@@ -1,0 +1,111 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { createMediaItem } from "@/lib/storage";
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const folder = searchParams.get("folder");
+    const search = searchParams.get("search");
+
+    const where: any = {};
+    if (folder && folder !== "all") {
+      where.folder = folder;
+    }
+    if (search) {
+      where.OR = [
+        { filename: { contains: search, mode: "insensitive" } },
+        { alt: { contains: search, mode: "insensitive" } },
+        { originalName: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    const mediaList = await prisma.media.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
+
+    // Also get distinct folders
+    const folders = await prisma.media.findMany({
+      select: { folder: true },
+      distinct: ["folder"],
+    });
+
+    return NextResponse.json({
+      media: mediaList,
+      folders: folders.map((f) => f.folder).filter(Boolean),
+    });
+  } catch (error) {
+    console.error("Error fetching media:", error);
+    return NextResponse.json(
+      { error: "Không thể lấy danh sách media." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const contentType = request.headers.get("content-type") || "";
+
+    // 1. Case: Adding media from external URL (e.g. Pinterest, CDN link)
+    if (contentType.includes("application/json")) {
+      const body = await request.json();
+      const { url, filename, alt, folder } = body;
+
+      if (!url) {
+        return NextResponse.json(
+          { error: "Vui lòng cung cấp URL hình ảnh." },
+          { status: 400 }
+        );
+      }
+
+      const media = await createMediaItem({
+        filename: filename || url.split("/").pop()?.split("?")[0] || "image.jpg",
+        originalName: filename || "Pinterest Image",
+        mimeType: "image/jpeg",
+        size: 0,
+        url,
+        folder: folder || "pinterest",
+        alt: alt || "Kiến trúc ACD Pinterest",
+      });
+
+      return NextResponse.json({ success: true, media });
+    }
+
+    // 2. Case: Uploading physical file via FormData
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
+    const folder = (formData.get("folder") as string) || "general";
+    const alt = (formData.get("alt") as string) || "";
+
+    if (!file) {
+      return NextResponse.json(
+        { error: "Không tìm thấy file để upload." },
+        { status: 400 }
+      );
+    }
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const media = await createMediaItem({
+      filename: file.name,
+      originalName: file.name,
+      mimeType: file.type || "image/jpeg",
+      size: file.size,
+      buffer,
+      folder,
+      alt: alt || file.name,
+    });
+
+    return NextResponse.json({ success: true, media });
+  } catch (error) {
+    console.error("Media upload error:", error);
+    return NextResponse.json(
+      { error: "Lỗi trong quá trình upload media." },
+      { status: 500 }
+    );
+  }
+}
+

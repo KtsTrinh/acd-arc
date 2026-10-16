@@ -1,0 +1,244 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ProductType {
+  CAD
+  MODEL_3D
+  INTERIOR
+  TEMPLATE
+  DOCUMENT
+  OTHER
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String?
+  email        String    @unique
+  passwordHash String?
+  role         UserRole  @default(USER)
+  avatar       String?
+
+  orders        Order[]
+  downloadLinks DownloadLink[]
+  posts         Post[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProjectCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  image       String?
+
+  projects Project[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  shortDesc    String?
+  description  String?
+  location     String?
+  client       String?
+  year         Int?
+  area         Float?
+  style        String?
+  buildingType String?
+  isFeatured   Boolean  @default(false)
+
+  categoryId String?
+  category   ProjectCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  coverId String?
+  cover   Media? @relation("ProjectCover", fields: [coverId], references: [id], onDelete: SetNull)
+
+  gallery ProjectMedia[]
+  tags    ProjectTag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Media {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String?
+  mimeType     String   @default("image/jpeg")
+  size         Int      @default(0) // size in bytes
+  url          String
+  storageKey   String
+  folder       String   @default("general")
+
+  width  Int?
+  height Int?
+  alt    String?
+
+  projectCovers Project[]      @relation("ProjectCover")
+  projectMedia  ProjectMedia[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProjectMedia {
+  id        String @id @default(cuid())
+  projectId String
+  mediaId   String
+  sortOrder Int    @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  media   Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, mediaId])
+  @@index([projectId, sortOrder])
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  projects ProjectTag[]
+  posts    PostTag[]
+
+  createdAt DateTime @default(now())
+}
+
+model ProjectTag {
+  projectId String
+  tagId     String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, tagId])
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String?
+  price       Float
+  comparePrice Float?
+  type        ProductType @default(CAD)
+  fileFormat  String?     // e.g. "AutoCAD .DWG / 3ds Max / SketchUp"
+  fileSize    String?     // e.g. "128 MB"
+  fileKey     String?     // Secure key in storage/private for download
+  thumbnail   String?
+  active      Boolean     @default(true)
+  featured    Boolean     @default(false)
+
+  orderItems    OrderItem[]
+  downloadLinks DownloadLink[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique
+  userId        String?
+  customerName  String
+  customerEmail String
+  customerPhone String?
+  status        OrderStatus @default(PENDING)
+  total         Float
+  paymentMethod String      @default("BANK_TRANSFER")
+  paymentNote   String?
+
+  user      User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items     OrderItem[]
+  downloads DownloadLink[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  productId   String
+  productName String
+  price       Float
+  quantity    Int     @default(1)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+}
+
+model DownloadLink {
+  id            String   @id @default(cuid())
+  token         String   @unique
+  orderId       String
+  productId     String
+  userId        String?
+  expiresAt     DateTime
+  maxDownloads  Int      @default(5)
+  downloadCount Int      @default(0)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  excerpt   String?
+  content   String
+  coverUrl  String?
+  published Boolean  @default(true)
+  views     Int      @default(0)
+
+  authorId String?
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  tags PostTag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PostTag {
+  postId String
+  tagId  String
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
