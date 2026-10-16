@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("PRISMA_DATABASE_URL")
 }
 
 enum UserRole {
@@ -242,3 +242,4 @@ model PostTag {
   @@id([postId, tagId])
 }
 
+PRISMA_DATABASE_URL="copy_nguyên_vẹn_giá_trị_của_DATABASE_URL_ở_trên_vào_đây"
