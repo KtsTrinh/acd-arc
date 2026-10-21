@@ -118,23 +118,15 @@ h1, h2, h3, h4 {
   letter-spacing: -0.02em;
 }
 
-/* Typing effect */
-@keyframes typing {
-  from { width: 0; }
-  to { width: 100%; }
+/* Marquee / running text effect */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
 }
 
-@keyframes blinkCaret {
-  from, to { border-color: transparent; }
-  50% { border-color: rgba(255, 255, 255, 0.6); }
-}
-
-.animate-typing {
+.animate-marquee {
+  animation: marquee 12s linear infinite;
   display: inline-block;
-  width: 0;
-  animation: typing 3.5s steps(60, end) forwards, blinkCaret 0.75s step-end infinite;
-  white-space: nowrap;
-  overflow: hidden;
-  vertical-align: bottom;
+  padding-left: 100%;
 }
 

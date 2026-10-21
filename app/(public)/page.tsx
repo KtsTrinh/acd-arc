@@ -63,9 +63,11 @@ export default async function HomePage() {
               <br />
               <span className="text-slate-200 font-light">Architecture Studio</span>
             </h1>
-            <p className="text-slate-200 text-base sm:text-lg max-w-2xl mx-auto whitespace-nowrap overflow-hidden border-r-2 border-white/60 animate-typing">
-              Kiến tạo công trình biệt thự, nhà phố và penthouse độc bản theo phong thủy hợp mệnh
-            </p>
+            <div className="overflow-hidden whitespace-nowrap max-w-3xl mx-auto">
+              <p className="text-slate-200 text-base sm:text-lg inline-block animate-marquee">
+                Kiến tạo công trình biệt thự, nhà phố và penthouse độc bản theo phong thủy hợp mệnh
+              </p>
+            </div>
           </div>
 
           {/* Category menu */}
