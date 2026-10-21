@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SortableGallery from "@/components/admin/SortableGallery";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
+import { slugify } from "@/lib/utils";
 import {
   ArrowLeft,
   Image as ImageIcon,
@@ -255,7 +256,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                 type="text"
                 required
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => { setTitle(e.target.value); setSlug(slugify(e.target.value)); }}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
               />
             </div>
