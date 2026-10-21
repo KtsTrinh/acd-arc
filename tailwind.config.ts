@@ -11,18 +11,18 @@ const config: Config = {
     extend: {
       colors: {
         thuy: {
-          950: "#040810", // Obsidian Mariana depth
-          900: "#070d1a", // Deep Midnight Navy (Primary Background)
-          850: "#0b1426", // Dark Oceanic Slate (Card Background)
-          800: "#0f1b33", // Elevated Container
-          700: "#182a4d", // Border & subtle line
-          600: "#223b6c", // Hover line
-          500: "#2d5295", // Deep Royal Water
-          400: "#38bdf8", // Glacial Sky Blue (Kim sinh Thủy accent)
-          300: "#7dd3fc", // Light Glacial Cyan
-          200: "#bae6fd", // Shimmer Water
-          100: "#e0f2fe", // Water highlight
-          50: "#f0f9ff",  // Foam white
+          950: "#000000", // Pure black
+          900: "#050505", // Deep black (Primary Background)
+          850: "#0a0a0a", // Card Background
+          800: "#141414", // Elevated Container
+          700: "#1f1f1f", // Border & subtle line
+          600: "#2a2a2a", // Hover line
+          500: "#3a3a3a", // Deep slate
+          400: "#d4d4d4", // Silver accent (luxury)
+          300: "#e5e5e5", // Light silver
+          200: "#f0f0f0", // Shimmer
+          100: "#f5f5f5", // Highlight
+          50: "#fafafa",  // Foam white
         },
         aqua: {
           400: "#22d3ee",
