@@ -118,13 +118,23 @@ h1, h2, h3, h4 {
   letter-spacing: -0.02em;
 }
 
-/* Subtle fade-in for premium feel */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Typing effect */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+@keyframes blinkCaret {
+  from, to { border-color: transparent; }
+  50% { border-color: rgba(255, 255, 255, 0.6); }
+}
+
+.animate-typing {
+  display: inline-block;
+  width: 0;
+  animation: typing 3.5s steps(60, end) forwards, blinkCaret 0.75s step-end infinite;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: bottom;
 }
 
