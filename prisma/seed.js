@@ -205,6 +205,55 @@ async function main() {
     },
   ];
 
+  const pinterestUrls = [
+    "https://i.pinimg.com/736x/ef/ec/58/efec58efa298d13dca0dde95e2528f20.jpg",
+    "https://i.pinimg.com/736x/e0/06/e7/e006e7457e647c608925488add4508dc.jpg",
+    "https://i.pinimg.com/736x/fe/de/13/fede138688ddd9a595090734b109c7ff.jpg",
+    "https://i.pinimg.com/736x/33/39/74/3339746a04aa480b39de3b0e6ba3529c.jpg",
+    "https://i.pinimg.com/736x/60/d5/f2/60d5f223b54b4d5de2243a432512d96a.jpg",
+    "https://i.pinimg.com/736x/cf/b0/40/cfb0408a8cb0d3e53a63aa2d765d3af6.jpg",
+    "https://i.pinimg.com/736x/ea/71/16/ea7116315c372c05ecb1f14b06e67768.jpg",
+    "https://i.pinimg.com/736x/48/49/09/484909cd303d2b48336ab5a390662ddf.jpg",
+    "https://i.pinimg.com/736x/97/51/e5/9751e564b9763396b99f64b5ee035743.jpg",
+    "https://i.pinimg.com/736x/12/71/ab/1271abd2fe2d6338c4177bba2a2bbdb1.jpg",
+    "https://i.pinimg.com/736x/d5/72/da/d572da3293e42fbf24aed9bd60ae8fd4.jpg",
+    "https://i.pinimg.com/736x/99/9c/17/999c172f28c24090698b0c04f86bd445.jpg",
+    "https://i.pinimg.com/736x/a4/da/1e/a4da1e327e13325e3c1484391e1482bc.jpg",
+    "https://i.pinimg.com/736x/fa/b5/96/fab5960ea3828980e7fd73055cb5a9dd.jpg",
+    "https://i.pinimg.com/736x/8c/82/4a/8c824a564e2eceb172c74ae79c6bbd16.jpg",
+    "https://i.pinimg.com/736x/95/50/66/955066bbcd2ba58762479bb257d193a9.jpg",
+    "https://i.pinimg.com/736x/31/ae/9a/31ae9ad163b754055b566be105102773.jpg",
+    "https://i.pinimg.com/736x/72/79/9e/72799e5475a77656dc76d1a9ec0947d5.jpg",
+    "https://i.pinimg.com/736x/47/c2/01/47c20141106c13e2d48578485f9a70e5.jpg",
+    "https://i.pinimg.com/736x/21/6b/92/216b92632567f492586ab3eba027f87c.jpg",
+    "https://i.pinimg.com/736x/90/93/cd/9093cd641f71625cc8e99a81c6f86027.jpg",
+    "https://i.pinimg.com/736x/13/05/2e/13052e4a879232d489d375616280602c.jpg",
+    "https://i.pinimg.com/736x/c1/82/3a/c1823aa7be0a11944e2271f05d2b665c.jpg",
+    "https://i.pinimg.com/736x/03/86/b2/0386b2d593fe1a526db647962a977e2c.jpg",
+    "https://i.pinimg.com/736x/b1/94/fa/b194fa3f1c013f59d295b0bb2985a1d4.jpg",
+    "https://i.pinimg.com/736x/12/49/01/124901657d08c887be589d93d7839c05.jpg",
+    "https://i.pinimg.com/736x/51/d0/66/51d066f509e0e812cfb97c7b74277f7c.jpg",
+    "https://i.pinimg.com/736x/0c/1c/e4/0c1ce4c2a622001510a06d4ab435f767.jpg",
+    "https://i.pinimg.com/736x/ad/58/98/ad5898564994bb2fa49d320d00e7db9f.jpg",
+  ];
+  const extraCount = pinterestUrls.length;
+  for (let i = 0; i < extraCount; i++) {
+    await prisma.media.create({
+      data: {
+        id: `media_extra_${i}`,
+        filename: `pinterest-${i}.jpg`,
+        originalName: `Pinterest Image ${i + 1}`,
+        url: pinterestUrls[i],
+        storageKey: `pinterest/extra/${i}.jpg`,
+        folder: "extra",
+        width: 736,
+        height: 736,
+        alt: `Hình ảnh Pinterest ${i + 1}`,
+      },
+    });
+  }
+  console.log(`✅ Seeded ${extraCount} Pinterest Media items`);
+
   for (const m of mediaList) {
     await prisma.media.create({ data: m });
   }
@@ -1141,16 +1190,73 @@ Một ngôi nhà đẹp không chỉ dừng lại ở tính thẩm mỹ thị gi
     },
   ];
 
+  const categoryByType = (title) => {
+    if (title.includes("nội thất")) return catInterior.id;
+    if (title.includes("nhà vườn")) return catVilla.id;
+    return catTownhouse.id;
+  };
+  const styleByTitle = (title) => {
+    if (title.includes("tân cổ")) return "Tân Cổ / Neo-Classical";
+    if (title.includes("indochi")) return "Indochi / Đông Tây Hợp Wall";
+    return "Modern / Hiện Đại";
+  };
+  const coverByType = (title, idx) => {
+    if (title.includes("nội thất")) return idx % 2 ? "media_interior_1" : "media_interior_2";
+    if (title.includes("nhà vườn")) return idx % 2 ? "media_moc_wood" : "media_villa_3";
+    return idx % 2 ? "media_townhouse_1" : "media_townhouse_2";
+  };
+  const tagsByTitle = (title) => {
+    const t = [];
+    if (title.includes("nội thất")) t.push("noi-that");
+    else if (title.includes("nhà vườn")) t.push("nha-vuon");
+    else t.push("nha-pho");
+    if (title.includes("tân cổ")) t.push("tans-co");
+    else if (title.includes("indochi")) t.push("indochi");
+    else t.push("hien-dai");
+    if (title.includes("Hà Nội")) t.push("ha-noi");
+    if (title.includes("Bắc Ninh")) t.push("bac-ninh");
+    if (title.includes("Quảng Ninh")) t.push("quang-ninh");
+    return t;
+  };
+
+  let idx = 0;
   for (const p of postsData) {
-    await prisma.post.create({
+    const tagSlugs = tagsByTitle(p.title);
+    const locMatch = p.title.match(/tại (.+)$/);
+    const location = locMatch ? locMatch[1] : "Hà Nội";
+    const coverId = `media_extra_${idx % extraCount}`;
+    const galleryIds = [
+      `media_extra_${(idx + 1) % extraCount}`,
+      `media_extra_${(idx + 2) % extraCount}`,
+    ];
+    const project = await prisma.project.create({
       data: {
-        ...p,
-        published: true,
-        authorId: admin.id,
+        title: p.title,
+        slug: p.slug,
+        shortDesc: p.excerpt,
+        description: p.content,
+        location,
+        year: p.title.includes("2026") ? 2026 : 2025,
+        area: 120 + (idx % 8) * 30,
+        style: styleByTitle(p.title),
+        buildingType: p.title.includes("nội thất") ? "Nội thất cao cấp" : (p.title.includes("nhà vườn") ? "Nhà vườn sinh thái" : "Nhà phố hiện đại"),
+        isFeatured: false,
+        categoryId: categoryByType(p.title),
+        coverId,
       },
     });
+    await prisma.projectMedia.createMany({
+      data: [
+        { projectId: project.id, mediaId: coverId, sortOrder: 0 },
+        ...galleryIds.map((m, i) => ({ projectId: project.id, mediaId: m, sortOrder: i + 1 })),
+      ],
+    });
+    await prisma.projectTag.createMany({
+      data: tagSlugs.map((s) => ({ projectId: project.id, tagId: tagsMap[s] })).filter((x) => x.tagId),
+    });
+    idx++;
   }
-  console.log(`✅ Seeded ${postsData.length} Blog Posts about Projects`);
+  console.log(`✅ Seeded ${postsData.length} Projects (Nhà Phố / Nội Thất / Nhà Vườn)`);
 
   console.log("🚀 ACD Architecture database seeded successfully!");
 }
