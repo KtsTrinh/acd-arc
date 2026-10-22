@@ -16,6 +16,7 @@
     "db:studio": "prisma studio",
     "cms:sync": "node scripts/cms-sync.mjs",
     "cms:watch": "node scripts/watch-cms-sync.mjs",
+    "auth:setup": "node scripts/setup-auth-env.mjs",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down"
   },

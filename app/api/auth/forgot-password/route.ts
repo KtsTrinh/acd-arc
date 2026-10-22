@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/app-url";
 import { signToken } from "@/lib/jwt";
 import { maskEmail, maskPhone, normalizePhone } from "@/lib/otp";
-import { buildResetPasswordEmail, sendEmail } from "@/lib/email";
-import { buildOtpSms, sendSms } from "@/lib/sms";
+import { buildResetPasswordEmail, getEmailProviderInfo, sendEmail } from "@/lib/email";
+import { buildOtpSms, getSmsProviderInfo, sendSms } from "@/lib/sms";
 import {
   createOtpVerification,
   createTokenVerification,
@@ -92,10 +92,14 @@ export async function POST(request: Request) {
       console.warn(`[auth] Yêu cầu đặt lại mật khẩu cho tài khoản không tồn tại: ${maskEmail(identifier)}`);
     }
 
+    const emailReady = getEmailProviderInfo().configured;
+    const smsReady = getSmsProviderInfo().configured;
+
     return NextResponse.json({
       success: true,
       message: GENERIC_MESSAGE,
       delivered,
+      channels: { email: emailReady, sms: smsReady },
     });
   } catch (error) {
     console.error("Forgot password error:", error);

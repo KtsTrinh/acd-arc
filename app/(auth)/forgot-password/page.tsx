@@ -10,6 +10,9 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [delivered, setDelivered] = useState<string[]>([]);
+  const [channels, setChannels] = useState<{ email: boolean; sms: boolean } | null>(
+    null
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +33,7 @@ export default function ForgotPasswordPage() {
 
       setSuccess(data.message);
       setDelivered(data.delivered || []);
+      setChannels(data.channels || null);
     } catch (err: any) {
       setError(err.message || "Đã có lỗi xảy ra.");
     } finally {
@@ -74,6 +78,17 @@ export default function ForgotPasswordPage() {
                 {delivered.map((item) => (
                   <p key={item}>{item}</p>
                 ))}
+              </div>
+            )}
+            {channels && !channels.email && !channels.sms && (
+              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-400 text-xs">
+                Dịch vụ gửi email và tin nhắn hiện chưa được cấu hình nên chưa thể
+                gửi mã đặt lại mật khẩu. Vui lòng liên hệ quản trị viên.
+              </div>
+            )}
+            {channels && (channels.email || channels.sms) && delivered.length === 0 && (
+              <div className="p-3.5 rounded-xl bg-thuy-900 border border-thuy-700 text-[11px] text-slate-400">
+                Không tìm thấy tài khoản nào khớp với thông tin đã nhập.
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   exchangeOAuthCode,
   fetchOAuthProfile,
+  getOAuthRedirectUri,
   isOAuthProvider,
   verifyOAuthState,
 } from "@/lib/oauth";
@@ -47,7 +48,7 @@ export async function GET(
   }
 
   try {
-    const redirectUri = `${getBaseUrl(request)}/api/auth/oauth/${provider}/callback`;
+    const redirectUri = getOAuthRedirectUri(provider, getBaseUrl(request));
     const tokens = await exchangeOAuthCode(provider, code, redirectUri);
     const profile = await fetchOAuthProfile(provider, tokens);
 

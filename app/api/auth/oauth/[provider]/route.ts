@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   createOAuthState,
   getOAuthProviderConfig,
+  getOAuthRedirectUri,
   isOAuthProvider,
 } from "@/lib/oauth";
 import { getBaseUrl } from "@/lib/app-url";
@@ -25,7 +26,7 @@ export async function GET(
     );
   }
 
-  const redirectUri = `${getBaseUrl(request)}/api/auth/oauth/${provider}/callback`;
+  const redirectUri = getOAuthRedirectUri(provider, getBaseUrl(request));
 
   const authorizeUrl = new URL(config.authorizeUrl);
   authorizeUrl.searchParams.set("client_id", config.clientId);

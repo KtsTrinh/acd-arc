@@ -70,6 +70,25 @@ export function isOAuthProviderConfigured(provider: string): boolean {
   return Boolean(getOAuthProviderConfig(provider));
 }
 
+/**
+ * Redirect URI phải khớp chính xác với URI đã đăng ký ở Google/Facebook.
+ * Cho phép ghi đè bằng biến môi trường (GOOGLE_REDIRECT_URI / FACEBOOK_REDIRECT_URI),
+ * nếu không có thì tự suy ra từ domain ứng dụng.
+ */
+export function getOAuthRedirectUri(
+  provider: OAuthProvider,
+  baseUrl: string
+): string {
+  const override =
+    provider === "google"
+      ? process.env.GOOGLE_REDIRECT_URI
+      : process.env.FACEBOOK_REDIRECT_URI;
+
+  if (override) return override;
+
+  return `${baseUrl}/api/auth/oauth/${provider}/callback`;
+}
+
 /* ------------------------------------------------------------------ */
 /* State chống CSRF                                                    */
 /* ------------------------------------------------------------------ */
