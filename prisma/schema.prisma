@@ -63,9 +63,83 @@ model User {
   downloadLinks DownloadLink[]
   posts         Post[]
   verifications Verification[]
+  visitSessions VisitorSession[]
+  pageViews     PageView[]
+  cartEvents    CartEvent[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+/// Phiên truy cập của khách (kể cả khách ẩn danh). Dùng cho thống kê CMS.
+model VisitorSession {
+  id        String  @id @default(cuid())
+  visitorId String  @unique
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  ip        String?
+  userAgent String?
+  device    String? // mobile | tablet | desktop
+  browser   String?
+  os        String?
+  referrer  String?
+
+  landingPath String?
+  lastPath    String?
+
+  pageViews   Int @default(0)
+  durationSec Int @default(0)
+
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+
+  visits     PageView[]
+  cartEvents CartEvent[]
+
+  @@index([userId])
+  @@index([lastSeenAt])
+  @@index([firstSeenAt])
+}
+
+/// Một lần xem trang, kèm thời gian khách ở lại trang
+model PageView {
+  id        String  @id @default(cuid())
+  sessionId String
+  userId    String?
+  path      String
+  referrer  String?
+  durationSec Int    @default(0)
+
+  createdAt DateTime @default(now())
+
+  session VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+/// Khách hàng đã cho sản phẩm vào giỏ / bỏ khỏi giỏ
+model CartEvent {
+  id        String  @id @default(cuid())
+  sessionId String?
+  userId    String?
+  productId String?
+  productName String
+  productSlug String?
+  price     Float   @default(0)
+  action    String  @default("add") // add | remove | clear | checkout
+
+  createdAt DateTime @default(now())
+
+  session VisitorSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  user    User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([productId])
+  @@index([userId])
 }
 
 model Account {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import VisitorTracker from "@/components/tracking/VisitorTracker";
 import { getSettings } from "@/lib/settings";
 
 export const revalidate = 0;
@@ -34,6 +35,7 @@ export default async function PublicLayout({
 
   return (
     <div className="flex flex-col min-h-screen">
+      <VisitorTracker />
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
