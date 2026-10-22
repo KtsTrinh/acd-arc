@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Plus, Trash2, BookOpen, ExternalLink, Loader2, X } from "lucide-react";
-import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 import { slugify, formatDateTime } from "@/lib/utils";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 
@@ -69,7 +68,6 @@ export default function AdminBlogPage() {
         setContent("");
         setCoverUrl("");
         fetchPosts();
-        await autoSyncAfterSave(`bÃ i viáº¿t "${data.post.title}"`);
       }
     } catch (err) {
       console.error(err);

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export async function GET(
   request: Request,
@@ -76,7 +77,8 @@ export async function POST(
       include: { media: true },
     });
 
-    return NextResponse.json({ success: true, gallery: updatedGallery });
+    const sync = await triggerCmsAutoSync("cập nhật thư viện ảnh dự án");
+    return NextResponse.json({ success: true, gallery: updatedGallery, sync });
   } catch (error) {
     console.error("Error adding to gallery:", error);
     return NextResponse.json(
@@ -126,7 +128,8 @@ export async function PUT(
       include: { media: true },
     });
 
-    return NextResponse.json({ success: true, gallery: updatedGallery });
+    const sync = await triggerCmsAutoSync("cập nhật thư viện ảnh dự án");
+    return NextResponse.json({ success: true, gallery: updatedGallery, sync });
   } catch (error) {
     console.error("Error reordering gallery:", error);
     return NextResponse.json(
@@ -168,7 +171,8 @@ export async function DELETE(
       include: { media: true },
     });
 
-    return NextResponse.json({ success: true, gallery: updatedGallery });
+    const sync = await triggerCmsAutoSync("cập nhật thư viện ảnh dự án");
+    return NextResponse.json({ success: true, gallery: updatedGallery, sync });
   } catch (error) {
     console.error("Error removing gallery item:", error);
     return NextResponse.json(

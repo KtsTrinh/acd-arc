@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export async function GET(request: Request) {
   try {
@@ -163,7 +164,10 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, project: createdProject });
+    const sync = await triggerCmsAutoSync(
+      `thêm dự án "${createdProject?.title ?? ""}"`
+    );
+    return NextResponse.json({ success: true, project: createdProject, sync });
   } catch (error) {
     console.error("Error creating project:", error);
     return NextResponse.json(

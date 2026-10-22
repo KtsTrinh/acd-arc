@@ -47,6 +47,7 @@ export async function GET() {
           ? `https://github.com/${getGithubRepo()}/commit/${settings.cmsLastSyncSha}`
           : "",
       },
+      autoSync: (settings.cmsAutoSync || "true") === "true",
       files: files.map((file) => ({
         path: file.path,
         size: Buffer.byteLength(file.content, "utf8"),

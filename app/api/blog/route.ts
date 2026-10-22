@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/auth";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export async function GET(request: Request) {
   try {
@@ -71,7 +72,8 @@ export async function POST(request: Request) {
       });
     }
 
-    return NextResponse.json({ success: true, post });
+    const sync = await triggerCmsAutoSync(`thêm bài viết "${post.title}"`);
+    return NextResponse.json({ success: true, post, sync });
   } catch (error) {
     console.error("Error creating post:", error);
     return NextResponse.json({ error: "Lỗi tạo bài viết." }, { status: 500 });

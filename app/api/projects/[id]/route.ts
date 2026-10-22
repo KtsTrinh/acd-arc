@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export async function GET(
   request: Request,
@@ -115,7 +116,10 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json({ success: true, project: fullProject });
+    const sync = await triggerCmsAutoSync(
+      `cập nhật dự án "${fullProject?.title ?? ""}"`
+    );
+    return NextResponse.json({ success: true, project: fullProject, sync });
   } catch (error) {
     console.error("Error updating project:", error);
     return NextResponse.json(
@@ -132,7 +136,12 @@ export async function DELETE(
   try {
     const { id } = params;
     await prisma.project.delete({ where: { id } });
-    return NextResponse.json({ success: true, message: "Đã xóa dự án thành công." });
+    const sync = await triggerCmsAutoSync("xóa dự án");
+    return NextResponse.json({
+      success: true,
+      message: "Đã xóa dự án thành công.",
+      sync,
+    });
   } catch (error) {
     console.error("Error deleting project:", error);
     return NextResponse.json(

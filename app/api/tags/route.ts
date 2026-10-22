@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export async function GET() {
   try {
@@ -34,7 +35,8 @@ export async function POST(request: Request) {
       data: { name, slug },
     });
 
-    return NextResponse.json({ success: true, tag });
+    const sync = await triggerCmsAutoSync(`thêm tag "${tag.name}"`);
+    return NextResponse.json({ success: true, tag, sync });
   } catch (error) {
     console.error("Error creating tag:", error);
     return NextResponse.json({ error: "Không thể tạo thẻ tag" }, { status: 500 });

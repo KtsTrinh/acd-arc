@@ -4,9 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 import { resolveHeroVideo, playableVideoUrl, resolveVideoFit } from "@/lib/media-url";
-import CmsSyncButton, {
-  autoSyncAfterSave,
-} from "@/components/admin/CmsSyncButton";
+import CmsSyncButton from "@/components/admin/CmsSyncButton";
 
 import {
   Settings,
@@ -121,7 +119,6 @@ export default function AdminSettingsPage() {
       if (!res.ok) throw new Error(data.error || "Lỗi lưu cấu hình.");
       if (data.settings) setSettings(data.settings);
       setMessage({ type: "ok", text: "Đã lưu cấu hình thành công." });
-      await autoSyncAfterSave("cấu hình hệ thống");
     } catch (err: any) {
       setMessage({ type: "err", text: err.message || "Đã xảy ra lỗi." });
     } finally {

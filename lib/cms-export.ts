@@ -63,6 +63,7 @@ export async function buildCmsExport(): Promise<CmsExportFile[]> {
   // Loại metadata nội bộ của quá trình đồng bộ để tránh sinh commit vô ích
   delete settingsMap.cmsLastSyncSha;
   delete settingsMap.cmsLastSyncAt;
+  delete settingsMap.cmsAutoSync;
 
   const settings = {
     ...defaultSettings,

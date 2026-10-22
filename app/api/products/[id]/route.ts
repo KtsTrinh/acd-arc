@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export async function GET(
   request: Request,
@@ -74,7 +75,8 @@ export async function PATCH(
       data: updateData,
     });
 
-    return NextResponse.json({ success: true, product: updated });
+    const sync = await triggerCmsAutoSync(`cập nhật sản phẩm "${updated.name}"`);
+    return NextResponse.json({ success: true, product: updated, sync });
   } catch (error) {
     console.error("Error updating product:", error);
     return NextResponse.json(
@@ -91,7 +93,12 @@ export async function DELETE(
   try {
     const { id } = params;
     await prisma.product.delete({ where: { id } });
-    return NextResponse.json({ success: true, message: "Đã xóa sản phẩm thành công." });
+    const sync = await triggerCmsAutoSync("xóa sản phẩm");
+    return NextResponse.json({
+      success: true,
+      message: "Đã xóa sản phẩm thành công.",
+      sync,
+    });
   } catch (error) {
     console.error("Error deleting product:", error);
     return NextResponse.json(

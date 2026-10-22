@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { formatVND, slugify } from "@/lib/utils";
 import { Plus, Trash2, Package, Download, Loader2, Check, X } from "lucide-react";
-import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 
 export default function AdminProductsPage() {
@@ -76,7 +75,6 @@ export default function AdminProductsPage() {
         setDescription("");
         setPrice("");
         fetchProducts();
-        await autoSyncAfterSave(`sáº£n pháº©m "${data.product.name}"`);
       }
     } catch (err) {
       console.error(err);

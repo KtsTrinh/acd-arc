@@ -10,6 +10,7 @@ export interface GithubPushResult {
   commitUrl: string;
   branch: string;
   changedFiles: string[];
+  skipped?: boolean;
 }
 
 export function getGithubRepo(): string {
@@ -39,6 +40,7 @@ async function githubRequest<T>(
   const response = await fetch(`${GITHUB_API}${path}`, {
     ...init,
     method,
+    signal: init.signal ?? AbortSignal.timeout(15_000),
     headers: {
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
@@ -144,6 +146,17 @@ export async function pushFilesToGithub(
     },
     "POST"
   );
+
+  // Nội dung không đổi -> không tạo commit rỗng
+  if (tree.sha === baseCommit.tree.sha) {
+    return {
+      commitSha: baseCommitSha,
+      commitUrl: `https://github.com/${repo}/commit/${baseCommitSha}`,
+      branch,
+      changedFiles: [],
+      skipped: true,
+    };
+  }
 
   const newCommit = await githubRequest<GithubNewCommit>(
     `/repos/${repo}/git/commits`,

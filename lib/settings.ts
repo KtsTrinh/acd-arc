@@ -47,6 +47,7 @@ export interface SystemSettings {
   bodyEmbedCode: string;
 
   // Nội bộ - không export ra source
+  cmsAutoSync: string;
   cmsLastSyncSha: string;
   cmsLastSyncAt: string;
 }
@@ -89,6 +90,7 @@ export const defaultSettings: SystemSettings = {
   headerEmbedCode: "",
   bodyEmbedCode: "",
 
+  cmsAutoSync: "true",
   cmsLastSyncSha: "",
   cmsLastSyncAt: "",
 };

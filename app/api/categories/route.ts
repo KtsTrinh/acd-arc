@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export async function GET() {
   try {
@@ -45,7 +46,8 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, category });
+    const sync = await triggerCmsAutoSync(`thêm danh mục "${category.name}"`);
+    return NextResponse.json({ success: true, category, sync });
   } catch (error) {
     console.error("Error creating category:", error);
     return NextResponse.json(

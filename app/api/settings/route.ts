@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSettings, saveSettings, defaultSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export const revalidate = 0;
 
@@ -49,8 +50,11 @@ export async function PUT(request: Request) {
 
     await saveSettings(payload);
 
+    // Đồng bộ nội dung CMS ra mã nguồn (GitHub -> Vercel tự deploy)
+    const sync = await triggerCmsAutoSync("cập nhật cấu hình hệ thống");
+
     const updated = await getSettings();
-    return NextResponse.json({ success: true, settings: updated });
+    return NextResponse.json({ success: true, settings: updated, sync });
   } catch (error) {
     console.error("Error saving settings:", error);
     return NextResponse.json(

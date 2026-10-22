@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus, Tags, Loader2 } from "lucide-react";
-import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 
 export default function AdminTagsPage() {
   const [tags, setTags] = useState<any[]>([]);
@@ -41,7 +40,6 @@ export default function AdminTagsPage() {
       if (data.tag) {
         setName("");
         fetchTags();
-        await autoSyncAfterSave(`tag "${data.tag.name}"`);
       }
     } catch (err) {
       console.error(err);

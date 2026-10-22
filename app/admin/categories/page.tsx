@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Plus, Trash2, FolderTree, Loader2 } from "lucide-react";
-import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 import { slugify } from "@/lib/utils";
 
 export default function AdminCategoriesPage() {
@@ -56,7 +55,6 @@ export default function AdminCategoriesPage() {
         setDescription("");
         setImage("");
         fetchCategories();
-        await autoSyncAfterSave(`danh má»¥c "${data.category.name}"`);
       }
     } catch (err) {
       console.error(err);

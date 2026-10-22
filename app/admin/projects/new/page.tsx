@@ -7,7 +7,6 @@ import Link from "next/link";
 import { slugify } from "@/lib/utils";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 import { ArrowLeft, Image as ImageIcon, Loader2, Plus, Sparkles } from "lucide-react";
-import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -95,7 +94,6 @@ export default function NewProjectPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "KhÃ´ng thá»ƒ táº¡o dá»± Ã¡n.");
 
-      await autoSyncAfterSave(`dá»± Ã¡n "${data.project.title}"`);
 
       // Redirect to Project detail page to manage sortable gallery!
       router.push(`/admin/projects/${data.project.id}`);

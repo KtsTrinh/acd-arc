@@ -11,7 +11,9 @@ import {
   Terminal,
   Info,
 } from "lucide-react";
-import CmsSyncButton, { AutoSyncToggle, syncCmsToGithub } from "@/components/admin/CmsSyncButton";
+import CmsSyncButton, {
+  syncCmsToGithub,
+} from "@/components/admin/CmsSyncButton";
 
 interface SyncFile {
   path: string;
@@ -34,6 +36,8 @@ export default function AdminSyncPage() {
     branch: string;
   } | null>(null);
   const [error, setError] = useState("");
+  const [autoSync, setAutoSync] = useState(true);
+  const [toggling, setToggling] = useState(false);
 
   const loadStatus = async () => {
     setLoading(true);
@@ -45,12 +49,33 @@ export default function AdminSyncPage() {
       setFiles(data.files || []);
       setGithub(data.github || null);
       setLastSync(data.lastSync || null);
+      if (typeof data.autoSync === "boolean") setAutoSync(data.autoSync);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Không tải được trạng thái đồng bộ."
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleAutoSync = async () => {
+    const next = !autoSync;
+    setToggling(true);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          settings: { cmsAutoSync: next ? "true" : "false" },
+        }),
+      });
+      if (!res.ok) throw new Error("Không đổi được cài đặt.");
+      setAutoSync(next);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không đổi được cài đặt.");
+    } finally {
+      setToggling(false);
     }
   };
 
@@ -79,8 +104,36 @@ export default function AdminSyncPage() {
           <CmsSyncButton label="Đồng bộ ngay" />
         </div>
 
-        <div className="pt-1">
-          <AutoSyncToggle />
+        <div className="pt-1 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={toggleAutoSync}
+            disabled={toggling}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-thuy-900 border border-thuy-700 hover:border-thuy-400 transition-colors disabled:opacity-60"
+          >
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${
+                autoSync ? "text-thuy-400" : "text-slate-500"
+              }`}
+            />
+            <span className="text-xs text-slate-300">
+              Tự động đồng bộ mã nguồn sau mỗi lần lưu trong CMS
+            </span>
+            <span
+              className={`ml-1 w-9 h-5 rounded-full relative transition-colors ${
+                autoSync ? "bg-thuy-400" : "bg-thuy-700"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${
+                  autoSync ? "left-4.5" : "left-0.5"
+                }`}
+              />
+            </span>
+          </button>
+          {toggling && (
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-thuy-400" />
+          )}
         </div>
       </div>
 

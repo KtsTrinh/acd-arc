@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export async function GET(request: Request) {
   try {
@@ -86,7 +87,8 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, product });
+    const sync = await triggerCmsAutoSync(`thêm sản phẩm "${product.name}"`);
+    return NextResponse.json({ success: true, product, sync });
   } catch (error) {
     console.error("Error creating product:", error);
     return NextResponse.json(

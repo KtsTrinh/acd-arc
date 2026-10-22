@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { updateMediaMetadata, deleteMediaItem } from "@/lib/storage";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export async function PATCH(
   request: Request,
@@ -11,7 +12,8 @@ export async function PATCH(
     const { filename, alt, folder } = body;
 
     const updated = await updateMediaMetadata(id, { filename, alt, folder });
-    return NextResponse.json({ success: true, media: updated });
+    const sync = await triggerCmsAutoSync("cập nhật media");
+    return NextResponse.json({ success: true, media: updated, sync });
   } catch (error) {
     console.error("Error updating media:", error);
     return NextResponse.json(
@@ -28,7 +30,12 @@ export async function DELETE(
   try {
     const { id } = params;
     await deleteMediaItem(id);
-    return NextResponse.json({ success: true, message: "Đã xóa media thành công." });
+    const sync = await triggerCmsAutoSync("xóa media");
+    return NextResponse.json({
+      success: true,
+      message: "Đã xóa media thành công.",
+      sync,
+    });
   } catch (error) {
     console.error("Error deleting media:", error);
     return NextResponse.json(

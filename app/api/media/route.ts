@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createMediaItem } from "@/lib/storage";
 import { isVideoUrl } from "@/lib/media-url";
+import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 
 export async function GET(request: Request) {
   try {
@@ -79,7 +80,8 @@ export async function POST(request: Request) {
         alt: alt || "ACD Media",
       });
 
-      return NextResponse.json({ success: true, media });
+      const sync = await triggerCmsAutoSync("thêm media mới");
+      return NextResponse.json({ success: true, media, sync });
     }
 
     // 2. Case: Uploading physical file via FormData
