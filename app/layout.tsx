@@ -1,32 +1,55 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { getSettings } from "@/lib/settings";
 
-export const metadata: Metadata = {
-  title: "ACD Architecture & Design | Kiến Trúc Hợp Mệnh Ngũ Hành & Nội Thất Thượng Lưu",
-  description:
-    "ACD Studio - Đơn vị thiết kế kiến trúc biệt thự, nhà phố, penthouse và nội thất cao cấp theo phong thủy hợp mệnh (Kim - Mộc - Thủy - Hỏa - Thổ). Cung cấp hệ sinh thái tài nguyên bản vẽ CAD, model 3D chuyên nghiệp.",
-  keywords: [
-    "kiến trúc biệt thự",
-    "thiết kế nội thất",
-    "nhà phố hiện đại",
-    "phong thủy hợp mệnh",
-    "phong thủy ngũ hành",
-    "mệnh kim",
-    "mệnh mộc",
-    "mệnh thủy",
-    "mệnh hỏa",
-    "mệnh thổ",
-    "bản vẽ autocad",
-    "model 3d kiến trúc",
-    "acd architecture",
-  ],
-};
+export const revalidate = 0;
 
-export default function RootLayout({
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+
+  const keywords = settings.seoKeywords
+    ? settings.seoKeywords
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean)
+    : [];
+
+  const metadata: Metadata = {
+    title: settings.seoTitle || settings.siteName,
+    description: settings.seoDescription || settings.siteDescription,
+    keywords,
+    robots: settings.seoRobots === "noindex, nofollow" ? { index: false, follow: false } : undefined,
+  };
+
+  if (settings.seoOgImage) {
+    metadata.openGraph = {
+      title: settings.seoTitle || settings.siteName,
+      description: settings.seoDescription || settings.siteDescription,
+      images: [{ url: settings.seoOgImage }],
+      type: "website",
+    };
+    metadata.twitter = {
+      card: "summary_large_image",
+      title: settings.seoTitle || settings.siteName,
+      description: settings.seoDescription || settings.siteDescription,
+      images: [settings.seoOgImage],
+    };
+  }
+
+  if (settings.googleSiteVerification) {
+    metadata.other = { "google-site-verification": settings.googleSiteVerification };
+  }
+
+  return metadata;
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await getSettings();
+
   return (
     <html lang="vi" className="dark">
       <head>
@@ -36,11 +59,35 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
+
+        {/* Custom header embed code (ads, pixels, GTM...) - applied on every page */}
+        {settings.headerEmbedCode && (
+          <script dangerouslySetInnerHTML={{ __html: settings.headerEmbedCode }} />
+        )}
+
+        {/* Google Analytics */}
+        {settings.googleAnalyticsId && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}`}
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${settings.googleAnalyticsId}');`,
+              }}
+            />
+          </>
+        )}
       </head>
       <body className="min-h-screen bg-thuy-900 text-slate-100 antialiased selection:bg-thuy-400 selection:text-thuy-950">
         {children}
+
+        {/* Custom body embed code - applied on every page */}
+        {settings.bodyEmbedCode && (
+          <script dangerouslySetInnerHTML={{ __html: settings.bodyEmbedCode }} />
+        )}
       </body>
     </html>
   );
 }
-

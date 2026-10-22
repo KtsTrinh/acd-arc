@@ -1,8 +1,13 @@
 import React from "react";
 import Link from "next/link";
 import { Compass, Phone, Mail, MapPin, ShieldCheck, ArrowUpRight } from "lucide-react";
+import { getSettings } from "@/lib/settings";
 
-export default function Footer() {
+export const revalidate = 0;
+
+export default async function Footer() {
+  const settings = await getSettings();
+
   return (
     <footer className="border-t border-thuy-750 bg-thuy-950 text-slate-400 text-sm mt-24">
       {/* Top Banner with Water Motif */}
@@ -16,14 +21,13 @@ export default function Footer() {
               </div>
             </div>
             <span className="font-display font-bold text-xl text-white tracking-wide">
-              ACD ARCHITECTURE
+              {settings.siteName || "ACD ARCHITECTURE"}
             </span>
           </Link>
 
           <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
-            Studio kiến trúc & nội thất tiên phong ứng dụng triết lý phong thủy ngũ hành hợp mệnh
-            (Kim - Mộc - Thủy - Hỏa - Thổ). Tối giản, sang trọng và kiến tạo không gian sống tương sinh
-            mang lại thịnh vượng cho từng gia chủ.
+            {settings.siteDescription ||
+              "Studio kiến trúc & nội thất tiên phong ứng dụng triết lý phong thủy ngũ hành hợp mệnh (Kim - Mộc - Thủy - Hỏa - Thổ). Tối giản, sang trọng và kiến tạo không gian sống tương sinh mang lại thịnh vượng cho từng gia chủ."}
           </p>
 
           <div className="pt-2 flex items-center gap-2 text-xs text-thuy-300">
@@ -102,20 +106,52 @@ export default function Footer() {
           <ul className="space-y-2.5 text-xs">
             <li className="flex items-start gap-2">
               <MapPin className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
-              <span>Hà Nội: Tòa nhà Heritage, P. Phan Chu Trinh, Hoàn Kiếm</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <MapPin className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
-              <span>TP. HCM: Khu biệt thự ven sông Thảo Điền, TP. Thủ Đức</span>
+              <span>{settings.contactAddress}</span>
             </li>
             <li className="flex items-center gap-2">
               <Phone className="w-3.5 h-3.5 text-thuy-400 flex-shrink-0" />
-              <span className="text-slate-200 font-medium">Hotline: 0988.ACD.888</span>
+              <span className="text-slate-200 font-medium">Hotline: {settings.contactPhone}</span>
             </li>
             <li className="flex items-center gap-2">
               <Mail className="w-3.5 h-3.5 text-thuy-400 flex-shrink-0" />
-              <span>contact@acd.vn</span>
+              <a href={`mailto:${settings.contactEmail}`} className="hover:text-thuy-400 transition-colors">
+                {settings.contactEmail}
+              </a>
             </li>
+            {(settings.facebookUrl || settings.instagramUrl || settings.youtubeUrl) && (
+              <li className="flex items-center gap-3 pt-1">
+                {settings.facebookUrl && (
+                  <a
+                    href={settings.facebookUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-thuy-400 transition-colors"
+                  >
+                    Facebook
+                  </a>
+                )}
+                {settings.instagramUrl && (
+                  <a
+                    href={settings.instagramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-thuy-400 transition-colors"
+                  >
+                    Instagram
+                  </a>
+                )}
+                {settings.youtubeUrl && (
+                  <a
+                    href={settings.youtubeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-thuy-400 transition-colors"
+                  >
+                    YouTube
+                  </a>
+                )}
+              </li>
+            )}
           </ul>
         </div>
       </div>

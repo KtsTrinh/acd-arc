@@ -13,6 +13,7 @@ import {
   Tags,
   Image as ImageIcon,
   Users,
+  Settings,
   ExternalLink,
   LogOut,
   ChevronRight,
@@ -31,6 +32,7 @@ export default function AdminSidebar() {
     { label: "Thẻ Tags", href: "/admin/tags", icon: Tags },
     { label: "Media Library Dùng Chung", href: "/admin/media", icon: ImageIcon },
     { label: "Người Dùng & Phân Quyền", href: "/admin/users", icon: Users },
+    { label: "Cấu Hình Hệ Thống", href: "/admin/settings", icon: Settings },
   ];
 
   const handleLogout = async () => {

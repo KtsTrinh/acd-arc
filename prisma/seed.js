@@ -20,6 +20,7 @@ async function main() {
   await prisma.tag.deleteMany();
   await prisma.media.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.systemSetting.deleteMany();
 
   // 2. Seed Users
   const adminPasswordHash = await bcrypt.hash("admin123", 10);
@@ -335,6 +336,40 @@ async function main() {
     tagsMap[t.slug] = createdTag.id;
   }
   console.log("✅ Seeded 5 Elements & Architectural Tags");
+
+  // 5.1 Seed default System Settings (Cấu hình hệ thống / SEO / Custom Script)
+  const defaultSettings = {
+    siteName: "ACD Architecture & Design",
+    siteTagline: "Kiến Trúc Hợp Mệnh Ngũ Hành & Nội Thất Thượng Lưu",
+    siteDescription:
+      "ACD Studio - Đơn vị thiết kế kiến trúc biệt thự, nhà phố, penthouse và nội thất cao cấp theo phong thủy hợp mệnh (Kim - Mộc - Thủy - Hỏa - Thổ).",
+    contactEmail: "contact@acd.vn",
+    contactPhone: "0988.ACD.888",
+    contactAddress:
+      "Hà Nội: Tòa nhà Heritage, P. Phan Chu Trinh, Hoàn Kiếm | TP. HCM: Khu biệt thự ven sông Thảo Điền, TP. Thủ Đức",
+    facebookUrl: "",
+    instagramUrl: "",
+    youtubeUrl: "",
+    zaloNumber: "",
+    maintenanceMode: "false",
+    seoTitle:
+      "ACD Architecture & Design | Kiến Trúc Hợp Mệnh Ngũ Hành & Nội Thất Thượng Lưu",
+    seoDescription:
+      "ACD Studio - Đơn vị thiết kế kiến trúc biệt thự, nhà phố, penthouse và nội thất cao cấp theo phong thủy hợp mệnh (Kim - Mộc - Thủy - Hỏa - Thổ). Cung cấp hệ sinh thái tài nguyên bản vẽ CAD, model 3D chuyên nghiệp.",
+    seoKeywords:
+      "kiến trúc biệt thự,thiết kế nội thất,nhà phố hiện đại,phong thủy hợp mệnh,phong thủy ngũ hành,mệnh kim,mệnh mộc,mệnh thủy,mệnh hỏa,mệnh thổ,bản vẽ autocad,model 3d kiến trúc,acd architecture",
+    seoOgImage: "",
+    seoRobots: "index, follow",
+    googleAnalyticsId: "",
+    googleSiteVerification: "",
+    headerEmbedCode: "",
+    bodyEmbedCode: "",
+  };
+
+  for (const [key, value] of Object.entries(defaultSettings)) {
+    await prisma.systemSetting.create({ data: { key, value } });
+  }
+  console.log(`✅ Seeded ${Object.keys(defaultSettings).length} System Settings`);
 
   // 6. Seed Projects for all 5 Elements
   // 6.1 Mệnh Thủy: The Aqua Horizon Villa
