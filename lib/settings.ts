@@ -68,7 +68,7 @@ export const defaultSettings: SystemSettings = {
   heroBackgroundVideoMobile: "",
   heroVideoPoster: "",
   heroVideoEmbedCode: "",
-  heroVideoFit: "auto",
+  heroVideoFit: "cover",
   heroVideoAspect: "",
   heroOverlayOpacity: "60",
 

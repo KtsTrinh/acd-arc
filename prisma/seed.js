@@ -375,7 +375,7 @@ async function main() {
     heroBackgroundVideoMobile: "",
     heroVideoPoster: "",
     heroVideoEmbedCode: "",
-    heroVideoFit: "auto",
+    heroVideoFit: "cover",
     heroVideoAspect: "",
     heroOverlayOpacity: "60",
     seoTitle:

@@ -96,20 +96,14 @@ export function parseVideoAspect(aspect: string): {
 
 /**
  * Chọn cách hiển thị video nền.
- * - "cover": phủ kín khung (cắt bớt, phóng to)
- * - "contain": vừa khung (giữ nguyên tỉ lệ, không bị mờ do phóng lên)
- *
- * Video dọc (chiều cao > chiều rộng) nên mặc định "contain" vì "cover" sẽ
- * phóng to rất lớn và cắt mất phần lớn khung hình.
+ * - "cover": phủ kín toàn bộ khung nền (mặc định)
+ * - "contain": vừa khung, giữ nguyên tỉ lệ (chỉ khi bạn cần thấy trọn video)
  */
 export function resolveVideoFit(
   fitSetting: string,
   aspect: string
 ): "cover" | "contain" {
-  if (fitSetting === "cover") return "cover";
   if (fitSetting === "contain") return "contain";
-
-  const dimensions = parseVideoAspect(aspect);
-  if (!dimensions) return "cover";
-  return dimensions.height > dimensions.width ? "contain" : "cover";
+  void aspect;
+  return "cover";
 }

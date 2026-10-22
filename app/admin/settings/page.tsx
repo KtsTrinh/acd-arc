@@ -46,9 +46,6 @@ const inputCls =
   "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400 transition-colors";
 const labelCls = "block text-xs text-slate-300 font-medium mb-1.5";
 
-const FALLBACK_HERO =
-  "https://i.pinimg.com/736x/ef/ec/58/efec58efa298d13dca0dde95e2528f20.jpg";
-
 export default function AdminSettingsPage() {
   const [tab, setTab] = useState<TabKey>("system");
   const [settings, setSettings] = useState<Record<string, string>>({});
@@ -76,7 +73,7 @@ export default function AdminSettingsPage() {
 
   const heroVideoPreview = resolveHeroVideo(settings.heroBackgroundVideo || "");
   const heroVideoFit = resolveVideoFit(
-    settings.heroVideoFit || "auto",
+    settings.heroVideoFit || "cover",
     settings.heroVideoAspect || ""
   );
 
@@ -341,28 +338,16 @@ export default function AdminSettingsPage() {
                   </label>
                   <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
                     {heroVideoPreview?.kind === "file" ? (
-                      <>
-                        {heroVideoFit === "contain" && (
-                          <Image
-                            src={settings.heroVideoPoster || FALLBACK_HERO}
-                            alt=""
-                            fill
-                            className="object-cover scale-110 blur-xl"
-                            unoptimized
-                            aria-hidden
-                          />
-                        )}
-                        <video
-                          src={heroVideoPreview.src}
-                          className={`relative w-full h-full object-center ${
-                            heroVideoFit === "contain" ? "object-contain" : "object-cover"
-                          }`}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                        />
-                      </>
+                      <video
+                        src={heroVideoPreview.src}
+                        className={`w-full h-full object-center ${
+                          heroVideoFit === "contain" ? "object-contain" : "object-cover"
+                        }`}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                      />
                     ) : heroVideoPreview?.kind === "embed" ? (
                       <iframe
                         src={heroVideoPreview.src}
@@ -421,18 +406,16 @@ export default function AdminSettingsPage() {
                   <div className="space-y-2 pt-1">
                     <label className={labelCls}>Cách hiển thị video</label>
                     <select
-                      value={settings.heroVideoFit || "auto"}
+                      value={settings.heroVideoFit || "cover"}
                       onChange={(e) => update("heroVideoFit", e.target.value)}
                       className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
                     >
-                      <option value="auto">Tự động (khuyến nghị)</option>
-                      <option value="cover">Phủ kín khung (cắt mép)</option>
-                      <option value="contain">Vừa khung (không cắt, không mờ)</option>
+                      <option value="cover">Phủ kín toàn bộ nền (khuyến nghị)</option>
+                      <option value="contain">Vừa khung (không cắt mép)</option>
                     </select>
                     <p className="text-[10px] text-slate-500">
-                      Video dọc (chiều cao &gt; chiều rộng) khi dùng “Phủ kín” sẽ bị phóng to
-                      rất lớn và cắt mất phần lớn khung hình. “Vừa khung” giữ nguyên tỉ lệ và
-                      dùng ảnh nền blur phía sau cho phần trống.
+                      “Phủ kín” cho video phủ trọn màn hình như nền. Video không có ảnh poster
+                      nên không bị nháy ảnh trước khi video chạy.
                     </p>
                     {settings.heroVideoAspect && (
                       <p className="text-[10px] text-slate-400">

@@ -46,12 +46,10 @@ export default async function HomePage() {
     ? FALLBACK_HERO
     : normalizeMediaUrl(rawPoster);
 
-  // Video dọc phủ kín sẽ bị phóng to/cắt nặng và mờ -> dùng "contain" + nền blur.
   const videoFit = resolveVideoFit(
     settings.heroVideoFit || "auto",
     settings.heroVideoAspect || ""
   );
-  const backdropPoster = heroPoster;
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -76,20 +74,8 @@ export default async function HomePage() {
                 />
               </div>
             ) : (
-              /* Video file (mp4/webm) - autoplay, muted, loop */
+              /* Video file (mp4/webm) - autoplay, muted, loop, full nền */
               <>
-                {videoFit === "contain" && (
-                  /* Nền blur phủ kín khi video không vừa tỉ lệ màn hình */
-                  <Image
-                    src={backdropPoster}
-                    alt=""
-                    fill
-                    className="object-cover scale-110 blur-2xl"
-                    priority
-                    unoptimized
-                    aria-hidden
-                  />
-                )}
                 {desktopSource?.kind === "file" && mobileSource?.src === desktopSource.src && (
                   <video
                     className={`absolute inset-0 h-full w-full object-center ${
@@ -100,7 +86,6 @@ export default async function HomePage() {
                     loop
                     playsInline
                     preload="auto"
-                    poster={heroPoster}
                   >
                     <source
                       src={desktopSource.src}
@@ -118,7 +103,6 @@ export default async function HomePage() {
                     loop
                     playsInline
                     preload="auto"
-                    poster={heroPoster}
                   >
                     <source
                       src={desktopSource.src}
@@ -136,7 +120,6 @@ export default async function HomePage() {
                     loop
                     playsInline
                     preload="auto"
-                    poster={heroPoster}
                   >
                     <source
                       src={mobileSource.src}
