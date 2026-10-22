@@ -13,6 +13,9 @@ export interface SystemSettings {
   youtubeUrl: string;
   zaloNumber: string;
   maintenanceMode: string;
+  heroBackgroundImage: string;
+  heroBackgroundImageMobile: string;
+  heroOverlayOpacity: string;
 
   // SEO
   seoTitle: string;
@@ -41,6 +44,10 @@ export const defaultSettings: SystemSettings = {
   youtubeUrl: "",
   zaloNumber: "",
   maintenanceMode: "false",
+  heroBackgroundImage:
+    "https://i.pinimg.com/736x/ef/ec/58/efec58efa298d13dca0dde95e2528f20.jpg",
+  heroBackgroundImageMobile: "",
+  heroOverlayOpacity: "60",
 
   seoTitle: "ACD Architecture & Design | Kiến Trúc Hợp Mệnh Ngũ Hành & Nội Thất Thượng Lưu",
   seoDescription:

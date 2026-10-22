@@ -2,30 +2,57 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
+import { getSettings } from "@/lib/settings";
 import { ArrowRight } from "lucide-react";
 
 export const revalidate = 0;
 
+const FALLBACK_HERO =
+  "https://i.pinimg.com/736x/ef/ec/58/efec58efa298d13dca0dde95e2528f20.jpg";
+
 export default async function HomePage() {
-  const categories = await prisma.projectCategory.findMany({
-    include: { _count: { select: { projects: true } } },
-    orderBy: { name: "asc" },
-  });
+  const [categories, settings] = await Promise.all([
+    prisma.projectCategory.findMany({
+      include: { _count: { select: { projects: true } } },
+      orderBy: { name: "asc" },
+    }),
+    getSettings(),
+  ]);
+
+  const heroDesktop = settings.heroBackgroundImage || FALLBACK_HERO;
+  const heroMobile = settings.heroBackgroundImageMobile || heroDesktop;
+  const overlay = Math.min(100, Math.max(0, Number(settings.heroOverlayOpacity ?? 60)));
+  const overlayPct = Math.round(overlay * 0.9);
 
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Full-screen hero background image */}
       <div className="absolute inset-0 z-0">
+        {/* Mobile background */}
         <Image
-          src="https://i.pinimg.com/736x/ef/ec/58/efec58efa298d13dca0dde95e2528f20.jpg"
+          src={heroMobile}
           alt="ACD Modern Villa Architecture"
           fill
-          className="object-cover object-center"
+          className="object-cover object-center sm:hidden"
+          priority
+          unoptimized
+        />
+        {/* Desktop background */}
+        <Image
+          src={heroDesktop}
+          alt="ACD Modern Villa Architecture"
+          fill
+          className="object-cover object-center hidden sm:block"
           priority
           unoptimized
         />
         {/* Dark gradient overlays for readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/85" />
+        <div
+          className="absolute inset-0 bg-gradient-to-b"
+          style={{
+            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,${overlayPct / 100}), rgba(0,0,0,${(overlayPct / 100) * 0.65}), rgba(0,0,0,${Math.min(1, (overlayPct / 100) * 1.4)}))`,
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-black/70" />
       </div>
 
@@ -34,7 +61,7 @@ export default async function HomePage() {
         {/* Top bar */}
         <header className="flex items-center justify-between px-6 sm:px-12 py-6">
           <Link href="/" className="font-display font-bold text-xl text-white tracking-widest">
-            ACD ARCHITECTURE
+            {settings.siteName || "ACD ARCHITECTURE"}
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-sm text-slate-200">
             <Link href="/projects" className="hover:text-white transition-colors">

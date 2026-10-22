@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 import {
   Settings,
   Search,
@@ -10,6 +12,9 @@ import {
   CheckCircle2,
   AlertTriangle,
   Info,
+  Image as ImageIcon,
+  Upload,
+  Trash2,
 } from "lucide-react";
 
 type TabKey = "system" | "seo" | "script";
@@ -45,6 +50,7 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/settings")
@@ -255,6 +261,116 @@ export default function AdminSettingsPage() {
             </div>
           </div>
 
+          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3 pt-2">
+            1.4. Ảnh Nền Hero (Trang Chủ)
+          </h2>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {/* Desktop hero */}
+              <div className="space-y-2">
+                <label className={labelCls}>Ảnh Nền Hero (Desktop)</label>
+                <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
+                  {settings.heroBackgroundImage ? (
+                    <Image
+                      src={settings.heroBackgroundImage}
+                      alt="Hero background preview"
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-500">
+                      <ImageIcon className="w-7 h-7" />
+                      <span className="text-[11px]">Chưa chọn ảnh nền</span>
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  value={settings.heroBackgroundImage || ""}
+                  onChange={(e) => update("heroBackgroundImage", e.target.value)}
+                  className={inputCls}
+                  placeholder="https://... (URL ảnh nền hero)"
+                />
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsMediaModalOpen(true)}
+                    className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-white border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-thuy-400" />
+                    <span>Chọn từ Media Library</span>
+                  </button>
+                  {settings.heroBackgroundImage && (
+                    <button
+                      type="button"
+                      onClick={() => update("heroBackgroundImage", "")}
+                      className="px-3 py-2 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-400 hover:text-red-300 border border-thuy-700 transition-all"
+                      title="Xóa ảnh nền"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Mobile hero + overlay */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className={labelCls}>
+                    Ảnh Nền Hero (Mobile){" "}
+                    <span className="text-slate-500 font-normal">— để trống để dùng ảnh desktop</span>
+                  </label>
+                  <div className="relative aspect-[9/16] max-h-[240px] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
+                    {settings.heroBackgroundImageMobile || settings.heroBackgroundImage ? (
+                      <Image
+                        src={settings.heroBackgroundImageMobile || settings.heroBackgroundImage}
+                        alt="Hero mobile preview"
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-500">
+                        <ImageIcon className="w-7 h-7" />
+                        <span className="text-[11px]">Chưa chọn ảnh nền</span>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={settings.heroBackgroundImageMobile || ""}
+                    onChange={(e) => update("heroBackgroundImageMobile", e.target.value)}
+                    className={inputCls}
+                    placeholder="https://... (URL ảnh nền mobile)"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className={labelCls}>
+                    Độ Đậm Lớp Phủ:{" "}
+                    <span className="text-thuy-300 font-bold">
+                      {settings.heroOverlayOpacity || "60"}%
+                    </span>
+                  </label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={5}
+                    value={settings.heroOverlayOpacity || "60"}
+                    onChange={(e) => update("heroOverlayOpacity", e.target.value)}
+                    className="w-full accent-thuy-400"
+                  />
+                  <p className="text-[10px] text-slate-500">
+                    Tăng giá trị để phủ tối hơn, giúp chữ và menu dễ đọc hơn trên ảnh nền.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="pt-2 flex items-center gap-3 p-4 rounded-xl bg-thuy-900 border border-thuy-750">
             <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
             <div className="flex-1">
@@ -446,6 +562,21 @@ export default function AdminSettingsPage() {
           <span>Lưu Cấu Hình</span>
         </button>
       </div>
+
+      {/* Media Picker Modal */}
+      <MediaPickerModal
+        isOpen={isMediaModalOpen}
+        onClose={() => setIsMediaModalOpen(false)}
+        onSelect={(selected) => {
+          if (!Array.isArray(selected)) {
+            update("heroBackgroundImage", selected.url);
+          }
+          setIsMediaModalOpen(false);
+        }}
+        multiple={false}
+        selectedIds={[]}
+        title="Chọn ảnh nền Hero"
+      />
     </form>
   );
 }
