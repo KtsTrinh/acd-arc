@@ -1,16 +1,42 @@
 import fs from "fs";
+import os from "os";
 import path from "path";
 import { prisma } from "./prisma";
 
 const PUBLIC_UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 const PRIVATE_STORAGE_DIR = path.join(process.cwd(), "storage", "private");
 
-// Ensure directories exist
-if (!fs.existsSync(PUBLIC_UPLOAD_DIR)) {
-  fs.mkdirSync(PUBLIC_UPLOAD_DIR, { recursive: true });
+// Vercel (serverless) có filesystem read-only ngoài /tmp -> dùng thư mục tạm
+const PUBLIC_UPLOAD_FALLBACK_DIR = path.join(os.tmpdir(), "acd-uploads");
+const PRIVATE_STORAGE_FALLBACK_DIR = path.join(os.tmpdir(), "acd-private");
+
+/**
+ * Tạo thư mục nếu chưa có. KHÔNG được làm module-level vì trên môi trường
+ * serverless (read-only) sẽ khiến toàn bộ route import module này bị lỗi 500.
+ */
+function ensureDir(dir: string): string {
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    return dir;
+  } catch {
+    return "";
+  }
 }
-if (!fs.existsSync(PRIVATE_STORAGE_DIR)) {
-  fs.mkdirSync(PRIVATE_STORAGE_DIR, { recursive: true });
+
+/** Thư mục lưu file public (kèm fallback cho môi trường read-only) */
+function resolvePublicDir(): string {
+  return (
+    ensureDir(PUBLIC_UPLOAD_DIR) || ensureDir(PUBLIC_UPLOAD_FALLBACK_DIR) || ""
+  );
+}
+
+/** Thư mục lưu file private (kèm fallback cho môi trường read-only) */
+function resolvePrivateDir(): string {
+  return (
+    ensureDir(PRIVATE_STORAGE_DIR) || ensureDir(PRIVATE_STORAGE_FALLBACK_DIR) || ""
+  );
 }
 
 export interface SaveMediaInput {
@@ -36,7 +62,8 @@ export async function createMediaItem(input: SaveMediaInput) {
   // If buffer is provided, save physical file to disk
   if (input.buffer) {
     const safeName = `${Date.now()}-${input.filename.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-    const filePath = path.join(PUBLIC_UPLOAD_DIR, safeName);
+    const uploadDir = resolvePublicDir();
+    const filePath = path.join(uploadDir, safeName);
     fs.writeFileSync(filePath, input.buffer);
     finalUrl = `/uploads/${safeName}`;
     storageKey = `uploads/${safeName}`;
@@ -110,7 +137,8 @@ export async function savePrivateProductFile(
   buffer: Buffer
 ): Promise<{ storageKey: string; fileSize: string }> {
   const safeName = `${Date.now()}-${fileName.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-  const filePath = path.join(PRIVATE_STORAGE_DIR, safeName);
+  const privateDir = resolvePrivateDir();
+  const filePath = path.join(privateDir, safeName);
   fs.writeFileSync(filePath, buffer);
 
   const sizeInMb = (buffer.length / (1024 * 1024)).toFixed(1) + " MB";
@@ -122,12 +150,24 @@ export async function savePrivateProductFile(
 
 /**
  * Read private product file path
+ * (kiểm tra cả thư mục chính và thư mục fallback cho môi trường read-only)
  */
 export function getPrivateFilePath(storageKey: string): string | null {
-  const filePath = path.join(PRIVATE_STORAGE_DIR, storageKey);
-  if (fs.existsSync(filePath)) {
-    return filePath;
+  const candidates = [
+    path.join(PRIVATE_STORAGE_DIR, storageKey),
+    path.join(PRIVATE_STORAGE_FALLBACK_DIR, storageKey),
+  ];
+
+  for (const filePath of candidates) {
+    try {
+      if (fs.existsSync(filePath)) {
+        return filePath;
+      }
+    } catch {
+      /* bỏ qua */
+    }
   }
+
   return null;
 }
 
