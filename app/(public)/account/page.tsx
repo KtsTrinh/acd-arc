@@ -149,12 +149,10 @@ export default function AccountPage() {
             <div className="space-y-4">
               {activeDownloads.map((dl: any, index: number) => {
                 const downloadUrl = `/api/downloads/${dl.token}`;
-                const remainingHours = Math.max(
-                  0,
-                  Math.round(
-                    (new Date(dl.expiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60)
-                  )
-                );
+                const remainingMs =
+                  new Date(dl.expiresAt).getTime() - new Date().getTime();
+                const remainingMinutes = Math.max(0, Math.floor(remainingMs / 60000));
+                const isExpired = remainingMs <= 0;
 
                 return (
                   <div
@@ -166,15 +164,18 @@ export default function AccountPage() {
                         <span className="px-2 py-0.5 rounded bg-thuy-800 text-thuy-300 font-bold text-[10px] border border-thuy-700">
                           FILE #{index + 1}
                         </span>
-                        <span className="text-emerald-400 font-medium">
-                          Hiệu lực còn: {remainingHours} giờ
+                        <span className={isExpired ? "text-red-400 font-medium" : "text-emerald-400 font-medium"}>
+                          {isExpired
+                            ? "Link đã hết hạn"
+                            : `Hiệu lực còn: ${remainingMinutes} phút`}
                         </span>
                       </div>
                       <h3 className="font-semibold text-sm text-white">
-                        Hồ sơ thiết kế kỹ thuật số ACD
+                        {dl.product?.name || "Hồ sơ thiết kế kỹ thuật số ACD"}
                       </h3>
                       <p className="text-xs text-slate-400">
-                        Số lần đã tải: <b>{dl.downloadCount}</b> / {dl.maxDownloads} lần
+                        Số lần đã tải: <b>{dl.downloadCount}</b> / {dl.maxDownloads} lần · chỉ
+                        tài khoản của bạn tải được
                       </p>
                     </div>
 

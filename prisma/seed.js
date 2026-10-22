@@ -581,7 +581,29 @@ Mệnh Hỏa đại diện cho nguồn năng lượng dồi dào, sự sáng t�
 
   console.log("✅ Seeded 5 Projects representing Kim - Mộc - Thủy - Hỏa - Thổ");
 
-  // 7. Seed Products (CAD, 3D Models, Templates)
+  // 7. Seed Products (Danh Mục Sản Phẩm: 4 nhóm Kiến trúc / Nội thất / Xây dựng / File kỹ thuật số)
+  const productArchitecture = await prisma.product.create({
+    data: {
+      name: "Hồ Sơ Kiến Trúc Dự Án The Aqua Horizon Villa (Full Set)",
+      slug: "ho-so-kien-truc-aqua-horizon-villa",
+      description:
+        "Trọn bộ hồ sơ thiết kế kiến trúc của dự án biệt thự hồ nước The Aqua Horizon Villa: mặt bằng, mặt đứng, mặt cắt, kết cấu, điện nước và hồ sơ xin phép xây dựng.",
+      price: 1500000,
+      comparePrice: 2200000,
+      type: ProductType.ARCHITECTURE,
+      fileFormat: "AutoCAD .DWG 2018-2026 + Revit + PDF trình chiếu",
+      fileSize: "320 MB",
+      fileKey: "architecture/aqua-horizon-full-set.zip",
+      fileName: "aqua-horizon-villa-full-set.zip",
+      thumbnail: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+      active: true,
+      featured: true,
+      downloadExpiresMinutes: 5,
+      requiresPayment: true,
+      projectId: projectThuy.id,
+    },
+  });
+
   const productCAD = await prisma.product.create({
     data: {
       name: "Trọn Bộ Hồ Sơ Thiết Kế Thi Công Biệt Thự Hiện Đại 3 Tầng (AutoCAD Full Set)",
@@ -589,13 +611,15 @@ Mệnh Hỏa đại diện cho nguồn năng lượng dồi dào, sự sáng t�
       description: "Bao gồm đầy đủ bản vẽ kiến trúc (mặt bằng, mặt đứng, mặt cắt chi tiết), kết cấu bê tông cốt thép, điện nước (MEP), chi tiết vệ sinh, cầu thang, cửa và hồ sơ xin phép xây dựng chuẩn.",
       price: 850000,
       comparePrice: 1200000,
-      type: ProductType.CAD,
+      type: ProductType.DIGITAL_FILE,
       fileFormat: "AutoCAD .DWG 2018-2026 + PDF Trình chiếu",
       fileSize: "185 MB",
       fileKey: "cad/villa-modern-full-cad-pack.zip",
       thumbnail: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80",
       active: true,
       featured: true,
+      downloadExpiresMinutes: 5,
+      requiresPayment: true,
     },
   });
 
@@ -606,13 +630,15 @@ Mệnh Hỏa đại diện cho nguồn năng lượng dồi dào, sự sáng t�
       description: "File 3D hoàn chỉnh đã setup full ánh sáng ngày và đêm, vật liệu PBR 4K chuẩn xác, camera góc đẹp, sẵn sàng render cho brochure dự án và diễn họa chuyên nghiệp.",
       price: 650000,
       comparePrice: 950000,
-      type: ProductType.MODEL_3D,
+      type: ProductType.DIGITAL_FILE,
       fileFormat: "3ds Max 2024 (Corona 10) + SketchUp 2024 (Enscape/Vray)",
       fileSize: "1.4 GB",
       fileKey: "models/luxury-villa-exterior-3d.zip",
       thumbnail: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
       active: true,
       featured: true,
+      downloadExpiresMinutes: 5,
+      requiresPayment: true,
     },
   });
 
@@ -630,6 +656,28 @@ Mệnh Hỏa đại diện cho nguồn năng lượng dồi dào, sự sáng t�
       thumbnail: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&q=80",
       active: true,
       featured: true,
+      downloadExpiresMinutes: 5,
+      requiresPayment: true,
+    },
+  });
+
+  const productConstruction = await prisma.product.create({
+    data: {
+      name: "Hồ Sơ Thi Công & Kết Cấu Nhà Phố 4 Tầng (Kết Cấu + Điện Nước + An Toàn)",
+      slug: "ho-so-thi-cong-nha-pho-4-tang",
+      description:
+        "Hồ sơ thi công hoàn chỉnh cho nhà phố 4 tầng: bản vẽ kết cấu móng, cột, dầm, sàn, thang; hệ điện nước M&E; bản vẽ phòng cháy và checklist an toàn thi công.",
+      price: 980000,
+      comparePrice: 1400000,
+      type: ProductType.CONSTRUCTION,
+      fileFormat: "AutoCAD .DWG + Revit + Excel khoá liệu vật tư",
+      fileSize: "260 MB",
+      fileKey: "construction/nha-pho-4-tang-thi-cong.zip",
+      thumbnail: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80",
+      active: true,
+      featured: false,
+      downloadExpiresMinutes: 5,
+      requiresPayment: true,
     },
   });
 
@@ -640,17 +688,19 @@ Mệnh Hỏa đại diện cho nguồn năng lượng dồi dào, sự sáng t�
       description: "30 layout PSD phối cảnh mặt bằng sàn, mặt cắt phối cảnh, moodboard vật liệu chuẩn nhận diện thương hiệu kiến trúc sang trọng.",
       price: 320000,
       comparePrice: 500000,
-      type: ProductType.TEMPLATE,
+      type: ProductType.DIGITAL_FILE,
       fileFormat: "Adobe Photoshop (.PSD layered) + Brushes",
       fileSize: "620 MB",
       fileKey: "templates/acd-architectural-presentation-psd.zip",
       thumbnail: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80",
       active: true,
       featured: false,
+      downloadExpiresMinutes: 5,
+      requiresPayment: true,
     },
   });
 
-  console.log("✅ Seeded 4 Products");
+  console.log("✅ Seeded 5 Products theo 4 nhóm Danh Mục Sản Phẩm");
 
   // 8. Seed Sample Orders and Download Links
   const order1 = await prisma.order.create({

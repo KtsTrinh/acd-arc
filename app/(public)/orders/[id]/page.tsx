@@ -222,12 +222,14 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             {order.downloads && order.downloads.length > 0 ? (
               order.downloads.map((dl: any, idx: number) => {
                 const downloadUrl = `/api/downloads/${dl.token}`;
-                const remainingHours = Math.max(
+                const remainingMs =
+                  new Date(dl.expiresAt).getTime() - new Date().getTime();
+                const remainingMinutes = Math.max(0, Math.floor(remainingMs / 60000));
+                const remainingSeconds = Math.max(
                   0,
-                  Math.round(
-                    (new Date(dl.expiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60)
-                  )
+                  Math.floor((remainingMs % 60000) / 1000)
                 );
+                const isExpired = remainingMs <= 0;
 
                 return (
                   <div
@@ -241,11 +243,20 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                             FILE #{idx + 1}
                           </span>
                           <span className="text-xs text-slate-400">
-                            Hạn tải còn lại: <b className="text-emerald-400">{remainingHours} giờ</b>
+                            {isExpired ? (
+                              <b className="text-red-400">Link đã hết hạn</b>
+                            ) : (
+                              <>
+                                Hạn tải còn lại:{" "}
+                                <b className="text-emerald-400">
+                                  {remainingMinutes} phút {remainingSeconds} giây
+                                </b>
+                              </>
+                            )}
                           </span>
                         </div>
                         <h3 className="font-semibold text-sm sm:text-base text-white">
-                          Gói tài nguyên hồ sơ thiết kế kèm theo đơn hàng
+                          {dl.product?.name || "Gói tài nguyên hồ sơ thiết kế kèm theo đơn hàng"}
                         </h3>
                         <p className="text-xs text-slate-400">
                           Lượt tải đã dùng:{" "}
@@ -266,7 +277,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
                     {/* Token details for transparency */}
                     <div className="pt-3 border-t border-thuy-800/80 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-slate-500 gap-2 font-mono">
-                      <span className="truncate max-w-sm">Mã token: {dl.token}</span>
+                      <span className="truncate max-w-sm">
+                        Mã token: {dl.token} · gắn với tài khoản đã thanh toán
+                      </span>
                       <button
                         onClick={() => copyToClipboard(`${window.location.origin}${downloadUrl}`)}
                         className="text-thuy-400 hover:text-white transition-colors flex items-center gap-1 self-start sm:self-auto"

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart";
 import { useCurrentUser } from "@/components/auth/useCurrentUser";
 import { formatVND } from "@/lib/utils";
+import { PRODUCT_TYPE_LABELS } from "@/lib/catalog";
 import {
   Download,
   ShoppingBag,
@@ -128,7 +129,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               </div>
             )}
             <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-thuy-950/85 backdrop-blur-md border border-thuy-700 text-xs font-bold text-thuy-300">
-              {product.type}
+              {PRODUCT_TYPE_LABELS[product.type] || product.type}
             </span>
           </div>
 
@@ -189,8 +190,8 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               <span>Chính sách cấp quyền tải kỹ thuật số:</span>
             </div>
             <ul className="space-y-1.5 pl-6 list-disc text-slate-400">
-              <li>Link tải được tạo tự động ngay sau khi xác nhận thanh toán.</li>
-              <li>Hiệu lực liên kết tải: <b>72 giờ</b> kể từ thời điểm mua.</li>
+              <li>Link tải được tạo tự động ngay sau khi xác nhận thanh toán (có hiệu lực trong vòng 5 phút).</li>
+              <li>Chỉ <b className="text-white">tài khoản đã thanh toán</b> mới tải được — link gắn với đơn hàng của bạn, người khác không dùng được.</li>
               <li>Số lượt tải tối đa: <b>5 lần</b> (phục vụ dự phòng và lưu trữ).</li>
               <li>Hệ thống lưu lịch sử đơn hàng tại trang tài khoản khách hàng.</li>
             </ul>

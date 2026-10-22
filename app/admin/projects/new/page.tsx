@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -108,7 +108,7 @@ export default function NewProjectPage() {
     <div className="max-w-4xl mx-auto space-y-8 pb-20">
       <div className="flex items-center justify-between">
         <Link
-          href="/admin/projects"
+          href="/admin/catalog?tab=MANAGE"
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-thuy-400"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -320,7 +320,7 @@ export default function NewProjectPage() {
         {/* Submit */}
         <div className="flex justify-end gap-3 pt-4">
           <Link
-            href="/admin/projects"
+            href="/admin/catalog?tab=MANAGE"
             className="px-5 py-2.5 rounded-xl bg-thuy-850 text-slate-300 hover:text-white text-xs font-semibold border border-thuy-750"
           >
             Há»§y

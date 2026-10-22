@@ -61,6 +61,23 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const handleRegenerateLinks = async (orderId: string) => {
+    setUpdatingId(orderId);
+    try {
+      const res = await fetch(`/api/orders/${orderId}/status`, { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        fetchOrders();
+      } else {
+        alert(data.error || "Không cấp lại được link tải.");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -70,7 +87,8 @@ export default function AdminOrdersPage() {
             Quản Lý Đơn Hàng & Cấp Quyền Tải File
           </h1>
           <p className="text-xs text-slate-400">
-            Theo dõi trạng thái thanh toán, tự động sinh mã Token tải file bảo mật có thời hạn 72 giờ
+            Theo dõi trạng thái thanh toán, tự động sinh mã Token tải file bảo mật cho đúng tài
+            khoản đã thanh toán (mặc định hiệu lực 5 phút, tối đa 5 lượt tải)
           </p>
         </div>
       </div>
@@ -191,15 +209,32 @@ export default function AdminOrdersPage() {
                   </td>
 
                   <td className="py-4 px-5 text-right">
-                    <Link
-                      href={`/orders/${o.id}`}
-                      target="_blank"
-                      className="p-2 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-200 inline-flex items-center gap-1 text-xs"
-                      title="Xem trang nhận file khách hàng"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>Xem</span>
-                    </Link>
+                    <div className="inline-flex items-center gap-1.5">
+                      {o.status === "PAID" && (
+                        <button
+                          onClick={() => handleRegenerateLinks(o.id)}
+                          disabled={updatingId === o.id}
+                          className="p-2 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-thuy-300 inline-flex items-center gap-1 text-xs disabled:opacity-50"
+                          title="Cấp lại link tải mới cho khách"
+                        >
+                          <RefreshCw
+                            className={`w-3.5 h-3.5 ${
+                              updatingId === o.id ? "animate-spin" : ""
+                            }`}
+                          />
+                          <span>Cấp lại link</span>
+                        </button>
+                      )}
+                      <Link
+                        href={`/orders/${o.id}`}
+                        target="_blank"
+                        className="p-2 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-200 inline-flex items-center gap-1 text-xs"
+                        title="Xem trang nhận file khách hàng"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Xem</span>
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

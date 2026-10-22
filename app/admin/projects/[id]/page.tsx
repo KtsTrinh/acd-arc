@@ -134,7 +134,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
 
     try {
       await fetch(`/api/projects/${params.id}`, { method: "DELETE" });
-      router.push("/admin/projects");
+      router.push("/admin/catalog?tab=MANAGE");
     } catch (err) {
       console.error(err);
     }
@@ -161,7 +161,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
     return (
       <div className="py-20 text-center space-y-3">
         <h2 className="text-white">Không tìm thấy dự án.</h2>
-        <Link href="/admin/projects" className="text-thuy-400 text-xs">
+        <Link href="/admin/catalog?tab=MANAGE" className="text-thuy-400 text-xs">
           Quay lại danh sách
         </Link>
       </div>
@@ -174,7 +174,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-thuy-750 pb-4">
         <div className="space-y-1">
           <Link
-            href="/admin/projects"
+            href="/admin/catalog?tab=MANAGE"
             className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-thuy-400"
           >
             <ArrowLeft className="w-3.5 h-3.5" />

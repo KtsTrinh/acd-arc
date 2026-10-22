@@ -5,8 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Building2,
-  FolderTree,
   Package,
   ShoppingBag,
   BookOpen,
@@ -26,9 +24,7 @@ export default function AdminSidebar() {
 
   const menuItems = [
     { label: "Dashboard Tổng Quan", href: "/admin", icon: LayoutDashboard },
-    { label: "Dự Án Kiến Trúc", href: "/admin/projects", icon: Building2 },
-    { label: "Danh Mục Dự Án", href: "/admin/categories", icon: FolderTree },
-    { label: "Sản Phẩm & File 3D/CAD", href: "/admin/products", icon: Package },
+    { label: "Danh Mục Sản Phẩm", href: "/admin/catalog", icon: Package },
     { label: "Đơn Hàng & Cấp Tải", href: "/admin/orders", icon: ShoppingBag },
     { label: "Khách Hàng & Truy Cập", href: "/admin/customers", icon: Activity },
     { label: "Tạp Chí & Bài Viết", href: "/admin/blog", icon: BookOpen },
@@ -67,7 +63,8 @@ export default function AdminSidebar() {
           const isActive =
             item.href === "/admin"
               ? pathname === "/admin"
-              : pathname.startsWith(item.href);
+              : pathname.startsWith(item.href) ||
+                (item.href === "/admin/catalog" && pathname.startsWith("/admin/projects"));
           const Icon = item.icon;
 
           return (

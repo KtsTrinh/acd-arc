@@ -3,16 +3,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { formatVND } from "@/lib/utils";
+import { CATALOG_GROUPS, PRODUCT_TYPE_LABELS } from "@/lib/catalog";
 import {
   Download,
   Filter,
   Search,
   ArrowRight,
   Layers,
-  FileCode,
-  Box,
+  Building2,
   Layout,
-  FileText,
+  HardHat,
+  FileCode,
 } from "lucide-react";
 
 export const revalidate = 0;
@@ -29,7 +30,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   const where: any = { active: true };
   if (type && type !== "ALL") {
-    where.type = type;
+    const group = CATALOG_GROUPS.find((g) => g.key === type);
+    if (group) {
+      where.type = { in: [...group.types] };
+    } else {
+      where.type = type;
+    }
   }
   if (search) {
     where.OR = [
@@ -46,10 +52,18 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   const productTypes = [
     { label: "Tất Cả", value: "ALL", icon: Layers },
-    { label: "Bản Vẽ CAD (.DWG)", value: "CAD", icon: FileCode },
-    { label: "Model 3D (Max/SKP)", value: "MODEL_3D", icon: Box },
-    { label: "Nội Thất & Decor", value: "INTERIOR", icon: Layout },
-    { label: "Template Thiết Kế", value: "TEMPLATE", icon: FileText },
+    ...CATALOG_GROUPS.map((g) => ({
+      label: g.label,
+      value: g.key,
+      icon:
+        g.key === "ARCHITECTURE"
+          ? Building2
+          : g.key === "INTERIOR"
+          ? Layout
+          : g.key === "CONSTRUCTION"
+          ? HardHat
+          : FileCode,
+    })),
   ];
 
   return (
@@ -148,7 +162,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       </div>
                     )}
                     <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-thuy-950/85 backdrop-blur-sm border border-thuy-700 text-[10px] font-bold text-thuy-300">
-                      {prod.type}
+                        {PRODUCT_TYPE_LABELS[prod.type] || prod.type}
                     </span>
                     {prod.fileSize && (
                       <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-thuy-950/85 text-[10px] text-slate-300 border border-thuy-700">

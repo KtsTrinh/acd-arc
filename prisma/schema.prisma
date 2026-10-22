@@ -13,9 +13,14 @@ enum UserRole {
 }
 
 enum ProductType {
+  // Danh mục sản phẩm mới (đã gộp)
+  ARCHITECTURE   // Dự án kiến trúc (biệt thự, nhà phố, penthouse...)
+  INTERIOR       // Nội thất (phòng khách, phòng ngủ, nhà bếp...)
+  CONSTRUCTION   // Xây dựng (hồ sơ thi công, kết cấu, điện nước...)
+  DIGITAL_FILE   // File kỹ thuật số (CAD, 3D, template, document...)
+  // Legacy types (kept for backward compatibility)
   CAD
   MODEL_3D
-  INTERIOR
   TEMPLATE
   DOCUMENT
   OTHER
@@ -228,6 +233,9 @@ model Project {
   gallery ProjectMedia[]
   tags    ProjectTag[]
 
+  // Các mục trong "Danh Mục Sản Phẩm" được gắn với dự án hiển thị (nếu có)
+  catalogItems Product[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -298,9 +306,23 @@ model Product {
   fileFormat  String?     // e.g. "AutoCAD .DWG / 3ds Max / SketchUp"
   fileSize    String?     // e.g. "128 MB"
   fileKey     String?     // Secure key in storage/private for download
+  fileName    String?     // Tên file hiển thị khi khách tải về
   thumbnail   String?
   active      Boolean     @default(true)
   featured    Boolean     @default(false)
+  
+  // Trạng thái yêu cầu thanh toán: true = phải thanh toán mới được tải
+  requiresPayment Boolean @default(true)
+  // Link tải trực tiếp (dành cho dự án kiến trúc/nội thất: admin up link)
+  // Link này KHÔNG bao giờ được trả về cho khách chưa thanh toán,
+  // mọi lượt tải đều đi qua /api/downloads/[token] để kiểm tra chủ mua.
+  downloadLinkUrl String?
+  // Thời gian hiệu lực link tải sau khi thanh toán (phút), mặc định 5
+  downloadExpiresMinutes Int @default(5)
+
+  // Gắn mục danh mục sản phẩm với dự án hiển thị trên website
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   orderItems    OrderItem[]
   downloadLinks DownloadLink[]

@@ -240,7 +240,7 @@ export default function CheckoutPage() {
                   Mô phỏng xác nhận thanh toán tự động (Instant Webhook Demo)
                 </span>
                 <span className="text-[11px] text-slate-400 block">
-                  Tự động xác nhận PAID & sinh Token tải 72h ngay khi tạo đơn hàng.
+                  Tự động xác nhận PAID & sinh link tải (hiệu lực 5 phút) gắn với đúng tài khoản đã thanh toán.
                 </span>
               </div>
               <input

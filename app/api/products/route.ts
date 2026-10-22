@@ -2,17 +2,37 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
 import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
+import { getCurrentUser } from "@/lib/auth";
+import {
+  getTypesOfGroup,
+  sanitizeProduct,
+} from "@/lib/catalog";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
+    const group = searchParams.get("group");
     const search = searchParams.get("search");
     const featured = searchParams.get("featured");
+    const includeInactive = searchParams.get("includeInactive") === "1";
 
-    const where: any = { active: true };
+    const user = await getCurrentUser();
+    const isAdmin = user?.role === "ADMIN";
 
-    if (type && type !== "ALL") {
+    const where: any = {};
+
+    // Chỉ quản trị viên được xem sản phẩm đang ẩn
+    if (!isAdmin || !includeInactive) {
+      where.active = true;
+    }
+
+    if (group && group !== "ALL") {
+      const types = getTypesOfGroup(group);
+      if (types.length > 0) {
+        where.type = { in: types as any };
+      }
+    } else if (type && type !== "ALL") {
       where.type = type;
     }
 
@@ -30,10 +50,16 @@ export async function GET(request: Request) {
 
     const products = await prisma.product.findMany({
       where,
+      include: {
+        project: { select: { id: true, title: true, slug: true } },
+      },
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ products });
+    // Khách chưa thanh toán không được thấy khoá file / link gốc
+    const payload = isAdmin ? products : products.map(sanitizeProduct);
+
+    return NextResponse.json({ products: payload });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(
@@ -45,6 +71,14 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Chỉ quản trị viên mới được tạo mục danh mục sản phẩm." },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const {
       name,
@@ -56,9 +90,14 @@ export async function POST(request: Request) {
       fileFormat,
       fileSize,
       fileKey,
+      fileName,
       thumbnail,
       active,
       featured,
+      requiresPayment,
+      downloadLinkUrl,
+      downloadExpiresMinutes,
+      projectId,
     } = body;
 
     if (!name || price === undefined) {
@@ -81,9 +120,16 @@ export async function POST(request: Request) {
         fileFormat,
         fileSize,
         fileKey,
+        fileName: fileName || (fileKey ? fileKey.split("/").pop() : null),
         thumbnail,
         active: active !== undefined ? Boolean(active) : true,
         featured: Boolean(featured),
+        requiresPayment: requiresPayment !== undefined ? Boolean(requiresPayment) : true,
+        downloadLinkUrl: downloadLinkUrl || null,
+        downloadExpiresMinutes: downloadExpiresMinutes
+          ? parseInt(downloadExpiresMinutes, 10)
+          : 5,
+        projectId: projectId || null,
       },
     });
 
@@ -97,4 +143,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

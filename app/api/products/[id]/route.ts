@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
 import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
+import { getCurrentUser } from "@/lib/auth";
+import { sanitizeProduct } from "@/lib/catalog";
 
 export async function GET(
   request: Request,
@@ -9,10 +11,15 @@ export async function GET(
 ) {
   try {
     const { id } = params;
+    const user = await getCurrentUser();
+    const isAdmin = user?.role === "ADMIN";
 
     const product = await prisma.product.findFirst({
       where: {
         OR: [{ id }, { slug: id }],
+      },
+      include: {
+        project: { select: { id: true, title: true, slug: true } },
       },
     });
 
@@ -23,7 +30,9 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ product });
+    return NextResponse.json({
+      product: isAdmin ? product : sanitizeProduct(product),
+    });
   } catch (error) {
     console.error("Error fetching product:", error);
     return NextResponse.json(
@@ -38,6 +47,14 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Chỉ quản trị viên mới được cập nhật sản phẩm." },
+        { status: 403 }
+      );
+    }
+
     const { id } = params;
     const body = await request.json();
 
@@ -51,9 +68,14 @@ export async function PATCH(
       fileFormat,
       fileSize,
       fileKey,
+      fileName,
       thumbnail,
       active,
       featured,
+      requiresPayment,
+      downloadLinkUrl,
+      downloadExpiresMinutes,
+      projectId,
     } = body;
 
     const updateData: any = {};
@@ -66,9 +88,15 @@ export async function PATCH(
     if (fileFormat !== undefined) updateData.fileFormat = fileFormat;
     if (fileSize !== undefined) updateData.fileSize = fileSize;
     if (fileKey !== undefined) updateData.fileKey = fileKey;
+    if (fileName !== undefined) updateData.fileName = fileName;
     if (thumbnail !== undefined) updateData.thumbnail = thumbnail;
     if (active !== undefined) updateData.active = Boolean(active);
     if (featured !== undefined) updateData.featured = Boolean(featured);
+    if (requiresPayment !== undefined) updateData.requiresPayment = Boolean(requiresPayment);
+    if (downloadLinkUrl !== undefined) updateData.downloadLinkUrl = downloadLinkUrl || null;
+    if (downloadExpiresMinutes !== undefined)
+      updateData.downloadExpiresMinutes = parseInt(downloadExpiresMinutes, 10) || 5;
+    if (projectId !== undefined) updateData.projectId = projectId || null;
 
     const updated = await prisma.product.update({
       where: { id },
@@ -91,6 +119,14 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Chỉ quản trị viên mới được xoá sản phẩm." },
+        { status: 403 }
+      );
+    }
+
     const { id } = params;
     await prisma.product.delete({ where: { id } });
     const sync = await triggerCmsAutoSync("xóa sản phẩm");
@@ -107,4 +143,3 @@ export async function DELETE(
     );
   }
 }
-

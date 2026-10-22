@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { createMediaItem } from "@/lib/storage";
 import { isVideoUrl } from "@/lib/media-url";
 import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function GET(request: Request) {
   try {
@@ -48,6 +49,14 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Chỉ quản trị viên mới được tải media lên." },
+        { status: 403 }
+      );
+    }
+
     const contentType = request.headers.get("content-type") || "";
 
     // 1. Case: Adding media from external URL (Pinterest, Unsplash, Mixkit, CDN...)

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { generateOrderNumber } from "@/lib/utils";
 import { generateOrderDownloadLinks } from "@/lib/downloads";
+import { sanitizeProduct } from "@/lib/catalog";
 
 export async function GET(request: Request) {
   try {
@@ -41,12 +42,29 @@ export async function GET(request: Request) {
             product: true,
           },
         },
-        downloads: true,
+        downloads: {
+          include: {
+            product: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ orders });
+    // Không bao giờ trả khoá file / link gốc cho khách
+    const sanitized = orders.map((order) => ({
+      ...order,
+      items: order.items.map((item) => ({
+        ...item,
+        product: item.product ? sanitizeProduct(item.product) : null,
+      })),
+      downloads: order.downloads.map((dl) => ({
+        ...dl,
+        product: dl.product ? sanitizeProduct(dl.product) : null,
+      })),
+    }));
+
+    return NextResponse.json({ orders: sanitized });
   } catch (error) {
     console.error("Error fetching orders:", error);
     return NextResponse.json(
@@ -134,7 +152,10 @@ export async function POST(request: Request) {
       success: true,
       order: {
         ...order,
-        downloadLinks,
+        downloadLinks: downloadLinks.map((dl: any) => ({
+          ...dl,
+          product: dl.product ? sanitizeProduct(dl.product) : null,
+        })),
       },
     });
   } catch (error) {
