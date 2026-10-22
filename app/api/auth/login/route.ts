@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { comparePassword, signJwtToken, AUTH_COOKIE_NAME } from "@/lib/auth";
+import {
+  AUTH_COOKIE_NAME,
+  TWO_FACTOR_COOKIE_NAME,
+  authCookieOptions,
+  comparePassword,
+  createSessionToken,
+  createTwoFactorToken,
+} from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
@@ -32,9 +39,34 @@ export async function POST(request: Request) {
       );
     }
 
-    const token = signJwtToken({
-      userId: user.id,
+    if (user.twoFactorEnabled && user.twoFactorSecret) {
+      const pendingToken = createTwoFactorToken({
+        id: user.id,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      });
+
+      const response = NextResponse.json({
+        success: true,
+        twoFactorRequired: true,
+        message:
+          "Vui lòng nhập mã 6 chữ số từ ứng dụng xác thực để hoàn tất đăng nhập.",
+      });
+
+      response.cookies.set(
+        TWO_FACTOR_COOKIE_NAME,
+        pendingToken,
+        authCookieOptions(10 * 60)
+      );
+
+      return response;
+    }
+
+    const token = createSessionToken({
+      id: user.id,
       email: user.email,
+      phone: user.phone,
       role: user.role,
     });
 
@@ -49,13 +81,7 @@ export async function POST(request: Request) {
       },
     });
 
-    response.cookies.set(AUTH_COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-      path: "/",
-    });
+    response.cookies.set(AUTH_COOKIE_NAME, token, authCookieOptions());
 
     return response;
   } catch (error) {
@@ -66,4 +92,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

@@ -32,17 +32,90 @@ enum OrderStatus {
 model User {
   id           String    @id @default(cuid())
   name         String?
-  email        String    @unique
+  email        String?   @unique
+  phone        String?   @unique
   passwordHash String?
   role         UserRole  @default(USER)
   avatar       String?
 
+  // Thông tin hồ sơ bổ sung (lấy từ OAuth hoặc người dùng tự khai)
+  firstName   String?
+  lastName    String?
+  dateOfBirth DateTime?
+  gender      String?
+  address     String?
+
+  // Nguồn đăng nhập: local | google | facebook
+  provider   String? @default("local")
+  providerId String?
+
+  emailVerified DateTime?
+  phoneVerified DateTime?
+
+  // Bảo mật 2 lớp
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String?
+  twoFactorType    String? // totp | email | sms
+
+  accounts      Account[]
+  sessions      Session[]
   orders        Order[]
   downloadLinks DownloadLink[]
   posts         Post[]
+  verifications Verification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// Mã xác minh dùng một lần: đăng ký qua SĐT, quên mật khẩu, 2FA
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  code       String
+  purpose    String // register | reset_password | two_factor
+  channel    String // email | sms
+  attempts   Int      @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([identifier, purpose])
+  @@index([expiresAt])
 }
 
 model ProjectCategory {

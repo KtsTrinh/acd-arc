@@ -1324,6 +1324,10 @@ Một ngôi nhà đẹp không chỉ dừng lại ở tính thẩm mỹ thị gi
   }
   console.log(`✅ Seeded ${postsData.length} Projects (Nhà Phố / Nội Thất / Nhà Vườn)`);
 
+  // 11. Seed ~53 bài viết chuyên sâu về kiến trúc, nhà phố, nội thất, nhà vườn
+  const { seedArticles } = require("./seed_articles");
+  await seedArticles();
+
   console.log("🚀 ACD Architecture database seeded successfully!");
 }
 

@@ -103,6 +103,14 @@ export default function AccountPage() {
             </Link>
           )}
 
+          <Link
+            href="/account/security"
+            className="px-4 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-thuy-300 text-xs font-semibold border border-thuy-700 transition-colors flex items-center gap-1.5"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Bảo Mật</span>
+          </Link>
+
           <button
             onClick={handleLogout}
             className="px-4 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-red-400 text-xs font-semibold border border-thuy-700 transition-colors flex items-center gap-1.5"
