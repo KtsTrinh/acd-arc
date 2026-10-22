@@ -40,6 +40,10 @@ function hasUncommittedChanges() {
   return run("git status --porcelain").length > 0;
 }
 
+function hasConflicts() {
+  return run("git diff --name-only --diff-filter=U").length > 0;
+}
+
 async function checkOnce() {
   try {
     run(`git fetch ${REMOTE} ${BRANCH}`);
@@ -63,7 +67,17 @@ async function checkOnce() {
       return;
     }
 
-    run(`git pull --ff-only ${REMOTE} ${BRANCH}`);
+    // CMS push trực tiếp lên main nên nhánh có thể bị phân kỳ với commit
+    // local -> dùng merge (không rebase) để không đổi SHA các commit đã push.
+    run(`git pull --no-rebase --no-edit ${REMOTE} ${BRANCH}`);
+
+    if (hasConflicts()) {
+      log(
+        "⚠ Có xung đột khi gộp nội dung CMS. Hãy mở tab Source Control để xử lý."
+      );
+      return;
+    }
+
     log("✓ Đã cập nhật mã nguồn trong VSCode.");
   } catch (error) {
     log(`Lỗi khi kiểm tra cập nhật: ${error.message.split("\n")[0]}`);
