@@ -55,8 +55,14 @@ function LoginForm() {
     }
   }, [searchParams]);
 
-  const goTo = (path: string) => {
-    router.push(path);
+  const fromParam = searchParams.get("from");
+  const safeFrom =
+    fromParam && fromParam.startsWith("/") && !fromParam.startsWith("//")
+      ? fromParam
+      : null;
+
+  const goTo = (fallback: string) => {
+    router.push(safeFrom || fallback);
     router.refresh();
   };
 
@@ -328,7 +334,7 @@ function LoginForm() {
               </form>
             )}
 
-            <SocialButtons text="Đăng nhập" />
+            <SocialButtons text="Đăng nhập" from={safeFrom} />
           </>
         )}
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart";
+import { useCurrentUser } from "@/components/auth/useCurrentUser";
 import { formatVND } from "@/lib/utils";
 import {
   Download,
@@ -17,14 +18,19 @@ import {
   FileCode,
   ArrowLeft,
   Sparkles,
+  LogIn,
 } from "lucide-react";
 
 export default function ProductDetailPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
   const { addItem } = useCartStore();
+  const { user, loading: authLoading } = useCurrentUser();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(false);
+
+  const isLoggedIn = Boolean(user);
+  const currentPath = `/products/${params.slug}`;
 
   useEffect(() => {
     fetch(`/api/products/${params.slug}`)
@@ -55,7 +61,12 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
     );
   }
 
-  const handleAddToCart = () => {
+  /** Khách chưa đăng nhập sẽ được đưa tới trang đăng nhập rồi quay lại sản phẩm */
+  const requireLogin = () => {
+    router.push(`/login?from=${encodeURIComponent(currentPath)}`);
+  };
+
+  const addToCart = () => {
     addItem({
       id: product.id,
       name: product.name,
@@ -70,17 +81,20 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
     setTimeout(() => setAdded(false), 3000);
   };
 
+  const handleAddToCart = () => {
+    if (!isLoggedIn) {
+      requireLogin();
+      return;
+    }
+    addToCart();
+  };
+
   const handleBuyNow = () => {
-    addItem({
-      id: product.id,
-      name: product.name,
-      slug: product.slug,
-      price: product.price,
-      type: product.type,
-      fileFormat: product.fileFormat,
-      fileSize: product.fileSize,
-      thumbnail: product.thumbnail,
-    });
+    if (!isLoggedIn) {
+      requireLogin();
+      return;
+    }
+    addToCart();
     router.push("/checkout");
   };
 
@@ -184,20 +198,43 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
 
           {/* Action Buttons */}
           <div className="space-y-3 pt-2">
+            {!authLoading && !isLoggedIn && (
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 text-xs text-amber-300 flex items-start gap-2.5">
+                <LogIn className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>
+                  Bạn cần <b>đăng nhập</b> để thêm tài nguyên vào giỏ hàng và
+                  thanh toán. Sau khi đăng nhập bạn sẽ được đưa trở lại trang này.
+                </span>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button
                 onClick={handleAddToCart}
-                className="py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-200 bg-thuy-800 hover:bg-thuy-750 border border-thuy-700 transition-all flex items-center justify-center gap-2 hover:border-thuy-500"
+                disabled={!authLoading && !isLoggedIn}
+                className="py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-200 bg-thuy-800 hover:bg-thuy-750 border border-thuy-700 transition-all flex items-center justify-center gap-2 hover:border-thuy-500 disabled:opacity-60"
               >
-                <ShoppingBag className="w-4 h-4 text-thuy-400" />
-                <span>{added ? "Đã thêm vào giỏ ✓" : "Thêm vào giỏ"}</span>
+                {isLoggedIn ? (
+                  <ShoppingBag className="w-4 h-4 text-thuy-400" />
+                ) : (
+                  <LogIn className="w-4 h-4 text-thuy-400" />
+                )}
+                <span>
+                  {added
+                    ? "Đã thêm vào giỏ ✓"
+                    : isLoggedIn
+                    ? "Thêm vào giỏ"
+                    : "Đăng nhập để thêm giỏ"}
+                </span>
               </button>
 
               <button
                 onClick={handleBuyNow}
                 className="py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all flex items-center justify-center gap-2"
               >
-                <span>Mua ngay & Nhận file</span>
+                <span>
+                  {isLoggedIn ? "Mua ngay & Nhận file" : "Đăng nhập & Mua ngay"}
+                </span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

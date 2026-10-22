@@ -4,18 +4,67 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCartStore } from "@/lib/cart";
+import { useCurrentUser } from "@/components/auth/useCurrentUser";
 import { formatVND } from "@/lib/utils";
-import { ShoppingBag, Trash2, ArrowRight, ArrowLeft, ShieldCheck, Download } from "lucide-react";
+import {
+  ShoppingBag,
+  Trash2,
+  ArrowRight,
+  ArrowLeft,
+  ShieldCheck,
+  Download,
+  LogIn,
+} from "lucide-react";
 
 export default function CartPage() {
   const { items, removeItem, clearCart, totalPrice, totalItems } = useCartStore();
+  const { user, loading: authLoading } = useCurrentUser();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted || authLoading) return null;
+
+  // Chỉ khách đã đăng nhập mới được sử dụng giỏ hàng
+  if (!user) {
+    return (
+      <div className="pt-28 pb-24 max-w-xl mx-auto px-4 space-y-5 text-center">
+        <div className="w-16 h-16 mx-auto rounded-full bg-thuy-800 flex items-center justify-center text-thuy-400">
+          <LogIn className="w-8 h-8" />
+        </div>
+        <h1 className="font-display font-bold text-2xl text-white">
+          Đăng nhập để sử dụng giỏ hàng
+        </h1>
+        <p className="text-xs text-slate-400">
+          Giỏ hàng và việc thanh toán tài nguyên số được gắn với tài khoản của
+          bạn. Vui lòng đăng nhập để tiếp tục chọn và mua bản vẽ, model 3D.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link
+            href="/login?from=%2Fcart"
+            className="px-6 py-3 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-glow-cyan"
+          >
+            Đăng nhập
+          </Link>
+          <Link
+            href="/register?from=%2Fcart"
+            className="px-6 py-3 rounded-xl bg-thuy-800 text-slate-200 hover:text-white border border-thuy-700 font-bold text-xs uppercase tracking-wider"
+          >
+            Tạo tài khoản
+          </Link>
+        </div>
+        <Link
+          href="/products"
+          className="inline-flex items-center gap-1.5 text-xs text-thuy-400 hover:underline font-semibold"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Quay lại kho tài nguyên
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-28 pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">

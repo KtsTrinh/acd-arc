@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/lib/cart";
+import { useCurrentUser } from "@/components/auth/useCurrentUser";
 import { formatVND } from "@/lib/utils";
 import {
   CreditCard,
@@ -21,6 +22,7 @@ import {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalPrice, clearCart } = useCartStore();
+  const { user, loading: authLoading } = useCurrentUser();
   const [mounted, setMounted] = useState(false);
 
   // Form states
@@ -34,19 +36,25 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     setMounted(true);
-    // Prefill user details if logged in
-    fetch("/api/auth/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          if (data.user.name) setCustomerName(data.user.name);
-          if (data.user.email) setCustomerEmail(data.user.email);
-        }
-      })
-      .catch(() => {});
   }, []);
 
-  if (!mounted) return null;
+  // Bắt buộc đăng nhập mới được thanh toán
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      router.replace("/login?from=%2Fcheckout");
+    }
+  }, [authLoading, user, router]);
+
+  // Tự động điền thông tin khách hàng từ hồ sơ đã đăng nhập
+  useEffect(() => {
+    if (!user) return;
+    if (user.name && !customerName) setCustomerName(user.name);
+    if (user.email && !customerEmail) setCustomerEmail(user.email);
+    if (user.phone && !customerPhone) setCustomerPhone(user.phone);
+  }, [user, customerName, customerEmail, customerPhone]);
+
+  if (!mounted || authLoading || !user) return null;
 
   if (items.length === 0) {
     return (

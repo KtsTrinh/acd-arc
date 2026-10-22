@@ -4,8 +4,17 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCartStore } from "@/lib/cart";
+import { useCurrentUser } from "@/components/auth/useCurrentUser";
 import { formatVND } from "@/lib/utils";
-import { ShoppingBag, X, Trash2, ArrowRight, ShieldCheck, Download } from "lucide-react";
+import {
+  ShoppingBag,
+  X,
+  Trash2,
+  ArrowRight,
+  ShieldCheck,
+  Download,
+  LogIn,
+} from "lucide-react";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -14,6 +23,7 @@ interface CartDrawerProps {
 
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, removeItem, totalPrice, totalItems } = useCartStore();
+  const { user, loading: authLoading } = useCurrentUser();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -55,7 +65,23 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
         {/* Items List */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {items.length === 0 ? (
+          {!authLoading && !user ? (
+            <div className="text-center py-16 space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-thuy-800 flex items-center justify-center text-thuy-400">
+                <LogIn className="w-8 h-8" />
+              </div>
+              <p className="text-slate-400 text-sm">
+                Vui lòng đăng nhập để thêm tài nguyên vào giỏ hàng.
+              </p>
+              <Link
+                href="/login?from=%2Fcart"
+                onClick={onClose}
+                className="inline-block px-5 py-2.5 rounded-lg bg-thuy-400 text-thuy-950 text-sm font-bold hover:brightness-110 shadow-glow-cyan transition-all"
+              >
+                Đăng nhập ngay
+              </Link>
+            </div>
+          ) : items.length === 0 ? (
             <div className="text-center py-16 space-y-4">
               <div className="w-16 h-16 mx-auto rounded-full bg-thuy-800 flex items-center justify-center text-slate-500">
                 <ShoppingBag className="w-8 h-8" />
@@ -123,7 +149,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         </div>
 
         {/* Footer Summary */}
-        {items.length > 0 && (
+        {items.length > 0 && user && (
           <div className="p-6 border-t border-thuy-700/80 bg-thuy-850/90 space-y-4">
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-400">Tổng thanh toán:</span>

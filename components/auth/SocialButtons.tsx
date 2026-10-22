@@ -3,11 +3,18 @@
 import { Loader2 } from "lucide-react";
 import { useProviders } from "./useProviders";
 
-export default function SocialButtons({ text }: { text: string }) {
+export default function SocialButtons({
+  text,
+  from,
+}: {
+  text: string;
+  from?: string | null;
+}) {
   const providers = useProviders();
 
   const start = (provider: "google" | "facebook") => {
-    window.location.href = `/api/auth/oauth/${provider}`;
+    const query = from ? `?from=${encodeURIComponent(from)}` : "";
+    window.location.href = `/api/auth/oauth/${provider}${query}`;
   };
 
   const items = [

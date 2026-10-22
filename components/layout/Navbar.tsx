@@ -47,9 +47,19 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await fetch("/api/auth/me", { method: "POST" });
+    // Xóa giỏ hàng để không lẫn sản phẩm giữa các tài khoản trên cùng máy
+    useCartStore.getState().clearCart();
     setUser(null);
     setUserDropdown(false);
     window.location.href = "/";
+  };
+
+  const handleCartOpen = () => {
+    if (!user) {
+      window.location.href = "/login?from=%2Fcart";
+      return;
+    }
+    setCartOpen(true);
   };
 
   const navLinks = [
@@ -121,7 +131,7 @@ export default function Navbar() {
 
             {/* Cart Button */}
             <button
-              onClick={() => setCartOpen(true)}
+              onClick={handleCartOpen}
               className="relative p-2.5 rounded-full bg-thuy-850/80 hover:bg-thuy-700/80 text-slate-300 hover:text-thuy-300 border border-thuy-700/60 transition-colors"
               title="Giỏ tài nguyên"
             >

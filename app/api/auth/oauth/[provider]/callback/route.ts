@@ -3,6 +3,7 @@ import {
   exchangeOAuthCode,
   fetchOAuthProfile,
   getOAuthRedirectUri,
+  getSafeRedirectPath,
   isOAuthProvider,
   verifyOAuthState,
 } from "@/lib/oauth";
@@ -47,6 +48,9 @@ export async function GET(
     return fail(request, "oauth_invalid_state");
   }
 
+  const statePayload = verifyOAuthState(state, provider);
+  const redirectAfterLogin = getSafeRedirectPath(statePayload?.from);
+
   try {
     const redirectUri = getOAuthRedirectUri(provider, getBaseUrl(request));
     const tokens = await exchangeOAuthCode(provider, code, redirectUri);
@@ -66,7 +70,8 @@ export async function GET(
     });
 
     const target = new URL(
-      user.role === "ADMIN" ? "/admin" : "/account",
+      redirectAfterLogin ||
+        (user.role === "ADMIN" ? "/admin" : "/account"),
       request.url
     );
 

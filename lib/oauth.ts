@@ -93,23 +93,37 @@ export function getOAuthRedirectUri(
 /* State chống CSRF                                                    */
 /* ------------------------------------------------------------------ */
 
-export function createOAuthState(provider: OAuthProvider): string {
+export function createOAuthState(
+  provider: OAuthProvider,
+  from?: string | null
+): string {
   return signToken(
     {
       purpose: "oauth_state",
       provider,
       nonce: crypto.randomBytes(16).toString("hex"),
+      from: from ? from.slice(0, 200) : undefined,
     },
     "10m"
   );
 }
 
-export function verifyOAuthState(state: string, provider: OAuthProvider): boolean {
+export function verifyOAuthState(
+  state: string,
+  provider: OAuthProvider
+): Record<string, any> | null {
   const payload = verifyToken(state);
-  if (!payload) return false;
-  if (payload.purpose !== "oauth_state") return false;
-  if (payload.provider !== provider) return false;
-  return true;
+  if (!payload) return null;
+  if (payload.purpose !== "oauth_state") return null;
+  if (payload.provider !== provider) return null;
+  return payload;
+}
+
+/** Chỉ cho phép chuyển hướng nội bộ để tránh open redirect */
+export function getSafeRedirectPath(value?: unknown): string | null {
+  if (typeof value !== "string") return null;
+  if (!value.startsWith("/") || value.startsWith("//")) return null;
+  return value.slice(0, 200);
 }
 
 /* ------------------------------------------------------------------ */
