@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import SortableGallery from "@/components/admin/SortableGallery";
+import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 import { slugify } from "@/lib/utils";
 import {
@@ -121,6 +122,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         setProject(data.project);
         setMessage("Đã cập nhật dự án thành công!");
         setTimeout(() => setMessage(""), 3000);
+        await autoSyncAfterSave(`dự án "${data.project.title}"`);
       }
     } catch (err) {
       console.error(err);

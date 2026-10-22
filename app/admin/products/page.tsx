@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { formatVND, slugify } from "@/lib/utils";
 import { Plus, Trash2, Package, Download, Loader2, Check, X } from "lucide-react";
+import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 
 export default function AdminProductsPage() {
@@ -75,6 +76,7 @@ export default function AdminProductsPage() {
         setDescription("");
         setPrice("");
         fetchProducts();
+        await autoSyncAfterSave(`sáº£n pháº©m "${data.product.name}"`);
       }
     } catch (err) {
       console.error(err);
@@ -84,7 +86,7 @@ export default function AdminProductsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) return;
+    if (!confirm("Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a sáº£n pháº©m nÃ y?")) return;
     try {
       await fetch(`/api/products/${id}`, { method: "DELETE" });
       fetchProducts();
@@ -99,10 +101,10 @@ export default function AdminProductsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
-            Quản Lý Sản Phẩm & Tài Nguyên Kỹ Thuật Số
+            Quáº£n LÃ½ Sáº£n Pháº©m & TÃ i NguyÃªn Ká»¹ Thuáº­t Sá»‘
           </h1>
           <p className="text-xs text-slate-400">
-            Hồ sơ AutoCAD, mô hình 3D (3ds Max, SketchUp), bộ model nội thất và template
+            Há»“ sÆ¡ AutoCAD, mÃ´ hÃ¬nh 3D (3ds Max, SketchUp), bá»™ model ná»™i tháº¥t vÃ  template
           </p>
         </div>
 
@@ -111,7 +113,7 @@ export default function AdminProductsPage() {
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
-          <span>+ Thêm Sản Phẩm Mới</span>
+          <span>+ ThÃªm Sáº£n Pháº©m Má»›i</span>
         </button>
       </div>
 
@@ -122,11 +124,11 @@ export default function AdminProductsPage() {
             <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
                 <th className="py-3 px-5">Thumbnail</th>
-                <th className="py-3 px-5">Tên Sản Phẩm</th>
-                <th className="py-3 px-5">Loại</th>
-                <th className="py-3 px-5">Giá Bán</th>
-                <th className="py-3 px-5">File Tải Về & Định Dạng</th>
-                <th className="py-3 px-5 text-right">Thao Tác</th>
+                <th className="py-3 px-5">TÃªn Sáº£n Pháº©m</th>
+                <th className="py-3 px-5">Loáº¡i</th>
+                <th className="py-3 px-5">GiÃ¡ BÃ¡n</th>
+                <th className="py-3 px-5">File Táº£i Vá» & Äá»‹nh Dáº¡ng</th>
+                <th className="py-3 px-5 text-right">Thao TÃ¡c</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-thuy-750/60">
@@ -156,7 +158,7 @@ export default function AdminProductsPage() {
                     {formatVND(p.price)}
                   </td>
                   <td className="py-3.5 px-5 text-slate-300">
-                    <div>{p.fileFormat || "Chưa cập nhật"}</div>
+                    <div>{p.fileFormat || "ChÆ°a cáº­p nháº­t"}</div>
                     <span className="text-[10px] text-slate-400 font-mono block">
                       Key: {p.fileKey || "none"} ({p.fileSize || "N/A"})
                     </span>
@@ -165,7 +167,7 @@ export default function AdminProductsPage() {
                     <button
                       onClick={() => handleDelete(p.id)}
                       className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-400 border border-thuy-700"
-                      title="Xóa"
+                      title="XÃ³a"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -183,7 +185,7 @@ export default function AdminProductsPage() {
           <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
           <div className="relative z-10 w-full max-w-xl bg-thuy-900 border border-thuy-700 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-white">Thêm Sản Phẩm Mới</h3>
+              <h3 className="font-semibold text-base text-white">ThÃªm Sáº£n Pháº©m Má»›i</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
@@ -191,20 +193,20 @@ export default function AdminProductsPage() {
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Tên sản phẩm *:</label>
+                <label className="text-xs text-slate-300">TÃªn sáº£n pháº©m *:</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  placeholder="Bộ Hồ Sơ AutoCAD Biệt Thự Hiện Đại..."
+                  placeholder="Bá»™ Há»“ SÆ¡ AutoCAD Biá»‡t Thá»± Hiá»‡n Äáº¡i..."
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300">Giá bán (VNĐ) *:</label>
+                  <label className="text-xs text-slate-300">GiÃ¡ bÃ¡n (VNÄ) *:</label>
                   <input
                     type="number"
                     required
@@ -216,24 +218,24 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300">Loại sản phẩm:</label>
+                  <label className="text-xs text-slate-300">Loáº¡i sáº£n pháº©m:</label>
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   >
-                    <option value="CAD">Bản vẽ CAD (.DWG)</option>
+                    <option value="CAD">Báº£n váº½ CAD (.DWG)</option>
                     <option value="MODEL_3D">Model 3D (Max/SKP)</option>
-                    <option value="INTERIOR">Nội thất & Decor</option>
+                    <option value="INTERIOR">Ná»™i tháº¥t & Decor</option>
                     <option value="TEMPLATE">Template Photoshop</option>
-                    <option value="DOCUMENT">Tài liệu thiết kế</option>
+                    <option value="DOCUMENT">TÃ i liá»‡u thiáº¿t káº¿</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300">Định dạng file:</label>
+                  <label className="text-xs text-slate-300">Äá»‹nh dáº¡ng file:</label>
                   <input
                     type="text"
                     value={fileFormat}
@@ -244,7 +246,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300">Dung lượng:</label>
+                  <label className="text-xs text-slate-300">Dung lÆ°á»£ng:</label>
                   <input
                     type="text"
                     value={fileSize}
@@ -257,7 +259,7 @@ export default function AdminProductsPage() {
 
               <div className="space-y-1">
                 <label className="text-xs text-slate-300">
-                  Khóa file bảo mật (fileKey trong storage/private):
+                  KhÃ³a file báº£o máº­t (fileKey trong storage/private):
                 </label>
                 <input
                   type="text"
@@ -270,13 +272,13 @@ export default function AdminProductsPage() {
 
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs text-slate-300">Ảnh Thumbnail (URL):</label>
+                  <label className="text-xs text-slate-300">áº¢nh Thumbnail (URL):</label>
                   <button
                     type="button"
                     onClick={() => setMediaPickerOpen(true)}
                     className="text-[10px] text-thuy-400 hover:underline"
                   >
-                    Chọn từ Media Library
+                    Chá»n tá»« Media Library
                   </button>
                 </div>
                 <input
@@ -289,12 +291,12 @@ export default function AdminProductsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Mô tả sản phẩm:</label>
+                <label className="text-xs text-slate-300">MÃ´ táº£ sáº£n pháº©m:</label>
                 <textarea
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Chi tiết các file đính kèm..."
+                  placeholder="Chi tiáº¿t cÃ¡c file Ä‘Ã­nh kÃ¨m..."
                   className="w-full p-3 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
@@ -305,7 +307,7 @@ export default function AdminProductsPage() {
                 className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan flex items-center justify-center gap-2"
               >
                 {isCreating && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>Lưu Sản Phẩm</span>
+                <span>LÆ°u Sáº£n Pháº©m</span>
               </button>
             </form>
           </div>
@@ -322,7 +324,7 @@ export default function AdminProductsPage() {
           }
         }}
         multiple={false}
-        title="Chọn thumbnail sản phẩm từ Media Library"
+        title="Chá»n thumbnail sáº£n pháº©m tá»« Media Library"
       />
     </div>
   );

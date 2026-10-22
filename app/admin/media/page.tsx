@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 import {
   Upload,
   Link as LinkIcon,
@@ -92,6 +93,7 @@ export default function AdminMediaPage() {
         setUploadFile(null);
         setUploadAlt("");
         fetchMedia();
+        await autoSyncAfterSave("media mới");
       }
     } catch (err) {
       console.error(err);
@@ -125,6 +127,7 @@ export default function AdminMediaPage() {
         setImportFilename("");
         setImportAlt("");
         fetchMedia();
+        await autoSyncAfterSave("media mới");
       }
     } catch (err) {
       console.error(err);

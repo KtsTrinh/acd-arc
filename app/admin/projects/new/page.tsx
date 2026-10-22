@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -7,6 +7,7 @@ import Link from "next/link";
 import { slugify } from "@/lib/utils";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 import { ArrowLeft, Image as ImageIcon, Loader2, Plus, Sparkles } from "lucide-react";
+import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function NewProjectPage() {
   const [year, setYear] = useState("2026");
   const [area, setArea] = useState("");
   const [style, setStyle] = useState("Modern Luxury");
-  const [buildingType, setBuildingType] = useState("Biệt thự nghỉ dưỡng");
+  const [buildingType, setBuildingType] = useState("Biá»‡t thá»± nghá»‰ dÆ°á»¡ng");
   const [categoryId, setCategoryId] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [coverMedia, setCoverMedia] = useState<MediaItem | null>(null);
@@ -64,7 +65,7 @@ export default function NewProjectPage() {
     setError("");
 
     if (!title) {
-      setError("Vui lòng nhập tên dự án.");
+      setError("Vui lÃ²ng nháº­p tÃªn dá»± Ã¡n.");
       return;
     }
 
@@ -92,12 +93,14 @@ export default function NewProjectPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Không thể tạo dự án.");
+      if (!res.ok) throw new Error(data.error || "KhÃ´ng thá»ƒ táº¡o dá»± Ã¡n.");
+
+      await autoSyncAfterSave(`dá»± Ã¡n "${data.project.title}"`);
 
       // Redirect to Project detail page to manage sortable gallery!
       router.push(`/admin/projects/${data.project.id}`);
     } catch (err: any) {
-      setError(err.message || "Đã xảy ra lỗi.");
+      setError(err.message || "ÄÃ£ xáº£y ra lá»—i.");
     } finally {
       setIsSubmitting(false);
     }
@@ -111,9 +114,9 @@ export default function NewProjectPage() {
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-thuy-400"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Quay lại danh sách dự án</span>
+          <span>Quay láº¡i danh sÃ¡ch dá»± Ã¡n</span>
         </Link>
-        <h1 className="font-display font-bold text-xl text-white">Thêm Dự Án Kiến Trúc Mới</h1>
+        <h1 className="font-display font-bold text-xl text-white">ThÃªm Dá»± Ãn Kiáº¿n TrÃºc Má»›i</h1>
       </div>
 
       {error && (
@@ -126,12 +129,12 @@ export default function NewProjectPage() {
         {/* Basic Info Card */}
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
           <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-2">
-            1. Thông Tin Cơ Bản & Định Danh
+            1. ThÃ´ng Tin CÆ¡ Báº£n & Äá»‹nh Danh
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Tên dự án *:</label>
+              <label className="text-xs text-slate-300 font-medium">TÃªn dá»± Ã¡n *:</label>
               <input
                 type="text"
                 required
@@ -143,7 +146,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Đường dẫn tĩnh (Slug):</label>
+              <label className="text-xs text-slate-300 font-medium">ÄÆ°á»ng dáº«n tÄ©nh (Slug):</label>
               <input
                 type="text"
                 required
@@ -154,23 +157,23 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Mô tả tóm tắt:</label>
+              <label className="text-xs text-slate-300 font-medium">MÃ´ táº£ tÃ³m táº¯t:</label>
               <input
                 type="text"
                 value={shortDesc}
                 onChange={(e) => setShortDesc(e.target.value)}
-                placeholder="Biệt thự nghỉ dưỡng đương đại hòa quyện yếu tố nước phong thủy..."
+                placeholder="Biá»‡t thá»± nghá»‰ dÆ°á»¡ng Ä‘Æ°Æ¡ng Ä‘áº¡i hÃ²a quyá»‡n yáº¿u tá»‘ nÆ°á»›c phong thá»§y..."
                 className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Bài viết chi tiết dự án:</label>
+              <label className="text-xs text-slate-300 font-medium">BÃ i viáº¿t chi tiáº¿t dá»± Ã¡n:</label>
               <textarea
                 rows={6}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ý tưởng thiết kế, giải pháp kết cấu, vật liệu..."
+                placeholder="Ã tÆ°á»Ÿng thiáº¿t káº¿, giáº£i phÃ¡p káº¿t cáº¥u, váº­t liá»‡u..."
                 className="w-full p-3.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white leading-relaxed"
               />
             </div>
@@ -180,12 +183,12 @@ export default function NewProjectPage() {
         {/* Specifications & Classification */}
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
           <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-2">
-            2. Thông Số Kỹ Thuật & Phân Loại
+            2. ThÃ´ng Sá»‘ Ká»¹ Thuáº­t & PhÃ¢n Loáº¡i
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Danh mục:</label>
+              <label className="text-xs text-slate-300">Danh má»¥c:</label>
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
@@ -200,18 +203,18 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Loại công trình:</label>
+              <label className="text-xs text-slate-300">Loáº¡i cÃ´ng trÃ¬nh:</label>
               <input
                 type="text"
                 value={buildingType}
                 onChange={(e) => setBuildingType(e.target.value)}
-                placeholder="Biệt thự, Nhà phố, Penthouse..."
+                placeholder="Biá»‡t thá»±, NhÃ  phá»‘, Penthouse..."
                 className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Phong cách:</label>
+              <label className="text-xs text-slate-300">Phong cÃ¡ch:</label>
               <input
                 type="text"
                 value={style}
@@ -222,7 +225,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Diện tích (m²):</label>
+              <label className="text-xs text-slate-300">Diá»‡n tÃ­ch (mÂ²):</label>
               <input
                 type="number"
                 value={area}
@@ -233,7 +236,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Năm hoàn thành:</label>
+              <label className="text-xs text-slate-300">NÄƒm hoÃ n thÃ nh:</label>
               <input
                 type="number"
                 value={year}
@@ -243,12 +246,12 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Địa điểm:</label>
+              <label className="text-xs text-slate-300">Äá»‹a Ä‘iá»ƒm:</label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="Hạ Long, Quảng Ninh"
+                placeholder="Háº¡ Long, Quáº£ng Ninh"
                 className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
@@ -256,7 +259,7 @@ export default function NewProjectPage() {
 
           {/* Tags */}
           <div className="space-y-2 pt-2">
-            <label className="text-xs text-slate-300 font-medium block">Chọn thẻ Tags:</label>
+            <label className="text-xs text-slate-300 font-medium block">Chá»n tháº» Tags:</label>
             <div className="flex flex-wrap gap-2">
               {tags.map((t) => {
                 const isSelected = selectedTagIds.includes(t.id);
@@ -283,14 +286,14 @@ export default function NewProjectPage() {
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
           <div className="flex items-center justify-between border-b border-thuy-750 pb-2">
             <h2 className="font-semibold text-sm text-white">
-              3. Ảnh Đại Diện (Cover Image)
+              3. áº¢nh Äáº¡i Diá»‡n (Cover Image)
             </h2>
             <button
               type="button"
               onClick={() => setIsMediaModalOpen(true)}
               className="px-3 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700"
             >
-              Chọn từ Media Library
+              Chá»n tá»« Media Library
             </button>
           </div>
 
@@ -302,7 +305,7 @@ export default function NewProjectPage() {
                 onClick={() => setCoverMedia(null)}
                 className="absolute top-2 right-2 p-1.5 rounded-lg bg-thuy-950/80 text-red-400 hover:text-white"
               >
-                Gỡ ảnh
+                Gá»¡ áº£nh
               </button>
             </div>
           ) : (
@@ -311,7 +314,7 @@ export default function NewProjectPage() {
               className="border-2 border-dashed border-thuy-750 hover:border-thuy-400 rounded-2xl p-8 text-center cursor-pointer bg-thuy-900/40"
             >
               <ImageIcon className="w-8 h-8 mx-auto text-slate-500 mb-2" />
-              <p className="text-xs text-slate-300">Nhấn để chọn ảnh đại diện từ Media Library</p>
+              <p className="text-xs text-slate-300">Nháº¥n Ä‘á»ƒ chá»n áº£nh Ä‘áº¡i diá»‡n tá»« Media Library</p>
             </div>
           )}
         </div>
@@ -322,7 +325,7 @@ export default function NewProjectPage() {
             href="/admin/projects"
             className="px-5 py-2.5 rounded-xl bg-thuy-850 text-slate-300 hover:text-white text-xs font-semibold border border-thuy-750"
           >
-            Hủy
+            Há»§y
           </Link>
           <button
             type="submit"
@@ -330,7 +333,7 @@ export default function NewProjectPage() {
             className="px-6 py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-glow-cyan transition-all flex items-center gap-2"
           >
             {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            <span>Tạo Dự Án & Chỉnh Gallery</span>
+            <span>Táº¡o Dá»± Ãn & Chá»‰nh Gallery</span>
           </button>
         </div>
       </form>
@@ -346,7 +349,7 @@ export default function NewProjectPage() {
         }}
         multiple={false}
         selectedIds={coverMedia ? [coverMedia.id] : []}
-        title="Chọn ảnh đại diện dự án"
+        title="Chá»n áº£nh Ä‘áº¡i diá»‡n dá»± Ã¡n"
       />
     </div>
   );

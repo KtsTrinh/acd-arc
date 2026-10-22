@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Plus, Trash2, BookOpen, ExternalLink, Loader2, X } from "lucide-react";
+import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 import { slugify, formatDateTime } from "@/lib/utils";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 
@@ -68,6 +69,7 @@ export default function AdminBlogPage() {
         setContent("");
         setCoverUrl("");
         fetchPosts();
+        await autoSyncAfterSave(`bÃ i viáº¿t "${data.post.title}"`);
       }
     } catch (err) {
       console.error(err);
@@ -81,10 +83,10 @@ export default function AdminBlogPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
-            Quản Lý Tạp Chí & Bài Viết Kiến Trúc
+            Quáº£n LÃ½ Táº¡p ChÃ­ & BÃ i Viáº¿t Kiáº¿n TrÃºc
           </h1>
           <p className="text-xs text-slate-400">
-            Nghiên cứu phong thủy Mệnh Thủy, xu hướng thiết kế biệt thự và tài liệu chuyên sâu
+            NghiÃªn cá»©u phong thá»§y Má»‡nh Thá»§y, xu hÆ°á»›ng thiáº¿t káº¿ biá»‡t thá»± vÃ  tÃ i liá»‡u chuyÃªn sÃ¢u
           </p>
         </div>
 
@@ -93,7 +95,7 @@ export default function AdminBlogPage() {
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
-          <span>+ Viết Bài Mới</span>
+          <span>+ Viáº¿t BÃ i Má»›i</span>
         </button>
       </div>
 
@@ -103,10 +105,10 @@ export default function AdminBlogPage() {
           <table className="w-full text-left text-xs">
             <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
-                <th className="py-3 px-5">Ảnh Bìa</th>
-                <th className="py-3 px-5">Tiêu Đề Bài Viết</th>
-                <th className="py-3 px-5">Lượt Xem</th>
-                <th className="py-3 px-5">Ngày Đăng</th>
+                <th className="py-3 px-5">áº¢nh BÃ¬a</th>
+                <th className="py-3 px-5">TiÃªu Äá» BÃ i Viáº¿t</th>
+                <th className="py-3 px-5">LÆ°á»£t Xem</th>
+                <th className="py-3 px-5">NgÃ y ÄÄƒng</th>
                 <th className="py-3 px-5 text-right">Xem Public</th>
               </tr>
             </thead>
@@ -129,7 +131,7 @@ export default function AdminBlogPage() {
                     <span className="text-[10px] text-slate-400 font-mono">/blog/{post.slug}</span>
                   </td>
                   <td className="py-3.5 px-5 font-semibold text-thuy-400">
-                    {post.views} lượt xem
+                    {post.views} lÆ°á»£t xem
                   </td>
                   <td className="py-3.5 px-5 text-slate-300">
                     {formatDateTime(post.createdAt)}
@@ -156,7 +158,7 @@ export default function AdminBlogPage() {
           <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
           <div className="relative z-10 w-full max-w-2xl bg-thuy-900 border border-thuy-700 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-white">Soạn Thảo Bài Viết Mới</h3>
+              <h3 className="font-semibold text-base text-white">Soáº¡n Tháº£o BÃ i Viáº¿t Má»›i</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
@@ -164,26 +166,26 @@ export default function AdminBlogPage() {
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Tiêu đề bài viết *:</label>
+                <label className="text-xs text-slate-300">TiÃªu Ä‘á» bÃ i viáº¿t *:</label>
                 <input
                   type="text"
                   required
                   value={title}
                   onChange={(e) => handleTitleChange(e.target.value)}
-                  placeholder="Ứng dụng yếu tố Thủy trong kiến trúc..."
+                  placeholder="á»¨ng dá»¥ng yáº¿u tá»‘ Thá»§y trong kiáº¿n trÃºc..."
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
 
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs text-slate-300">Ảnh bìa bài viết (URL):</label>
+                  <label className="text-xs text-slate-300">áº¢nh bÃ¬a bÃ i viáº¿t (URL):</label>
                   <button
                     type="button"
                     onClick={() => setMediaPickerOpen(true)}
                     className="text-[10px] text-thuy-400 hover:underline"
                   >
-                    Chọn từ Media Library
+                    Chá»n tá»« Media Library
                   </button>
                 </div>
                 <input
@@ -196,24 +198,24 @@ export default function AdminBlogPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Tóm tắt ngắn (Excerpt):</label>
+                <label className="text-xs text-slate-300">TÃ³m táº¯t ngáº¯n (Excerpt):</label>
                 <input
                   type="text"
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
-                  placeholder="Tóm tắt nội dung 1-2 câu..."
+                  placeholder="TÃ³m táº¯t ná»™i dung 1-2 cÃ¢u..."
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Nội dung chi tiết *:</label>
+                <label className="text-xs text-slate-300">Ná»™i dung chi tiáº¿t *:</label>
                 <textarea
                   rows={8}
                   required
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Nội dung bài viết kiến trúc..."
+                  placeholder="Ná»™i dung bÃ i viáº¿t kiáº¿n trÃºc..."
                   className="w-full p-3.5 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white leading-relaxed"
                 />
               </div>
@@ -224,7 +226,7 @@ export default function AdminBlogPage() {
                 className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan flex items-center justify-center gap-2"
               >
                 {isCreating && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>Xuất Bản Bài Viết</span>
+                <span>Xuáº¥t Báº£n BÃ i Viáº¿t</span>
               </button>
             </form>
           </div>
@@ -241,7 +243,7 @@ export default function AdminBlogPage() {
           }
         }}
         multiple={false}
-        title="Chọn ảnh bìa bài viết từ Media Library"
+        title="Chá»n áº£nh bÃ¬a bÃ i viáº¿t tá»« Media Library"
       />
     </div>
   );

@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Plus, Trash2, FolderTree, Loader2 } from "lucide-react";
+import { autoSyncAfterSave } from "@/components/admin/CmsSyncButton";
 import { slugify } from "@/lib/utils";
 
 export default function AdminCategoriesPage() {
@@ -55,6 +56,7 @@ export default function AdminCategoriesPage() {
         setDescription("");
         setImage("");
         fetchCategories();
+        await autoSyncAfterSave(`danh má»¥c "${data.category.name}"`);
       }
     } catch (err) {
       console.error(err);
@@ -67,10 +69,10 @@ export default function AdminCategoriesPage() {
     <div className="space-y-8">
       <div>
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
-          Quản Lý Danh Mục Dự Án
+          Quáº£n LÃ½ Danh Má»¥c Dá»± Ãn
         </h1>
         <p className="text-xs text-slate-400">
-          Phân loại các dự án kiến trúc (Biệt thự, Nhà phố, Nội thất, Penthouse, Resort...)
+          PhÃ¢n loáº¡i cÃ¡c dá»± Ã¡n kiáº¿n trÃºc (Biá»‡t thá»±, NhÃ  phá»‘, Ná»™i tháº¥t, Penthouse, Resort...)
         </p>
       </div>
 
@@ -79,18 +81,18 @@ export default function AdminCategoriesPage() {
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
           <h2 className="font-semibold text-sm text-white flex items-center gap-2 border-b border-thuy-750 pb-2">
             <Plus className="w-4 h-4 text-thuy-400" />
-            <span>Thêm Danh Mục Mới</span>
+            <span>ThÃªm Danh Má»¥c Má»›i</span>
           </h2>
 
           <form onSubmit={handleCreate} className="space-y-3.5">
             <div className="space-y-1">
-              <label className="text-xs text-slate-300 font-medium">Tên danh mục *:</label>
+              <label className="text-xs text-slate-300 font-medium">TÃªn danh má»¥c *:</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
-                placeholder="Biệt Thự & Villa..."
+                placeholder="Biá»‡t Thá»± & Villa..."
                 className="w-full px-3 py-2 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
@@ -107,7 +109,7 @@ export default function AdminCategoriesPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300 font-medium">Ảnh đại diện danh mục (URL):</label>
+              <label className="text-xs text-slate-300 font-medium">áº¢nh Ä‘áº¡i diá»‡n danh má»¥c (URL):</label>
               <input
                 type="url"
                 value={image}
@@ -118,12 +120,12 @@ export default function AdminCategoriesPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300 font-medium">Mô tả ngắn:</label>
+              <label className="text-xs text-slate-300 font-medium">MÃ´ táº£ ngáº¯n:</label>
               <textarea
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Mô tả danh mục..."
+                placeholder="MÃ´ táº£ danh má»¥c..."
                 className="w-full p-3 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
@@ -134,7 +136,7 @@ export default function AdminCategoriesPage() {
               className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan flex items-center justify-center gap-2"
             >
               {isCreating && <Loader2 className="w-4 h-4 animate-spin" />}
-              <span>Tạo Danh Mục</span>
+              <span>Táº¡o Danh Má»¥c</span>
             </button>
           </form>
         </div>
@@ -143,7 +145,7 @@ export default function AdminCategoriesPage() {
         <div className="lg:col-span-2 rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
           <div className="p-4 border-b border-thuy-750">
             <h2 className="font-semibold text-sm text-white">
-              Danh Mục Hiện Có ({categories.length})
+              Danh Má»¥c Hiá»‡n CÃ³ ({categories.length})
             </h2>
           </div>
 
@@ -165,7 +167,7 @@ export default function AdminCategoriesPage() {
                     <h3 className="font-bold text-sm text-white">{c.name}</h3>
                     <p className="text-[11px] text-slate-400 font-mono">/projects?category={c.slug}</p>
                     <span className="text-[11px] text-thuy-400 font-semibold">
-                      {c._count?.projects || 0} dự án đang thuộc danh mục này
+                      {c._count?.projects || 0} dá»± Ã¡n Ä‘ang thuá»™c danh má»¥c nÃ y
                     </span>
                   </div>
                 </div>
