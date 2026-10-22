@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
-import { getSettings } from "@/lib/settings";
+import { getSettings, normalizeMediaUrl, resolveHeroVideo } from "@/lib/settings";
 import { ArrowRight } from "lucide-react";
 
 export const revalidate = 0;
@@ -24,56 +24,85 @@ export default async function HomePage() {
     getSettings(),
   ]);
 
-  const heroDesktop = settings.heroBackgroundImage || FALLBACK_HERO;
-  const heroMobile = settings.heroBackgroundImageMobile || heroDesktop;
+  const heroDesktop = normalizeMediaUrl(settings.heroBackgroundImage) || FALLBACK_HERO;
+  const heroMobile = normalizeMediaUrl(settings.heroBackgroundImageMobile) || heroDesktop;
   const overlay = Math.min(100, Math.max(0, Number(settings.heroOverlayOpacity ?? 60)));
   const overlayPct = Math.round(overlay * 0.9);
   const isVideo = settings.heroBackgroundType === "video";
-  const heroVideo = settings.heroBackgroundVideo || "";
-  const heroVideoMobile = settings.heroBackgroundVideoMobile || heroVideo;
-  const heroPoster = settings.heroVideoPoster || heroDesktop;
+  const embedCode = (settings.heroVideoEmbedCode || "").trim();
+
+  const desktopSource = resolveHeroVideo(settings.heroBackgroundVideo || "");
+  const mobileSource = resolveHeroVideo(
+    settings.heroBackgroundVideoMobile || settings.heroBackgroundVideo || ""
+  );
+
+  const rawPoster = (settings.heroVideoPoster || "").trim();
+  const posterIsUnusable =
+    !rawPoster ||
+    /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(rawPoster) ||
+    rawPoster.includes("drive.google.com");
+  const heroPoster = posterIsUnusable
+    ? FALLBACK_HERO
+    : normalizeMediaUrl(rawPoster);
 
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Full-screen hero background image / video */}
       <div className="absolute inset-0 z-0">
-        {isVideo && (heroVideo || settings.heroVideoEmbedCode) ? (
+        {isVideo && (embedCode || desktopSource || mobileSource) ? (
           <>
-            {/* Video file (mp4/webm) - autoplay, muted, loop */}
-            {heroVideo && (
-              <>
-                <video
-                  className="absolute inset-0 h-full w-full object-cover object-center hidden sm:block"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  poster={heroPoster}
-                >
-                  <source src={heroVideo} type="video/mp4" />
-                  {heroVideo.endsWith(".webm") && <source src={heroVideo} type="video/webm" />}
-                </video>
-                <video
-                  className="absolute inset-0 h-full w-full object-cover object-center sm:hidden"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  poster={heroPoster}
-                >
-                  <source src={heroVideoMobile} type="video/mp4" />
-                </video>
-              </>
-            )}
-
-            {/* Embed code (YouTube / Vimeo / any iframe) */}
-            {settings.heroVideoEmbedCode && (
+            {/* Mã nhúng tùy chỉnh (ưu tiên cao nhất) */}
+            {embedCode ? (
               <div
                 className="absolute inset-0 w-full h-full overflow-hidden hero-video-embed"
-                dangerouslySetInnerHTML={{ __html: settings.heroVideoEmbedCode }}
+                dangerouslySetInnerHTML={{ __html: embedCode }}
               />
+            ) : desktopSource?.kind === "embed" ? (
+              /* YouTube / Vimeo tự nhận diện từ link */
+              <div className="absolute inset-0 w-full h-full overflow-hidden hero-video-embed">
+                <iframe
+                  src={desktopSource.src}
+                  allow="autoplay; fullscreen; encrypted-media"
+                  allowFullScreen
+                  title="Hero background video"
+                />
+              </div>
+            ) : (
+              /* Video file (mp4/webm) - autoplay, muted, loop */
+              <>
+                {desktopSource?.kind === "file" && (
+                  <video
+                    className="absolute inset-0 h-full w-full object-cover object-center hidden sm:block"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    poster={heroPoster}
+                  >
+                    <source
+                      src={desktopSource.src}
+                      type={desktopSource.src.endsWith(".webm") ? "video/webm" : "video/mp4"}
+                    />
+                  </video>
+                )}
+                {mobileSource?.kind === "file" && (
+                  <video
+                    className="absolute inset-0 h-full w-full object-cover object-center sm:hidden"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    poster={heroPoster}
+                  >
+                    <source
+                      src={mobileSource.src}
+                      type={mobileSource.src.endsWith(".webm") ? "video/webm" : "video/mp4"}
+                    />
+                  </video>
+                )}
+              </>
             )}
           </>
         ) : (

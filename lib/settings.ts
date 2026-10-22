@@ -96,6 +96,59 @@ async function loadSettings(): Promise<SystemSettings> {
  * Đọc cấu hình hệ thống. Có cache TTL ngắn + gộp request đồng thời để không
  * mở quá nhiều connection tới Postgres trong môi trường serverless.
  */
+export type HeroVideoSource =
+  | { kind: "file"; src: string }
+  | { kind: "embed"; src: string }
+  | null;
+
+const DRIVE_ID_REGEX =
+  /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([a-zA-Z0-9_-]+)/;
+const YOUTUBE_ID_REGEX =
+  /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/;
+const VIMEO_ID_REGEX = /vimeo\.com\/(?:video\/)?(\d+)/;
+
+/**
+ * Chuẩn hoá link Google Drive về link tải/trực tiếp (Drive share page không
+ * phát được trong thẻ <video>).
+ */
+export function normalizeMediaUrl(url: string): string {
+  const trimmed = (url || "").trim();
+  if (!trimmed) return "";
+  const drive = trimmed.match(DRIVE_ID_REGEX);
+  if (drive) return `https://drive.google.com/uc?export=download&id=${drive[1]}`;
+  return trimmed;
+}
+
+/**
+ * Phân giải link video thành nguồn phát được cho hero:
+ * - file .mp4/.webm trực tiếp -> thẻ <video>
+ * - YouTube / Vimeo -> iframe nhúng
+ * - Google Drive -> chuyển về link tải trực tiếp
+ */
+export function resolveHeroVideo(url: string): HeroVideoSource {
+  const trimmed = (url || "").trim();
+  if (!trimmed) return null;
+
+  const youtube = trimmed.match(YOUTUBE_ID_REGEX);
+  if (youtube) {
+    const id = youtube[1];
+    return {
+      kind: "embed",
+      src: `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`,
+    };
+  }
+
+  const vimeo = trimmed.match(VIMEO_ID_REGEX);
+  if (vimeo) {
+    return {
+      kind: "embed",
+      src: `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1&muted=1&loop=1&background=1&controls=0&playsinline=1`,
+    };
+  }
+
+  return { kind: "file", src: normalizeMediaUrl(trimmed) };
+}
+
 export async function getSettings(): Promise<SystemSettings> {
   const now = Date.now();
   if (settingsCache && settingsCache.expiresAt > now) {

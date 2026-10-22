@@ -355,6 +355,10 @@ export default function AdminSettingsPage() {
                     Bunny CDN hoặc bất kỳ link .mp4/.webm trực tiếp. Video tự chạy lặp, tắt
                     tiếng, không điều khiển.
                   </p>
+                  <p className="text-[10px] text-thuy-300/80">
+                    Link Google Drive, YouTube hoặc Vimeo được tự động chuyển đổi sang nguồn
+                    phát được — chỉ cần dán link gốc.
+                  </p>
                 </div>
 
                 <div className="space-y-4">
