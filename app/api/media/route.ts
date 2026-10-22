@@ -48,10 +48,10 @@ export async function POST(request: Request) {
   try {
     const contentType = request.headers.get("content-type") || "";
 
-    // 1. Case: Adding media from external URL (e.g. Pinterest, CDN link)
+    // 1. Case: Adding media from external URL (Pinterest, Unsplash, Mixkit, CDN...)
     if (contentType.includes("application/json")) {
       const body = await request.json();
-      const { url, filename, alt, folder } = body;
+      const { url, filename, alt, folder, mimeType } = body;
 
       if (!url) {
         return NextResponse.json(
@@ -60,14 +60,23 @@ export async function POST(request: Request) {
         );
       }
 
+      const isVideoUrl = /\.(mp4|webm|mov|m4v|ogv)(\?.*)?$/i.test(url);
+      const detectedMime =
+        mimeType ||
+        (isVideoUrl
+          ? url.endsWith(".webm")
+            ? "video/webm"
+            : "video/mp4"
+          : "image/jpeg");
+
       const media = await createMediaItem({
-        filename: filename || url.split("/").pop()?.split("?")[0] || "image.jpg",
-        originalName: filename || "Pinterest Image",
-        mimeType: "image/jpeg",
+        filename: filename || url.split("/").pop()?.split("?")[0] || "media.jpg",
+        originalName: filename || "External Media",
+        mimeType: detectedMime,
         size: 0,
         url,
-        folder: folder || "pinterest",
-        alt: alt || "Kiến trúc ACD Pinterest",
+        folder: folder || "external",
+        alt: alt || "ACD Media",
       });
 
       return NextResponse.json({ success: true, media });

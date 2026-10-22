@@ -23,29 +23,77 @@ export default async function HomePage() {
   const heroMobile = settings.heroBackgroundImageMobile || heroDesktop;
   const overlay = Math.min(100, Math.max(0, Number(settings.heroOverlayOpacity ?? 60)));
   const overlayPct = Math.round(overlay * 0.9);
+  const isVideo = settings.heroBackgroundType === "video";
+  const heroVideo = settings.heroBackgroundVideo || "";
+  const heroVideoMobile = settings.heroBackgroundVideoMobile || heroVideo;
+  const heroPoster = settings.heroVideoPoster || heroDesktop;
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Full-screen hero background image */}
+      {/* Full-screen hero background image / video */}
       <div className="absolute inset-0 z-0">
-        {/* Mobile background */}
-        <Image
-          src={heroMobile}
-          alt="ACD Modern Villa Architecture"
-          fill
-          className="object-cover object-center sm:hidden"
-          priority
-          unoptimized
-        />
-        {/* Desktop background */}
-        <Image
-          src={heroDesktop}
-          alt="ACD Modern Villa Architecture"
-          fill
-          className="object-cover object-center hidden sm:block"
-          priority
-          unoptimized
-        />
+        {isVideo && (heroVideo || settings.heroVideoEmbedCode) ? (
+          <>
+            {/* Video file (mp4/webm) - autoplay, muted, loop */}
+            {heroVideo && (
+              <>
+                <video
+                  className="absolute inset-0 h-full w-full object-cover object-center hidden sm:block"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  poster={heroPoster}
+                >
+                  <source src={heroVideo} type="video/mp4" />
+                  {heroVideo.endsWith(".webm") && <source src={heroVideo} type="video/webm" />}
+                </video>
+                <video
+                  className="absolute inset-0 h-full w-full object-cover object-center sm:hidden"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  poster={heroPoster}
+                >
+                  <source src={heroVideoMobile} type="video/mp4" />
+                </video>
+              </>
+            )}
+
+            {/* Embed code (YouTube / Vimeo / any iframe) */}
+            {settings.heroVideoEmbedCode && (
+              <div
+                className="absolute inset-0 w-full h-full overflow-hidden hero-video-embed"
+                dangerouslySetInnerHTML={{ __html: settings.heroVideoEmbedCode }}
+              />
+            )}
+          </>
+        ) : (
+          <>
+            {/* Mobile background */}
+            <Image
+              src={heroMobile}
+              alt="ACD Modern Villa Architecture"
+              fill
+              className="object-cover object-center sm:hidden"
+              priority
+              unoptimized
+            />
+            {/* Desktop background */}
+            <Image
+              src={heroDesktop}
+              alt="ACD Modern Villa Architecture"
+              fill
+              className="object-cover object-center hidden sm:block"
+              priority
+              unoptimized
+            />
+          </>
+        )}
+
         {/* Dark gradient overlays for readability */}
         <div
           className="absolute inset-0 bg-gradient-to-b"

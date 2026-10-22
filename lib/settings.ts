@@ -15,6 +15,11 @@ export interface SystemSettings {
   maintenanceMode: string;
   heroBackgroundImage: string;
   heroBackgroundImageMobile: string;
+  heroBackgroundType: string;
+  heroBackgroundVideo: string;
+  heroBackgroundVideoMobile: string;
+  heroVideoPoster: string;
+  heroVideoEmbedCode: string;
   heroOverlayOpacity: string;
 
   // SEO
@@ -47,6 +52,11 @@ export const defaultSettings: SystemSettings = {
   heroBackgroundImage:
     "https://i.pinimg.com/736x/ef/ec/58/efec58efa298d13dca0dde95e2528f20.jpg",
   heroBackgroundImageMobile: "",
+  heroBackgroundType: "image",
+  heroBackgroundVideo: "",
+  heroBackgroundVideoMobile: "",
+  heroVideoPoster: "",
+  heroVideoEmbedCode: "",
   heroOverlayOpacity: "60",
 
   seoTitle: "ACD Architecture & Design | Kiến Trúc Hợp Mệnh Ngũ Hành & Nội Thất Thượng Lưu",

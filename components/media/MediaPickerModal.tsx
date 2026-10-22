@@ -13,6 +13,7 @@ export interface MediaItem {
   alt: string | null;
   width?: number | null;
   height?: number | null;
+  mimeType?: string | null;
 }
 
 interface MediaPickerModalProps {
@@ -22,7 +23,81 @@ interface MediaPickerModalProps {
   multiple?: boolean;
   selectedIds?: string[];
   title?: string;
+  mediaType?: "image" | "video" | "all";
 }
+
+const MEDIA_SOURCES = [
+  {
+    id: "pinterest",
+    label: "Pinterest",
+    folder: "pinterest",
+    placeholder: "https://i.pinimg.com/736x/.../abc.jpg",
+    hint: "Nhấp chuột phải vào ảnh trên Pinterest → Copy image address.",
+  },
+  {
+    id: "unsplash",
+    label: "Unsplash",
+    folder: "unsplash",
+    placeholder: "https://images.unsplash.com/photo-xxxx?w=1920",
+    hint: "Mở ảnh → Copy link ảnh, hoặc dùng link CDN images.unsplash.com.",
+  },
+  {
+    id: "pexels",
+    label: "Pexels",
+    folder: "pexels",
+    placeholder: "https://images.pexels.com/photos/xxxx/pexels-photo.jpg",
+    hint: "Mở ảnh/video trên Pexels → Copy link tệp.",
+  },
+  {
+    id: "mixkit",
+    label: "Mixkit",
+    folder: "mixkit",
+    placeholder: "https://assets.mixkit.co/videos/preview/mixkit-xxxx-large.mp4",
+    hint: "Nguồn video miễn phí, link kết thúc bằng .mp4 hoặc .webm.",
+  },
+  {
+    id: "coverr",
+    label: "Coverr",
+    folder: "coverr",
+    placeholder: "https://storage.coverr.co/videos/xxxx.mp4",
+    hint: "Video nền miễn phí, link trực tiếp tới file .mp4.",
+  },
+  {
+    id: "youtube",
+    label: "YouTube",
+    folder: "youtube",
+    placeholder: "https://www.youtube.com/watch?v=XXXXXXXXXXX",
+    hint: "Dùng cho mã nhúng (tab Nền Hero sẽ hỗ trợ iframe nhúng).",
+  },
+  {
+    id: "vimeo",
+    label: "Vimeo",
+    folder: "vimeo",
+    placeholder: "https://vimeo.com/123456789",
+    hint: "Dùng cho mã nhúng iframe trong cài đặt nền Hero.",
+  },
+  {
+    id: "cloudinary",
+    label: "Cloudinary",
+    folder: "cloudinary",
+    placeholder: "https://res.cloudinary.com/demo/video/upload/v123/hero.mp4",
+    hint: "Link CDN trực tiếp tới file video .mp4.",
+  },
+  {
+    id: "bunny",
+    label: "Bunny CDN",
+    folder: "bunny",
+    placeholder: "https://cdn.bunny.net/hero.mp4",
+    hint: "Link CDN trực tiếp tới file video .mp4.",
+  },
+  {
+    id: "direct",
+    label: "Link MP4 / Ảnh khác",
+    folder: "external",
+    placeholder: "https://.../hero.mp4",
+    hint: "Bất kỳ link trực tiếp nào tới file .mp4, .webm hoặc ảnh.",
+  },
+];
 
 export default function MediaPickerModal({
   isOpen,
@@ -31,6 +106,7 @@ export default function MediaPickerModal({
   multiple = false,
   selectedIds = [],
   title = "Chọn từ Media Library",
+  mediaType = "image",
 }: MediaPickerModalProps) {
   const [activeTab, setActiveTab] = useState<"library" | "upload" | "url">("library");
   const [mediaList, setMediaList] = useState<MediaItem[]>([]);
@@ -46,12 +122,24 @@ export default function MediaPickerModal({
   const [uploadAlt, setUploadAlt] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
-  // Form states for External URL (Pinterest / CDN)
+  // Form states for External URL (nhiều nguồn)
   const [externalUrl, setExternalUrl] = useState("");
   const [externalFilename, setExternalFilename] = useState("");
   const [externalFolder, setExternalFolder] = useState("pinterest");
   const [externalAlt, setExternalAlt] = useState("");
+  const [externalSource, setExternalSource] = useState("pinterest");
   const [isImporting, setIsImporting] = useState(false);
+
+  const isVideoItem = (item: MediaItem) => {
+    if (item.mimeType && item.mimeType.startsWith("video/")) return true;
+    return /\.(mp4|webm|mov|m4v|ogv)$/i.test(item.url || "");
+  };
+
+  const filteredMedia = mediaList.filter((item) => {
+    if (mediaType === "all") return true;
+    const isVideo = isVideoItem(item);
+    return mediaType === "video" ? isVideo : !isVideo;
+  });
 
   const fetchMedia = async () => {
     setLoading(true);
@@ -220,7 +308,7 @@ export default function MediaPickerModal({
                 }`}
               >
                 <LinkIcon className="w-3.5 h-3.5" />
-                <span>Pinterest / Link URL</span>
+                <span>Link nhiều nguồn</span>
               </button>
             </div>
 
@@ -282,17 +370,18 @@ export default function MediaPickerModal({
               {loading ? (
                 <div className="col-span-full flex items-center justify-center py-20 text-slate-400 gap-2">
                   <Loader2 className="w-5 h-5 animate-spin text-thuy-400" />
-                  <span>Đang tải thư viện ảnh...</span>
+                  <span>Đang tải thư viện...</span>
                 </div>
-              ) : mediaList.length === 0 ? (
+              ) : filteredMedia.length === 0 ? (
                 <div className="col-span-full text-center py-20 text-slate-400 text-xs">
-                  Không tìm thấy hình ảnh nào phù hợp.
+                  Không tìm thấy {mediaType === "video" ? "video" : "hình ảnh"} nào phù hợp.
                 </div>
               ) : (
-                mediaList.map((item) => {
+                filteredMedia.map((item) => {
                   const isSelected = multiple
                     ? selectedItems.some((i) => i.id === item.id)
                     : selectedIds.includes(item.id);
+                  const itemIsVideo = isVideoItem(item);
 
                   return (
                     <div
@@ -304,13 +393,30 @@ export default function MediaPickerModal({
                           : "border-thuy-750 hover:border-thuy-500"
                       }`}
                     >
-                      <Image
-                        src={item.url}
-                        alt={item.alt || item.filename}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
+                      {itemIsVideo ? (
+                        <video
+                          src={item.url}
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Image
+                          src={item.url}
+                          alt={item.alt || item.filename}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      )}
+
+                      {itemIsVideo && (
+                        <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-thuy-300 uppercase">
+                          Video
+                        </div>
+                      )}
 
                       {/* Selected check badge */}
                       {isSelected && (
@@ -342,7 +448,13 @@ export default function MediaPickerModal({
                 type="file"
                 id="file-upload"
                 className="hidden"
-                accept="image/*"
+                accept={
+                  mediaType === "video"
+                    ? "video/mp4,video/webm,video/quicktime"
+                    : mediaType === "all"
+                      ? "image/*,video/mp4,video/webm"
+                      : "image/*"
+                }
                 onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
               />
               <label htmlFor="file-upload" className="cursor-pointer space-y-3 block">
@@ -351,9 +463,17 @@ export default function MediaPickerModal({
                 </div>
                 <div>
                   <p className="text-sm font-medium text-white">
-                    {uploadFile ? uploadFile.name : "Nhấn để chọn file ảnh từ máy tính"}
+                    {uploadFile
+                      ? uploadFile.name
+                      : mediaType === "video"
+                        ? "Nhấn để chọn file video từ máy tính"
+                        : "Nhấn để chọn file ảnh từ máy tính"}
                   </p>
-                  <p className="text-xs text-slate-400 mt-1">PNG, JPG, WEBP lên đến 20MB</p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {mediaType === "video"
+                      ? "MP4, WEBM lên đến 50MB"
+                      : "PNG, JPG, WEBP lên đến 20MB"}
+                  </p>
                 </div>
               </label>
             </div>
@@ -393,37 +513,83 @@ export default function MediaPickerModal({
           </form>
         )}
 
-        {/* Tab 3: Import Pinterest / CDN External Link */}
+        {/* Tab 3: Import từ nhiều nguồn (Pinterest, Unsplash, Mixkit, CDN...) */}
         {activeTab === "url" && (
           <form
             onSubmit={handleUrlSubmit}
-            className="flex-1 p-8 flex flex-col justify-center max-w-lg mx-auto w-full space-y-4"
+            className="flex-1 p-8 flex flex-col justify-center max-w-lg mx-auto w-full space-y-4 overflow-y-auto"
           >
             <div className="space-y-3">
               <div>
                 <label className="text-xs text-slate-300 block mb-1">
-                  Đường dẫn ảnh trực tiếp (Pinterest / Unsplash / CDN):
+                  Nguồn lấy link:
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                  {MEDIA_SOURCES.map((source) => (
+                    <button
+                      key={source.id}
+                      type="button"
+                      onClick={() => {
+                        setExternalSource(source.id);
+                        setExternalFolder(source.folder);
+                        setExternalUrl("");
+                      }}
+                      className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold transition-all border ${
+                        externalSource === source.id
+                          ? "bg-thuy-400 text-thuy-950 border-thuy-400"
+                          : "bg-thuy-800 text-slate-300 hover:text-white border-thuy-700"
+                      }`}
+                    >
+                      {source.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-300 block mb-1">
+                  Link trực tiếp (
+                  {MEDIA_SOURCES.find((s) => s.id === externalSource)?.label}):
                 </label>
                 <input
-                  type="url"
+                  type="text"
                   required
-                  placeholder="https://i.pinimg.com/... hoặc https://images.unsplash.com/..."
+                  placeholder={
+                    MEDIA_SOURCES.find((s) => s.id === externalSource)?.placeholder ||
+                    "https://..."
+                  }
                   value={externalUrl}
                   onChange={(e) => setExternalUrl(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
                 />
+                <p className="text-[10px] text-slate-500 mt-1">
+                  {MEDIA_SOURCES.find((s) => s.id === externalSource)?.hint}
+                </p>
               </div>
 
-              {externalUrl && (
+              {externalUrl && /\.(mp4|webm|mov|m4v|ogv)(\?|$)/i.test(externalUrl) ? (
                 <div className="relative w-full h-40 rounded-xl overflow-hidden border border-thuy-700 bg-thuy-950">
-                  <Image
+                  <video
                     src={externalUrl}
-                    alt="Preview"
-                    fill
-                    className="object-cover"
-                    unoptimized
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    className="w-full h-full object-cover"
                   />
                 </div>
+              ) : (
+                externalUrl && (
+                  <div className="relative w-full h-40 rounded-xl overflow-hidden border border-thuy-700 bg-thuy-950">
+                    <Image
+                      src={externalUrl}
+                      alt="Preview"
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
+                )
               )}
 
               <div>
@@ -432,7 +598,7 @@ export default function MediaPickerModal({
                   type="text"
                   value={externalFilename}
                   onChange={(e) => setExternalFilename(e.target.value)}
-                  placeholder="villa-modern-pinterest.jpg"
+                  placeholder="villa-modern-hero.mp4"
                   className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
@@ -443,7 +609,7 @@ export default function MediaPickerModal({
                   type="text"
                   value={externalFolder}
                   onChange={(e) => setExternalFolder(e.target.value)}
-                  placeholder="pinterest, villa, townhouse..."
+                  placeholder="pinterest, villa, townhouse, mixkit..."
                   className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>

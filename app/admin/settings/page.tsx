@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   Info,
   Image as ImageIcon,
+  Video as VideoIcon,
   Upload,
   Trash2,
 } from "lucide-react";
@@ -51,6 +52,9 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+  const [mediaTarget, setMediaTarget] = useState<
+    "heroBackgroundImage" | "heroBackgroundVideo" | "heroVideoPoster"
+  >("heroBackgroundImage");
 
   useEffect(() => {
     fetch("/api/settings")
@@ -262,71 +266,210 @@ export default function AdminSettingsPage() {
           </div>
 
           <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3 pt-2">
-            1.4. Ảnh Nền Hero (Trang Chủ)
+            1.4. Nền Hero (Ảnh / Video)
           </h2>
 
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              {/* Desktop hero */}
-              <div className="space-y-2">
-                <label className={labelCls}>Ảnh Nền Hero (Desktop)</label>
-                <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
-                  {settings.heroBackgroundImage ? (
-                    <Image
-                      src={settings.heroBackgroundImage}
-                      alt="Hero background preview"
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-500">
-                      <ImageIcon className="w-7 h-7" />
-                      <span className="text-[11px]">Chưa chọn ảnh nền</span>
-                    </div>
-                  )}
-                </div>
-                <input
-                  type="text"
-                  value={settings.heroBackgroundImage || ""}
-                  onChange={(e) => update("heroBackgroundImage", e.target.value)}
-                  className={inputCls}
-                  placeholder="https://... (URL ảnh nền hero)"
-                />
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsMediaModalOpen(true)}
-                    className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-white border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
-                  >
-                    <Upload className="w-3.5 h-3.5 text-thuy-400" />
-                    <span>Chọn từ Media Library</span>
-                  </button>
-                  {settings.heroBackgroundImage && (
+          {/* Type switch */}
+          <div className="flex items-center gap-2 p-1 rounded-xl bg-thuy-900 border border-thuy-750 w-fit">
+            {(
+              [
+                { key: "image", label: "Ảnh nền" },
+                { key: "video", label: "Video nền (lặp)" },
+              ] as const
+            ).map((opt) => (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => update("heroBackgroundType", opt.key)}
+                className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                  (settings.heroBackgroundType || "image") === opt.key
+                    ? "bg-thuy-400 text-thuy-950 font-bold"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {(settings.heroBackgroundType || "image") === "video" ? (
+            /* ============ VIDEO MODE ============ */
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <label className={labelCls}>
+                    Link video nền (Desktop){" "}
+                    <span className="text-slate-500 font-normal">
+                      — file .mp4 / .webm trực tiếp
+                    </span>
+                  </label>
+                  <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
+                    {settings.heroBackgroundVideo ? (
+                      <video
+                        src={settings.heroBackgroundVideo}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-500">
+                        <VideoIcon className="w-7 h-7" />
+                        <span className="text-[11px]">Chưa chọn video nền</span>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={settings.heroBackgroundVideo || ""}
+                    onChange={(e) => update("heroBackgroundVideo", e.target.value)}
+                    className={inputCls}
+                    placeholder="https://assets.mixkit.co/videos/.../hero.mp4"
+                  />
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => update("heroBackgroundImage", "")}
-                      className="px-3 py-2 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-400 hover:text-red-300 border border-thuy-700 transition-all"
-                      title="Xóa ảnh nền"
+                      onClick={() => {
+                        setMediaTarget("heroBackgroundVideo");
+                        setIsMediaModalOpen(true);
+                      }}
+                      className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-white border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Upload className="w-3.5 h-3.5 text-thuy-400" />
+                      <span>Chọn video từ Media Library</span>
                     </button>
-                  )}
+                    {settings.heroBackgroundVideo && (
+                      <button
+                        type="button"
+                        onClick={() => update("heroBackgroundVideo", "")}
+                        className="px-3 py-2 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-400 hover:text-red-300 border border-thuy-700 transition-all"
+                        title="Xóa video nền"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-500">
+                    Hỗ trợ lấy từ nhiều nguồn: Mixkit, Coverr, Pexels Videos, Cloudinary,
+                    Bunny CDN hoặc bất kỳ link .mp4/.webm trực tiếp. Video tự chạy lặp, tắt
+                    tiếng, không điều khiển.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className={labelCls}>
+                      Link video nền (Mobile){" "}
+                      <span className="text-slate-500 font-normal">
+                        — để trống để dùng video desktop
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      value={settings.heroBackgroundVideoMobile || ""}
+                      onChange={(e) => update("heroBackgroundVideoMobile", e.target.value)}
+                      className={inputCls}
+                      placeholder="https://.../hero-mobile.mp4"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className={labelCls}>
+                      Ảnh Poster (ảnh hiển thị trước khi video tải)
+                    </label>
+                    <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
+                      {settings.heroVideoPoster ? (
+                        <Image
+                          src={settings.heroVideoPoster}
+                          alt="Video poster preview"
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-500">
+                          <ImageIcon className="w-7 h-7" />
+                          <span className="text-[11px]">Chưa chọn poster</span>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={settings.heroVideoPoster || ""}
+                      onChange={(e) => update("heroVideoPoster", e.target.value)}
+                      className={inputCls}
+                      placeholder="https://... (URL ảnh poster)"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMediaTarget("heroVideoPoster");
+                        setIsMediaModalOpen(true);
+                      }}
+                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-white border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <Upload className="w-3.5 h-3.5 text-thuy-400" />
+                      <span>Chọn poster từ Media Library</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className={labelCls}>
+                      Mã nhúng video (YouTube / Vimeo){" "}
+                      <span className="text-slate-500 font-normal">— tùy chọn</span>
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={settings.heroVideoEmbedCode || ""}
+                      onChange={(e) => update("heroVideoEmbedCode", e.target.value)}
+                      className={`${inputCls} font-mono leading-relaxed`}
+                      placeholder={'<iframe src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID" ...></iframe>'}
+                    />
+                    <p className="text-[10px] text-slate-500">
+                      Dùng khi không có link file trực tiếp. Nhớ thêm{" "}
+                      <code className="text-thuy-300">autoplay=1</code>,{" "}
+                      <code className="text-thuy-300">mute=1</code>,{" "}
+                      <code className="text-thuy-300">loop=1</code> để video chạy lặp không
+                      tiếng.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Mobile hero + overlay */}
-              <div className="space-y-4">
+              <div className="space-y-2">
+                <label className={labelCls}>
+                  Độ Đậm Lớp Phủ:{" "}
+                  <span className="text-thuy-300 font-bold">
+                    {settings.heroOverlayOpacity || "60"}%
+                  </span>
+                </label>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={5}
+                  value={settings.heroOverlayOpacity || "60"}
+                  onChange={(e) => update("heroOverlayOpacity", e.target.value)}
+                  className="w-full accent-thuy-400"
+                />
+                <p className="text-[10px] text-slate-500">
+                  Tăng giá trị để phủ tối hơn, giúp chữ và menu dễ đọc hơn trên video nền.
+                </p>
+              </div>
+            </div>
+          ) : (
+            /* ============ IMAGE MODE ============ */
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {/* Desktop hero */}
                 <div className="space-y-2">
-                  <label className={labelCls}>
-                    Ảnh Nền Hero (Mobile){" "}
-                    <span className="text-slate-500 font-normal">— để trống để dùng ảnh desktop</span>
-                  </label>
-                  <div className="relative aspect-[9/16] max-h-[240px] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
-                    {settings.heroBackgroundImageMobile || settings.heroBackgroundImage ? (
+                  <label className={labelCls}>Ảnh Nền Hero (Desktop)</label>
+                  <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
+                    {settings.heroBackgroundImage ? (
                       <Image
-                        src={settings.heroBackgroundImageMobile || settings.heroBackgroundImage}
-                        alt="Hero mobile preview"
+                        src={settings.heroBackgroundImage}
+                        alt="Hero background preview"
                         fill
                         className="object-cover"
                         unoptimized
@@ -340,36 +483,94 @@ export default function AdminSettingsPage() {
                   </div>
                   <input
                     type="text"
-                    value={settings.heroBackgroundImageMobile || ""}
-                    onChange={(e) => update("heroBackgroundImageMobile", e.target.value)}
+                    value={settings.heroBackgroundImage || ""}
+                    onChange={(e) => update("heroBackgroundImage", e.target.value)}
                     className={inputCls}
-                    placeholder="https://... (URL ảnh nền mobile)"
+                    placeholder="https://... (URL ảnh nền hero)"
                   />
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMediaTarget("heroBackgroundImage");
+                        setIsMediaModalOpen(true);
+                      }}
+                      className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-white border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <Upload className="w-3.5 h-3.5 text-thuy-400" />
+                      <span>Chọn từ Media Library</span>
+                    </button>
+                    {settings.heroBackgroundImage && (
+                      <button
+                        type="button"
+                        onClick={() => update("heroBackgroundImage", "")}
+                        className="px-3 py-2 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-400 hover:text-red-300 border border-thuy-700 transition-all"
+                        title="Xóa ảnh nền"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className={labelCls}>
-                    Độ Đậm Lớp Phủ:{" "}
-                    <span className="text-thuy-300 font-bold">
-                      {settings.heroOverlayOpacity || "60"}%
-                    </span>
-                  </label>
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={5}
-                    value={settings.heroOverlayOpacity || "60"}
-                    onChange={(e) => update("heroOverlayOpacity", e.target.value)}
-                    className="w-full accent-thuy-400"
-                  />
-                  <p className="text-[10px] text-slate-500">
-                    Tăng giá trị để phủ tối hơn, giúp chữ và menu dễ đọc hơn trên ảnh nền.
-                  </p>
+                {/* Mobile hero + overlay */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className={labelCls}>
+                      Ảnh Nền Hero (Mobile){" "}
+                      <span className="text-slate-500 font-normal">
+                        — để trống để dùng ảnh desktop
+                      </span>
+                    </label>
+                    <div className="relative aspect-[9/16] max-h-[240px] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
+                      {settings.heroBackgroundImageMobile || settings.heroBackgroundImage ? (
+                        <Image
+                          src={settings.heroBackgroundImageMobile || settings.heroBackgroundImage}
+                          alt="Hero mobile preview"
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-500">
+                          <ImageIcon className="w-7 h-7" />
+                          <span className="text-[11px]">Chưa chọn ảnh nền</span>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={settings.heroBackgroundImageMobile || ""}
+                      onChange={(e) => update("heroBackgroundImageMobile", e.target.value)}
+                      className={inputCls}
+                      placeholder="https://... (URL ảnh nền mobile)"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className={labelCls}>
+                      Độ Đậm Lớp Phủ:{" "}
+                      <span className="text-thuy-300 font-bold">
+                        {settings.heroOverlayOpacity || "60"}%
+                      </span>
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={5}
+                      value={settings.heroOverlayOpacity || "60"}
+                      onChange={(e) => update("heroOverlayOpacity", e.target.value)}
+                      className="w-full accent-thuy-400"
+                    />
+                    <p className="text-[10px] text-slate-500">
+                      Tăng giá trị để phủ tối hơn, giúp chữ và menu dễ đọc hơn trên ảnh nền.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="pt-2 flex items-center gap-3 p-4 rounded-xl bg-thuy-900 border border-thuy-750">
             <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
@@ -569,13 +770,20 @@ export default function AdminSettingsPage() {
         onClose={() => setIsMediaModalOpen(false)}
         onSelect={(selected) => {
           if (!Array.isArray(selected)) {
-            update("heroBackgroundImage", selected.url);
+            update(mediaTarget, selected.url);
           }
           setIsMediaModalOpen(false);
         }}
         multiple={false}
         selectedIds={[]}
-        title="Chọn ảnh nền Hero"
+        mediaType={mediaTarget === "heroBackgroundVideo" ? "video" : "image"}
+        title={
+          mediaTarget === "heroBackgroundVideo"
+            ? "Chọn video nền Hero"
+            : mediaTarget === "heroVideoPoster"
+              ? "Chọn ảnh poster cho video"
+              : "Chọn ảnh nền Hero"
+        }
       />
     </form>
   );
