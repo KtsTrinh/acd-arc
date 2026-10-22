@@ -92,6 +92,44 @@ export async function PATCH(
   }
 }
 
+/** Xoá đơn hàng (chỉ quản trị viên) - dùng cho đơn rác / đơn kiểm thử */
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Chỉ quản trị viên mới được xoá đơn hàng." },
+        { status: 403 }
+      );
+    }
+
+    const { id } = params;
+    const order = await prisma.order.findUnique({ where: { id } });
+
+    if (!order) {
+      return NextResponse.json(
+        { error: "Không tìm thấy đơn hàng." },
+        { status: 404 }
+      );
+    }
+
+    await prisma.downloadLink.deleteMany({ where: { orderId: id } });
+    await prisma.orderItem.deleteMany({ where: { orderId: id } });
+    await prisma.order.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting order:", error);
+    return NextResponse.json(
+      { error: "Không thể xoá đơn hàng." },
+      { status: 500 }
+    );
+  }
+}
+
 /** Cấp lại link tải cho đơn đã thanh toán (hết hạn / mất link) */
 export async function POST(
   request: Request,

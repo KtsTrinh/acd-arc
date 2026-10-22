@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Search,
   Filter,
+  Trash2,
 } from "lucide-react";
 
 export default function AdminOrdersPage() {
@@ -70,6 +71,29 @@ export default function AdminOrdersPage() {
         fetchOrders();
       } else {
         alert(data.error || "Không cấp lại được link tải.");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleDeleteOrder = async (orderId: string, orderNumber: string) => {
+    if (
+      !confirm(
+        `Xoá đơn hàng #${orderNumber}? Toàn bộ link tải của đơn này cũng sẽ bị xoá.`
+      )
+    )
+      return;
+    setUpdatingId(orderId);
+    try {
+      const res = await fetch(`/api/orders/${orderId}/status`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        fetchOrders();
+      } else {
+        alert(data.error || "Không xoá được đơn hàng.");
       }
     } catch (err) {
       console.error(err);
@@ -234,6 +258,14 @@ export default function AdminOrdersPage() {
                         <ExternalLink className="w-3.5 h-3.5" />
                         <span>Xem</span>
                       </Link>
+                      <button
+                        onClick={() => handleDeleteOrder(o.id, o.orderNumber)}
+                        disabled={updatingId === o.id}
+                        className="p-2 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-400 inline-flex items-center gap-1 text-xs disabled:opacity-50"
+                        title="Xoá đơn hàng"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </td>
                 </tr>
