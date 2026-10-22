@@ -4,7 +4,7 @@
   "siteDescription": "ACD Studio - Đơn vị thiết kế kiến trúc biệt thự, nhà phố, penthouse và nội thất cao cấp theo phong thủy hợp mệnh (Kim - Mộc - Thủy - Hỏa - Thổ).",
   "contactEmail": "kientrucsoacd@gmail.com",
   "contactPhone": "035.891.1895",
-  "contactAddress": "Hà Nội: Tòa nhà Heritage, P. Phan Chu Trinh, Hoàn Kiếm | TP. HCM: Khu biệt thự ven sông Thảo Điền, TP. Thủ Đức",
+  "contactAddress": "Hà Nội, Việt Nam",
   "facebookUrl": "",
   "instagramUrl": "",
   "youtubeUrl": "",
@@ -28,5 +28,8 @@
   "googleAnalyticsId": "",
   "googleSiteVerification": "",
   "headerEmbedCode": "",
-  "bodyEmbedCode": ""
+  "bodyEmbedCode": "",
+  "cmsAutoSync": "true",
+  "cmsLastSyncSha": "",
+  "cmsLastSyncAt": ""
 }
