@@ -133,8 +133,24 @@ async function addEnv(name, value, environment) {
 async function main() {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
 
+  let closed = false;
+  rl.on("close", () => {
+    closed = true;
+  });
+
   const ask = (question) =>
-    new Promise((resolve) => rl.question(question, (answer) => resolve(answer.trim())));
+    new Promise((resolve) => {
+      if (closed) {
+        resolve("");
+        return;
+      }
+      const onClose = () => resolve("");
+      rl.once("close", onClose);
+      rl.question(question, (answer) => {
+        rl.removeListener("close", onClose);
+        resolve(answer.trim());
+      });
+    });
 
   console.log(`\nCấu hình credential đăng nhập cho project "${PROJECT}"`);
   console.log(`Môi trường: ${ENVIRONMENTS.join(", ")}\n`);
