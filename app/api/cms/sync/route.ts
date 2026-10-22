@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { buildCmsExport } from "@/lib/cms-export";
+import { getSettings, saveSettings } from "@/lib/settings";
 import {
   getGithubBranch,
   getGithubRepo,
@@ -30,12 +31,21 @@ export async function GET() {
 
   try {
     const files = await buildCmsExport();
+    const settings = await getSettings();
+
     return NextResponse.json({
       success: true,
       github: {
         configured: isGithubConfigured(),
         repo: getGithubRepo(),
         branch: getGithubBranch(),
+      },
+      lastSync: {
+        sha: settings.cmsLastSyncSha || "",
+        at: settings.cmsLastSyncAt || "",
+        url: settings.cmsLastSyncSha
+          ? `https://github.com/${getGithubRepo()}/commit/${settings.cmsLastSyncSha}`
+          : "",
       },
       files: files.map((file) => ({
         path: file.path,
@@ -85,6 +95,12 @@ export async function POST(request: Request) {
       files.map((file) => ({ path: file.path, content: file.content })),
       message
     );
+
+    // Lưu thông tin lần đồng bộ gần nhất (nội bộ, không export ra source)
+    await saveSettings({
+      cmsLastSyncSha: result.commitSha,
+      cmsLastSyncAt: new Date().toISOString(),
+    });
 
     return NextResponse.json({
       success: true,

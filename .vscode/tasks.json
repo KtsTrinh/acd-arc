@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "A-C-D: Theo dõi đồng bộ CMS",
+      "type": "shell",
+      "command": "npm run cms:watch",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "acd-cms-watch",
+        "pattern": {
+          "regexp": "^$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": false
+      },
+      "runOn": "folderOpen"
+    },
+    {
+      "label": "A-C-D: Đồng bộ CMS ngay (kéo + commit + push)",
+      "type": "shell",
+      "command": "npm run cms:sync",
+      "problemMatcher": []
+    }
+  ]
+}

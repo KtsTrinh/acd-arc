@@ -60,6 +60,10 @@ export async function buildCmsExport(): Promise<CmsExportFile[]> {
   for (const row of settingRows) {
     settingsMap[row.key] = row.value ?? "";
   }
+  // Loại metadata nội bộ của quá trình đồng bộ để tránh sinh commit vô ích
+  delete settingsMap.cmsLastSyncSha;
+  delete settingsMap.cmsLastSyncAt;
+
   const settings = {
     ...defaultSettings,
     ...settingsMap,

@@ -18,9 +18,16 @@ interface SyncFile {
   size: number;
 }
 
+interface LastSync {
+  sha: string;
+  at: string;
+  url: string;
+}
+
 export default function AdminSyncPage() {
   const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<SyncFile[]>([]);
+  const [lastSync, setLastSync] = useState<LastSync | null>(null);
   const [github, setGithub] = useState<{
     configured: boolean;
     repo: string;
@@ -37,6 +44,7 @@ export default function AdminSyncPage() {
       if (!res.ok) throw new Error(data.error || "Không tải được trạng thái.");
       setFiles(data.files || []);
       setGithub(data.github || null);
+      setLastSync(data.lastSync || null);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Không tải được trạng thái đồng bộ."
@@ -130,6 +138,39 @@ export default function AdminSyncPage() {
               </div>
             </div>
 
+            <div className="p-3.5 rounded-xl bg-thuy-900 border border-thuy-750 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
+                  Lần đồng bộ gần nhất
+                </p>
+                {lastSync?.sha ? (
+                  <p className="text-xs text-white">
+                    <a
+                      href={lastSync.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-thuy-300 underline"
+                    >
+                      {lastSync.sha.slice(0, 7)}
+                    </a>{" "}
+                    <span className="text-slate-400">
+                      ·{" "}
+                      {new Date(lastSync.at).toLocaleString("vi-VN")}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-xs text-slate-400">Chưa có lần đồng bộ nào.</p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={loadStatus}
+                className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1.5"
+              >
+                <RefreshCw className="w-3 h-3" /> Làm mới
+              </button>
+            </div>
+
             {!github?.configured && (
               <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-800/40 flex items-start gap-2">
                 <Info className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
@@ -190,11 +231,13 @@ export default function AdminSyncPage() {
               Đồng bộ trong VSCode
             </h3>
             <p className="text-xs text-slate-400">
-              Lệnh này kéo nội dung CMS từ server về thư mục <code className="text-thuy-300">content/</code>{" "}
-              trong máy, sau đó commit và push lên GitHub (Vercel tự deploy).
+              Khi mở thư mục này trong VSCode, task{" "}
+              <b className="text-slate-200">A-C-D: Theo dõi đồng bộ CMS</b> tự chạy và
+              kéo commit mới từ CMS về máy mỗi 30 giây — không cần thao tác tay.
             </p>
             <pre className="p-4 rounded-xl bg-thuy-950 border border-thuy-750 text-[11px] text-emerald-300 overflow-x-auto">
-{`npm run cms:sync          # kéo + commit + push
+{`npm run cms:watch          # theo dõi + tự git pull (tương đương task VSCode)
+npm run cms:sync          # kéo về + commit + push thủ công
 npm run cms:sync -- --dry-run   # chỉ kéo về, không commit`}
             </pre>
           </div>

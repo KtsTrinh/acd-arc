@@ -6,8 +6,10 @@ import { Loader2, GitBranch, CheckCircle2, AlertTriangle, RefreshCw } from "luci
 const AUTO_SYNC_KEY = "acd_cms_auto_sync";
 
 export function isAutoSyncEnabled(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.localStorage.getItem(AUTO_SYNC_KEY) === "true";
+  if (typeof window === "undefined") return true;
+  const stored = window.localStorage.getItem(AUTO_SYNC_KEY);
+  if (stored === null) return true;
+  return stored === "true";
 }
 
 export function setAutoSyncEnabled(enabled: boolean) {
@@ -143,7 +145,7 @@ interface AutoSyncToggleProps {
 }
 
 export function AutoSyncToggle({ onChange }: AutoSyncToggleProps) {
-  const [enabled, setEnabled] = useState(false);
+  const [enabled, setEnabled] = useState(true);
 
   React.useEffect(() => {
     setEnabled(isAutoSyncEnabled());

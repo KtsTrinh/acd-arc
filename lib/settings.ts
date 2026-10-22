@@ -45,6 +45,10 @@ export interface SystemSettings {
   // Custom Script
   headerEmbedCode: string;
   bodyEmbedCode: string;
+
+  // Nội bộ - không export ra source
+  cmsLastSyncSha: string;
+  cmsLastSyncAt: string;
 }
 
 export const defaultSettings: SystemSettings = {
@@ -84,6 +88,9 @@ export const defaultSettings: SystemSettings = {
 
   headerEmbedCode: "",
   bodyEmbedCode: "",
+
+  cmsLastSyncSha: "",
+  cmsLastSyncAt: "",
 };
 
 const CACHE_TTL_MS = 30_000;

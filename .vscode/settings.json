@@ -1,0 +1,11 @@
+{
+  "git.autofetch": true,
+  "git.autofetchPeriod": 60,
+  "git.autoPull": "always",
+  "git.postCommitAction": "push",
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1500,
+  "editor.formatOnSave": true
+}
