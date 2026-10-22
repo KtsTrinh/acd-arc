@@ -1,34 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-
-type ProviderState = {
-  google?: { configured: boolean };
-  facebook?: { configured: boolean };
-};
+import { useProviders } from "./useProviders";
 
 export default function SocialButtons({ text }: { text: string }) {
-  const [providers, setProviders] = useState<ProviderState>({});
-  const [loading, setLoading] = useState<string | null>(null);
-
-  useEffect(() => {
-    let active = true;
-
-    fetch("/api/auth/providers")
-      .then((res) => res.json())
-      .then((data) => {
-        if (active) setProviders(data.providers || {});
-      })
-      .catch(() => undefined);
-
-    return () => {
-      active = false;
-    };
-  }, []);
+  const providers = useProviders();
 
   const start = (provider: "google" | "facebook") => {
-    setLoading(provider);
     window.location.href = `/api/auth/oauth/${provider}`;
   };
 
@@ -36,7 +14,7 @@ export default function SocialButtons({ text }: { text: string }) {
     {
       id: "google" as const,
       label: "Google",
-      configured: providers.google?.configured,
+      configured: providers.google,
       icon: (
         <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
           <path
@@ -49,7 +27,7 @@ export default function SocialButtons({ text }: { text: string }) {
     {
       id: "facebook" as const,
       label: "Facebook",
-      configured: providers.facebook?.configured,
+      configured: providers.facebook,
       icon: (
         <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
           <path
@@ -63,7 +41,7 @@ export default function SocialButtons({ text }: { text: string }) {
 
   const visible = items.filter((item) => item.configured);
 
-  if (!visible.length) return null;
+  if (providers.loading || !visible.length) return null;
 
   return (
     <div className="space-y-2">
@@ -79,14 +57,9 @@ export default function SocialButtons({ text }: { text: string }) {
           key={item.id}
           type="button"
           onClick={() => start(item.id)}
-          disabled={loading !== null}
-          className="w-full flex items-center justify-center gap-2.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 hover:border-thuy-500 text-xs font-medium text-thuy-200 transition-colors disabled:opacity-60"
+          className="w-full flex items-center justify-center gap-2.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 hover:border-thuy-500 text-xs font-medium text-thuy-200 transition-colors"
         >
-          {loading === item.id ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            item.icon
-          )}
+          {item.icon}
           {text} với {item.label}
         </button>
       ))}

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import SocialButtons from "@/components/auth/SocialButtons";
 import OtpInput from "@/components/auth/OtpInput";
+import { useProviders } from "@/components/auth/useProviders";
 
 const OAUTH_ERRORS: Record<string, string> = {
   oauth_provider: "Nhà cung cấp đăng ký không hợp lệ.",
@@ -39,6 +40,8 @@ function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+
+  const providers = useProviders();
 
   useEffect(() => {
     const oauthError = searchParams.get("error");
@@ -226,6 +229,12 @@ function RegisterForm() {
                         className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
                       />
                     </div>
+                    {!providers.loading && !providers.sms && (
+                      <p className="text-[11px] text-amber-400">
+                        Dịch vụ gửi tin nhắn hiện chưa được cấu hình. Vui lòng đăng
+                        ký bằng email hoặc liên hệ quản trị viên.
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1">
@@ -302,7 +311,10 @@ function RegisterForm() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={
+                  loading ||
+                  (mode === "phone" && !providers.loading && !providers.sms)
+                }
                 className="w-full py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {loading ? (

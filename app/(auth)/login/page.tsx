@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import SocialButtons from "@/components/auth/SocialButtons";
 import OtpInput from "@/components/auth/OtpInput";
+import { useProviders } from "@/components/auth/useProviders";
 
 const OAUTH_ERRORS: Record<string, string> = {
   oauth_provider: "Nhà cung cấp đăng nhập không hợp lệ.",
@@ -44,6 +45,8 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+
+  const providers = useProviders();
 
   useEffect(() => {
     const oauthError = searchParams.get("error");
@@ -303,11 +306,17 @@ function LoginForm() {
                   <p className="text-[11px] text-slate-500">
                     Chúng tôi sẽ gửi mã xác minh 6 chữ số qua tin nhắn SMS.
                   </p>
+                  {!providers.loading && !providers.sms && (
+                    <p className="text-[11px] text-amber-400">
+                      Dịch vụ gửi tin nhắn hiện chưa được cấu hình. Bạn có thể đăng
+                      nhập bằng email hoặc liên hệ quản trị viên.
+                    </p>
+                  )}
                 </div>
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || (!providers.loading && !providers.sms)}
                   className="w-full py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {loading ? (
