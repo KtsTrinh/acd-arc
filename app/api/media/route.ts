@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createMediaItem } from "@/lib/storage";
+import { isVideoUrl } from "@/lib/media-url";
 
 export async function GET(request: Request) {
   try {
@@ -60,11 +61,10 @@ export async function POST(request: Request) {
         );
       }
 
-      const isVideoUrl = /\.(mp4|webm|mov|m4v|ogv)(\?.*)?$/i.test(url);
       const detectedMime =
         mimeType ||
-        (isVideoUrl
-          ? url.endsWith(".webm")
+        (isVideoUrl(url)
+          ? url.includes(".webm")
             ? "video/webm"
             : "video/mp4"
           : "image/jpeg");

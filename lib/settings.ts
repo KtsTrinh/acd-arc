@@ -1,4 +1,13 @@
-import { prisma } from "./prisma";
+﻿import { prisma } from "./prisma";
+
+export {
+  normalizeMediaUrl,
+  resolveHeroVideo,
+  playableVideoUrl,
+  isVideoUrl,
+  DRIVE_ID_REGEX,
+} from "./media-url";
+export type { HeroVideoSource } from "./media-url";
 
 export interface SystemSettings {
   // General / System
@@ -38,12 +47,12 @@ export interface SystemSettings {
 
 export const defaultSettings: SystemSettings = {
   siteName: "ACD Architecture & Design",
-  siteTagline: "Kiến Trúc Hợp Mệnh Ngũ Hành & Nội Thất Thượng Lưu",
+  siteTagline: "Kiáº¿n TrÃºc Há»£p Má»‡nh NgÅ© HÃ nh & Ná»™i Tháº¥t ThÆ°á»£ng LÆ°u",
   siteDescription:
-    "ACD Studio - Đơn vị thiết kế kiến trúc biệt thự, nhà phố, penthouse và nội thất cao cấp theo phong thủy hợp mệnh (Kim - Mộc - Thủy - Hỏa - Thổ).",
+    "ACD Studio - ÄÆ¡n vá»‹ thiáº¿t káº¿ kiáº¿n trÃºc biá»‡t thá»±, nhÃ  phá»‘, penthouse vÃ  ná»™i tháº¥t cao cáº¥p theo phong thá»§y há»£p má»‡nh (Kim - Má»™c - Thá»§y - Há»a - Thá»•).",
   contactEmail: "contact@acd.vn",
   contactPhone: "0988.ACD.888",
-  contactAddress: "Tòa nhà Heritage, P. Phan Chu Trinh, Hoàn Kiếm, Hà Nội",
+  contactAddress: "TÃ²a nhÃ  Heritage, P. Phan Chu Trinh, HoÃ n Kiáº¿m, HÃ  Ná»™i",
   facebookUrl: "",
   instagramUrl: "",
   youtubeUrl: "",
@@ -59,11 +68,11 @@ export const defaultSettings: SystemSettings = {
   heroVideoEmbedCode: "",
   heroOverlayOpacity: "60",
 
-  seoTitle: "ACD Architecture & Design | Kiến Trúc Hợp Mệnh Ngũ Hành & Nội Thất Thượng Lưu",
+  seoTitle: "ACD Architecture & Design | Kiáº¿n TrÃºc Há»£p Má»‡nh NgÅ© HÃ nh & Ná»™i Tháº¥t ThÆ°á»£ng LÆ°u",
   seoDescription:
-    "ACD Studio - Đơn vị thiết kế kiến trúc biệt thự, nhà phố, penthouse và nội thất cao cấp theo phong thủy hợp mệnh (Kim - Mộc - Thủy - Hỏa - Thổ). Cung cấp hệ sinh thái tài nguyên bản vẽ CAD, model 3D chuyên nghiệp.",
+    "ACD Studio - ÄÆ¡n vá»‹ thiáº¿t káº¿ kiáº¿n trÃºc biá»‡t thá»±, nhÃ  phá»‘, penthouse vÃ  ná»™i tháº¥t cao cáº¥p theo phong thá»§y há»£p má»‡nh (Kim - Má»™c - Thá»§y - Há»a - Thá»•). Cung cáº¥p há»‡ sinh thÃ¡i tÃ i nguyÃªn báº£n váº½ CAD, model 3D chuyÃªn nghiá»‡p.",
   seoKeywords:
-    "kiến trúc biệt thự,thiết kế nội thất,nhà phố hiện đại,phong thủy hợp mệnh,phong thủy ngũ hành,bản vẽ autocad,model 3d kiến trúc,acd architecture",
+    "kiáº¿n trÃºc biá»‡t thá»±,thiáº¿t káº¿ ná»™i tháº¥t,nhÃ  phá»‘ hiá»‡n Ä‘áº¡i,phong thá»§y há»£p má»‡nh,phong thá»§y ngÅ© hÃ nh,báº£n váº½ autocad,model 3d kiáº¿n trÃºc,acd architecture",
   seoOgImage: "",
   seoRobots: "index, follow",
   googleAnalyticsId: "",
@@ -96,59 +105,6 @@ async function loadSettings(): Promise<SystemSettings> {
  * Đọc cấu hình hệ thống. Có cache TTL ngắn + gộp request đồng thời để không
  * mở quá nhiều connection tới Postgres trong môi trường serverless.
  */
-export type HeroVideoSource =
-  | { kind: "file"; src: string }
-  | { kind: "embed"; src: string }
-  | null;
-
-const DRIVE_ID_REGEX =
-  /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([a-zA-Z0-9_-]+)/;
-const YOUTUBE_ID_REGEX =
-  /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/;
-const VIMEO_ID_REGEX = /vimeo\.com\/(?:video\/)?(\d+)/;
-
-/**
- * Chuẩn hoá link Google Drive về link tải/trực tiếp (Drive share page không
- * phát được trong thẻ <video>).
- */
-export function normalizeMediaUrl(url: string): string {
-  const trimmed = (url || "").trim();
-  if (!trimmed) return "";
-  const drive = trimmed.match(DRIVE_ID_REGEX);
-  if (drive) return `https://drive.google.com/uc?export=download&id=${drive[1]}`;
-  return trimmed;
-}
-
-/**
- * Phân giải link video thành nguồn phát được cho hero:
- * - file .mp4/.webm trực tiếp -> thẻ <video>
- * - YouTube / Vimeo -> iframe nhúng
- * - Google Drive -> chuyển về link tải trực tiếp
- */
-export function resolveHeroVideo(url: string): HeroVideoSource {
-  const trimmed = (url || "").trim();
-  if (!trimmed) return null;
-
-  const youtube = trimmed.match(YOUTUBE_ID_REGEX);
-  if (youtube) {
-    const id = youtube[1];
-    return {
-      kind: "embed",
-      src: `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`,
-    };
-  }
-
-  const vimeo = trimmed.match(VIMEO_ID_REGEX);
-  if (vimeo) {
-    return {
-      kind: "embed",
-      src: `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1&muted=1&loop=1&background=1&controls=0&playsinline=1`,
-    };
-  }
-
-  return { kind: "file", src: normalizeMediaUrl(trimmed) };
-}
-
 export async function getSettings(): Promise<SystemSettings> {
   const now = Date.now();
   if (settingsCache && settingsCache.expiresAt > now) {

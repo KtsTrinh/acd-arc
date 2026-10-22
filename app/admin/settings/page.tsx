@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
+import { resolveHeroVideo } from "@/lib/media-url";
 import {
   Settings,
   Search,
@@ -69,6 +70,8 @@ export default function AdminSettingsPage() {
   const update = (key: string, value: string) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
+
+  const heroVideoPreview = resolveHeroVideo(settings.heroBackgroundVideo || "");
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -304,14 +307,22 @@ export default function AdminSettingsPage() {
                     </span>
                   </label>
                   <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
-                    {settings.heroBackgroundVideo ? (
+                    {heroVideoPreview?.kind === "file" ? (
                       <video
-                        src={settings.heroBackgroundVideo}
+                        src={heroVideoPreview.src}
                         className="w-full h-full object-cover"
                         autoPlay
                         muted
                         loop
                         playsInline
+                      />
+                    ) : heroVideoPreview?.kind === "embed" ? (
+                      <iframe
+                        src={heroVideoPreview.src}
+                        title="Hero video preview"
+                        allow="autoplay; fullscreen; encrypted-media"
+                        allowFullScreen
+                        className="w-full h-full border-0"
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-500">

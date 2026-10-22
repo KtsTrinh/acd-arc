@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, Upload, Link as LinkIcon, Search, Check, Folder, Loader2 } from "lucide-react";
+import { playableVideoUrl, isVideoUrl } from "@/lib/media-url";
 
 export interface MediaItem {
   id: string;
@@ -61,6 +62,13 @@ const MEDIA_SOURCES = [
     folder: "coverr",
     placeholder: "https://storage.coverr.co/videos/xxxx.mp4",
     hint: "Video nền miễn phí, link trực tiếp tới file .mp4.",
+  },
+  {
+    id: "googledrive",
+    label: "Google Drive",
+    folder: "drive",
+    placeholder: "https://drive.google.com/file/d/FILE_ID/view",
+    hint: "Chia sẻ file → Anyone with the link. Video sẽ được phát qua proxy của website.",
   },
   {
     id: "youtube",
@@ -132,7 +140,7 @@ export default function MediaPickerModal({
 
   const isVideoItem = (item: MediaItem) => {
     if (item.mimeType && item.mimeType.startsWith("video/")) return true;
-    return /\.(mp4|webm|mov|m4v|ogv)$/i.test(item.url || "");
+    return isVideoUrl(item.url || "");
   };
 
   const filteredMedia = mediaList.filter((item) => {
@@ -140,6 +148,9 @@ export default function MediaPickerModal({
     const isVideo = isVideoItem(item);
     return mediaType === "video" ? isVideo : !isVideo;
   });
+
+  const externalIsVideo = isVideoUrl(externalUrl);
+  const externalPlayable = externalIsVideo ? playableVideoUrl(externalUrl) : externalUrl;
 
   const fetchMedia = async () => {
     setLoading(true);
@@ -395,7 +406,7 @@ export default function MediaPickerModal({
                     >
                       {itemIsVideo ? (
                         <video
-                          src={item.url}
+                          src={playableVideoUrl(item.url)}
                           muted
                           loop
                           playsInline
@@ -567,10 +578,10 @@ export default function MediaPickerModal({
                 </p>
               </div>
 
-              {externalUrl && /\.(mp4|webm|mov|m4v|ogv)(\?|$)/i.test(externalUrl) ? (
+              {externalUrl && externalIsVideo ? (
                 <div className="relative w-full h-40 rounded-xl overflow-hidden border border-thuy-700 bg-thuy-950">
                   <video
-                    src={externalUrl}
+                    src={externalPlayable}
                     muted
                     loop
                     playsInline
