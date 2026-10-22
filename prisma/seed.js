@@ -6,6 +6,22 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Seeding ACD Architecture database with Ngũ Hành (Kim - Mộc - Thủy - Hỏa - Thổ)...");
 
+  // 0. Safety guard: refuse to wipe real customer accounts in production
+  const DEMO_EMAILS = ["admin@acd.vn", "user@acd.vn"];
+  const realUsers = await prisma.user.findMany({
+    where: { email: { notIn: DEMO_EMAILS } },
+    select: { id: true, email: true },
+  });
+  if (realUsers.length > 0 && process.env.FORCE_SEED !== "true") {
+    console.error(
+      `❌ Seed aborted: database contains ${realUsers.length} non-demo account(s) ` +
+        `(${realUsers.map((u) => u.email).join(", ")}). ` +
+        `Set FORCE_SEED=true to wipe them anyway.`
+    );
+    process.exitCode = 1;
+    return;
+  }
+
   // 1. Clean existing records (in order of relations)
   await prisma.downloadLink.deleteMany();
   await prisma.orderItem.deleteMany();
@@ -20,7 +36,6 @@ async function main() {
   await prisma.tag.deleteMany();
   await prisma.media.deleteMany();
   await prisma.user.deleteMany();
-  await prisma.systemSetting.deleteMany();
 
   // 2. Seed Users
   const adminPasswordHash = await bcrypt.hash("admin123", 10);
@@ -376,9 +391,14 @@ async function main() {
   };
 
   for (const [key, value] of Object.entries(defaultSettings)) {
-    await prisma.systemSetting.create({ data: { key, value } });
+    const existing = await prisma.systemSetting.findUnique({ where: { key } });
+    if (!existing) {
+      await prisma.systemSetting.create({ data: { key, value } });
+    }
   }
-  console.log(`✅ Seeded ${Object.keys(defaultSettings).length} System Settings`);
+  console.log(
+    `✅ Seeded ${Object.keys(defaultSettings).length} System Settings (existing admin values kept)`
+  );
 
   // 6. Seed Projects for all 5 Elements
   // 6.1 Mệnh Thủy: The Aqua Horizon Villa

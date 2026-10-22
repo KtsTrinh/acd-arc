@@ -73,7 +73,12 @@ export const defaultSettings: SystemSettings = {
   bodyEmbedCode: "",
 };
 
-export async function getSettings(): Promise<SystemSettings> {
+const CACHE_TTL_MS = 30_000;
+
+let settingsCache: { data: SystemSettings; expiresAt: number } | null = null;
+let inflight: Promise<SystemSettings> | null = null;
+
+async function loadSettings(): Promise<SystemSettings> {
   try {
     const rows = await prisma.systemSetting.findMany();
     const map: Record<string, string> = {};
@@ -87,6 +92,30 @@ export async function getSettings(): Promise<SystemSettings> {
   }
 }
 
+/**
+ * Đọc cấu hình hệ thống. Có cache TTL ngắn + gộp request đồng thời để không
+ * mở quá nhiều connection tới Postgres trong môi trường serverless.
+ */
+export async function getSettings(): Promise<SystemSettings> {
+  const now = Date.now();
+  if (settingsCache && settingsCache.expiresAt > now) {
+    return settingsCache.data;
+  }
+
+  if (!inflight) {
+    inflight = loadSettings()
+      .then((data) => {
+        settingsCache = { data, expiresAt: Date.now() + CACHE_TTL_MS };
+        return data;
+      })
+      .finally(() => {
+        inflight = null;
+      });
+  }
+
+  return inflight;
+}
+
 export async function saveSettings(values: Partial<SystemSettings>) {
   const entries = Object.entries(values).filter(([, v]) => v !== undefined);
   await prisma.$transaction(
@@ -98,4 +127,5 @@ export async function saveSettings(values: Partial<SystemSettings>) {
       })
     )
   );
+  settingsCache = null;
 }

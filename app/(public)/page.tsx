@@ -12,10 +12,15 @@ const FALLBACK_HERO =
 
 export default async function HomePage() {
   const [categories, settings] = await Promise.all([
-    prisma.projectCategory.findMany({
-      include: { _count: { select: { projects: true } } },
-      orderBy: { name: "asc" },
-    }),
+    prisma.projectCategory
+      .findMany({
+        include: { _count: { select: { projects: true } } },
+        orderBy: { name: "asc" },
+      })
+      .catch((error) => {
+        console.error("Error loading project categories:", error);
+        return [];
+      }),
     getSettings(),
   ]);
 
