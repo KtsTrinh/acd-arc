@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
-import { resolveHeroVideo } from "@/lib/media-url";
+import { resolveHeroVideo, playableVideoUrl, resolveVideoFit } from "@/lib/media-url";
 import {
   Settings,
   Search,
@@ -46,6 +46,9 @@ const inputCls =
   "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400 transition-colors";
 const labelCls = "block text-xs text-slate-300 font-medium mb-1.5";
 
+const FALLBACK_HERO =
+  "https://i.pinimg.com/736x/ef/ec/58/efec58efa298d13dca0dde95e2528f20.jpg";
+
 export default function AdminSettingsPage() {
   const [tab, setTab] = useState<TabKey>("system");
   const [settings, setSettings] = useState<Record<string, string>>({});
@@ -72,6 +75,36 @@ export default function AdminSettingsPage() {
   };
 
   const heroVideoPreview = resolveHeroVideo(settings.heroBackgroundVideo || "");
+  const heroVideoFit = resolveVideoFit(
+    settings.heroVideoFit || "auto",
+    settings.heroVideoAspect || ""
+  );
+
+  // Đọc kích thước thật của video để chọn cách hiển thị (tránh phóng to/cắt)
+  useEffect(() => {
+    const url = settings.heroBackgroundVideo;
+    if (!url) return;
+
+    let cancelled = false;
+    const probe = document.createElement("video");
+    probe.preload = "metadata";
+    probe.muted = true;
+    probe.onloadedmetadata = () => {
+      if (cancelled) return;
+      if (probe.videoWidth && probe.videoHeight) {
+        update(
+          "heroVideoAspect",
+          `${probe.videoWidth}x${probe.videoHeight}`
+        );
+      }
+    };
+    probe.src = playableVideoUrl(url);
+    return () => {
+      cancelled = true;
+      probe.removeAttribute("src");
+      probe.load();
+    };
+  }, [settings.heroBackgroundVideo]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -308,14 +341,28 @@ export default function AdminSettingsPage() {
                   </label>
                   <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
                     {heroVideoPreview?.kind === "file" ? (
-                      <video
-                        src={heroVideoPreview.src}
-                        className="w-full h-full object-cover"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                      />
+                      <>
+                        {heroVideoFit === "contain" && (
+                          <Image
+                            src={settings.heroVideoPoster || FALLBACK_HERO}
+                            alt=""
+                            fill
+                            className="object-cover scale-110 blur-xl"
+                            unoptimized
+                            aria-hidden
+                          />
+                        )}
+                        <video
+                          src={heroVideoPreview.src}
+                          className={`relative w-full h-full object-center ${
+                            heroVideoFit === "contain" ? "object-contain" : "object-cover"
+                          }`}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                        />
+                      </>
                     ) : heroVideoPreview?.kind === "embed" ? (
                       <iframe
                         src={heroVideoPreview.src}
@@ -370,6 +417,34 @@ export default function AdminSettingsPage() {
                     Link Google Drive, YouTube hoặc Vimeo được tự động chuyển đổi sang nguồn
                     phát được — chỉ cần dán link gốc.
                   </p>
+
+                  <div className="space-y-2 pt-1">
+                    <label className={labelCls}>Cách hiển thị video</label>
+                    <select
+                      value={settings.heroVideoFit || "auto"}
+                      onChange={(e) => update("heroVideoFit", e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
+                    >
+                      <option value="auto">Tự động (khuyến nghị)</option>
+                      <option value="cover">Phủ kín khung (cắt mép)</option>
+                      <option value="contain">Vừa khung (không cắt, không mờ)</option>
+                    </select>
+                    <p className="text-[10px] text-slate-500">
+                      Video dọc (chiều cao &gt; chiều rộng) khi dùng “Phủ kín” sẽ bị phóng to
+                      rất lớn và cắt mất phần lớn khung hình. “Vừa khung” giữ nguyên tỉ lệ và
+                      dùng ảnh nền blur phía sau cho phần trống.
+                    </p>
+                    {settings.heroVideoAspect && (
+                      <p className="text-[10px] text-slate-400">
+                        Kích thước video hiện tại:{" "}
+                        <b className="text-thuy-300">
+                          {settings.heroVideoAspect.replace("x", " x ")}
+                        </b>
+                        {settings.heroVideoAspect.startsWith("720") &&
+                          " — nên dùng video nền ngang ≥ 1920x1080 để không bị mờ."}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-4">

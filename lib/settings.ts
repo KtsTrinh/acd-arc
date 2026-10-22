@@ -29,6 +29,8 @@ export interface SystemSettings {
   heroBackgroundVideoMobile: string;
   heroVideoPoster: string;
   heroVideoEmbedCode: string;
+  heroVideoFit: string;
+  heroVideoAspect: string;
   heroOverlayOpacity: string;
 
   // SEO
@@ -66,6 +68,8 @@ export const defaultSettings: SystemSettings = {
   heroBackgroundVideoMobile: "",
   heroVideoPoster: "",
   heroVideoEmbedCode: "",
+  heroVideoFit: "auto",
+  heroVideoAspect: "",
   heroOverlayOpacity: "60",
 
   seoTitle: "ACD Architecture & Design | Kiáº¿n TrÃºc Há»£p Má»‡nh NgÅ© HÃ nh & Ná»™i Tháº¥t ThÆ°á»£ng LÆ°u",

@@ -375,6 +375,8 @@ async function main() {
     heroBackgroundVideoMobile: "",
     heroVideoPoster: "",
     heroVideoEmbedCode: "",
+    heroVideoFit: "auto",
+    heroVideoAspect: "",
     heroOverlayOpacity: "60",
     seoTitle:
       "ACD Architecture & Design | Kiến Trúc Hợp Mệnh Ngũ Hành & Nội Thất Thượng Lưu",

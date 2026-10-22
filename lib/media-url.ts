@@ -78,3 +78,38 @@ export function playableVideoUrl(url: string): string {
   if (!source) return "";
   return source.kind === "file" ? source.src : "";
 }
+
+/**
+ * Tính chiều rộng/cao thực của video từ chuỗi "720x1280".
+ */
+export function parseVideoAspect(aspect: string): {
+  width: number;
+  height: number;
+} | null {
+  const match = (aspect || "").trim().match(/^(\d+)\s*[xX×]\s*(\d+)$/);
+  if (!match) return null;
+  const width = Number(match[1]);
+  const height = Number(match[2]);
+  if (!width || !height) return null;
+  return { width, height };
+}
+
+/**
+ * Chọn cách hiển thị video nền.
+ * - "cover": phủ kín khung (cắt bớt, phóng to)
+ * - "contain": vừa khung (giữ nguyên tỉ lệ, không bị mờ do phóng lên)
+ *
+ * Video dọc (chiều cao > chiều rộng) nên mặc định "contain" vì "cover" sẽ
+ * phóng to rất lớn và cắt mất phần lớn khung hình.
+ */
+export function resolveVideoFit(
+  fitSetting: string,
+  aspect: string
+): "cover" | "contain" {
+  if (fitSetting === "cover") return "cover";
+  if (fitSetting === "contain") return "contain";
+
+  const dimensions = parseVideoAspect(aspect);
+  if (!dimensions) return "cover";
+  return dimensions.height > dimensions.width ? "contain" : "cover";
+}

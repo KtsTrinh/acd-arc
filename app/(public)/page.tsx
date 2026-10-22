@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { getSettings, normalizeMediaUrl, resolveHeroVideo } from "@/lib/settings";
+import { resolveVideoFit } from "@/lib/media-url";
 import { ArrowRight } from "lucide-react";
 
 export const revalidate = 0;
@@ -45,6 +46,13 @@ export default async function HomePage() {
     ? FALLBACK_HERO
     : normalizeMediaUrl(rawPoster);
 
+  // Video dọc phủ kín sẽ bị phóng to/cắt nặng và mờ -> dùng "contain" + nền blur.
+  const videoFit = resolveVideoFit(
+    settings.heroVideoFit || "auto",
+    settings.heroVideoAspect || ""
+  );
+  const backdropPoster = heroPoster;
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Full-screen hero background image / video */}
@@ -70,9 +78,23 @@ export default async function HomePage() {
             ) : (
               /* Video file (mp4/webm) - autoplay, muted, loop */
               <>
-                {desktopSource?.kind === "file" && (
+                {videoFit === "contain" && (
+                  /* Nền blur phủ kín khi video không vừa tỉ lệ màn hình */
+                  <Image
+                    src={backdropPoster}
+                    alt=""
+                    fill
+                    className="object-cover scale-110 blur-2xl"
+                    priority
+                    unoptimized
+                    aria-hidden
+                  />
+                )}
+                {desktopSource?.kind === "file" && mobileSource?.src === desktopSource.src && (
                   <video
-                    className="absolute inset-0 h-full w-full object-cover object-center hidden sm:block"
+                    className={`absolute inset-0 h-full w-full object-center ${
+                      videoFit === "contain" ? "object-contain" : "object-cover"
+                    }`}
                     autoPlay
                     muted
                     loop
@@ -86,9 +108,29 @@ export default async function HomePage() {
                     />
                   </video>
                 )}
-                {mobileSource?.kind === "file" && (
+                {desktopSource?.kind === "file" && mobileSource?.src !== desktopSource.src && (
                   <video
-                    className="absolute inset-0 h-full w-full object-cover object-center sm:hidden"
+                    className={`absolute inset-0 h-full w-full object-center hidden sm:block ${
+                      videoFit === "contain" ? "object-contain" : "object-cover"
+                    }`}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    poster={heroPoster}
+                  >
+                    <source
+                      src={desktopSource.src}
+                      type={desktopSource.src.endsWith(".webm") ? "video/webm" : "video/mp4"}
+                    />
+                  </video>
+                )}
+                {mobileSource?.kind === "file" && mobileSource?.src !== desktopSource?.src && (
+                  <video
+                    className={`absolute inset-0 h-full w-full object-center sm:hidden ${
+                      videoFit === "contain" ? "object-contain" : "object-cover"
+                    }`}
                     autoPlay
                     muted
                     loop
