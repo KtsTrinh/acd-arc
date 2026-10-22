@@ -14,6 +14,7 @@
     "db:seed": "node prisma/seed.js",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
+    "cms:sync": "node scripts/cms-sync.mjs",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down"
   },

@@ -4,6 +4,10 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 import { resolveHeroVideo, playableVideoUrl, resolveVideoFit } from "@/lib/media-url";
+import CmsSyncButton, {
+  autoSyncAfterSave,
+} from "@/components/admin/CmsSyncButton";
+
 import {
   Settings,
   Search,
@@ -117,6 +121,7 @@ export default function AdminSettingsPage() {
       if (!res.ok) throw new Error(data.error || "Lỗi lưu cấu hình.");
       if (data.settings) setSettings(data.settings);
       setMessage({ type: "ok", text: "Đã lưu cấu hình thành công." });
+      await autoSyncAfterSave("cấu hình hệ thống");
     } catch (err: any) {
       setMessage({ type: "err", text: err.message || "Đã xảy ra lỗi." });
     } finally {
@@ -827,14 +832,24 @@ export default function AdminSettingsPage() {
           )}
         </div>
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="px-6 py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-glow-cyan transition-all flex items-center gap-2 disabled:opacity-60"
-        >
-          {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-          <span>Lưu Cấu Hình</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <CmsSyncButton
+            label="Đồng bộ mã nguồn"
+            className="shrink-0"
+          />
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-6 py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-glow-cyan transition-all flex items-center gap-2 disabled:opacity-60"
+          >
+            {saving ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Save className="w-3.5 h-3.5" />
+            )}
+            <span>Lưu Cấu Hình</span>
+          </button>
+        </div>
       </div>
 
       {/* Media Picker Modal */}

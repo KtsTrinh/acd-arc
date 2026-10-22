@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
   Users,
   Settings,
+  GitBranch,
   ExternalLink,
   LogOut,
   ChevronRight,
@@ -33,6 +34,7 @@ export default function AdminSidebar() {
     { label: "Media Library Dùng Chung", href: "/admin/media", icon: ImageIcon },
     { label: "Người Dùng & Phân Quyền", href: "/admin/users", icon: Users },
     { label: "Cấu Hình Hệ Thống", href: "/admin/settings", icon: Settings },
+    { label: "Đồng Bộ Mã Nguồn", href: "/admin/sync", icon: GitBranch },
   ];
 
   const handleLogout = async () => {
