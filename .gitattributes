@@ -1,0 +1,15 @@
+# Luôn dùng LF cho file văn bản trong repo (tránh nhiễu diff trên Windows)
+* text=auto eol=lf
+
+# File sinh tự động từ CMS - luôn LF
+content/*.json text eol=lf
+
+# Nhị phân
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.mp4 binary
+*.woff binary
+*.woff2 binary
