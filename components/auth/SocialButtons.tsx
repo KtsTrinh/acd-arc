@@ -23,7 +23,7 @@ export default function SocialButtons({
       const { signInWithPopup, GoogleAuthProvider } = await import(
         "firebase/auth"
       );
-      const auth = getFirebaseAuth();
+      const auth = await getFirebaseAuth();
       if (!auth) {
         alert("Firebase chưa được cấu hình. Vui lòng liên hệ quản trị viên.");
         return;

@@ -7,6 +7,9 @@ import {
   createSessionToken,
 } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   try {
     const adminAuth = getFirebaseAdminAuth();
