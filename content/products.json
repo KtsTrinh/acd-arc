@@ -54,19 +54,5 @@
     "thumbnail": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80",
     "active": true,
     "featured": true
-  },
-  {
-    "id": "cmvjeq91g0001dn1xf6w3gs4x",
-    "name": "[TMP] Kiem Tra Danh Muc San Pham",
-    "slug": "tmp-kiem-tra-danh-muc-san-pham",
-    "description": null,
-    "price": 1000,
-    "comparePrice": null,
-    "type": "ARCHITECTURE",
-    "fileFormat": null,
-    "fileSize": null,
-    "thumbnail": null,
-    "active": true,
-    "featured": false
   }
 ]
