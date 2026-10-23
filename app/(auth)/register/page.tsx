@@ -198,6 +198,27 @@ function RegisterForm() {
         {step === "form" && (
           <>
             <form onSubmit={handleRegisterEmail} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs text-slate-300 font-medium">Họ tên:</label>
+                <div className="relative">
+                  <User className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                  <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Nguyễn Văn A" className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-slate-300 font-medium">Email:</label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@gmail.com" className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-slate-300 font-medium">Mật khẩu:</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                  <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400" />
+                </div>
+              </div>
 
               <button
                 type="submit"
