@@ -74,7 +74,7 @@ export default function Navbar() {
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? "bg-thuy-950/90 backdrop-blur-md border-b border-thuy-700/60 py-3 shadow-lg"
+            ? "bg-white/90 backdrop-blur-md border-b border-border py-3 shadow-sm"
             : "bg-gradient-to-b from-thuy-950/80 to-transparent py-5"
         }`}
       >
