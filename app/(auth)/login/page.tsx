@@ -37,17 +37,24 @@ function LoginForm() {
       : null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 relative">
-      <div className="max-w-md w-full space-y-8 bg-thuy-850/90 border border-thuy-700 p-8 rounded-3xl shadow-2xl backdrop-blur-xl relative z-10">
+    <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-thuy-950 via-thuy-900 to-slate-950" />
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-thuy-500/20 rounded-full blur-3xl" />
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-aqua-500/20 rounded-full blur-3xl" />
+
+      <div className="max-w-md w-full space-y-8 bg-white/5 border border-white/10 p-8 rounded-3xl shadow-2xl backdrop-blur-xl relative z-10">
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-thuy-400 to-thuy-700 flex items-center justify-center font-bold text-white shadow-glow-cyan">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-thuy-400 to-aqua-400 flex items-center justify-center font-bold text-white shadow-glow-cyan text-lg">
               ACD
             </div>
           </Link>
           <h2 className="font-display font-bold text-2xl text-white">
             Đăng Nhập
           </h2>
+          <p className="text-xs text-slate-400">
+            Chào mừng bạn quay lại
+          </p>
         </div>
 
         {error && (
