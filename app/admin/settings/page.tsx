@@ -903,7 +903,7 @@ export default function AdminSettingsPage() {
           </div>
 
           <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3 pt-2">
-            4.3. SMS (Webhook / Twilio)
+            4.3. SMS (Webhook)
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -948,33 +948,73 @@ export default function AdminSettingsPage() {
               />
             </div>
             <div>
-              <label className={labelCls}>Twilio Account SID</label>
+              <label className={labelCls}>Firebase API Key</label>
               <input
                 type="text"
-                value={settings.twilioAccountSid || ""}
-                onChange={(e) => update("twilioAccountSid", e.target.value)}
+                value={settings.firebaseApiKey || ""}
+                onChange={(e) => update("firebaseApiKey", e.target.value)}
                 className={inputCls}
-                placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                placeholder="AIzaSy..."
               />
             </div>
             <div>
-              <label className={labelCls}>Twilio Auth Token (secret)</label>
+              <label className={labelCls}>Firebase Auth Domain</label>
               <input
-                type="password"
-                value={settings.twilioAuthToken || ""}
-                onChange={(e) => update("twilioAuthToken", e.target.value)}
+                type="text"
+                value={settings.firebaseAuthDomain || ""}
+                onChange={(e) => update("firebaseAuthDomain", e.target.value)}
                 className={inputCls}
-                placeholder="••••••••••••••••"
+                placeholder="project-id.firebaseapp.com"
               />
             </div>
             <div>
-              <label className={labelCls}>Twilio Phone Number</label>
+              <label className={labelCls}>Firebase Project ID</label>
               <input
                 type="text"
-                value={settings.twilioPhoneNumber || ""}
-                onChange={(e) => update("twilioPhoneNumber", e.target.value)}
+                value={settings.firebaseProjectId || ""}
+                onChange={(e) => update("firebaseProjectId", e.target.value)}
                 className={inputCls}
-                placeholder="+14155552671"
+                placeholder="project-id"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Firebase Storage Bucket</label>
+              <input
+                type="text"
+                value={settings.firebaseStorageBucket || ""}
+                onChange={(e) => update("firebaseStorageBucket", e.target.value)}
+                className={inputCls}
+                placeholder="project-id.appspot.com"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Firebase Messaging Sender ID</label>
+              <input
+                type="text"
+                value={settings.firebaseMessagingSenderId || ""}
+                onChange={(e) => update("firebaseMessagingSenderId", e.target.value)}
+                className={inputCls}
+                placeholder="123456789"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Firebase App ID</label>
+              <input
+                type="text"
+                value={settings.firebaseAppId || ""}
+                onChange={(e) => update("firebaseAppId", e.target.value)}
+                className={inputCls}
+                placeholder="1:123:web:abc"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Firebase Measurement ID (tuỳ chọn)</label>
+              <input
+                type="text"
+                value={settings.firebaseMeasurementId || ""}
+                onChange={(e) => update("firebaseMeasurementId", e.target.value)}
+                className={inputCls}
+                placeholder="G-XXXXXXXXXX"
               />
             </div>
           </div>

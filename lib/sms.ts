@@ -12,55 +12,10 @@ export interface SmsProviderInfo {
 
 export async function getSmsProviderInfo(): Promise<SmsProviderInfo> {
   const settings = await getSettings();
-  if (settings.twilioAccountSid && settings.twilioAuthToken) {
-    return { configured: true, provider: "twilio" };
-  }
-  if (
-    settings.smsWebhookUrl ||
-    process.env.SMS_WEBHOOK_URL ||
-    process.env.TWILIO_ACCOUNT_SID
-  ) {
-    if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-      return { configured: true, provider: "twilio" };
-    }
-    if (settings.smsWebhookUrl || process.env.SMS_WEBHOOK_URL) {
-      return { configured: true, provider: "webhook" };
-    }
+  if (settings.smsWebhookUrl || process.env.SMS_WEBHOOK_URL) {
+    return { configured: true, provider: "webhook" };
   }
   return { configured: false, provider: "none" };
-}
-
-async function sendViaTwilio(message: SmsMessage) {
-  const settings = await getSettings();
-  const accountSid = settings.twilioAccountSid || process.env.TWILIO_ACCOUNT_SID;
-  const authToken = settings.twilioAuthToken || process.env.TWILIO_AUTH_TOKEN;
-  const from = settings.twilioPhoneNumber || process.env.TWILIO_PHONE_NUMBER;
-
-  const body = new URLSearchParams({
-    To: message.to,
-    From: from || "",
-    Body: message.body,
-  });
-
-  const response = await fetch(
-    `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString(
-          "base64"
-        )}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: body.toString(),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(
-      `Twilio lỗi ${response.status}: ${(await response.text()).slice(0, 200)}`
-    );
-  }
 }
 
 async function sendViaWebhook(message: SmsMessage) {
@@ -96,17 +51,7 @@ export async function sendSms(message: SmsMessage): Promise<boolean> {
   }
 
   try {
-    const settings = await getSettings();
-    const useTwilio =
-      info.provider === "twilio" ||
-      (settings.twilioAccountSid && settings.twilioAuthToken) ||
-      (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN);
-
-    if (useTwilio) {
-      await sendViaTwilio(message);
-    } else {
-      await sendViaWebhook(message);
-    }
+    await sendViaWebhook(message);
     console.log(`[sms] Đã gửi tới ${message.to}`);
     return true;
   } catch (error) {

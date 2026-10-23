@@ -17,6 +17,33 @@ export default function SocialButtons({
     window.location.href = `/api/auth/oauth/${provider}${query}`;
   };
 
+  const startFirebase = async () => {
+    try {
+      const { getFirebaseAuth } = await import("@/lib/firebase");
+      const { signInWithPopup, GoogleAuthProvider } = await import(
+        "firebase/auth"
+      );
+      const auth = getFirebaseAuth();
+      if (!auth) {
+        alert("Firebase chưa được cấu hình. Vui lòng liên hệ quản trị viên.");
+        return;
+      }
+      const result = await signInWithPopup(auth, new GoogleAuthProvider());
+      const idToken = await result.user.getIdToken();
+      const res = await fetch("/api/auth/firebase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Đăng nhập Firebase thất bại.");
+      window.location.href = from || "/account";
+    } catch (err: any) {
+      console.error("Firebase sign-in error:", err);
+      alert(err?.message || "Đăng nhập Firebase thất bại.");
+    }
+  };
+
   const items = [
     {
       id: "google" as const,
@@ -44,6 +71,18 @@ export default function SocialButtons({
         </svg>
       ),
     },
+    {
+      id: "firebase" as const,
+      label: "Firebase",
+      configured: providers.firebase,
+      icon: (
+        <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#FFCA28" d="M3.89 13.91l6.68-11.55a.5.5 0 01.86 0l2.3 3.99-5.9 10.22-3.94-2.66z" />
+          <path fill="#FFA000" d="M3.89 13.91l-1.5 2.6a.5.5 0 00.43.75h18.36a.5.5 0 00.43-.75l-1.5-2.6H3.89z" />
+          <path fill="#F57C00" d="M13.73 6.35l2.3 3.99 4.08 6.22-6.38-10.21z" />
+        </svg>
+      ),
+    },
   ];
 
   const visible = items.filter((item) => item.configured);
@@ -63,7 +102,9 @@ export default function SocialButtons({
         <button
           key={item.id}
           type="button"
-          onClick={() => start(item.id)}
+          onClick={() =>
+            item.id === "firebase" ? startFirebase() : start(item.id as any)
+          }
           className="w-full flex items-center justify-center gap-2.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 hover:border-thuy-500 text-xs font-medium text-thuy-200 transition-colors"
         >
           {item.icon}
