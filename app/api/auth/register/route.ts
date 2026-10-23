@@ -55,12 +55,22 @@ export async function POST(request: Request) {
     });
 
     const otpEmail = buildOtpEmail({ code, purpose: "register", minutes: 10 });
-    await sendEmail({
+    const sent = await sendEmail({
       to: cleanEmail,
       subject: otpEmail.subject,
       html: otpEmail.html,
       text: otpEmail.text,
     });
+
+    if (!sent) {
+      return NextResponse.json(
+        {
+          error:
+            "Hệ thống chưa cấu hình dịch vụ gửi email. Vui lòng liên hệ quản trị viên hoặc cấu hình Resend/SMTP trong phần Cài đặt.",
+        },
+        { status: 503 }
+      );
+    }
 
     const pendingToken = signToken(
       {
