@@ -81,11 +81,11 @@ export async function POST(request: Request) {
     });
     response.cookies.set(AUTH_COOKIE_NAME, token, authCookieOptions());
     return response;
-  } catch (error) {
-    console.error("Firebase auth error:", error);
+  } catch (error: any) {
+    console.error("Firebase auth error:", error?.stack || error?.message || error);
     return NextResponse.json(
-      { error: "Xác thực Firebase thất bại." },
-      { status: 401 }
+      { error: "Xác thực Firebase thất bại: " + String(error?.message || error).slice(0, 200) },
+      { status: 500 }
     );
   }
 }
