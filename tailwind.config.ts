@@ -10,47 +10,42 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        thuy: {
-          950: "#000000", // Pure black
-          900: "#050505", // Deep black (Primary Background)
-          850: "#0a0a0a", // Card Background
-          800: "#141414", // Elevated Container
-          700: "#1f1f1f", // Border & subtle line
-          600: "#2a2a2a", // Hover line
-          500: "#3a3a3a", // Deep slate
-          400: "#d4d4d4", // Silver accent (luxury)
-          300: "#e5e5e5", // Light silver
-          200: "#f0f0f0", // Shimmer
-          100: "#f5f5f5", // Highlight
-          50: "#fafafa",  // Foam white
+        navy: {
+          950: "#0B1726",
+          900: "#10263F",
+          800: "#193B59",
         },
-        aqua: {
-          400: "#22d3ee",
-          500: "#06b6d4",
-          600: "#0891b2",
+        blue: {
+          600: "#167DAD",
+        },
+        cyan: {
+          400: "#53D9F5",
         },
         silver: {
-          300: "#cbd5e1",
-          400: "#94a3b8",
-          500: "#64748b",
-        }
+          400: "#B8C4D0",
+        },
+        slate: {
+          600: "#526477",
+        },
+        surface: "#FFFFFF",
+        canvas: "#F5F7FA",
+        border: "#E0E6ED",
+        success: "#18794E",
+        danger: "#B42318",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "-apple-system", "sans-serif"],
-        display: ["var(--font-outfit)", "system-ui", "-apple-system", "sans-serif"],
+        display: ["var(--font-manrope)", "system-ui", "-apple-system", "sans-serif"],
       },
       boxShadow: {
-        'glow-cyan': '0 0 25px -5px rgba(6, 182, 212, 0.35)',
-        'glow-blue': '0 0 35px -5px rgba(56, 189, 248, 0.3)',
-        'card-dark': '0 8px 30px rgba(0, 0, 0, 0.65)',
+        card: "0 4px 20px rgba(16, 38, 63, 0.06)",
+        "card-hover": "0 8px 30px rgba(16, 38, 63, 0.12)",
       },
-      backgroundImage: {
-        'radial-gradient': 'radial-gradient(circle at 50% 20%, rgba(14, 165, 233, 0.12) 0%, rgba(7, 13, 26, 0.98) 70%)',
-        'water-glow': 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.15), rgba(255, 255, 255, 0))',
-      }
+      transitionDuration: {
+        fast: "160ms",
+      },
     },
   },
   plugins: [],
 };
 export default config;
-
