@@ -17,6 +17,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '50mb',
     },
+    serverComponentsExternalPackages: ['firebase-admin', 'jwks-rsa', 'jose'],
   },
 };
 
