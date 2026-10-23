@@ -15,6 +15,7 @@ const OAUTH_ERRORS: Record<string, string> = {
   oauth_invalid_state: "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.",
   oauth_missing_profile: "Không lấy được thông tin tài khoản từ nhà cung cấp.",
   oauth_failed: "Đăng nhập bằng nhà cung cấp không thành công. Vui lòng thử lại.",
+  admin_required: "Tài khoản này không có quyền quản trị. Vui lòng đăng nhập bằng tài khoản admin.",
 };
 
 function LoginForm() {

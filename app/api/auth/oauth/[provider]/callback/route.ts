@@ -69,6 +69,10 @@ export async function GET(
       role: user.role,
     });
 
+    if (redirectAfterLogin === "/admin" && user.role !== "ADMIN") {
+      return fail(request, "admin_required");
+    }
+
     const target = new URL(
       redirectAfterLogin ||
         (user.role === "ADMIN" ? "/admin" : "/account"),
