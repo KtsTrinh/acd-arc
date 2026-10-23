@@ -190,7 +190,10 @@ export async function provisionOAuthUser(
 
     return prisma.user.update({
       where: { id: existingAccount.userId },
-      data: await buildProfileUpdate(profile, existingAccount.userId),
+      data: {
+        ...(await buildProfileUpdate(profile, existingAccount.userId)),
+        ...(adminEmails.includes((profile.email || "").toLowerCase()) ? { role: "ADMIN" } : {}),
+      },
     });
   }
 
