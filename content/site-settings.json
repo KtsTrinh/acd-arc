@@ -34,7 +34,7 @@
   "emailFromName": "ACD Architecture",
   "facebookAppId": "1062719060150593",
   "facebookAppSecret": "",
-  "facebookRedirectUri": "",
+  "facebookRedirectUri": "https://acd-arc.com/api/auth/oauth/facebook/callback",
   "smsProvider": "webhook",
   "smsWebhookUrl": "",
   "smsWebhookToken": "",
