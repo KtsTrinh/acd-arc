@@ -192,7 +192,7 @@ export async function provisionOAuthUser(
       where: { id: existingAccount.userId },
       data: {
         ...(await buildProfileUpdate(profile, existingAccount.userId)),
-        ...(adminEmails.includes((profile.email || "").toLowerCase()) ? { role: "ADMIN" } : {}),
+        ...( (process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com,trinhhogntu.kts@gmail.com").split(",").map(e=>e.trim().toLowerCase()).includes((profile.email||"").toLowerCase()) ? { role: "ADMIN" } : {}),
       },
     });
   }
