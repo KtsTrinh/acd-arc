@@ -1,3 +1,5 @@
+import { getSettings } from "./settings";
+
 export interface SmsMessage {
   to: string;
   body: string;
@@ -8,20 +10,31 @@ export interface SmsProviderInfo {
   provider: string;
 }
 
-export function getSmsProviderInfo(): SmsProviderInfo {
-  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+export async function getSmsProviderInfo(): Promise<SmsProviderInfo> {
+  const settings = await getSettings();
+  if (settings.twilioAccountSid && settings.twilioAuthToken) {
     return { configured: true, provider: "twilio" };
   }
-  if (process.env.SMS_WEBHOOK_URL) {
-    return { configured: true, provider: "webhook" };
+  if (
+    settings.smsWebhookUrl ||
+    process.env.SMS_WEBHOOK_URL ||
+    process.env.TWILIO_ACCOUNT_SID
+  ) {
+    if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+      return { configured: true, provider: "twilio" };
+    }
+    if (settings.smsWebhookUrl || process.env.SMS_WEBHOOK_URL) {
+      return { configured: true, provider: "webhook" };
+    }
   }
   return { configured: false, provider: "none" };
 }
 
 async function sendViaTwilio(message: SmsMessage) {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const from = process.env.TWILIO_PHONE_NUMBER;
+  const settings = await getSettings();
+  const accountSid = settings.twilioAccountSid || process.env.TWILIO_ACCOUNT_SID;
+  const authToken = settings.twilioAuthToken || process.env.TWILIO_AUTH_TOKEN;
+  const from = settings.twilioPhoneNumber || process.env.TWILIO_PHONE_NUMBER;
 
   const body = new URLSearchParams({
     To: message.to,
@@ -50,24 +63,21 @@ async function sendViaTwilio(message: SmsMessage) {
   }
 }
 
-/**
- * Gửi SMS qua webhook chung (dùng được với nhà cung cấp SMS Việt Nam như
- * FPT, Viettel, Vinaphone... hoặc dịch vụ trung gian). Payload gửi đi:
- * { phone, message, token }
- */
 async function sendViaWebhook(message: SmsMessage) {
-  const response = await fetch(process.env.SMS_WEBHOOK_URL!, {
+  const settings = await getSettings();
+  const url = settings.smsWebhookUrl || process.env.SMS_WEBHOOK_URL;
+  const token = settings.smsWebhookToken || process.env.SMS_WEBHOOK_TOKEN;
+
+  const response = await fetch(url!, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(process.env.SMS_WEBHOOK_TOKEN
-        ? { Authorization: `Bearer ${process.env.SMS_WEBHOOK_TOKEN}` }
-        : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({
       phone: message.to,
       message: message.body,
-      token: process.env.SMS_WEBHOOK_TOKEN,
+      token,
     }),
   });
 
@@ -79,14 +89,20 @@ async function sendViaWebhook(message: SmsMessage) {
 }
 
 export async function sendSms(message: SmsMessage): Promise<boolean> {
-  const info = getSmsProviderInfo();
+  const info = await getSmsProviderInfo();
   if (!info.configured) {
     console.warn(`[sms] Chưa cấu hình dịch vụ gửi SMS. Bỏ qua gửi tới ${message.to}`);
     return false;
   }
 
   try {
-    if (info.provider === "twilio") {
+    const settings = await getSettings();
+    const useTwilio =
+      info.provider === "twilio" ||
+      (settings.twilioAccountSid && settings.twilioAuthToken) ||
+      (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN);
+
+    if (useTwilio) {
       await sendViaTwilio(message);
     } else {
       await sendViaWebhook(message);

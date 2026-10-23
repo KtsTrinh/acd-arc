@@ -5,9 +5,9 @@ import { getEmailProviderInfo } from "@/lib/email";
 
 export async function GET() {
   return NextResponse.json({
-    google: isOAuthProviderConfigured("google"),
-    facebook: isOAuthProviderConfigured("facebook"),
-    sms: getSmsProviderInfo().configured,
-    emailDelivery: getEmailProviderInfo().configured,
+    google: await isOAuthProviderConfigured("google"),
+    facebook: await isOAuthProviderConfigured("facebook"),
+    sms: (await getSmsProviderInfo()).configured,
+    emailDelivery: (await getEmailProviderInfo()).configured,
   });
 }

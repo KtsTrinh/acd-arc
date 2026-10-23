@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const smsProvider = getSmsProviderInfo();
+    const smsProvider = await getSmsProviderInfo();
     if (!smsProvider.configured) {
       return NextResponse.json(
         {

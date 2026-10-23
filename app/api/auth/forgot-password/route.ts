@@ -92,8 +92,8 @@ export async function POST(request: Request) {
       console.warn(`[auth] Yêu cầu đặt lại mật khẩu cho tài khoản không tồn tại: ${maskEmail(identifier)}`);
     }
 
-    const emailReady = getEmailProviderInfo().configured;
-    const smsReady = getSmsProviderInfo().configured;
+    const emailReady = (await getEmailProviderInfo()).configured;
+    const smsReady = (await getSmsProviderInfo()).configured;
 
     return NextResponse.json({
       success: true,

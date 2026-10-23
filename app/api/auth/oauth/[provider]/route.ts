@@ -20,14 +20,14 @@ export async function GET(
     );
   }
 
-  const config = getOAuthProviderConfig(provider);
+  const config = await getOAuthProviderConfig(provider);
   if (!config) {
     return NextResponse.redirect(
       new URL("/login?error=oauth_not_configured", request.url)
     );
   }
 
-  const redirectUri = getOAuthRedirectUri(provider, getBaseUrl(request));
+  const redirectUri = await getOAuthRedirectUri(provider, getBaseUrl(request));
   const from = getSafeRedirectPath(new URL(request.url).searchParams.get("from"));
 
   const authorizeUrl = new URL(config.authorizeUrl);

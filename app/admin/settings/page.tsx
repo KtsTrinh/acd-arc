@@ -21,7 +21,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-type TabKey = "system" | "seo" | "script";
+type TabKey = "system" | "seo" | "script" | "integrations";
 
 const TABS: { key: TabKey; label: string; sub: string; icon: typeof Settings }[] = [
   {
@@ -41,6 +41,12 @@ const TABS: { key: TabKey; label: string; sub: string; icon: typeof Settings }[]
     label: "Mã Tùy Chỉnh",
     sub: "Mã nhúng quảng cáo & theo dõi hiển thị toàn site",
     icon: Code2,
+  },
+  {
+    key: "integrations",
+    label: "Tích Hợp & Xác Thực",
+    sub: "Resend (email), Facebook OAuth, SMS",
+    icon: Settings,
   },
 ];
 
@@ -147,7 +153,7 @@ export default function AdminSettingsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {TABS.map((t) => {
           const Icon = t.icon;
           const isActive = tab === t.key;
@@ -808,6 +814,169 @@ export default function AdminSettingsPage() {
               Được chèn ngay trước thẻ đóng &lt;/body&gt;. Dùng cho mã cần chạy sau khi tải trang
               (ví dụ: adsense auto ads, chat widget, event tracking).
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: INTEGRATIONS */}
+      {tab === "integrations" && (
+        <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-6">
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-thuy-900 border border-thuy-700">
+            <Info className="w-4 h-4 text-thuy-400 flex-shrink-0 mt-0.5" />
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Cấu hình Resend (gửi email OTP), Facebook OAuth (đăng nhập) và SMS. Các trường secret
+              (API key, App Secret, Token) được lưu trong DB, <b className="text-slate-200">không</b>{" "}
+              commit lên mã nguồn. Ưu tiên giá trị trong DB; nếu để trống sẽ dùng biến môi trường.
+            </p>
+          </div>
+
+          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3">
+            4.1. Resend (Gửi Email OTP)
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
+              <label className={labelCls}>Resend API Key (secret)</label>
+              <input
+                type="password"
+                value={settings.resendApiKey || ""}
+                onChange={(e) => update("resendApiKey", e.target.value)}
+                className={inputCls}
+                placeholder="re_xxxxxxxxxxxxxxxxxxxx"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Email gửi đi (From)</label>
+              <input
+                type="email"
+                value={settings.emailFrom || ""}
+                onChange={(e) => update("emailFrom", e.target.value)}
+                className={inputCls}
+                placeholder="ACD Architecture <no-reply@acd.vn>"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Tên hiển thị người gửi</label>
+              <input
+                type="text"
+                value={settings.emailFromName || ""}
+                onChange={(e) => update("emailFromName", e.target.value)}
+                className={inputCls}
+                placeholder="ACD Architecture"
+              />
+            </div>
+          </div>
+
+          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3 pt-2">
+            4.2. Facebook OAuth (Đăng Nhập)
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelCls}>Facebook App ID</label>
+              <input
+                type="text"
+                value={settings.facebookAppId || ""}
+                onChange={(e) => update("facebookAppId", e.target.value)}
+                className={inputCls}
+                placeholder="123456789012345"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Facebook App Secret (secret)</label>
+              <input
+                type="password"
+                value={settings.facebookAppSecret || ""}
+                onChange={(e) => update("facebookAppSecret", e.target.value)}
+                className={inputCls}
+                placeholder="••••••••••••••••"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className={labelCls}>Redirect URI (để trống = tự suy ra)</label>
+              <input
+                type="url"
+                value={settings.facebookRedirectUri || ""}
+                onChange={(e) => update("facebookRedirectUri", e.target.value)}
+                className={inputCls}
+                placeholder="https://acd-arc.com/api/auth/oauth/facebook/callback"
+              />
+            </div>
+          </div>
+
+          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3 pt-2">
+            4.3. SMS (Webhook / Twilio)
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelCls}>Nhà cung cấp</label>
+              <select
+                value={settings.smsProvider || "webhook"}
+                onChange={(e) => update("smsProvider", e.target.value)}
+                className={inputCls}
+              >
+                <option value="webhook">Webhook (FPT/Viettel/Vinaphone/Trung gian)</option>
+                <option value="twilio">Twilio</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelCls}>Tên người gửi (SMS Sender ID)</label>
+              <input
+                type="text"
+                value={settings.smsSenderId || ""}
+                onChange={(e) => update("smsSenderId", e.target.value)}
+                className={inputCls}
+                placeholder="ACD"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className={labelCls}>SMS Webhook URL</label>
+              <input
+                type="url"
+                value={settings.smsWebhookUrl || ""}
+                onChange={(e) => update("smsWebhookUrl", e.target.value)}
+                className={inputCls}
+                placeholder="https://api.sms-provider.vn/send"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className={labelCls}>SMS Webhook Token (secret)</label>
+              <input
+                type="password"
+                value={settings.smsWebhookToken || ""}
+                onChange={(e) => update("smsWebhookToken", e.target.value)}
+                className={inputCls}
+                placeholder="Bearer token"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Twilio Account SID</label>
+              <input
+                type="text"
+                value={settings.twilioAccountSid || ""}
+                onChange={(e) => update("twilioAccountSid", e.target.value)}
+                className={inputCls}
+                placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Twilio Auth Token (secret)</label>
+              <input
+                type="password"
+                value={settings.twilioAuthToken || ""}
+                onChange={(e) => update("twilioAuthToken", e.target.value)}
+                className={inputCls}
+                placeholder="••••••••••••••••"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Twilio Phone Number</label>
+              <input
+                type="text"
+                value={settings.twilioPhoneNumber || ""}
+                onChange={(e) => update("twilioPhoneNumber", e.target.value)}
+                className={inputCls}
+                placeholder="+14155552671"
+              />
+            </div>
           </div>
         </div>
       )}

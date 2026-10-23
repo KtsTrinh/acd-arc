@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { getSettings } from "./settings";
 
 export interface EmailMessage {
   to: string;
@@ -12,10 +13,10 @@ export interface EmailProviderInfo {
   provider: string;
 }
 
-export function getEmailProviderInfo(): EmailProviderInfo {
-  if (process.env.RESEND_API_KEY) {
-    return { configured: true, provider: "resend" };
-  }
+export async function getEmailProviderInfo(): Promise<EmailProviderInfo> {
+  const settings = await getSettings();
+  const resendKey = settings.resendApiKey || process.env.RESEND_API_KEY;
+  if (resendKey) return { configured: true, provider: "resend" };
   if (process.env.SMTP_HOST && process.env.SMTP_USER) {
     return { configured: true, provider: "smtp" };
   }
@@ -23,8 +24,6 @@ export function getEmailProviderInfo(): EmailProviderInfo {
 }
 
 function buildTransport() {
-  if (process.env.RESEND_API_KEY) return null;
-
   const host = process.env.SMTP_HOST;
   const port = Number(process.env.SMTP_PORT || 587);
   const secure = process.env.SMTP_SECURE === "true" || port === 465;
@@ -43,14 +42,21 @@ function buildTransport() {
 }
 
 async function sendViaResend(message: EmailMessage) {
+  const settings = await getSettings();
+  const resendKey = settings.resendApiKey || process.env.RESEND_API_KEY;
+  const from =
+    settings.emailFrom ||
+    process.env.MAIL_FROM ||
+    "ACD Architecture <no-reply@acd.vn>";
+
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      Authorization: `Bearer ${resendKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: process.env.MAIL_FROM || "ACD Architecture <no-reply@acd.vn>",
+      from,
       to: message.to,
       subject: message.subject,
       html: message.html,
@@ -66,7 +72,7 @@ async function sendViaResend(message: EmailMessage) {
 }
 
 export async function sendEmail(message: EmailMessage): Promise<boolean> {
-  const info = getEmailProviderInfo();
+  const info = await getEmailProviderInfo();
   if (!info.configured) {
     console.warn(
       `[email] Chưa cấu hình dịch vụ gửi email. Bỏ qua gửi tới ${message.to}`
@@ -79,8 +85,13 @@ export async function sendEmail(message: EmailMessage): Promise<boolean> {
       await sendViaResend(message);
     } else {
       const transport = buildTransport();
+      const settings = await getSettings();
+      const from =
+        settings.emailFrom ||
+        process.env.MAIL_FROM ||
+        "ACD Architecture <no-reply@acd.vn>";
       await transport!.sendMail({
-        from: process.env.MAIL_FROM || "ACD Architecture <no-reply@acd.vn>",
+        from,
         to: message.to,
         subject: message.subject,
         html: message.html,

@@ -52,7 +52,7 @@ export async function GET(
   const redirectAfterLogin = getSafeRedirectPath(statePayload?.from);
 
   try {
-    const redirectUri = getOAuthRedirectUri(provider, getBaseUrl(request));
+    const redirectUri = await getOAuthRedirectUri(provider, getBaseUrl(request));
     const tokens = await exchangeOAuthCode(provider, code, redirectUri);
     const profile = await fetchOAuthProfile(provider, tokens);
 

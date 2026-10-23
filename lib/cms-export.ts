@@ -65,6 +65,17 @@ export async function buildCmsExport(): Promise<CmsExportFile[]> {
   delete settingsMap.cmsLastSyncAt;
   delete settingsMap.cmsAutoSync;
 
+  // Loại các secret tích hợp (không được commit lên repo công khai)
+  const SECRET_KEYS = [
+    "resendApiKey",
+    "facebookAppSecret",
+    "smsWebhookToken",
+    "twilioAuthToken",
+  ];
+  for (const key of SECRET_KEYS) {
+    delete settingsMap[key];
+  }
+
   const settings = {
     ...defaultSettings,
     ...settingsMap,

@@ -46,6 +46,23 @@ export interface SystemSettings {
   headerEmbedCode: string;
   bodyEmbedCode: string;
 
+  // Tích hợp & Xác thực
+  resendApiKey: string;
+  emailFrom: string;
+  emailFromName: string;
+
+  facebookAppId: string;
+  facebookAppSecret: string;
+  facebookRedirectUri: string;
+
+  smsProvider: string;
+  smsWebhookUrl: string;
+  smsWebhookToken: string;
+  smsSenderId: string;
+  twilioAccountSid: string;
+  twilioAuthToken: string;
+  twilioPhoneNumber: string;
+
   // Nội bộ - không export ra source
   cmsAutoSync: string;
   cmsLastSyncSha: string;
@@ -89,6 +106,22 @@ export const defaultSettings: SystemSettings = {
 
   headerEmbedCode: "",
   bodyEmbedCode: "",
+
+  resendApiKey: "",
+  emailFrom: "",
+  emailFromName: "ACD Architecture",
+
+  facebookAppId: "",
+  facebookAppSecret: "",
+  facebookRedirectUri: "",
+
+  smsProvider: "webhook",
+  smsWebhookUrl: "",
+  smsWebhookToken: "",
+  smsSenderId: "ACD",
+  twilioAccountSid: "",
+  twilioAuthToken: "",
+  twilioPhoneNumber: "",
 
   cmsAutoSync: "true",
   cmsLastSyncSha: "",

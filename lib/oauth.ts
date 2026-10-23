@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { signToken, verifyToken } from "./jwt";
 import { normalizePhone } from "./otp";
+import { getSettings } from "./settings";
 
 export type OAuthProvider = "google" | "facebook";
 
@@ -47,12 +48,23 @@ export function isOAuthProvider(value?: string): value is OAuthProvider {
   return value === "google" || value === "facebook";
 }
 
-export function getOAuthProviderConfig(provider: string) {
+export async function getOAuthProviderConfig(provider: string) {
   if (!isOAuthProvider(provider)) return null;
 
+  const settings = await getSettings();
   const meta = PROVIDER_META[provider];
-  const clientId = process.env[meta.clientIdEnv];
-  const clientSecret = process.env[meta.clientSecretEnv];
+
+  let clientId: string | undefined;
+  let clientSecret: string | undefined;
+
+  if (provider === "facebook") {
+    clientId = settings.facebookAppId || process.env.FACEBOOK_CLIENT_ID;
+    clientSecret =
+      settings.facebookAppSecret || process.env.FACEBOOK_CLIENT_SECRET;
+  } else {
+    clientId = process.env.GOOGLE_CLIENT_ID;
+    clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  }
 
   if (!clientId || !clientSecret) return null;
 
@@ -66,8 +78,8 @@ export function getOAuthProviderConfig(provider: string) {
   };
 }
 
-export function isOAuthProviderConfigured(provider: string): boolean {
-  return Boolean(getOAuthProviderConfig(provider));
+export async function isOAuthProviderConfigured(provider: string): Promise<boolean> {
+  return Boolean(await getOAuthProviderConfig(provider));
 }
 
 /**
@@ -75,14 +87,16 @@ export function isOAuthProviderConfigured(provider: string): boolean {
  * Cho phép ghi đè bằng biến môi trường (GOOGLE_REDIRECT_URI / FACEBOOK_REDIRECT_URI),
  * nếu không có thì tự suy ra từ domain ứng dụng.
  */
-export function getOAuthRedirectUri(
+export async function getOAuthRedirectUri(
   provider: OAuthProvider,
   baseUrl: string
-): string {
+): Promise<string> {
+  const settings = await getSettings();
+
   const override =
     provider === "google"
       ? process.env.GOOGLE_REDIRECT_URI
-      : process.env.FACEBOOK_REDIRECT_URI;
+      : settings.facebookRedirectUri || process.env.FACEBOOK_REDIRECT_URI;
 
   if (override) return override;
 
@@ -139,7 +153,7 @@ interface OAuthTokens {
 }
 
 async function exchangeGoogleCode(
-  config: ReturnType<typeof getOAuthProviderConfig> & {},
+  config: Awaited<ReturnType<typeof getOAuthProviderConfig>> & {},
   code: string,
   redirectUri: string
 ): Promise<OAuthTokens> {
@@ -170,7 +184,7 @@ async function exchangeGoogleCode(
 }
 
 async function exchangeFacebookCode(
-  config: ReturnType<typeof getOAuthProviderConfig> & {},
+  config: Awaited<ReturnType<typeof getOAuthProviderConfig>> & {},
   code: string,
   redirectUri: string
 ): Promise<OAuthTokens> {
@@ -204,7 +218,7 @@ export async function exchangeOAuthCode(
   code: string,
   redirectUri: string
 ): Promise<OAuthTokens> {
-  const config = getOAuthProviderConfig(provider);
+  const config = await getOAuthProviderConfig(provider);
   if (!config) throw new Error(`Nhà cung cấp ${provider} chưa được cấu hình.`);
 
   if (provider === "google") return exchangeGoogleCode(config, code, redirectUri);
@@ -316,7 +330,7 @@ export async function fetchOAuthProfile(
   provider: OAuthProvider,
   tokens: OAuthTokens
 ): Promise<OAuthProfile> {
-  const config = getOAuthProviderConfig(provider);
+  const config = await getOAuthProviderConfig(provider);
   if (!config) throw new Error(`Nhà cung cấp ${provider} chưa được cấu hình.`);
 
   if (provider === "google") return fetchGoogleProfile(tokens.accessToken);
