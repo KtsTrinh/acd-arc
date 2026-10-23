@@ -569,6 +569,9 @@ export default function AdminCustomersPage() {
                             {c.email || "-"}
                           </p>
                           <p className="text-[10px] text-slate-400">{c.phone || "-"}</p>
+                          {c.address && (
+                            <p className="text-[10px] text-slate-500">{c.address}</p>
+                          )}
                         </td>
                         <td className="py-3.5 px-5 text-slate-300 capitalize">
                           {c.provider || "local"}

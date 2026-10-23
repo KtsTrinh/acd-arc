@@ -63,13 +63,13 @@ export async function GET(request: Request) {
     ] = await Promise.all([
       prisma.visitorSession.findMany({
         where: { lastSeenAt: { gte: liveSince } },
-        include: { user: { select: { id: true, name: true, email: true, phone: true } } },
+        include: { user: { select: { id: true, name: true, email: true, phone: true, address: true } } },
         orderBy: { lastSeenAt: "desc" },
         take: 100,
       }),
       prisma.visitorSession.findMany({
         where: sessionWhere,
-        include: { user: { select: { id: true, name: true, email: true, phone: true } } },
+        include: { user: { select: { id: true, name: true, email: true, phone: true, address: true } } },
         orderBy: { lastSeenAt: "desc" },
         take: 300,
       }),
@@ -83,6 +83,7 @@ export async function GET(request: Request) {
           name: true,
           email: true,
           phone: true,
+          address: true,
           avatar: true,
           provider: true,
           role: true,
@@ -191,6 +192,7 @@ export async function GET(request: Request) {
           name: u.name,
           email: u.email,
           phone: u.phone,
+          address: u.address,
           avatar: u.avatar,
           provider: u.provider,
           role: u.role,
@@ -327,7 +329,7 @@ export async function GET(request: Request) {
     const cartRecent = await prisma.cartEvent.findMany({
       where: { action: "add" },
       include: {
-        user: { select: { id: true, name: true, email: true, phone: true } },
+        user: { select: { id: true, name: true, email: true, phone: true, address: true } },
         session: { select: { visitorId: true, device: true, browser: true, os: true } },
       },
       orderBy: { createdAt: "desc" },
