@@ -198,15 +198,12 @@ export async function provisionOAuthUser(
     ? await prisma.user.findUnique({ where: { email: profile.email } })
     : null;
 
+  const adminEmails = (process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
   const isAdminEmail = (email?: string | null) =>
-    Boolean(
-      email &&
-        (process.env.ADMIN_EMAILS || "")
-          .split(",")
-          .map((e) => e.trim().toLowerCase())
-          .filter(Boolean)
-          .includes(email.toLowerCase())
-    );
+    Boolean(email && adminEmails.includes(email.toLowerCase()));
 
   if (matchedUser) {
     await prisma.account.create({
