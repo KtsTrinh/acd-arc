@@ -122,7 +122,7 @@ export const defaultSettings: SystemSettings = {
   cmsLastSyncAt: "",
 };
 
-const CACHE_TTL_MS = 30_000;
+const CACHE_TTL_MS = 0;
 
 let settingsCache: { data: SystemSettings; expiresAt: number } | null = null;
 let inflight: Promise<SystemSettings> | null = null;
