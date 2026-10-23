@@ -207,35 +207,7 @@ function LoginForm() {
 
         {step === "credentials" && (
           <>
-            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-thuy-900 border border-thuy-700">
-              <button
-                type="button"
-                onClick={() => setMode("email")}
-                className={`py-2 rounded-lg text-xs font-semibold transition-colors ${
-                  mode === "email"
-                    ? "bg-thuy-800 text-white shadow-glow-cyan"
-                    : "text-slate-400 hover:text-thuy-200"
-                }`}
-              >
-                <Mail className="w-3.5 h-3.5 inline mr-1.5" />
-                Email
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("phone")}
-                className={`py-2 rounded-lg text-xs font-semibold transition-colors ${
-                  mode === "phone"
-                    ? "bg-thuy-800 text-white shadow-glow-cyan"
-                    : "text-slate-400 hover:text-thuy-200"
-                }`}
-              >
-                <Phone className="w-3.5 h-3.5 inline mr-1.5" />
-                Số điện thoại
-              </button>
-            </div>
-
-            {mode === "email" ? (
-              <form onSubmit={handleEmailLogin} className="space-y-4">
+            <form onSubmit={handleEmailLogin} className="space-y-4">
                 <div className="space-y-1">
                   <label className="text-xs text-slate-300 font-medium">Email:</label>
                   <div className="relative">
@@ -290,49 +262,6 @@ function LoginForm() {
                   )}
                 </button>
               </form>
-            ) : (
-              <form onSubmit={handleSendPhoneOtp} className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-xs text-slate-300 font-medium">
-                    Số điện thoại:
-                  </label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                    <input
-                      type="tel"
-                      required
-                      inputMode="tel"
-                      autoComplete="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="0912345678"
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
-                    />
-                  </div>
-                  <p className="text-[11px] text-slate-500">
-                    Chúng tôi sẽ gửi mã xác minh 6 chữ số qua tin nhắn SMS.
-                  </p>
-                  {!providers.loading && !providers.sms && (
-                    <p className="text-[11px] text-amber-400">
-                      Dịch vụ gửi tin nhắn hiện chưa được cấu hình. Bạn có thể đăng
-                      nhập bằng email hoặc liên hệ quản trị viên.
-                    </p>
-                  )}
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading || (!providers.loading && !providers.sms)}
-                  className="w-full py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <span>Gửi Mã Xác Minh</span>
-                  )}
-                </button>
-              </form>
-            )}
 
             <SocialButtons text="Đăng nhập" from={safeFrom} />
           </>

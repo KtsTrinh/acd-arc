@@ -28,7 +28,7 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [mode, setMode] = useState<"phone" | "email">("phone");
+  const [mode, setMode] = useState<"phone" | "email">("email");
   const [step, setStep] = useState<"form" | "otp">("form");
 
   const [name, setName] = useState("");
@@ -117,6 +117,7 @@ function RegisterForm() {
   const handleRegisterEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setNotice("");
     setLoading(true);
 
     try {
@@ -129,9 +130,36 @@ function RegisterForm() {
 
       if (!res.ok) throw new Error(data.error || "Đăng ký thất bại.");
 
-      goTo("/account");
+      setStep("otp");
+      setNotice(
+        data.message ||
+          `Mã xác minh đã được gửi tới ${email}. Vui lòng kiểm tra hộp thư (cả mục Spam).`
+      );
     } catch (err: any) {
       setError(err.message || "Đã có lỗi xảy ra khi đăng ký.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/verify-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code: otp }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Mã xác minh không đúng.");
+
+      goTo(data.user?.role === "ADMIN" ? "/admin" : "/account");
+    } catch (err: any) {
+      setError(err.message || "Đã có lỗi xảy ra.");
     } finally {
       setLoading(false);
     }
@@ -169,151 +197,7 @@ function RegisterForm() {
 
         {step === "form" && (
           <>
-            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-thuy-900 border border-thuy-700">
-              <button
-                type="button"
-                onClick={() => setMode("phone")}
-                className={`py-2 rounded-lg text-xs font-semibold transition-colors ${
-                  mode === "phone"
-                    ? "bg-thuy-800 text-white shadow-glow-cyan"
-                    : "text-slate-400 hover:text-thuy-200"
-                }`}
-              >
-                <Phone className="w-3.5 h-3.5 inline mr-1.5" />
-                Số điện thoại
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("email")}
-                className={`py-2 rounded-lg text-xs font-semibold transition-colors ${
-                  mode === "email"
-                    ? "bg-thuy-800 text-white shadow-glow-cyan"
-                    : "text-slate-400 hover:text-thuy-200"
-                }`}
-              >
-                <Mail className="w-3.5 h-3.5 inline mr-1.5" />
-                Email
-              </button>
-            </div>
-
-            <form
-              onSubmit={mode === "phone" ? handleRegisterPhone : handleRegisterEmail}
-              className="space-y-4"
-            >
-              <div className="space-y-1">
-                <label className="text-xs text-slate-300 font-medium">
-                  Họ và tên:
-                </label>
-                <div className="relative">
-                  <User className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Nguyễn Văn A"
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
-                  />
-                </div>
-              </div>
-
-              {mode === "phone" ? (
-                <>
-                  <div className="space-y-1">
-                    <label className="text-xs text-slate-300 font-medium">
-                      Số điện thoại:
-                    </label>
-                    <div className="relative">
-                      <Phone className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                      <input
-                        type="tel"
-                        required
-                        inputMode="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="0912345678"
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
-                      />
-                    </div>
-                    {!providers.loading && !providers.sms && (
-                      <p className="text-[11px] text-amber-400">
-                        Dịch vụ gửi tin nhắn hiện chưa được cấu hình. Vui lòng đăng
-                        ký bằng email hoặc liên hệ quản trị viên.
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs text-slate-300 font-medium">
-                      Email (không bắt buộc):
-                    </label>
-                    <div className="relative">
-                      <Mail className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="name@gmail.com"
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs text-slate-300 font-medium">
-                      Mật khẩu (không bắt buộc, tối thiểu 6 ký tự):
-                    </label>
-                    <div className="relative">
-                      <Lock className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                      <input
-                        type="password"
-                        minLength={6}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
-                      />
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="space-y-1">
-                    <label className="text-xs text-slate-300 font-medium">
-                      Email:
-                    </label>
-                    <div className="relative">
-                      <Mail className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="name@gmail.com"
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs text-slate-300 font-medium">
-                      Mật khẩu (ít nhất 6 ký tự):
-                    </label>
-                    <div className="relative">
-                      <Lock className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                      <input
-                        type="password"
-                        required
-                        minLength={6}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
+            <form onSubmit={handleRegisterEmail} className="space-y-4">
 
               <button
                 type="submit"
@@ -336,7 +220,7 @@ function RegisterForm() {
         )}
 
         {step === "otp" && (
-          <form onSubmit={handleVerifyPhone} className="space-y-4">
+          <form onSubmit={handleVerifyEmail} className="space-y-4">
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -354,7 +238,7 @@ function RegisterForm() {
 
             <div className="space-y-2">
               <label className="text-xs text-slate-300 font-medium block">
-                Nhập mã xác minh 6 chữ số
+                Nhập mã xác minh 6 chữ số đã gửi tới email của bạn
               </label>
               <OtpInput value={otp} onChange={setOtp} autoFocus />
             </div>

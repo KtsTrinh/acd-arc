@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hashPassword, signJwtToken, AUTH_COOKIE_NAME } from "@/lib/auth";
+import { hashPassword, SIGNUP_PENDING_COOKIE_NAME, authCookieOptions } from "@/lib/auth";
+import { signToken } from "@/lib/jwt";
+import { createOtpVerification } from "@/lib/verification";
+import { sendEmail, buildOtpEmail } from "@/lib/email";
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +27,14 @@ export async function POST(request: Request) {
       );
     }
 
-    const cleanEmail = email.toLowerCase().trim();
+    const cleanEmail = String(email).toLowerCase().trim();
+    if (!isValidEmail(cleanEmail)) {
+      return NextResponse.json(
+        { error: "Email không hợp lệ. Vui lòng nhập địa chỉ email đúng (ví dụ: name@gmail.com)." },
+        { status: 400 }
+      );
+    }
+
     const existing = await prisma.user.findUnique({
       where: { email: cleanEmail },
     });
@@ -33,38 +47,43 @@ export async function POST(request: Request) {
     }
 
     const passwordHash = await hashPassword(password);
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email: cleanEmail,
-        passwordHash,
-        role: "USER",
-      },
+
+    const { code } = await createOtpVerification({
+      identifier: cleanEmail,
+      purpose: "register",
+      channel: "email",
     });
 
-    const token = signJwtToken({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
+    const otpEmail = buildOtpEmail({ code, purpose: "register", minutes: 10 });
+    await sendEmail({
+      to: cleanEmail,
+      subject: otpEmail.subject,
+      html: otpEmail.html,
+      text: otpEmail.text,
     });
+
+    const pendingToken = signToken(
+      {
+        type: "signup",
+        email: cleanEmail,
+        name,
+        passwordHash,
+      },
+      "20m"
+    );
 
     const response = NextResponse.json({
       success: true,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      requiresOtp: true,
+      email: cleanEmail,
+      message: `Mã xác minh đã được gửi tới ${cleanEmail}. Vui lòng kiểm tra hộp thư (cả mục Spam).`,
     });
 
-    response.cookies.set(AUTH_COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60,
-      path: "/",
-    });
+    response.cookies.set(
+      SIGNUP_PENDING_COOKIE_NAME,
+      pendingToken,
+      authCookieOptions(20 * 60)
+    );
 
     return response;
   } catch (error) {
@@ -75,4 +94,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
