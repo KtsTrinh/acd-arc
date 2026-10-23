@@ -64,7 +64,21 @@ function LoginForm() {
           </div>
         )}
 
-        <SocialButtons text="Đăng nhập" from={safeFrom} />
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <p className="text-xs text-slate-400 text-center font-semibold uppercase tracking-wider">
+              Dành cho quản trị viên
+            </p>
+            <SocialButtons text="Đăng nhập" from="/admin" />
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs text-slate-400 text-center font-semibold uppercase tracking-wider">
+              Dành cho khách hàng
+            </p>
+            <SocialButtons text="Đăng nhập" from="/account" />
+          </div>
+        </div>
 
         <div className="text-center text-xs text-slate-400">
           Chưa có tài khoản? Đăng nhập bằng Google hoặc Facebook để tạo tài khoản tự động.
