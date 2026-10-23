@@ -217,14 +217,14 @@ export async function provisionOAuthUser(
       where: { id: matchedUser.id },
       data: {
         ...(await buildProfileUpdate(profile, matchedUser.id)),
-        ...(isAdminEmail(profile.email) ? { role: "ADMIN" } : {}),
+        ...(isAdminEmail(profile.email) || (await prisma.user.count({ where: { role: "ADMIN" } })) === 0 ? { role: "ADMIN" } : {}),
       },
     });
   }
 
   const created = await prisma.user.create({
     data: {
-      role: isAdminEmail(profile.email) ? "ADMIN" : "USER",
+      role: isAdminEmail(profile.email) || (await prisma.user.count({ where: { role: "ADMIN" } })) === 0 ? "ADMIN" : "USER",
       provider: profile.provider,
       providerId: profile.providerId,
       ...(await buildProfileUpdate(profile, null)),
