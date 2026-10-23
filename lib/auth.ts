@@ -198,6 +198,16 @@ export async function provisionOAuthUser(
     ? await prisma.user.findUnique({ where: { email: profile.email } })
     : null;
 
+  const isAdminEmail = (email?: string | null) =>
+    Boolean(
+      email &&
+        (process.env.ADMIN_EMAILS || "")
+          .split(",")
+          .map((e) => e.trim().toLowerCase())
+          .filter(Boolean)
+          .includes(email.toLowerCase())
+    );
+
   if (matchedUser) {
     await prisma.account.create({
       data: { ...accountData, userId: matchedUser.id },
@@ -205,13 +215,16 @@ export async function provisionOAuthUser(
 
     return prisma.user.update({
       where: { id: matchedUser.id },
-      data: await buildProfileUpdate(profile, matchedUser.id),
+      data: {
+        ...(await buildProfileUpdate(profile, matchedUser.id)),
+        ...(isAdminEmail(profile.email) ? { role: "ADMIN" } : {}),
+      },
     });
   }
 
   const created = await prisma.user.create({
     data: {
-      role: "USER",
+      role: isAdminEmail(profile.email) ? "ADMIN" : "USER",
       provider: profile.provider,
       providerId: profile.providerId,
       ...(await buildProfileUpdate(profile, null)),
