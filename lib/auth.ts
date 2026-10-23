@@ -198,7 +198,7 @@ export async function provisionOAuthUser(
     ? await prisma.user.findUnique({ where: { email: profile.email } })
     : null;
 
-  const adminEmails = (process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com")
+  const adminEmails = (process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com,trinhhogntu.kts@gmail.com")
     .split(",")
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
