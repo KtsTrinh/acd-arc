@@ -34,6 +34,13 @@ function LoginForm() {
   const searchParams = useSearchParams();
 
   const [mode, setMode] = useState<"email" | "phone">("email");
+
+  // Firebase Phone Auth
+  const [firebasePhone, setFirebasePhone] = useState("");
+  const [firebaseOtp, setFirebaseOtp] = useState("");
+  const [firebaseConfirmation, setFirebaseConfirmation] = useState<any>(null);
+  const [firebaseSending, setFirebaseSending] = useState(false);
+  const [firebaseVerifying, setFirebaseVerifying] = useState(false);
   const [step, setStep] = useState<Step>("credentials");
 
   const [email, setEmail] = useState("");
@@ -64,6 +71,56 @@ function LoginForm() {
   const goTo = (fallback: string) => {
     router.push(safeFrom || fallback);
     router.refresh();
+  };
+
+  const handleSendFirebaseOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setNotice("");
+    setFirebaseSending(true);
+    try {
+      const { getFirebaseAuth } = await import("@/lib/firebase");
+      const { signInWithPhoneNumber, RecaptchaVerifier } = await import(
+        "firebase/auth"
+      );
+      const auth = getFirebaseAuth();
+      if (!auth) {
+        throw new Error("Firebase chưa được cấu hình. Vui lòng liên hệ quản trị viên.");
+      }
+      const verifier = new RecaptchaVerifier(auth, "firebase-recaptcha", {
+        size: "invisible",
+      });
+      const confirmation = await signInWithPhoneNumber(auth, firebasePhone, verifier);
+      setFirebaseConfirmation(confirmation);
+      setNotice("Mã xác minh đã được gửi tới số điện thoại của bạn.");
+    } catch (err: any) {
+      setError(err?.message || "Không thể gửi mã xác minh.");
+    } finally {
+      setFirebaseSending(false);
+    }
+  };
+
+  const handleVerifyFirebaseOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setFirebaseVerifying(true);
+    try {
+      if (!firebaseConfirmation) throw new Error("Vui lòng gửi mã trước.");
+      const result = await firebaseConfirmation.confirm(firebaseOtp);
+      const idToken = await result.user.getIdToken();
+      const res = await fetch("/api/auth/firebase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Xác minh thất bại.");
+      goTo(data.user?.role === "ADMIN" ? "/admin" : "/account");
+    } catch (err: any) {
+      setError(err?.message || "Mã xác minh không đúng.");
+    } finally {
+      setFirebaseVerifying(false);
+    }
   };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
@@ -207,7 +264,35 @@ function LoginForm() {
 
         {step === "credentials" && (
           <>
-            <form onSubmit={handleEmailLogin} className="space-y-4">
+            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-thuy-900 border border-thuy-700">
+              <button
+                type="button"
+                onClick={() => setMode("email")}
+                className={`py-2 rounded-lg text-xs font-semibold transition-colors ${
+                  mode === "email"
+                    ? "bg-thuy-800 text-white shadow-glow-cyan"
+                    : "text-slate-400 hover:text-thuy-200"
+                }`}
+              >
+                <Mail className="w-3.5 h-3.5 inline mr-1.5" />
+                Email
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("phone")}
+                className={`py-2 rounded-lg text-xs font-semibold transition-colors ${
+                  mode === "phone"
+                    ? "bg-thuy-800 text-white shadow-glow-cyan"
+                    : "text-slate-400 hover:text-thuy-200"
+                }`}
+              >
+                <Phone className="w-3.5 h-3.5 inline mr-1.5" />
+                Số điện thoại
+              </button>
+            </div>
+
+            {mode === "email" ? (
+              <form onSubmit={handleEmailLogin} className="space-y-4">
                 <div className="space-y-1">
                   <label className="text-xs text-slate-300 font-medium">Email:</label>
                   <div className="relative">
@@ -262,6 +347,54 @@ function LoginForm() {
                   )}
                 </button>
               </form>
+            ) : (
+              <form onSubmit={firebaseConfirmation ? handleVerifyFirebaseOtp : handleSendFirebaseOtp} className="space-y-4">
+                <div id="firebase-recaptcha" />
+                <div className="space-y-1">
+                  <label className="text-xs text-slate-300 font-medium">Số điện thoại:</label>
+                  <div className="relative">
+                    <Phone className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                    <input
+                      type="tel"
+                      required
+                      inputMode="tel"
+                      autoComplete="tel"
+                      value={firebasePhone}
+                      onChange={(e) => setFirebasePhone(e.target.value)}
+                      placeholder="+84912345678"
+                      disabled={!!firebaseConfirmation}
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400 disabled:opacity-60"
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Mã xác minh sẽ được gửi qua Firebase (SMS). Nhập số theo định dạng quốc tế, ví dụ +84912345678.
+                  </p>
+                </div>
+
+                {firebaseConfirmation && (
+                  <div className="space-y-2">
+                    <label className="text-xs text-slate-300 font-medium block">
+                      Nhập mã xác minh
+                    </label>
+                    <OtpInput value={firebaseOtp} onChange={setFirebaseOtp} autoFocus />
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={firebaseSending || firebaseVerifying}
+                  className="w-full py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {firebaseSending || firebaseVerifying ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : firebaseConfirmation ? (
+                    <span>Xác Nhận</span>
+                  ) : (
+                    <span>Gửi Mã Xác Minh</span>
+                  )}
+                </button>
+              </form>
+            )}
 
             <SocialButtons text="Đăng nhập" from={safeFrom} />
           </>
