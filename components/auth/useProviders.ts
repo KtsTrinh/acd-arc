@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 export interface ProviderAvailability {
   google: boolean;
   facebook: boolean;
-  firebase: boolean;
   sms: boolean;
   emailDelivery: boolean;
   loading: boolean;
@@ -14,7 +13,6 @@ export interface ProviderAvailability {
 const EMPTY: ProviderAvailability = {
   google: false,
   facebook: false,
-  firebase: false,
   sms: false,
   emailDelivery: false,
   loading: true,
@@ -34,7 +32,6 @@ export function useProviders(): ProviderAvailability {
         setState({
           google: Boolean(source.google),
           facebook: Boolean(source.facebook),
-          firebase: Boolean(source.firebase),
           sms: Boolean(source.sms),
           emailDelivery: Boolean(source.emailDelivery),
           loading: false,

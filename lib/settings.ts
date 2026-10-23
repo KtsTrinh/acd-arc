@@ -60,15 +60,6 @@ export interface SystemSettings {
   smsWebhookToken: string;
   smsSenderId: string;
 
-  // Firebase
-  firebaseApiKey: string;
-  firebaseAuthDomain: string;
-  firebaseProjectId: string;
-  firebaseStorageBucket: string;
-  firebaseMessagingSenderId: string;
-  firebaseAppId: string;
-  firebaseMeasurementId: string;
-
   // Nội bộ - không export ra source
   cmsAutoSync: string;
   cmsLastSyncSha: string;
@@ -125,14 +116,6 @@ export const defaultSettings: SystemSettings = {
   smsWebhookUrl: "",
   smsWebhookToken: "",
   smsSenderId: "ACD",
-
-  firebaseApiKey: "",
-  firebaseAuthDomain: "",
-  firebaseProjectId: "",
-  firebaseStorageBucket: "",
-  firebaseMessagingSenderId: "",
-  firebaseAppId: "",
-  firebaseMeasurementId: "",
 
   cmsAutoSync: "true",
   cmsLastSyncSha: "",
