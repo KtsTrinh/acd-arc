@@ -164,7 +164,7 @@ export default function AdminBlogPage() {
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">TiÃªu Ä‘á» bÃ i viáº¿t *:</label>
+                <label className="text-xs text-slate-300">Tiêu đề bài viết *:</label>
                 <input
                   type="text"
                   required
@@ -177,13 +177,13 @@ export default function AdminBlogPage() {
 
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs text-slate-300">áº¢nh bÃ¬a bÃ i viáº¿t (URL):</label>
+                  <label className="text-xs text-slate-300">Ảnh bìa bài viết (URL):</label>
                   <button
                     type="button"
                     onClick={() => setMediaPickerOpen(true)}
                     className="text-[10px] text-thuy-400 hover:underline"
                   >
-                    Chá»n tá»« Media Library
+                    Chọn từ Media Library
                   </button>
                 </div>
                 <input
@@ -213,7 +213,7 @@ export default function AdminBlogPage() {
                   required
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Ná»™i dung bÃ i viáº¿t kiáº¿n trÃºc..."
+                  placeholder="Nhập nội dung bài viết kiến trúc, phân tích giải pháp thiết kế tại đây..."
                   className="w-full p-3.5 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white leading-relaxed"
                 />
               </div>
@@ -241,7 +241,7 @@ export default function AdminBlogPage() {
           }
         }}
         multiple={false}
-        title="Chá»n áº£nh bÃ¬a bÃ i viáº¿t tá»« Media Library"
+                    Chọn từ Media Library
       />
     </div>
   );
