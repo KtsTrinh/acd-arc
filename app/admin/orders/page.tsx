@@ -166,7 +166,7 @@ export default function AdminOrdersPage() {
               {orders.map((o) => (
                 <tr key={o.id} className="hover:bg-thuy-800/40">
                   <td className="py-4 px-5">
-                    <span className="font-mono font-bold text-navy-900 text-sm block">
+                    <span className="font-mono font-bold text-white text-sm block">
                       #{o.orderNumber}
                     </span>
                     <span className="text-[10px] text-slate-400">
@@ -176,7 +176,7 @@ export default function AdminOrdersPage() {
 
                   <td className="py-4 px-5">
                     <p className="font-bold text-white">{o.customerName}</p>
-                    <p className="text-[10px] text-slate-600 font-mono">{o.customerEmail}</p>
+                    <p className="text-[10px] text-thuy-300 font-mono">{o.customerEmail}</p>
                     {o.customerPhone && (
                       <p className="text-[10px] text-slate-400">{o.customerPhone}</p>
                     )}

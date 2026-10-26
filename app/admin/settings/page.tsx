@@ -46,7 +46,7 @@ const TABS: { key: TabKey; label: string; sub: string; icon: typeof Settings }[]
 ];
 
 const inputCls =
-  "w-full px-3.5 py-2.5 rounded-xl bg-surface border border-border text-navy-900 text-xs focus:outline-none focus:border-blue-600 transition-colors";
+  "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400 transition-colors";
 const labelCls = "block text-xs text-slate-300 font-medium mb-1.5";
 
 export default function AdminSettingsPage() {

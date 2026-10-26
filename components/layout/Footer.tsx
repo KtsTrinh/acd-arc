@@ -9,7 +9,7 @@ export default async function Footer() {
   const settings = await getSettings();
 
   return (
-    <footer className="border-t border-navy-800 bg-navy-950 text-slate-300 text-sm mt-24">
+    <footer className="border-t border-thuy-750 bg-thuy-950 text-slate-400 text-sm mt-24">
       {/* Top Banner with Water Motif */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
         {/* Brand & Philosophy */}

@@ -81,7 +81,7 @@ export default async function RootLayout({
           </>
         )}
       </head>
-      <body className="min-h-screen bg-canvas text-navy-900 antialiased selection:bg-blue-600 selection:text-white">
+      <body className="min-h-screen bg-thuy-900 text-slate-100 antialiased selection:bg-thuy-400 selection:text-thuy-950">
         {children}
 
         {/* Custom body embed code - applied on every page */}
