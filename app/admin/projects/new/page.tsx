@@ -200,7 +200,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Loáº¡i cÃ´ng trÃ¬nh:</label>
+              <label className="text-xs text-slate-300">Loại công trình:</label>
               <input
                 type="text"
                 value={buildingType}
@@ -222,7 +222,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Diá»‡n tÃ­ch (mÂ²):</label>
+              <label className="text-xs text-slate-300">Diện tích (m²):</label>
               <input
                 type="number"
                 value={area}
@@ -256,7 +256,7 @@ export default function NewProjectPage() {
 
           {/* Tags */}
           <div className="space-y-2 pt-2">
-            <label className="text-xs text-slate-300 font-medium block">Chá»n tháº» Tags:</label>
+            <label className="text-xs text-slate-300 font-medium block">Chọn thẻ Tags:</label>
             <div className="flex flex-wrap gap-2">
               {tags.map((t) => {
                 const isSelected = selectedTagIds.includes(t.id);
