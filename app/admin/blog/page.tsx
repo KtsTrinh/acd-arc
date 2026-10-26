@@ -84,7 +84,7 @@ export default function AdminBlogPage() {
             Quáº£n LÃ½ Táº¡p ChÃ­ & BÃ i Viáº¿t Kiáº¿n TrÃºc
           </h1>
           <p className="text-xs text-slate-400">
-            NghiÃªn cá»©u phong thá»§y Má»‡nh Thá»§y, xu hÆ°á»›ng thiáº¿t káº¿ biá»‡t thá»± vÃ  tÃ i liá»‡u chuyÃªn sÃ¢u
+            Nghiên cứu phong thủy hình thái, xu hướng thiết kế, biến tất cả bài viết thành vũ khí truyền thông siêu hạng.
           </p>
         </div>
 
@@ -103,9 +103,9 @@ export default function AdminBlogPage() {
           <table className="w-full text-left text-xs">
             <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
-                <th className="py-3 px-5">áº¢nh BÃ¬a</th>
+                <th className="py-3 px-5">ẢNH BÌA</th>
                 <th className="py-3 px-5">TiÃªu Äá» BÃ i Viáº¿t</th>
-                <th className="py-3 px-5">LÆ°á»£t Xem</th>
+                <th className="py-3 px-5">LƯỢT XEM</th>
                 <th className="py-3 px-5">NgÃ y ÄÄƒng</th>
                 <th className="py-3 px-5 text-right">Xem Public</th>
               </tr>
@@ -129,7 +129,7 @@ export default function AdminBlogPage() {
                     <span className="text-[10px] text-slate-400 font-mono">/blog/{post.slug}</span>
                   </td>
                   <td className="py-3.5 px-5 font-semibold text-thuy-400">
-                    {post.views} lÆ°á»£t xem
+                    {post.views} lượt xem
                   </td>
                   <td className="py-3.5 px-5 text-slate-300">
                     {formatDateTime(post.createdAt)}
