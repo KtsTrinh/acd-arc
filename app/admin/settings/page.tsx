@@ -813,6 +813,31 @@ export default function AdminSettingsPage() {
         </div>
       )}
 
+      {/* Payment / Bank info (Super Admin) */}
+      <div className="rounded-2xl bg-thuy-850 border border-thuy-750 p-6 space-y-4">
+        <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-2">
+          Thông Tin Thanh Toán (Super Admin)
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={labelCls}>Tên ngân hàng</label>
+            <input type="text" value={settings.bankName || ""} onChange={(e) => update("bankName", e.target.value)} className={inputCls} placeholder="Vietcombank" />
+          </div>
+          <div>
+            <label className={labelCls}>Số tài khoản</label>
+            <input type="text" value={settings.bankAccount || ""} onChange={(e) => update("bankAccount", e.target.value)} className={inputCls} placeholder="0123456789" />
+          </div>
+          <div>
+            <label className={labelCls}>Chủ tài khoản</label>
+            <input type="text" value={settings.bankAccountName || ""} onChange={(e) => update("bankAccountName", e.target.value)} className={inputCls} placeholder="NGUYEN VAN A" />
+          </div>
+          <div>
+            <label className={labelCls}>URL ảnh QR Code</label>
+            <input type="text" value={settings.bankQrUrl || ""} onChange={(e) => update("bankQrUrl", e.target.value)} className={inputCls} placeholder="https://..." />
+          </div>
+        </div>
+      </div>
+
       {/* Save bar */}
       <div className="sticky bottom-0 flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl bg-thuy-950/90 border border-thuy-750 backdrop-blur-md">
         <div className="flex items-center gap-2 text-xs min-h-[20px]">

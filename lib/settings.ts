@@ -60,6 +60,12 @@ export interface SystemSettings {
   smsWebhookToken: string;
   smsSenderId: string;
 
+  // Thanh toán
+  bankName: string;
+  bankAccount: string;
+  bankAccountName: string;
+  bankQrUrl: string;
+
   // Nội bộ - không export ra source
   cmsAutoSync: string;
   cmsLastSyncSha: string;
@@ -116,6 +122,11 @@ export const defaultSettings: SystemSettings = {
   smsWebhookUrl: "",
   smsWebhookToken: "",
   smsSenderId: "ACD",
+
+  bankName: "",
+  bankAccount: "",
+  bankAccountName: "",
+  bankQrUrl: "",
 
   cmsAutoSync: "true",
   cmsLastSyncSha: "",
