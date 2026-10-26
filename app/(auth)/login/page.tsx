@@ -144,8 +144,9 @@ function LoginForm() {
           </div>
         )}
 
-        <div className="text-center text-xs text-slate-300">
-          Chưa có tài khoản? Đăng nhập bằng Google hoặc Facebook để tạo tài khoản tự động.
+        <div className="text-center text-xs text-slate-300 space-y-1">
+          <p>Chưa có tài khoản?</p>
+          <p>Đăng nhập bằng Google hoặc Facebook để tạo tài khoản tự động.</p>
         </div>
       </div>
     </div>
