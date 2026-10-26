@@ -22,8 +22,8 @@ export default function NewProjectPage() {
   const [client, setClient] = useState("");
   const [year, setYear] = useState("2026");
   const [area, setArea] = useState("");
+  const [buildingType, setBuildingType] = useState("Biệt thự nghỉ dưỡng");
   const [style, setStyle] = useState("Modern Luxury");
-  const [buildingType, setBuildingType] = useState("Biá»‡t thá»± nghá»‰ dÆ°á»¡ng");
   const [categoryId, setCategoryId] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [coverMedia, setCoverMedia] = useState<MediaItem | null>(null);
@@ -159,8 +159,7 @@ export default function NewProjectPage() {
               <input
                 type="text"
                 value={shortDesc}
-                onChange={(e) => setShortDesc(e.target.value)}
-                placeholder="Biá»‡t thá»± nghá»‰ dÆ°á»¡ng Ä‘Æ°Æ¡ng Ä‘áº¡i hÃ²a quyá»‡n yáº¿u tá»‘ nÆ°á»›c phong thá»§y..."
+                placeholder="Bài viết tóm tắt ngắn về dự án, giải pháp kiến trúc và phong thủy..."
                 className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
@@ -284,14 +283,14 @@ export default function NewProjectPage() {
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
           <div className="flex items-center justify-between border-b border-thuy-750 pb-2">
             <h2 className="font-semibold text-sm text-white">
-              3. áº¢nh Äáº¡i Diá»‡n (Cover Image)
+              3. Ảnh Đại Diện (Cover Image)
             </h2>
             <button
               type="button"
               onClick={() => setIsMediaModalOpen(true)}
               className="px-3 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700"
             >
-              Chá»n tá»« Media Library
+              Chọn từ Media Library
             </button>
           </div>
 
@@ -312,7 +311,7 @@ export default function NewProjectPage() {
               className="border-2 border-dashed border-thuy-750 hover:border-thuy-400 rounded-2xl p-8 text-center cursor-pointer bg-thuy-900/40"
             >
               <ImageIcon className="w-8 h-8 mx-auto text-slate-500 mb-2" />
-              <p className="text-xs text-slate-300">Nháº¥n Ä‘á»ƒ chá»n áº£nh Ä‘áº¡i diá»‡n tá»« Media Library</p>
+              <p className="text-xs text-slate-300">Nhấp hoặc thả ảnh đại diện dự án từ Media Library</p>
             </div>
           )}
         </div>
@@ -331,7 +330,7 @@ export default function NewProjectPage() {
             className="px-6 py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-glow-cyan transition-all flex items-center gap-2"
           >
             {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            <span>Táº¡o Dá»± Ãn & Chá»‰nh Gallery</span>
+            <span>TẠO DỰ ÁN & CHỌN GALLERY</span>
           </button>
         </div>
       </form>
