@@ -52,7 +52,6 @@ export default function AdminTagsPage() {
     <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
-        <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
           Quản Lý Thẻ Phân Loại (Tags)
         </h1>
         <p className="text-xs text-slate-400">
