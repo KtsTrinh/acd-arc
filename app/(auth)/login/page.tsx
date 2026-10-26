@@ -48,14 +48,14 @@ function LoginForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-thuy-950 via-thuy-900 to-slate-950" />
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-thuy-500/20 rounded-full blur-3xl" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-aqua-500/20 rounded-full blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-br from-thuy-950 via-thuy-900 to-[#020c1b]" />
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl" />
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
 
-      <div className="max-w-md w-full space-y-8 bg-white/5 border border-white/10 p-8 rounded-3xl shadow-2xl backdrop-blur-xl relative z-10">
+      <div className="max-w-md w-full space-y-8 bg-[#112240]/90 border border-white/10 p-8 rounded-3xl shadow-2xl backdrop-blur-xl relative z-10">
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2 mb-2">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-thuy-400 to-aqua-400 flex items-center justify-center font-bold text-white shadow-glow-cyan text-lg">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-300 to-blue-500 flex items-center justify-center font-bold text-[#0a192f] shadow-glow-cyan text-lg">
               ACD
             </div>
           </Link>
@@ -81,10 +81,10 @@ function LoginForm() {
             <button
               type="button"
               onClick={() => setSelectedRole("admin")}
-              className="w-full flex items-center gap-4 p-4 rounded-2xl bg-thuy-900/60 border border-thuy-700 hover:border-thuy-400 hover:bg-thuy-900/80 transition-all group"
+              className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#112240]/80 border border-white/10 hover:border-accent hover:bg-gradient-to-r hover:from-cyan-400/10 hover:to-blue-500/10 transition-all duration-300 ease-out-quart group"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
-                <ShieldCheck className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-300 to-blue-500 flex items-center justify-center shadow-glow-cyan">
+                <ShieldCheck className="w-6 h-6 text-[#0a192f]" />
               </div>
               <div className="flex-1 text-left">
                 <p className="text-sm font-semibold text-white group-hover:text-thuy-100 transition-colors">
@@ -99,10 +99,10 @@ function LoginForm() {
             <button
               type="button"
               onClick={() => setSelectedRole("customer")}
-              className="w-full flex items-center gap-4 p-4 rounded-2xl bg-thuy-900/60 border border-thuy-700 hover:border-thuy-400 hover:bg-thuy-900/80 transition-all group"
+              className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#112240]/80 border border-white/10 hover:border-accent hover:bg-gradient-to-r hover:from-cyan-400/10 hover:to-blue-500/10 transition-all duration-300 ease-out-quart group"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-thuy-400 to-aqua-400 flex items-center justify-center shadow-lg">
-                <User className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-300 to-blue-500 flex items-center justify-center shadow-glow-cyan">
+                <User className="w-6 h-6 text-[#0a192f]" />
               </div>
               <div className="flex-1 text-left">
                 <p className="text-sm font-semibold text-white group-hover:text-thuy-100 transition-colors">
@@ -119,10 +119,10 @@ function LoginForm() {
             <button
               type="button"
               onClick={handleBack}
-              className="flex items-center gap-2 text-xs text-slate-400 hover:text-thuy-300 transition-colors"
+              className="flex items-center gap-2 text-xs text-slate-400 hover:text-accent transition-colors duration-300 ease-out-quart"
             >
               <ChevronLeft className="w-4 h-4" />
-              Quay lại chọn loại tài khoản
+              Quay láº¡i chá»n loáº¡i tÃ i khoáº£n
             </button>
 
             <div className="space-y-3">
