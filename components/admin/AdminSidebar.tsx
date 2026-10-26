@@ -41,18 +41,18 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-thuy-950 border-r border-thuy-750 flex flex-col h-screen sticky top-0">
+    <aside className="w-64 bg-navy-900 border-r border-navy-800 flex flex-col h-screen sticky top-0">
       {/* Brand Header */}
-      <div className="p-5 border-b border-thuy-750/80 flex items-center justify-between">
+      <div className="p-5 border-b border-navy-800/80 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-thuy-400 to-thuy-600 flex items-center justify-center font-display font-extrabold text-thuy-950 text-sm shadow-glow-cyan">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-navy-800 flex items-center justify-center font-display font-extrabold text-white text-sm shadow-sm">
             ACD
           </div>
           <div>
             <span className="font-display font-bold text-sm tracking-wide text-white block">
               ACD ADMIN CMS
             </span>
-            <span className="text-[10px] text-thuy-400 font-medium">Hệ Thống Động Toàn Diện</span>
+            <span className="text-[10px] text-silver-400 font-medium">Hệ Thống Đồng Toàn Diện</span>
           </div>
         </Link>
       </div>
@@ -73,12 +73,12 @@ export default function AdminSidebar() {
               href={item.href}
               className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
                 isActive
-                  ? "bg-thuy-400 text-thuy-950 font-bold shadow-glow-cyan"
-                  : "text-slate-300 hover:text-white hover:bg-thuy-850"
+                  ? "bg-blue-600 text-white font-bold shadow-sm"
+                  : "text-silver-400 hover:text-white hover:bg-navy-800"
               }`}
             >
               <div className="flex items-center gap-3">
-                <Icon className={`w-4 h-4 ${isActive ? "text-thuy-950" : "text-thuy-400"}`} />
+                <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-silver-400"}`} />
                 <span>{item.label}</span>
               </div>
               {isActive && <ChevronRight className="w-3.5 h-3.5" />}
@@ -88,7 +88,7 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Footer link to public website & logout */}
-      <div className="p-3.5 border-t border-thuy-750/80 space-y-2 bg-thuy-900/40">
+      <div className="p-3.5 border-t border-navy-800/80 space-y-2 bg-navy-950/40">
         <Link
           href="/"
           target="_blank"
