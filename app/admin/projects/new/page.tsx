@@ -323,7 +323,7 @@ export default function NewProjectPage() {
             href="/admin/catalog?tab=MANAGE"
             className="px-5 py-2.5 rounded-xl bg-thuy-850 text-slate-300 hover:text-white text-xs font-semibold border border-thuy-750"
           >
-            Há»§y
+            Hủy
           </Link>
           <button
             type="submit"
