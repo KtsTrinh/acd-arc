@@ -3,7 +3,7 @@
 import React, { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ChevronLeft, ShieldCheck, User } from "lucide-react";
 import SocialButtons from "@/components/auth/SocialButtons";
 
 const OAUTH_ERRORS: Record<string, string> = {
@@ -19,11 +19,14 @@ const OAUTH_ERRORS: Record<string, string> = {
   forbidden: "Tài khoản này không có quyền truy cập khu vực này.",
 };
 
+type LoginRole = "admin" | "customer" | null;
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [error, setError] = useState("");
+  const [selectedRole, setSelectedRole] = useState<LoginRole>(null);
 
   useEffect(() => {
     const oauthError = searchParams.get("error");
@@ -37,6 +40,11 @@ function LoginForm() {
     fromParam && fromParam.startsWith("/") && !fromParam.startsWith("//")
       ? fromParam
       : null;
+
+  const handleBack = () => {
+    setSelectedRole(null);
+    setError("");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -55,7 +63,9 @@ function LoginForm() {
             Đăng Nhập
           </h2>
           <p className="text-xs text-slate-400">
-            Chào mừng bạn quay lại
+            {selectedRole
+              ? "Chọn phương thức đăng nhập"
+              : "Chào mừng bạn quay lại"}
           </p>
         </div>
 
@@ -66,21 +76,73 @@ function LoginForm() {
           </div>
         )}
 
-        <div className="space-y-6">
+        {!selectedRole ? (
           <div className="space-y-3">
-            <p className="text-xs text-slate-400 text-center font-semibold uppercase tracking-wider">
-              Dành cho quản trị viên
-            </p>
-            <SocialButtons text="Đăng nhập" from="/admin" />
-          </div>
+            <button
+              type="button"
+              onClick={() => setSelectedRole("admin")}
+              className="w-full flex items-center gap-4 p-4 rounded-2xl bg-thuy-900/60 border border-thuy-700 hover:border-thuy-400 hover:bg-thuy-900/80 transition-all group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+                <ShieldCheck className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-semibold text-white group-hover:text-thuy-100 transition-colors">
+                  Quản trị viên
+                </p>
+                <p className="text-xs text-slate-400">
+                  Đăng nhập vào trang quản trị
+                </p>
+              </div>
+            </button>
 
-          <div className="space-y-3">
-            <p className="text-xs text-slate-400 text-center font-semibold uppercase tracking-wider">
-              Dành cho khách hàng
-            </p>
-            <SocialButtons text="Đăng nhập" from="/account" />
+            <button
+              type="button"
+              onClick={() => setSelectedRole("customer")}
+              className="w-full flex items-center gap-4 p-4 rounded-2xl bg-thuy-900/60 border border-thuy-700 hover:border-thuy-400 hover:bg-thuy-900/80 transition-all group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-thuy-400 to-aqua-400 flex items-center justify-center shadow-lg">
+                <User className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-semibold text-white group-hover:text-thuy-100 transition-colors">
+                  Khách hàng
+                </p>
+                <p className="text-xs text-slate-400">
+                  Đăng nhập để mua hàng và quản lý tài khoản
+                </p>
+              </div>
+            </button>
           </div>
-        </div>
+        ) : (
+          <div className="space-y-6">
+            <button
+              type="button"
+              onClick={handleBack}
+              className="flex items-center gap-2 text-xs text-slate-400 hover:text-thuy-300 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Quay lại chọn loại tài khoản
+            </button>
+
+            <div className="space-y-3">
+              <div className="text-center">
+                <p className="text-sm font-medium text-white">
+                  {selectedRole === "admin"
+                    ? "Đăng nhập dành cho Quản trị viên"
+                    : "Đăng nhập dành cho Khách hàng"}
+                </p>
+                <p className="text-xs text-slate-400 mt-1">
+                  Sử dụng tài khoản Google hoặc Facebook
+                </p>
+              </div>
+              <SocialButtons
+                text="Đăng nhập"
+                from={selectedRole === "admin" ? "/admin" : "/account"}
+              />
+            </div>
+          </div>
+        )}
 
         <div className="text-center text-xs text-slate-400">
           Chưa có tài khoản? Đăng nhập bằng Google hoặc Facebook để tạo tài khoản tự động.
