@@ -186,7 +186,7 @@ export default function NewProjectPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Danh má»¥c:</label>
+              <label className="text-xs text-slate-300">Danh mục:</label>
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
@@ -212,7 +212,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Phong cÃ¡ch:</label>
+              <label className="text-xs text-slate-300">Phong cách:</label>
               <input
                 type="text"
                 value={style}
@@ -234,7 +234,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">NÄƒm hoÃ n thÃ nh:</label>
+              <label className="text-xs text-slate-300">Năm hoàn thành:</label>
               <input
                 type="number"
                 value={year}
