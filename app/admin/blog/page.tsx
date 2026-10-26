@@ -156,7 +156,7 @@ export default function AdminBlogPage() {
           <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
           <div className="relative z-10 w-full max-w-2xl bg-thuy-900 border border-thuy-700 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-white">Soáº¡n Tháº£o BÃ i Viáº¿t Má»›i</h3>
+              <h3 className="font-semibold text-base text-white">Soạn Thảo Bài Viết Mới</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
@@ -170,7 +170,7 @@ export default function AdminBlogPage() {
                   required
                   value={title}
                   onChange={(e) => handleTitleChange(e.target.value)}
-                  placeholder="á»¨ng dá»¥ng yáº¿u tá»‘ Thá»§y trong kiáº¿n trÃºc..."
+                  placeholder="Ấn vào đây để nhập tiêu đề bài viết..."
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
@@ -196,18 +196,18 @@ export default function AdminBlogPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">TÃ³m táº¯t ngáº¯n (Excerpt):</label>
+                <label className="text-xs text-slate-300">Tóm tắt ngắn (Excerpt):</label>
                 <input
                   type="text"
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
-                  placeholder="TÃ³m táº¯t ná»™i dung 1-2 cÃ¢u..."
+                  placeholder="Tóm tắt ngắn nội dung bài viết khoảng 1-2 câu..."
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Ná»™i dung chi tiáº¿t *:</label>
+                <label className="text-xs text-slate-300">Nội dung chi tiết *:</label>
                 <textarea
                   rows={8}
                   required
@@ -224,7 +224,7 @@ export default function AdminBlogPage() {
                 className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan flex items-center justify-center gap-2"
               >
                 {isCreating && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>Xuáº¥t Báº£n BÃ i Viáº¿t</span>
+                <span>XUẤT BẢN BÀI VIẾT</span>
               </button>
             </form>
           </div>
