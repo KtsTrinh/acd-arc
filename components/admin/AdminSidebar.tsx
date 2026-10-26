@@ -42,10 +42,11 @@ export default function AdminSidebar() {
 
   return (
     <aside
-      className="w-64 flex flex-col h-screen sticky top-0 z-20"
+      className="w-64 flex flex-col h-screen sticky top-0 z-20 border-r"
       style={{
-        background: "linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%)",
-        boxShadow: "4px 0 24px rgba(0, 102, 204, 0.08)",
+        background: "#ffffff",
+        borderColor: "#e2e8f0",
+        boxShadow: "4px 0 20px rgba(0, 50, 100, 0.05)",
       }}
     >
       {/* Brand Header */}
@@ -77,22 +78,23 @@ export default function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`group flex items-center justify-between px-3 py-2.5 text-xs font-medium transition-all duration-300 ease-out rounded-[12px] ${
+              className={`group flex items-center justify-between px-3 py-2.5 text-xs font-medium transition-all duration-200 ease rounded-[12px] ${
                 isActive
                   ? "text-white font-bold shadow-[0_4px_16px_rgba(0,102,204,0.35)]"
-                  : "text-slate-700 hover:text-slate-900 hover:bg-[#e0f0ff] hover:translate-x-1"
+                  : "text-[#334155] hover:text-[#0284c7] hover:bg-[#f0f7ff] hover:translate-x-1"
               }`}
               style={
                 isActive
-                  ? { background: "#0066cc" }
-                  : undefined
+                  ? { background: "#0066cc", fontWeight: 500 }
+                  : { fontWeight: 500 }
               }
             >
-              {isActive && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-white/80" />
-              )}
               <div className="flex items-center gap-3">
-                <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-[#0066cc] group-hover:scale-110 transition-transform"}`} />
+                <Icon
+                  className={`w-4 h-4 ${
+                    isActive ? "text-white" : "text-[#334155] group-hover:text-[#0284c7] transition-colors"
+                  }`}
+                />
                 <span>{item.label}</span>
               </div>
               {isActive && <ChevronRight className="w-3.5 h-3.5" />}
