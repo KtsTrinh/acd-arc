@@ -165,7 +165,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">BÃ i viáº¿t chi tiáº¿t dá»± Ã¡n:</label>
+              <label className="text-xs text-slate-300 font-medium">BÀI VIẾT CHI TIẾT DỰ ÁN:</label>
               <textarea
                 rows={6}
                 value={description}
@@ -248,7 +248,7 @@ export default function NewProjectPage() {
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="Háº¡ Long, Quáº£ng Ninh"
+                placeholder="Hạ Long, Quảng Ninh"
                 className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
