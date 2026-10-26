@@ -170,7 +170,7 @@ export default function NewProjectPage() {
                 rows={6}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ã tÆ°á»Ÿng thiáº¿t káº¿, giáº£i phÃ¡p káº¿t cáº¥u, váº­t liá»‡u..."
+                placeholder="Ấn vào đây để nhập nội dung, giải pháp kỹ thuật, vật liệu..."
                 className="w-full p-3.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white leading-relaxed"
               />
             </div>
@@ -205,7 +205,7 @@ export default function NewProjectPage() {
                 type="text"
                 value={buildingType}
                 onChange={(e) => setBuildingType(e.target.value)}
-                placeholder="Biá»‡t thá»±, NhÃ  phá»‘, Penthouse..."
+                placeholder="Biệt thự, Nhà phố, Penthouse..."
                 className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
@@ -243,7 +243,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Äá»‹a Ä‘iá»ƒm:</label>
+              <label className="text-xs text-slate-300">Địa điểm:</label>
               <input
                 type="text"
                 value={location}
@@ -265,11 +265,10 @@ export default function NewProjectPage() {
                     key={t.id}
                     type="button"
                     onClick={() => toggleTag(t.id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      isSelected
-                        ? "bg-thuy-400 text-thuy-950 font-bold shadow-sm"
-                        : "bg-thuy-900 text-slate-400 border border-thuy-700 hover:text-white"
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${isSelected
+                      ? "bg-thuy-400 text-thuy-950 font-bold shadow-sm"
+                      : "bg-thuy-900 text-slate-400 border border-thuy-700 hover:text-white"
+                      }`}
                   >
                     #{t.name}
                   </button>

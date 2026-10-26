@@ -7,5 +7,6 @@
   "git.enableSmartCommit": true,
   "files.autoSave": "afterDelay",
   "files.autoSaveDelay": 1500,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "gitdoc.enabled": true
 }
