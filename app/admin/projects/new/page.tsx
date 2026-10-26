@@ -64,7 +64,7 @@ export default function NewProjectPage() {
     setError("");
 
     if (!title) {
-      setError("Vui lÃ²ng nháº­p tÃªn dá»± Ã¡n.");
+      setError("Vui lòng nhập tên dự án.");
       return;
     }
 
@@ -112,9 +112,9 @@ export default function NewProjectPage() {
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-thuy-400"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Quay láº¡i danh sÃ¡ch dá»± Ã¡n</span>
+          <span>Quay lại danh sách dự án</span>
         </Link>
-        <h1 className="font-display font-bold text-xl text-white">ThÃªm Dá»± Ãn Kiáº¿n TrÃºc Má»›i</h1>
+        <h1 className="font-display font-bold text-xl text-white">Thêm Dự Án Kiến Trúc Mới</h1>
       </div>
 
       {error && (
@@ -127,12 +127,12 @@ export default function NewProjectPage() {
         {/* Basic Info Card */}
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
           <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-2">
-            1. ThÃ´ng Tin CÆ¡ Báº£n & Äá»‹nh Danh
+            1. Thông Tin Cơ Bản & Định Danh
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">TÃªn dá»± Ã¡n *:</label>
+              <label className="text-xs text-slate-300 font-medium">Tên dự án *:</label>
               <input
                 type="text"
                 required
@@ -144,7 +144,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">ÄÆ°á»ng dáº«n tÄ©nh (Slug):</label>
+              <label className="text-xs text-slate-300 font-medium">Đường dẫn tĩnh (Slug):</label>
               <input
                 type="text"
                 required
@@ -155,7 +155,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">MÃ´ táº£ tÃ³m táº¯t:</label>
+              <label className="text-xs text-slate-300 font-medium">Mô tả tóm tắt:</label>
               <input
                 type="text"
                 value={shortDesc}
@@ -181,7 +181,7 @@ export default function NewProjectPage() {
         {/* Specifications & Classification */}
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
           <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-2">
-            2. ThÃ´ng Sá»‘ Ká»¹ Thuáº­t & PhÃ¢n Loáº¡i
+            2. Thông Số Kỹ Thuật & Phân Loại
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
