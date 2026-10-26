@@ -264,7 +264,7 @@ export default function AdminCatalogClient({
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan transition-all self-start sm:self-auto"
           >
             <Plus className="w-4 h-4" />
-            <span>+ Thêm mục</span>
+            <span>Thêm mục</span>
           </button>
         )}
       </div>
@@ -652,7 +652,7 @@ function CatalogTable({
     return (
       <div className="py-16 text-center text-slate-400 text-xs rounded-2xl bg-thuy-850/50 border border-thuy-750">
         <Package className="w-8 h-8 mx-auto mb-3 text-slate-600" />
-        Nhóm <b className="text-white">{group?.label}</b> chưa có mục nào. Bấm “+ Thêm mục” để
+        Nhóm <b className="text-white">{group?.label}</b> chưa có mục nào. Bấm “Thêm mục” để
         tạo mục danh mục đầu tiên.
       </div>
     );
