@@ -59,10 +59,10 @@ function LoginForm() {
               ACD
             </div>
           </Link>
-          <h2 className="font-display font-bold text-2xl text-white">
+          <h2 className="font-display font-bold text-2xl text-[#e6f1ff]">
             Đăng Nhập
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-300">
             {selectedRole
               ? "Chọn phương thức đăng nhập"
               : "Chào mừng bạn quay lại"}
@@ -87,10 +87,10 @@ function LoginForm() {
                 <ShieldCheck className="w-6 h-6 text-[#0a192f]" />
               </div>
               <div className="flex-1 text-left">
-                <p className="text-sm font-semibold text-white group-hover:text-thuy-100 transition-colors">
+                <p className="text-sm font-semibold text-[#e6f1ff] group-hover:text-accent transition-colors duration-300">
                   Quản trị viên
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-300">
                   Đăng nhập vào trang quản trị
                 </p>
               </div>
@@ -105,10 +105,10 @@ function LoginForm() {
                 <User className="w-6 h-6 text-[#0a192f]" />
               </div>
               <div className="flex-1 text-left">
-                <p className="text-sm font-semibold text-white group-hover:text-thuy-100 transition-colors">
+                <p className="text-sm font-semibold text-[#e6f1ff] group-hover:text-accent transition-colors duration-300">
                   Khách hàng
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-300">
                   Đăng nhập để mua hàng và quản lý tài khoản
                 </p>
               </div>
@@ -127,12 +127,12 @@ function LoginForm() {
 
             <div className="space-y-3">
               <div className="text-center">
-                <p className="text-sm font-medium text-white">
+                <p className="text-sm font-medium text-[#e6f1ff]">
                   {selectedRole === "admin"
                     ? "Đăng nhập dành cho Quản trị viên"
                     : "Đăng nhập dành cho Khách hàng"}
                 </p>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-slate-300 mt-1">
                   Sử dụng tài khoản Google hoặc Facebook
                 </p>
               </div>
@@ -144,7 +144,7 @@ function LoginForm() {
           </div>
         )}
 
-        <div className="text-center text-xs text-slate-400">
+        <div className="text-center text-xs text-slate-300">
           Chưa có tài khoản? Đăng nhập bằng Google hoặc Facebook để tạo tài khoản tự động.
         </div>
       </div>
