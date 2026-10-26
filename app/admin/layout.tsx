@@ -13,7 +13,7 @@ export default async function AdminLayout({
   const user = await getCurrentUser();
 
   // If not logged in or not admin, redirect to login
-  if (!user || user.role !== "ADMIN") {
+  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
     redirect("/login?error=admin_required");
   }
 

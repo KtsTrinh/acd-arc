@@ -17,7 +17,7 @@ export interface JWTPayload {
   userId: string;
   email?: string | null;
   phone?: string | null;
-  role: "USER" | "ADMIN";
+  role: "USER" | "ADMIN" | "SUPER_ADMIN";
   type?: "session" | "two_factor" | "signup";
 }
 
@@ -68,7 +68,7 @@ export function createSessionToken(user: {
   id: string;
   email?: string | null;
   phone?: string | null;
-  role: "USER" | "ADMIN";
+  role: "USER" | "ADMIN" | "SUPER_ADMIN";
 }): string {
   return signJwtToken({
     userId: user.id,
@@ -83,7 +83,7 @@ export function createTwoFactorToken(user: {
   id: string;
   email?: string | null;
   phone?: string | null;
-  role: "USER" | "ADMIN";
+  role: "USER" | "ADMIN" | "SUPER_ADMIN";
 }): string {
   return signJwtToken(
     {
@@ -192,7 +192,7 @@ export async function provisionOAuthUser(
       where: { id: existingAccount.userId },
       data: {
         ...(await buildProfileUpdate(profile, existingAccount.userId)),
-        ...( (process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com,trinhhogntu.kts@gmail.com").split(",").map(e=>e.trim().toLowerCase()).includes((profile.email||"").toLowerCase()) ? { role: "ADMIN" } : {}),
+        ...((process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com,trinhhogntu.kts@gmail.com").split(",").map(e=>e.trim().toLowerCase()).includes((profile.email||"").toLowerCase()) ? { role: "SUPER_ADMIN" } : {}),
       },
     });
   }
@@ -217,14 +217,14 @@ export async function provisionOAuthUser(
       where: { id: matchedUser.id },
       data: {
         ...(await buildProfileUpdate(profile, matchedUser.id)),
-        ...(isAdminEmail(profile.email) || (await prisma.user.count({ where: { role: "ADMIN" } })) === 0 ? { role: "ADMIN" } : {}),
+        ...((process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com,trinhhogntu.kts@gmail.com").split(",").map(e=>e.trim().toLowerCase()).includes((profile.email||"").toLowerCase()) ? { role: "SUPER_ADMIN" } : {}),
       },
     });
   }
 
   const created = await prisma.user.create({
     data: {
-      role: isAdminEmail(profile.email) || (await prisma.user.count({ where: { role: "ADMIN" } })) === 0 ? "ADMIN" : "USER",
+      role: (process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com,trinhhogntu.kts@gmail.com").split(",").map(e=>e.trim().toLowerCase()).includes((profile.email||"").toLowerCase()) ? "SUPER_ADMIN" : (await prisma.user.count({ where: { role: "ADMIN" } })) === 0 && (await prisma.user.count({ where: { role: "SUPER_ADMIN" } })) === 0 ? "SUPER_ADMIN" : "USER",
       provider: profile.provider,
       providerId: profile.providerId,
       ...(await buildProfileUpdate(profile, null)),

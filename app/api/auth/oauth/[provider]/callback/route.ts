@@ -69,13 +69,13 @@ export async function GET(
       role: user.role,
     });
 
-    if (redirectAfterLogin === "/admin" && user.role !== "ADMIN") {
+    if (redirectAfterLogin === "/admin" && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") {
       return fail(request, "admin_required");
     }
 
     const target = new URL(
       redirectAfterLogin ||
-        (user.role === "ADMIN" ? "/admin" : "/account"),
+        (user.role === "ADMIN" || user.role === "SUPER_ADMIN" ? "/admin" : "/account"),
       request.url
     );
 
