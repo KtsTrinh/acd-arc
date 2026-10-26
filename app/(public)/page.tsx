@@ -165,27 +165,6 @@ export default async function HomePage() {
 
       {/* Content */}
       <div className="relative z-10 flex min-h-screen flex-col">
-        {/* Top bar */}
-        <header className="flex items-center justify-between px-6 sm:px-12 py-6">
-          <Link href="/" className="font-display font-bold text-xl text-white tracking-widest">
-            {settings.siteName || "ACD ARCHITECTURE"}
-          </Link>
-          <nav className="hidden md:flex items-center gap-8 text-sm text-slate-200">
-            <Link href="/projects" className="hover:text-white transition-colors">
-              Dự Án
-            </Link>
-            <Link href="/products" className="hover:text-white transition-colors">
-              Tài Nguyên
-            </Link>
-            <Link href="/blog" className="hover:text-white transition-colors">
-              Tạp Chí
-            </Link>
-            <Link href="/login" className="hover:text-white transition-colors">
-              Đăng Nhập
-            </Link>
-          </nav>
-        </header>
-
         {/* Hero center */}
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center space-y-10">
           <div className="space-y-4 max-w-3xl">
