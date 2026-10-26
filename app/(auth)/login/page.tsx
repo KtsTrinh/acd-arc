@@ -122,7 +122,7 @@ function LoginForm() {
               className="flex items-center gap-2 text-xs text-slate-400 hover:text-accent transition-colors duration-300 ease-out-quart"
             >
               <ChevronLeft className="w-4 h-4" />
-              Quay láº¡i chá»n loáº¡i tÃ i khoáº£n
+              Quay lại chọn loại tài khoản
             </button>
 
             <div className="space-y-3">
