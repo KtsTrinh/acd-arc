@@ -18,18 +18,18 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-thuy-900 text-slate-100">
+    <div className="flex min-h-screen bg-gradient-to-br from-white via-cyan-50 to-blue-50 text-slate-800">
       <AdminSidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 border-b border-thuy-750 bg-thuy-950/80 px-8 flex items-center justify-between sticky top-0 z-30 backdrop-blur-md">
+        <header className="h-16 border-b border-slate-200/60 bg-white/70 px-8 flex items-center justify-between sticky top-0 z-30 backdrop-blur-xl">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs text-slate-300 font-medium">Hệ Thống Trực Tuyến ACD Studio</span>
+            <span className="text-xs text-slate-600 font-medium">Hệ Thống Trực Tuyến ACD Studio</span>
           </div>
 
           <div className="flex items-center gap-3 text-xs">
-            <span className="text-slate-400">Đang quản trị:</span>
-            <span className="font-semibold text-white px-2.5 py-1 rounded-lg bg-thuy-850 border border-thuy-700">
+            <span className="text-slate-500">Đang quản trị:</span>
+            <span className="font-semibold text-slate-900 px-2.5 py-1 rounded-lg bg-white/80 border border-slate-200 shadow-sm">
               {user.name} ({user.email})
             </span>
           </div>

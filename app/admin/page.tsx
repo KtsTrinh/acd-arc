@@ -53,7 +53,7 @@ export default async function AdminDashboardPage() {
       icon: Building2,
       sub: "Công trình & Portfolio",
       href: "/admin/catalog?tab=MANAGE",
-      color: "text-thuy-400",
+       color: "text-cyan-600",
     },
     {
       label: "Danh Mục Sản Phẩm",
@@ -61,7 +61,7 @@ export default async function AdminDashboardPage() {
       icon: Package,
       sub: "Kiến trúc · Nội thất · Xây dựng · File",
       href: "/admin/catalog",
-      color: "text-aqua-400",
+       color: "text-blue-600",
     },
     {
       label: "Đơn Hàng",
@@ -86,18 +86,18 @@ export default async function AdminDashboardPage() {
       {/* Page Title & Quick Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
-            Dashboard Tổng Quan
-          </h1>
-          <p className="text-xs text-slate-400">
-            Hệ thống quản trị kiến trúc ACD: Portfolio, Media Library dùng chung & Thương mại điện tử
-          </p>
+       <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-900">
+             Dashboard Tổng Quan
+           </h1>
+           <p className="text-xs text-slate-500">
+             Hệ thống quản trị kiến trúc ACD: Portfolio, Media Library dùng chung & Thương mại điện tử
+           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
           <Link
             href="/admin/projects/new"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110 shadow-glow-cyan transition-all"
+             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-xs hover:brightness-110 shadow-lg shadow-cyan-500/25 transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Thêm Dự Án Mới</span>
@@ -105,9 +105,9 @@ export default async function AdminDashboardPage() {
 
           <Link
             href="/admin/media"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-thuy-800 text-slate-200 hover:text-white hover:bg-thuy-750 border border-thuy-700 text-xs font-semibold transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/80 text-slate-700 hover:text-slate-900 hover:bg-white border border-slate-200 text-xs font-semibold transition-all"
           >
-            <ImageIcon className="w-3.5 h-3.5 text-thuy-400" />
+            <ImageIcon className="w-3.5 h-3.5 text-cyan-600" />
             <span>Upload Media</span>
           </Link>
         </div>
@@ -121,20 +121,20 @@ export default async function AdminDashboardPage() {
             <Link
               key={idx}
               href={s.href}
-              className="p-5 rounded-2xl bg-thuy-850/90 border border-thuy-750 hover:border-thuy-500 transition-all duration-200 hover:shadow-card-dark flex flex-col justify-between space-y-4"
+               className="p-5 rounded-2xl bg-white/70 backdrop-blur-xl border border-white/60 hover:border-cyan-300 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(14,165,233,0.15)] hover:-translate-y-1 flex flex-col justify-between space-y-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-slate-400">{s.label}</span>
-                <div className="p-2 rounded-xl bg-thuy-900 border border-thuy-700">
+                <span className="text-xs font-medium text-slate-500">{s.label}</span>
+                <div className="p-2 rounded-xl bg-cyan-50 border border-cyan-100 transition-transform group-hover:scale-110">
                   <Icon className={`w-4 h-4 ${s.color}`} />
                 </div>
               </div>
 
               <div>
-                <span className="font-display font-extrabold text-2xl sm:text-3xl text-white block">
+                <span className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 block">
                   {s.value}
                 </span>
-                <span className="text-[11px] text-slate-400 mt-1 block">{s.sub}</span>
+                <span className="text-[11px] text-slate-500 mt-1 block">{s.sub}</span>
               </div>
             </Link>
           );
@@ -142,17 +142,17 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Recent Orders Section */}
-      <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden">
-        <div className="p-5 border-b border-thuy-750 flex items-center justify-between">
+       <div className="rounded-2xl bg-white/70 backdrop-blur-xl border border-white/60 overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+        <div className="p-5 border-b border-slate-200/60 flex items-center justify-between">
           <div>
-            <h2 className="font-semibold text-base text-white">Đơn Hàng Gần Đây</h2>
-            <p className="text-xs text-slate-400">
+            <h2 className="font-semibold text-base text-slate-900">Đơn Hàng Gần Đây</h2>
+            <p className="text-xs text-slate-500">
               Kiểm tra trạng thái đơn hàng và các liên kết tải tài nguyên đã sinh
             </p>
           </div>
           <Link
             href="/admin/orders"
-            className="text-xs text-thuy-400 hover:text-white font-medium flex items-center gap-1 transition-colors"
+            className="text-xs text-cyan-600 hover:text-cyan-800 font-medium flex items-center gap-1 transition-colors"
           >
             <span>Xem tất cả</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -161,7 +161,7 @@ export default async function AdminDashboardPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+            <thead className="bg-slate-50/80 text-slate-500 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-200/60">
               <tr>
                 <th className="py-3 px-5">Mã Đơn</th>
                 <th className="py-3 px-5">Khách Hàng</th>
@@ -172,28 +172,28 @@ export default async function AdminDashboardPage() {
                 <th className="py-3 px-5 text-right">Chi Tiết</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-thuy-750/60">
+            <tbody className="divide-y divide-slate-200/60">
               {recentOrders.map((o) => (
-                <tr key={o.id} className="hover:bg-thuy-800/40 transition-colors">
-                  <td className="py-3.5 px-5 font-mono font-bold text-white">
+                <tr key={o.id} className="hover:bg-cyan-50/40 transition-colors">
+                  <td className="py-3.5 px-5 font-mono font-bold text-slate-900">
                     #{o.orderNumber}
                   </td>
                   <td className="py-3.5 px-5">
-                    <p className="font-medium text-slate-200">{o.customerName}</p>
-                    <p className="text-[10px] text-slate-400">{o.customerEmail}</p>
+                    <p className="font-medium text-slate-800">{o.customerName}</p>
+                    <p className="text-[10px] text-slate-500">{o.customerEmail}</p>
                   </td>
-                  <td className="py-3.5 px-5 text-slate-300">
+                  <td className="py-3.5 px-5 text-slate-600">
                     {o.items.length} sản phẩm
                   </td>
-                  <td className="py-3.5 px-5 font-bold text-thuy-400">
+                  <td className="py-3.5 px-5 font-bold text-cyan-700">
                     {formatVND(o.total)}
                   </td>
                   <td className="py-3.5 px-5">
                     <span
                       className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                         o.status === "PAID"
-                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                          : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                          ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+                          : "bg-amber-100 text-amber-700 border border-amber-200"
                       }`}
                     >
                       {o.status === "PAID" ? (
@@ -206,18 +206,18 @@ export default async function AdminDashboardPage() {
                   </td>
                   <td className="py-3.5 px-5">
                     {o.downloads.length > 0 ? (
-                      <span className="text-emerald-400 font-medium">
+                      <span className="text-emerald-600 font-medium">
                         {o.downloads.length} Token Active
                       </span>
                     ) : (
-                      <span className="text-slate-500">Chưa cấp</span>
+                      <span className="text-slate-400">Chưa cấp</span>
                     )}
                   </td>
                   <td className="py-3.5 px-5 text-right">
                     <Link
                       href={`/orders/${o.id}`}
                       target="_blank"
-                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-300 hover:text-white inline-flex items-center gap-1"
+                      className="p-1.5 rounded-lg bg-slate-100 hover:bg-cyan-100 text-slate-600 hover:text-cyan-700 inline-flex items-center gap-1 transition-colors"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </Link>
