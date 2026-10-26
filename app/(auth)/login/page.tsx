@@ -16,6 +16,7 @@ const OAUTH_ERRORS: Record<string, string> = {
   oauth_missing_profile: "Không lấy được thông tin tài khoản từ nhà cung cấp.",
   oauth_failed: "Đăng nhập bằng nhà cung cấp không thành công. Vui lòng thử lại.",
   admin_required: "Tài khoản này không có quyền quản trị. Vui lòng đăng nhập bằng tài khoản admin.",
+  forbidden: "Tài khoản này không có quyền truy cập khu vực này.",
 };
 
 function LoginForm() {

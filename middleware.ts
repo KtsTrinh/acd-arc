@@ -31,7 +31,7 @@ export function middleware(request: NextRequest) {
       }
 
       // Check ADMIN role
-      if (payload.role !== "ADMIN") {
+      if (payload.role !== "ADMIN" && payload.role !== "SUPER_ADMIN") {
         return NextResponse.redirect(new URL("/account?error=forbidden", request.url));
       }
     } catch {
