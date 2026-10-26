@@ -41,7 +41,13 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-white/70 backdrop-blur-xl border-r border-slate-200/60 flex flex-col h-screen sticky top-0 shadow-[inset_-1px_0_0_rgba(255,255,255,0.6)]">
+    <aside
+      className="w-64 flex flex-col h-screen sticky top-0 z-20"
+      style={{
+        background: "linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%)",
+        boxShadow: "4px 0 24px rgba(0, 102, 204, 0.08)",
+      }}
+    >
       {/* Brand Header */}
       <div className="p-5 border-b border-slate-200/60 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-2.5">
@@ -71,17 +77,22 @@ export default function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 relative ${
+              className={`group flex items-center justify-between px-3 py-2.5 text-xs font-medium transition-all duration-300 ease-out rounded-[12px] ${
                 isActive
-                  ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold shadow-lg shadow-cyan-500/25"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-cyan-50"
+                  ? "text-white font-bold shadow-[0_4px_16px_rgba(0,102,204,0.35)]"
+                  : "text-slate-700 hover:text-slate-900 hover:bg-[#e0f0ff] hover:translate-x-1"
               }`}
+              style={
+                isActive
+                  ? { background: "#0066cc" }
+                  : undefined
+              }
             >
               {isActive && (
                 <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-white/80" />
               )}
               <div className="flex items-center gap-3">
-                <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-cyan-600 group-hover:scale-110 transition-transform"}`} />
+                <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-[#0066cc] group-hover:scale-110 transition-transform"}`} />
                 <span>{item.label}</span>
               </div>
               {isActive && <ChevronRight className="w-3.5 h-3.5" />}
