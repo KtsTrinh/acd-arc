@@ -81,7 +81,7 @@ export default function AdminBlogPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
-            Quáº£n LÃ½ Táº¡p ChÃ­ & BÃ i Viáº¿t Kiáº¿n TrÃºc
+            Quản Lý Tạp Chí & Bài Viết Kiến Trúc
           </h1>
           <p className="text-xs text-slate-400">
             Nghiên cứu phong thủy hình thái, xu hướng thiết kế, biến tất cả bài viết thành vũ khí truyền thông siêu hạng.
@@ -93,7 +93,7 @@ export default function AdminBlogPage() {
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
-          <span>+ Viáº¿t BÃ i Má»›i</span>
+          <span>+ VIẾT BÀI MỚI</span>
         </button>
       </div>
 
@@ -104,9 +104,9 @@ export default function AdminBlogPage() {
             <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
                 <th className="py-3 px-5">ẢNH BÌA</th>
-                <th className="py-3 px-5">TiÃªu Äá» BÃ i Viáº¿t</th>
+                <th className="py-3 px-5">TIÊU ĐỀ BÀI VIẾT</th>
                 <th className="py-3 px-5">LƯỢT XEM</th>
-                <th className="py-3 px-5">NgÃ y ÄÄƒng</th>
+                <th className="py-3 px-5">NGÀY ĐĂNG</th>
                 <th className="py-3 px-5 text-right">Xem Public</th>
               </tr>
             </thead>
