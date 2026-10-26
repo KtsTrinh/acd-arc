@@ -54,6 +54,7 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
   const [mediaTarget, setMediaTarget] = useState<
@@ -68,6 +69,15 @@ export default function AdminSettingsPage() {
       })
       .catch(() => setMessage({ type: "err", text: "Không tải được cấu hình." }))
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.user?.role === "SUPER_ADMIN") setIsSuperAdmin(true);
+      })
+      .catch(() => {});
   }, []);
 
   const update = (key: string, value: string) => {
@@ -814,6 +824,7 @@ export default function AdminSettingsPage() {
       )}
 
       {/* Payment / Bank info (Super Admin) */}
+      {isSuperAdmin && (
       <div className="rounded-2xl bg-thuy-850 border border-thuy-750 p-6 space-y-4">
         <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-2">
           Thông Tin Thanh Toán (Super Admin)
@@ -837,6 +848,7 @@ export default function AdminSettingsPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Save bar */}
       <div className="sticky bottom-0 flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl bg-thuy-950/90 border border-thuy-750 backdrop-blur-md">
