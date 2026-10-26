@@ -241,7 +241,6 @@ export default function AdminBlogPage() {
           }
         }}
         multiple={false}
-                    Chọn từ Media Library
       />
     </div>
   );
