@@ -127,14 +127,6 @@ function LoginForm() {
 
             <div className="space-y-3">
               <div className="text-center">
-                <p className="text-sm font-medium text-[#e6f1ff]">
-                  {selectedRole === "admin"
-                    ? "Đăng nhập dành cho Quản trị viên"
-                    : "Đăng nhập dành cho Khách hàng"}
-                </p>
-                <p className="text-xs text-slate-300 mt-1">
-                  Sử dụng tài khoản Google hoặc Facebook
-                </p>
               </div>
               <SocialButtons
                 text="Đăng nhập"
@@ -143,11 +135,6 @@ function LoginForm() {
             </div>
           </div>
         )}
-
-        <div className="text-center text-xs text-slate-300 space-y-1">
-          <p>Chưa có tài khoản?</p>
-          <p>Đăng nhập bằng Google hoặc Facebook để tạo tài khoản tự động.</p>
-        </div>
       </div>
     </div>
   );
