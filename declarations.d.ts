@@ -1,1 +1,4 @@
-declare module " *.css\ {\n const content: { [className: string]: string };\n export default content;\n}
+declare module \" "*.css\ {  
+  const content: { [className: string]: string };  
+  export default content;  
+} 
