@@ -1,11 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-// Thêm import hook lấy thông tin user (Ví dụ dùng useAuth, hãy thay đổi đường dẫn này nếu hook của bạn ở thư mục khác)
-// Hoặc nếu bạn dùng NextAuth: import { useSession } from "next-auth/react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import {
   LayoutDashboard,
   Package,
@@ -19,30 +17,32 @@ import {
   GitBranch,
   ExternalLink,
   LogOut,
-  ChevronRight,
-  CreditCard, // Đã thêm import CreditCard ở đây để sửa lỗi ts(2304)
+  CreditCard,
 } from "lucide-react";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
-
-  // Lấy dữ liệu user từ hook xử lý Auth của hệ thống để sửa lỗi ts(2552)
-  // Nếu bạn dùng NextAuth, hãy đổi thành: const { data: session } = useSession(); const user = session?.user;
   const { user } = useAuth();
 
-  const menuItems = [
-    { label: "Dashboard Tổng Quan", href: "/admin", icon: LayoutDashboard },
-    { label: "Danh Mục Sản Phẩm", href: "/admin/catalog", icon: Package },
-    { label: "Đơn Hàng & Cấp Tải", href: "/admin/orders", icon: ShoppingBag },
-    { label: "Khách Hàng & Truy Cập", href: "/admin/customers", icon: Activity },
-    { label: "Tạp Chí & Bài Viết", href: "/admin/blog", icon: BookOpen },
-    { label: "Thẻ Tags", href: "/admin/tags", icon: Tags },
-    { label: "Media Library Dùng Chung", href: "/admin/media", icon: ImageIcon },
-    { label: "Người Dùng & Phân Quyền", href: "/admin/users", icon: Users },
-    { label: "Cấu Hình Hệ Thống", href: "/admin/settings", icon: Settings },
-    ...(user && user.role === "SUPER_ADMIN" ? [{ label: "Cấu hình tài khoản thanh toán", href: "/admin/payment-settings", icon: CreditCard }] : []),
-    { label: "Đồng Bộ Mã Nguồn", href: "/admin/sync", icon: GitBranch },
-  ];
+  // Dùng useMemo để tối ưu hóa việc render danh sách menu dựa vào quyền (role) của user
+  const menuItems = useMemo(() => {
+    return [
+      { label: "Dashboard Tổng Quan", href: "/admin", icon: LayoutDashboard },
+      { label: "Danh Mục Sản Phẩm", href: "/admin/catalog", icon: Package },
+      { label: "Đơn Hàng & Cấp Tải", href: "/admin/orders", icon: ShoppingBag },
+      { label: "Khách Hàng & Truy Cập", href: "/admin/customers", icon: Activity },
+      { label: "Tạp Chí & Bài Viết", href: "/admin/blog", icon: BookOpen },
+      { label: "Thẻ Tags", href: "/admin/tags", icon: Tags },
+      { label: "Media Library Dùng Chung", href: "/admin/media", icon: ImageIcon },
+      { label: "Người Dùng & Phân Quyền", href: "/admin/users", icon: Users },
+      { label: "Cấu Hình Hệ Thống", href: "/admin/settings", icon: Settings },
+      // Chỉ khi user đăng nhập VÀ có quyền SUPER_ADMIN thì menu này mới xuất hiện
+      ...(user?.role === "SUPER_ADMIN"
+        ? [{ label: "Cấu hình tài khoản thanh toán", href: "/admin/payment-settings", icon: CreditCard }]
+        : []),
+      { label: "Đồng Bộ Mã Nguồn", href: "/admin/sync", icon: GitBranch },
+    ];
+  }, [user]);
 
   const handleLogout = async () => {
     await fetch("/api/auth/me", { method: "POST" });
@@ -87,8 +87,8 @@ export default function AdminSidebar() {
               key={item.href}
               href={item.href}
               className={`group relative flex items-center justify-between px-3 py-2.5 text-xs font-medium transition-all duration-200 ease rounded-[10px] ${isActive
-                  ? "text-white font-semibold"
-                  : "text-slate-300 hover:text-white hover:bg-white/5"
+                ? "text-white font-semibold"
+                : "text-slate-300 hover:text-white hover:bg-white/5"
                 }`}
               style={
                 isActive
@@ -101,7 +101,8 @@ export default function AdminSidebar() {
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r bg-cyan-400" />
                 )}
                 <Icon
-                  className={`w-4 h-4 ${isActive ? "text-cyan-300" : "text-slate-400 group-hover:text-white transition-colors"} ${isActive ? "ml-2" : ""}`}
+                  className={`w-4 h-4 ${isActive ? "text-cyan-300" : "text-slate-400 group-hover:text-white transition-colors"} ${isActive ? "ml-2" : ""
+                    }`}
                 />
                 <span className={isActive ? "ml-2" : ""}>{item.label}</span>
               </div>
