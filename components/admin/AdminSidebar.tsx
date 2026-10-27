@@ -26,7 +26,7 @@ export default function AdminSidebar() {
 
   // Dùng useMemo để tối ưu hóa việc render danh sách menu dựa vào quyền (role) của user
   const menuItems = useMemo(() => {
-    return [
+    const rawItems = [
       { label: "Dashboard Tổng Quan", href: "/admin", icon: LayoutDashboard },
       { label: "Danh Mục Sản Phẩm", href: "/admin/catalog", icon: Package },
       { label: "Đơn Hàng & Cấp Tải", href: "/admin/orders", icon: ShoppingBag },
@@ -36,12 +36,17 @@ export default function AdminSidebar() {
       { label: "Media Library Dùng Chung", href: "/admin/media", icon: ImageIcon },
       { label: "Người Dùng & Phân Quyền", href: "/admin/users", icon: Users },
       { label: "Cấu Hình Hệ Thống", href: "/admin/settings", icon: Settings },
-      // Chỉ khi user đăng nhập VÀ có quyền SUPER_ADMIN thì menu này mới xuất hiện
-      ...(user?.role === "SUPER_ADMIN"
-        ? [{ label: "Cấu hình tài khoản thanh toán", href: "/admin/payment-settings", icon: CreditCard }]
-        : []),
+      // Đã tách hẳn thành một hàng riêng biệt, chỉ render khi là SUPER_ADMIN
+      user?.role === "SUPER_ADMIN" ? {
+        label: "Cấu hình tài khoản thanh toán",
+        href: "/admin/payment-settings",
+        icon: CreditCard
+      } : null,
       { label: "Đồng Bộ Mã Nguồn", href: "/admin/sync", icon: GitBranch },
     ];
+
+    // Sử dụng Type Guard để TypeScript tự hiểu mảng sau khi filter sẽ không còn chứa giá trị null
+    return rawItems.filter((item): item is Exclude<typeof item, null> => item !== null);
   }, [user]);
 
   const handleLogout = async () => {
