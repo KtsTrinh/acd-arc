@@ -3,6 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+// Thêm import hook lấy thông tin user (Ví dụ dùng useAuth, hãy thay đổi đường dẫn này nếu hook của bạn ở thư mục khác)
+// Hoặc nếu bạn dùng NextAuth: import { useSession } from "next-auth/react";
+import { useAuth } from "@/hooks/useAuth";
 import {
   LayoutDashboard,
   Package,
@@ -17,10 +20,15 @@ import {
   ExternalLink,
   LogOut,
   ChevronRight,
+  CreditCard, // Đã thêm import CreditCard ở đây để sửa lỗi ts(2304)
 } from "lucide-react";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+
+  // Lấy dữ liệu user từ hook xử lý Auth của hệ thống để sửa lỗi ts(2552)
+  // Nếu bạn dùng NextAuth, hãy đổi thành: const { data: session } = useSession(); const user = session?.user;
+  const { user } = useAuth();
 
   const menuItems = [
     { label: "Dashboard Tổng Quan", href: "/admin", icon: LayoutDashboard },
@@ -71,18 +79,17 @@ export default function AdminSidebar() {
             item.href === "/admin"
               ? pathname === "/admin"
               : pathname.startsWith(item.href) ||
-                (item.href === "/admin/catalog" && pathname.startsWith("/admin/projects"));
+              (item.href === "/admin/catalog" && pathname.startsWith("/admin/projects"));
           const Icon = item.icon;
 
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`group relative flex items-center justify-between px-3 py-2.5 text-xs font-medium transition-all duration-200 ease rounded-[10px] ${
-                isActive
+              className={`group relative flex items-center justify-between px-3 py-2.5 text-xs font-medium transition-all duration-200 ease rounded-[10px] ${isActive
                   ? "text-white font-semibold"
                   : "text-slate-300 hover:text-white hover:bg-white/5"
-              }`}
+                }`}
               style={
                 isActive
                   ? { background: "rgba(34, 211, 238, 0.08)" }
@@ -127,4 +134,3 @@ export default function AdminSidebar() {
     </aside>
   );
 }
-
