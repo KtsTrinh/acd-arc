@@ -1,5 +1,39 @@
 [
   {
+    "id": "cmvq3cca7001823lcq8sgwu7k",
+    "title": "Nhà vườn 1 tầng",
+    "slug": "nha-vuon-1-tang",
+    "shortDesc": "",
+    "description": "",
+    "location": "",
+    "client": "",
+    "year": 2026,
+    "area": null,
+    "style": "Modern Luxury",
+    "buildingType": "Biệt thự nghỉ dưỡng",
+    "isFeatured": true,
+    "category": {
+      "slug": "biet-thu-villa",
+      "name": "Biệt Thự & Villa Nghỉ Dưỡng"
+    },
+    "cover": {
+      "filename": "1rvgBJwnwE_kH9IdxvCqBj2LH7L5bmkyF",
+      "url": "https://drive.google.com/drive/folders/1rvgBJwnwE_kH9IdxvCqBj2LH7L5bmkyF?usp=sharing",
+      "alt": "ACD Media"
+    },
+    "gallery": [
+      {
+        "filename": "1rvgBJwnwE_kH9IdxvCqBj2LH7L5bmkyF",
+        "url": "https://drive.google.com/drive/folders/1rvgBJwnwE_kH9IdxvCqBj2LH7L5bmkyF?usp=sharing",
+        "alt": "ACD Media",
+        "sortOrder": 0
+      }
+    ],
+    "tags": [],
+    "createdAt": "2026-10-27T02:53:17.743Z",
+    "updatedAt": "2026-10-27T02:53:17.743Z"
+  },
+  {
     "id": "cmvizla09009hkmbazos9uxfq",
     "title": "Nhà phố indochi - văn hóa và kiến trúc tại miền Bắc",
     "slug": "nha-pho-indochi-van-hoa-va-kien-truc-mien-bac",
