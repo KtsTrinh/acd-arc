@@ -85,6 +85,35 @@ export default function AdminSettingsPage() {
   };
 
   const heroVideoPreview = resolveHeroVideo(settings.heroBackgroundVideo || "");
+  const bankList = [
+    { code: "VCB", shortName: "Vietcombank" },
+    { code: "ACB", shortName: "ACB" },
+    { code: "TCB", shortName: "Techcombank" },
+    { code: "MB", shortName: "MB" },
+    { code: "VTB", shortName: "VietinBank" },
+    { code: "BIDV", shortName: "BIDV" },
+    { code: "VPB", shortName: "VPBank" },
+    { code: "TPB", shortName: "TPBank" },
+    { code: "STB", shortName: "Sacombank" },
+    { code: "HDB", shortName: "HDBank" },
+    { code: "SHB", shortName: "SHB" },
+    { code: "VIB", shortName: "VIB" },
+    { code: "MSB", shortName: "MSB" },
+    { code: "OCB", shortName: "OCB" },
+    { code: "SCB", shortName: "SCB" },
+    { code: "EIB", shortName: "Eximbank" },
+    { code: "ABB", shortName: "ABBANK" },
+  ];
+
+  const generateBankQr = (account: string, bankName: string, accountName: string) => {
+    if (!account || !bankName) return "";
+    const bank = bankList.find((b) => bankName.toLowerCase().includes(b.shortName.toLowerCase()));
+    const bankCode = bank && bank.code ? bank.code : "";
+    if (!bankCode) return "";
+    const sep = String.fromCharCode(38);
+    return "https://img.vietqr.io/image/" + bankCode + "-" + account + "-compact2.png?amount=0" + sep + "addInfo=" + encodeURIComponent("Thanh toan") + sep + "accountName=" + encodeURIComponent(accountName || "");
+  };
+
   const heroVideoFit = resolveVideoFit(
     settings.heroVideoFit || "cover",
     settings.heroVideoAspect || ""
@@ -832,15 +861,27 @@ export default function AdminSettingsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelCls}>Tên ngân hàng</label>
-            <input type="text" value={settings.bankName || ""} onChange={(e) => update("bankName", e.target.value)} className={inputCls} placeholder="Vietcombank" />
+            <input type="text" value={settings.bankName || ""} onChange={(e) => {
+              update("bankName", e.target.value);
+              const qr = generateBankQr(settings.bankAccount || "", e.target.value, settings.bankAccountName || "");
+              if (qr) update("bankQrUrl", qr);
+            }} className={inputCls} placeholder="Vietcombank" />
           </div>
           <div>
             <label className={labelCls}>Số tài khoản</label>
-            <input type="text" value={settings.bankAccount || ""} onChange={(e) => update("bankAccount", e.target.value)} className={inputCls} placeholder="0123456789" />
+            <input type="text" value={settings.bankAccount || ""} onChange={(e) => {
+              update("bankAccount", e.target.value);
+              const qr = generateBankQr(e.target.value, settings.bankName || "", settings.bankAccountName || "");
+              if (qr) update("bankQrUrl", qr);
+            }} className={inputCls} placeholder="0123456789" />
           </div>
           <div>
             <label className={labelCls}>Chủ tài khoản</label>
-            <input type="text" value={settings.bankAccountName || ""} onChange={(e) => update("bankAccountName", e.target.value)} className={inputCls} placeholder="NGUYEN VAN A" />
+            <input type="text" value={settings.bankAccountName || ""} onChange={(e) => {
+              update("bankAccountName", e.target.value);
+              const qr = generateBankQr(settings.bankAccount || "", settings.bankName || "", e.target.value);
+              if (qr) update("bankQrUrl", qr);
+            }} className={inputCls} placeholder="NGUYEN VAN A" />
           </div>
           <div>
             <label className={labelCls}>URL ảnh QR Code</label>
