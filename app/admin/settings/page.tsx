@@ -54,7 +54,6 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
   const [mediaTarget, setMediaTarget] = useState<
@@ -71,48 +70,11 @@ export default function AdminSettingsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.user?.role === "SUPER_ADMIN") setIsSuperAdmin(true);
-      })
-      .catch(() => {});
-  }, []);
-
   const update = (key: string, value: string) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   const heroVideoPreview = resolveHeroVideo(settings.heroBackgroundVideo || "");
-  const bankList = [
-    { code: "VCB", shortName: "Vietcombank" },
-    { code: "ACB", shortName: "ACB" },
-    { code: "TCB", shortName: "Techcombank" },
-    { code: "MB", shortName: "MB" },
-    { code: "VTB", shortName: "VietinBank" },
-    { code: "BIDV", shortName: "BIDV" },
-    { code: "VPB", shortName: "VPBank" },
-    { code: "TPB", shortName: "TPBank" },
-    { code: "STB", shortName: "Sacombank" },
-    { code: "HDB", shortName: "HDBank" },
-    { code: "SHB", shortName: "SHB" },
-    { code: "VIB", shortName: "VIB" },
-    { code: "MSB", shortName: "MSB" },
-    { code: "OCB", shortName: "OCB" },
-    { code: "SCB", shortName: "SCB" },
-    { code: "EIB", shortName: "Eximbank" },
-    { code: "ABB", shortName: "ABBANK" },
-  ];
-
-  const generateBankQr = (account: string, bankName: string, accountName: string) => {
-    if (!account || !bankName) return "";
-    const bank = bankList.find((b) => bankName.toLowerCase().includes(b.shortName.toLowerCase()));
-    const bankCode = bank && bank.code ? bank.code : "";
-    if (!bankCode) return "";
-    const sep = String.fromCharCode(38);
-    return "https://img.vietqr.io/image/" + bankCode + "-" + account + "-compact2.png?amount=0" + sep + "addInfo=" + encodeURIComponent("Thanh toan") + sep + "accountName=" + encodeURIComponent(accountName || "");
-  };
 
   const heroVideoFit = resolveVideoFit(
     settings.heroVideoFit || "cover",
