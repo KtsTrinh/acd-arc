@@ -16,19 +16,8 @@
       "slug": "biet-thu-villa",
       "name": "Biệt Thự & Villa Nghỉ Dưỡng"
     },
-    "cover": {
-      "filename": "1rvgBJwnwE_kH9IdxvCqBj2LH7L5bmkyF",
-      "url": "https://drive.google.com/drive/folders/1rvgBJwnwE_kH9IdxvCqBj2LH7L5bmkyF?usp=sharing",
-      "alt": "ACD Media"
-    },
-    "gallery": [
-      {
-        "filename": "1rvgBJwnwE_kH9IdxvCqBj2LH7L5bmkyF",
-        "url": "https://drive.google.com/drive/folders/1rvgBJwnwE_kH9IdxvCqBj2LH7L5bmkyF?usp=sharing",
-        "alt": "ACD Media",
-        "sortOrder": 0
-      }
-    ],
+    "cover": null,
+    "gallery": [],
     "tags": [],
     "createdAt": "2026-10-27T02:53:17.743Z",
     "updatedAt": "2026-10-27T02:53:17.743Z"
