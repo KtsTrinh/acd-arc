@@ -1,17 +1,5 @@
 [
   {
-    "id": "media_resort_1",
-    "filename": "resort-water-villa.jpg",
-    "originalName": "Eco Resort Water Pavilion",
-    "mimeType": "image/jpeg",
-    "size": 0,
-    "url": "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=1600&q=80",
-    "folder": "resort",
-    "width": 1600,
-    "height": 1067,
-    "alt": "Khu nghỉ dưỡng sinh thái trên mặt nước"
-  },
-  {
     "id": "media_penthouse_1",
     "filename": "penthouse-skyline-view.jpg",
     "originalName": "Penthouse Panoramic River View",
