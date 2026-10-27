@@ -54,8 +54,7 @@ export default function ForgotPasswordPage() {
             Quên Mật Khẩu
           </h2>
           <p className="text-xs text-slate-400">
-            Nhập email hoặc số điện thoại đã đăng ký để nhận hướng dẫn đặt lại
-            mật khẩu
+            Nhập email đã đăng ký để nhận hướng dẫn đặt lại mật khẩu
           </p>
         </div>
 
