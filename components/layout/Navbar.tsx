@@ -165,14 +165,14 @@ export default function Navbar() {
                     <div className="px-4 py-2 border-b border-thuy-700/60 text-xs">
                       <p className="text-white font-medium truncate">{user.name}</p>
                       <p className="text-slate-400 truncate">{user.email}</p>
-                      {user.role === "ADMIN" && (
+                      {(user.role === "ADMIN" || user.role === "SUPER_ADMIN") && (
                         <span className="inline-block mt-1 px-2 py-0.5 rounded bg-thuy-500/20 text-thuy-300 font-bold text-[10px] border border-thuy-500/30">
                           Hệ thống Quản Trị
                         </span>
                       )}
                     </div>
 
-                    {user.role === "ADMIN" && (
+                    {(user.role === "ADMIN" || user.role === "SUPER_ADMIN") && (
                       <Link
                         href="/admin"
                         onClick={() => setUserDropdown(false)}
