@@ -42,24 +42,23 @@ export default function AdminSidebar() {
 
   return (
     <aside
-      className="w-64 flex flex-col h-screen sticky top-0 z-20 border-r"
+      className="w-64 flex flex-col h-screen sticky top-0 z-20 border-r border-slate-800"
       style={{
-        background: "#ffffff",
-        borderColor: "#e2e8f0",
-        boxShadow: "4px 0 20px rgba(0, 50, 100, 0.05)",
+        background: "#0b1528",
+        boxShadow: "none",
       }}
     >
       {/* Brand Header */}
-      <div className="p-5 border-b border-slate-200/60 flex items-center justify-between">
+      <div className="p-5 border-b border-slate-800 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-display font-extrabold text-white text-sm shadow-lg shadow-cyan-500/30">
             ACD
           </div>
           <div>
-            <span className="font-display font-bold text-sm tracking-wide text-slate-900 block">
+            <span className="font-display font-bold text-sm tracking-wide text-white block">
               ACD ADMIN CMS
             </span>
-            <span className="text-[10px] text-cyan-600 font-medium">Hệ Thống Đồng Toàn Diện</span>
+            <span className="text-[10px] text-cyan-400 font-medium">Hệ Thống Đồng Toàn Diện</span>
           </div>
         </Link>
       </div>
@@ -78,37 +77,37 @@ export default function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`group flex items-center justify-between px-3 py-2.5 text-xs font-medium transition-all duration-200 ease rounded-[12px] ${
+              className={`group relative flex items-center justify-between px-3 py-2.5 text-xs font-medium transition-all duration-200 ease rounded-[10px] ${
                 isActive
-                  ? "text-white font-bold shadow-[0_4px_16px_rgba(0,102,204,0.35)]"
-                  : "text-[#334155] hover:text-[#0284c7] hover:bg-[#f0f7ff] hover:translate-x-1"
+                  ? "text-white font-semibold"
+                  : "text-slate-300 hover:text-white hover:bg-white/5"
               }`}
               style={
                 isActive
-                  ? { background: "#0066cc", fontWeight: 500 }
+                  ? { background: "rgba(34, 211, 238, 0.08)" }
                   : { fontWeight: 500 }
               }
             >
               <div className="flex items-center gap-3">
+                {isActive && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r bg-cyan-400" />
+                )}
                 <Icon
-                  className={`w-4 h-4 ${
-                    isActive ? "text-white" : "text-[#334155] group-hover:text-[#0284c7] transition-colors"
-                  }`}
+                  className={`w-4 h-4 ${isActive ? "text-cyan-300" : "text-slate-400 group-hover:text-white transition-colors"} ${isActive ? "ml-2" : ""}`}
                 />
-                <span>{item.label}</span>
+                <span className={isActive ? "ml-2" : ""}>{item.label}</span>
               </div>
-              {isActive && <ChevronRight className="w-3.5 h-3.5" />}
             </Link>
           );
         })}
       </nav>
 
       {/* Footer link to public website & logout */}
-      <div className="p-3.5 border-t border-slate-200/60 space-y-2 bg-slate-50/60">
+      <div className="p-3.5 border-t border-slate-800 space-y-2 bg-[#0b1528]">
         <Link
           href="/"
           target="_blank"
-          className="flex items-center justify-between px-3 py-2 rounded-lg text-xs text-slate-600 hover:text-cyan-700 hover:bg-cyan-50 transition-colors"
+          className="flex items-center justify-between px-3 py-2 rounded-lg text-xs text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-2">
             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
@@ -118,7 +117,7 @@ export default function AdminSidebar() {
 
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span>Đăng xuất Admin</span>
