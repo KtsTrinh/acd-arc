@@ -32,6 +32,7 @@ export default function AdminSidebar() {
     { label: "Media Library Dùng Chung", href: "/admin/media", icon: ImageIcon },
     { label: "Người Dùng & Phân Quyền", href: "/admin/users", icon: Users },
     { label: "Cấu Hình Hệ Thống", href: "/admin/settings", icon: Settings },
+    ...(user?.role === "SUPER_ADMIN" ? [{ label: "Cấu hình tài khoản thanh toán", href: "/admin/payment-settings", icon: CreditCard }] : []),
     { label: "Đồng Bộ Mã Nguồn", href: "/admin/sync", icon: GitBranch },
   ];
 
