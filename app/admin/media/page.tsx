@@ -167,15 +167,17 @@ export default function AdminMediaPage() {
 
     try {
       const res = await fetch(`/api/media/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
         alert(data.error || "Không thể xóa media.");
+        await fetchMedia();
         return;
       }
       await fetchMedia();
     } catch (err) {
       console.error(err);
       alert("Không thể xóa media.");
+      await fetchMedia();
     }
   };
 
