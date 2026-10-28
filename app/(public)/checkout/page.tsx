@@ -29,7 +29,9 @@ export default function CheckoutPage() {
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"VIETQR" | "BANK_TRANSFER">("VIETQR");
+  const [paymentMethod, setPaymentMethod] = useState<
+    "VIETQR" | "BANK_TRANSFER"
+  >("VIETQR");
   const [autoPay, setAutoPay] = useState(true); // Allows instant server-side payment simulation
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -72,7 +74,9 @@ export default function CheckoutPage() {
     setErrorMessage("");
 
     if (!customerName || !customerEmail) {
-      setErrorMessage("Vui lòng điền họ tên và email để nhận liên kết tải file.");
+      setErrorMessage(
+        "Vui lòng điền họ tên và email để nhận liên kết tải file.",
+      );
       return;
     }
 
@@ -123,7 +127,8 @@ export default function CheckoutPage() {
           Thanh Toán & Kích Hoạt Tải File
         </h1>
         <p className="text-xs sm:text-sm text-slate-400">
-          Vui lòng kiểm tra email chính xác. Liên kết tải mã hóa sẽ được gửi tới email của bạn.
+          Vui lòng kiểm tra email chính xác. Liên kết tải mã hóa sẽ được gửi tới
+          email của bạn.
         </p>
       </div>
 
@@ -134,7 +139,10 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
+      <form
+        onSubmit={handleSubmitOrder}
+        className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start"
+      >
         {/* Left Form: Customer Details & Payment Options */}
         <div className="lg:col-span-2 space-y-6">
           {/* Customer info card */}
@@ -176,7 +184,9 @@ export default function CheckoutPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">Số điện thoại:</label>
+                <label className="text-xs font-medium text-slate-300">
+                  Số điện thoại:
+                </label>
                 <input
                   type="tel"
                   value={customerPhone}
@@ -208,7 +218,9 @@ export default function CheckoutPage() {
               >
                 <QrCode className="w-5 h-5 text-thuy-400 mt-0.5" />
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Mã VietQR Tự Động</h4>
+                  <h4 className="text-xs font-semibold text-white">
+                    Mã VietQR Tự Động
+                  </h4>
                   <p className="text-[11px] text-slate-400 mt-0.5">
                     Quét mã QR từ mọi ứng dụng Mobile Banking (VCB, TCB, MB...)
                   </p>
@@ -225,7 +237,9 @@ export default function CheckoutPage() {
               >
                 <CreditCard className="w-5 h-5 text-thuy-400 mt-0.5" />
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Chuyển Khoản Ngân Hàng</h4>
+                  <h4 className="text-xs font-semibold text-white">
+                    Chuyển Khoản Ngân Hàng
+                  </h4>
                   <p className="text-[11px] text-slate-400 mt-0.5">
                     Số tài khoản chuyên dụng ACD Studio Studio Tech
                   </p>
@@ -240,7 +254,8 @@ export default function CheckoutPage() {
                   Mô phỏng xác nhận thanh toán tự động (Instant Webhook Demo)
                 </span>
                 <span className="text-[11px] text-slate-400 block">
-                  Tự động xác nhận PAID & sinh link tải (hiệu lực 5 phút) gắn với đúng tài khoản đã thanh toán.
+                  Tự động xác nhận PAID & sinh link tải (hiệu lực 5 phút) gắn
+                  với đúng tài khoản đã thanh toán.
                 </span>
               </div>
               <input
@@ -263,7 +278,9 @@ export default function CheckoutPage() {
             {items.map((i) => (
               <div key={i.id} className="flex justify-between text-xs gap-3">
                 <div className="min-w-0">
-                  <p className="font-medium text-slate-200 truncate">{i.name}</p>
+                  <p className="font-medium text-slate-200 truncate">
+                    {i.name}
+                  </p>
                   <span className="text-[10px] text-slate-400">{i.type}</span>
                 </div>
                 <span className="font-semibold text-thuy-400 flex-shrink-0">
@@ -292,7 +309,9 @@ export default function CheckoutPage() {
 
           <div className="p-3 rounded-xl bg-thuy-900 border border-thuy-800 flex items-start gap-2 text-xs text-slate-400">
             <Lock className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-            <span>Mọi giao dịch được mã hóa và bảo mật theo chuẩn an toàn quốc tế.</span>
+            <span>
+              Mọi giao dịch được mã hóa và bảo mật theo chuẩn an toàn quốc tế.
+            </span>
           </div>
 
           <button
@@ -317,4 +336,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
