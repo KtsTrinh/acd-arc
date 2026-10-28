@@ -166,10 +166,16 @@ export default function AdminMediaPage() {
     if (!confirm("Bạn có chắc chắn muốn xóa hình ảnh này khỏi Media Library?")) return;
 
     try {
-      await fetch(`/api/media/${id}`, { method: "DELETE" });
-      fetchMedia();
+      const res = await fetch(`/api/media/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Không thể xóa media.");
+        return;
+      }
+      await fetchMedia();
     } catch (err) {
       console.error(err);
+      alert("Không thể xóa media.");
     }
   };
 
