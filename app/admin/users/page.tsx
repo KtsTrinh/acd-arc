@@ -57,7 +57,7 @@ export default function AdminUsersPage() {
       <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+            <thead className="bg-thuy-900/80 text-white uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
                 <th className="py-3 px-5">Tài Khoản</th>
                 <th className="py-3 px-5">Email</th>
@@ -75,10 +75,14 @@ export default function AdminUsersPage() {
                       <div className="w-8 h-8 rounded-full bg-thuy-750 flex items-center justify-center font-bold text-[#142338] text-xs">
                         {u.name ? u.name[0].toUpperCase() : "U"}
                       </div>
-                      <span className="font-semibold text-[#142338]">{u.name || "Chưa đặt tên"}</span>
+                      <span className="font-semibold text-[#142338]">
+                        {u.name || "Chưa đặt tên"}
+                      </span>
                     </div>
                   </td>
-                  <td className="py-3.5 px-5 font-mono text-slate-700">{u.email}</td>
+                  <td className="py-3.5 px-5 font-mono text-slate-700">
+                    {u.email}
+                  </td>
                   <td className="py-3.5 px-5">
                     <span
                       className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
@@ -98,7 +102,9 @@ export default function AdminUsersPage() {
                   <td className="py-3.5 px-5 font-semibold text-thuy-400">
                     {u._count?.orders || 0} đơn
                   </td>
-                  <td className="py-3.5 px-5 text-slate-600">{formatDateTime(u.createdAt)}</td>
+                  <td className="py-3.5 px-5 text-slate-600">
+                    {formatDateTime(u.createdAt)}
+                  </td>
                   <td className="py-3.5 px-5 text-right">
                     <button
                       onClick={() => handleToggleRole(u.id, u.role)}
@@ -108,8 +114,8 @@ export default function AdminUsersPage() {
                       {updatingId === u.id
                         ? "Đang cập nhật..."
                         : u.role === "ADMIN"
-                        ? "Hạ xuống USER"
-                        : "Nâng lên ADMIN"}
+                          ? "Hạ xuống USER"
+                          : "Nâng lên ADMIN"}
                     </button>
                   </td>
                 </tr>
@@ -121,4 +127,3 @@ export default function AdminUsersPage() {
     </div>
   );
 }
-
