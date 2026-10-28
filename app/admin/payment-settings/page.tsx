@@ -52,7 +52,7 @@ export default function AdminPaymentSettingsPage() {
           setIsSuperAdmin(true);
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setCheckingAuth(false));
   }, []);
 
@@ -219,3 +219,4 @@ export default function AdminPaymentSettingsPage() {
     </form>
   );
 }
+
