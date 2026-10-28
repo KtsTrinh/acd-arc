@@ -64,7 +64,7 @@ export default function NewProjectPage() {
     setError("");
 
     if (!title) {
-      setError("Vui lòng nhập tên dự án.");
+      setError("Vui lòng nhập tên dự án");
       return;
     }
 
@@ -92,13 +92,13 @@ export default function NewProjectPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "KhÃ´ng thá»ƒ táº¡o dá»± Ã¡n.");
+      if (!res.ok) throw new Error(data.error || "Không thể tạo dự án!");
 
 
       // Redirect to Project detail page to manage sortable gallery!
       router.push(`/admin/projects/${data.project.id}`);
     } catch (err: any) {
-      setError(err.message || "ÄÃ£ xáº£y ra lá»—i.");
+      setError(err.message || "Đã xảy ra lỗi!");
     } finally {
       setIsSubmitting(false);
     }
