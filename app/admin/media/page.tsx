@@ -535,7 +535,7 @@ export default function AdminMediaPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Thư mục:</label>
+                <label className="text-xs text-white">Thư mục:</label>
                 <input
                   type="text"
                   value={importFolder}
@@ -546,9 +546,7 @@ export default function AdminMediaPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">
-                  Mô tả ảnh (Alt):
-                </label>
+                <label className="text-xs text-white">Mô tả ảnh (Alt):</label>
                 <input
                   type="text"
                   value={importAlt}
