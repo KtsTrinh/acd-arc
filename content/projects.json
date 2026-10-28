@@ -2789,14 +2789,7 @@
       "name": "Biệt Thự & Villa Nghỉ Dưỡng"
     },
     "cover": null,
-    "gallery": [
-      {
-        "filename": "villa-zen-exterior.jpg",
-        "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80",
-        "alt": "Mặt tiền biệt thự đá xám và kính phản chiếu nước",
-        "sortOrder": 1
-      }
-    ],
+    "gallery": [],
     "tags": [
       "menh-tho",
       "toi-gian"
@@ -2822,14 +2815,7 @@
       "name": "Biệt Thự & Villa Nghỉ Dưỡng"
     },
     "cover": null,
-    "gallery": [
-      {
-        "filename": "villa-living-atrium.jpg",
-        "url": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1600&q=80",
-        "alt": "Phòng khách thông tầng phong cách Modern Luxury",
-        "sortOrder": 1
-      }
-    ],
+    "gallery": [],
     "tags": [
       "menh-hoa",
       "hien-dai"
@@ -2918,18 +2904,6 @@
         "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=85",
         "alt": "Kiến trúc Biệt Thự Mariana với hồ nước phong thủy ban đêm",
         "sortOrder": 0
-      },
-      {
-        "filename": "villa-zen-exterior.jpg",
-        "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80",
-        "alt": "Mặt tiền biệt thự đá xám và kính phản chiếu nước",
-        "sortOrder": 1
-      },
-      {
-        "filename": "villa-pool-night.jpg",
-        "url": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80",
-        "alt": "Hồ bơi vô cực biệt thự nghỉ dưỡng về đêm",
-        "sortOrder": 2
       }
     ],
     "tags": [
