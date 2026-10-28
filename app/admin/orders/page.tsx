@@ -65,7 +65,9 @@ export default function AdminOrdersPage() {
   const handleRegenerateLinks = async (orderId: string) => {
     setUpdatingId(orderId);
     try {
-      const res = await fetch(`/api/orders/${orderId}/status`, { method: "POST" });
+      const res = await fetch(`/api/orders/${orderId}/status`, {
+        method: "POST",
+      });
       const data = await res.json();
       if (data.success) {
         fetchOrders();
@@ -82,13 +84,15 @@ export default function AdminOrdersPage() {
   const handleDeleteOrder = async (orderId: string, orderNumber: string) => {
     if (
       !confirm(
-        `Xoá đơn hàng #${orderNumber}? Toàn bộ link tải của đơn này cũng sẽ bị xoá.`
+        `Xoá đơn hàng #${orderNumber}? Toàn bộ link tải của đơn này cũng sẽ bị xoá.`,
       )
     )
       return;
     setUpdatingId(orderId);
     try {
-      const res = await fetch(`/api/orders/${orderId}/status`, { method: "DELETE" });
+      const res = await fetch(`/api/orders/${orderId}/status`, {
+        method: "DELETE",
+      });
       const data = await res.json();
       if (data.success) {
         fetchOrders();
@@ -111,8 +115,9 @@ export default function AdminOrdersPage() {
             Quản Lý Đơn Hàng & Cấp Tải
           </h1>
           <p className="text-xs text-[#526780]">
-            Theo dõi trạng thái thanh toán, tự động sinh mã Token tải file bảo mật cho đúng tài
-            khoản đã thanh toán (mặc định hiệu lực 5 phút, tối đa 5 lượt tải)
+            Theo dõi trạng thái thanh toán, tự động sinh mã Token tải file bảo
+            mật cho đúng tài khoản đã thanh toán (mặc định hiệu lực 5 phút, tối
+            đa 5 lượt tải)
           </p>
         </div>
       </div>
@@ -176,16 +181,23 @@ export default function AdminOrdersPage() {
 
                   <td className="py-4 px-5">
                     <p className="font-bold text-[#142338]">{o.customerName}</p>
-                    <p className="text-[10px] text-thuy-300 font-mono">{o.customerEmail}</p>
+                    <p className="text-[10px] text-thuy-300 font-mono">
+                      {o.customerEmail}
+                    </p>
                     {o.customerPhone && (
-                      <p className="text-[10px] text-slate-600">{o.customerPhone}</p>
+                      <p className="text-[10px] text-slate-600">
+                        {o.customerPhone}
+                      </p>
                     )}
                   </td>
 
                   <td className="py-4 px-5 max-w-xs">
                     <div className="space-y-1">
                       {o.items.map((it: any) => (
-                        <div key={it.id} className="text-[11px] text-slate-700 truncate">
+                        <div
+                          key={it.id}
+                          className="text-[11px] text-slate-700 truncate"
+                        >
                           • {it.productName || it.product?.name}
                         </div>
                       ))}
@@ -205,8 +217,8 @@ export default function AdminOrdersPage() {
                         o.status === "PAID"
                           ? "bg-emerald-950 text-emerald-400 border-emerald-700"
                           : o.status === "PENDING"
-                          ? "bg-amber-950 text-amber-400 border-amber-700"
-                          : "bg-red-950 text-red-400 border-red-700"
+                            ? "bg-amber-950 text-amber-400 border-amber-700"
+                            : "bg-red-950 text-red-400 border-red-700"
                       }`}
                     >
                       <option value="PAID">PAID (Đã thanh toán)</option>
@@ -222,13 +234,18 @@ export default function AdminOrdersPage() {
                           ✓ {o.downloads.length} Token Tải Đang Active
                         </span>
                         {o.downloads.map((d: any) => (
-                          <div key={d.id} className="text-[10px] text-slate-600 font-mono">
+                          <div
+                            key={d.id}
+                            className="text-[10px] text-slate-600 font-mono"
+                          >
                             Đã tải: {d.downloadCount}/{d.maxDownloads} lần
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <span className="text-slate-500 text-[11px]">Chưa cấp quyền</span>
+                      <span className="text-slate-500 text-[11px]">
+                        Chưa cấp quyền
+                      </span>
                     )}
                   </td>
 
@@ -252,7 +269,7 @@ export default function AdminOrdersPage() {
                       <Link
                         href={`/orders/${o.id}`}
                         target="_blank"
-                        className="p-2 rounded-lg bg-white800 hover:bg-white700 text-slate-200 inline-flex items-center gap-1 text-xs"
+                        className="p-2 rounded-lg bg-white800 hover:bg-white700 text-slate-700 inline-flex items-center gap-1 text-xs"
                         title="Xem trang nhận file khách hàng"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -277,4 +294,3 @@ export default function AdminOrdersPage() {
     </div>
   );
 }
-
