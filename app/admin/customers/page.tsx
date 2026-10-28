@@ -41,9 +41,8 @@ export default function AdminCustomersPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [range, setRange] = useState("7d");
-  const [search, setSearch] = useState("");
-  const [tab, setTab] = useState("traffic");
+  const [pageSize, setPageSize] = useState(20);
+  const [page, setPage] = useState(1);
 
   const fetchAnalytics = useCallback(
     async (silent = false) => {
