@@ -394,7 +394,7 @@ export default function AdminMediaPage() {
           <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setUrlModalOpen(false)} />
           <div className="relative z-10 w-full max-w-md bg-thuy-900 border border-thuy-700 rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-white">Thêm Ảnh Pinterest / Unsplash</h3>
+              <h3 className="font-semibold text-base text-white">Thêm Ảnh/Video</h3>
               <button onClick={() => setUrlModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
