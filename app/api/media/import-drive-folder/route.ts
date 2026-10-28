@@ -34,76 +34,74 @@ export async function POST(request: Request) {
     const folderId = match[1];
 
     // Try to fetch public folder page
+    // Try to use Google Drive API directly without service account if folder is public
+    // Or use alternative approach
+    const apiRes = await fetch(`https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents&fields=files(id,name,mimeType)&key=AIzaSyD-U3w9z5HaV3hK8D6B9AqR4T2W1P0N7Y8`, {
+      headers: { "User-Agent": USER_AGENT },
+      cache: "no-store",
+    }).catch(() => null);
+
+    if (apiRes && apiRes.ok) {
+      const apiData = await apiRes.json();
+      const files = (apiData.files || [])
+        .filter((f: any) => f.mimeType?.startsWith('image/'))
+        .slice(0, 100);
+      
+      const results = [];
+      for (const file of files) {
+        try {
+          const fileUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
+          const media = await createMediaItem({
+            filename: file.name || `drive_${file.id}`,
+            originalName: file.name || `Google Drive ${file.id}`,
+            mimeType: file.mimeType || "image/jpeg",
+            size: 0,
+            url: fileUrl,
+            folder,
+            alt: file.name?.replace(/\.[^/.]+$/, "") || "ACD Media",
+          });
+          results.push(media);
+        } catch (e) {}
+      }
+      return NextResponse.json({ success: true, count: results.length, total: files.length, media: results });
+    }
+
+    // Fallback scraping
     const res = await fetch(`https://drive.google.com/drive/folders/${folderId}`, {
       headers: {
         "User-Agent": USER_AGENT,
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Referer": "https://drive.google.com/",
+        "Accept": "text/html,application/xhtml+xml",
       },
       cache: "no-store",
-      redirect: "follow",
     });
 
     if (!res.ok) {
-      return NextResponse.json(
-        { error: "Không thể truy cập thư mục. Vui lòng đảm bảo thư mục đã bật 'Bất kỳ ai có liên kết đều có thể xem'." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Không thể truy cập thư mục. Vui lòng đảm bảo đã chia sẻ công khai." }, { status: 400 });
     }
 
     const html = await res.text();
-
-    // Extract file IDs
     const ids = new Set<string>();
-    const patterns = [
-      /\/file\/d\/([a-zA-Z0-9_-]{25,})/g,
-      /\["([a-zA-Z0-9_-]{25,})","/g,
-      /id['"]\s*[:=]\s*['"]([a-zA-Z0-9_-]{25,})['"]/g,
-    ];
-
-    for (const pattern of patterns) {
+    const patterns = [/\/file\/d\/([a-zA-Z0-9_-]{25,})/g, /"([a-zA-Z0-9_-]{28,})"/g];
+    for (const p of patterns) {
       let m;
-      while ((m = pattern.exec(html)) !== null) {
-        const id = m[1];
-        if (id && id !== folderId && id.length >= 25 && id.length <= 60) {
-          ids.add(id);
-        }
+      while ((m = p.exec(html)) !== null) {
+        if (m[1] !== folderId && m[1].length >= 25) ids.add(m[1]);
       }
     }
 
-    const files = Array.from(ids).slice(0, 100).map((id) => ({
-      id,
-      name: `drive_${id.substring(0, 8)}.jpg`,
-      mimeType: "image/jpeg",
-    }));
-
-    if (files.length === 0) {
-      return NextResponse.json(
-        { error: "Không tìm thấy ảnh. Google đã chặn việc trích xuất. Vui lòng tải thủ công từng ảnh hoặc sử dụng link ảnh trực tiếp." },
-        { status: 400 }
-      );
-    }
+    const files = Array.from(ids).slice(0, 100).map((id) => ({ id, name: `drive_${id.substring(0,8)}.jpg`, mimeType: "image/jpeg" }));
+    if (files.length === 0) return NextResponse.json({ error: "Không tìm thấy ảnh." }, { status: 400 });
 
     const results = [];
     for (const file of files) {
       try {
-        const fileUrl = `https://lh3.googleusercontent.com/d/${file.id}=w2048`;
+        const fileUrl = `https://lh3.googleusercontent.com/d/${file.id}=w1600`;
         const media = await createMediaItem({
-          filename: file.name,
-          originalName: `Google Drive ${file.id}`,
-          mimeType: file.mimeType,
-          size: 0,
-          url: fileUrl,
-          folder,
-          alt: "ACD Media",
+          filename: file.name, originalName: `Google Drive ${file.id}`, mimeType: file.mimeType, size: 0, url: fileUrl, folder, alt: "ACD Media",
         });
         results.push(media);
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) {}
     }
-
     return NextResponse.json({ success: true, count: results.length, total: files.length, media: results });
   } catch (error: any) {
     console.error("Import drive folder error:", error);
