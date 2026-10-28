@@ -1,17 +1,5 @@
 [
   {
-    "id": "media_hoa_light",
-    "filename": "villa-hoa-sunlight.jpg",
-    "originalName": "Sunlit Terraced Villa Geometric Architecture",
-    "mimeType": "image/jpeg",
-    "size": 0,
-    "url": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1600&q=80",
-    "folder": "villa",
-    "width": 1600,
-    "height": 1067,
-    "alt": "Biệt thự tràn ngập ánh sáng và lam chắn nắng nghệ thuật - Hợp Mệnh Hỏa"
-  },
-  {
     "id": "media_moc_wood",
     "filename": "villa-moc-teakwood.jpg",
     "originalName": "Tropical Wood and Lush Green Residence",
