@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { createMediaItem } from "@/lib/storage";
 import { DRIVE_FOLDER_REGEX } from "@/lib/media-url";
+import { google } from "googleapis";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    // 1. Kiểm tra phân quyền quản trị viên
     const user = await getCurrentUser();
     if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
       return NextResponse.json(
@@ -24,7 +24,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Vui lòng cung cấp link thư mục Google Drive." }, { status: 400 });
     }
 
-    // 2. Trích xuất Folder ID từ URL dán vào
     const match = url.match(DRIVE_FOLDER_REGEX);
     if (!match) {
       return NextResponse.json({ error: "Link không phải là thư mục Google Drive hợp lệ." }, { status: 400 });
@@ -32,73 +31,61 @@ export async function POST(request: Request) {
 
     const folderId = match[1];
 
-    // 3. Gửi request lấy nội dung trang hiển thị công khai để bóc dữ liệu
-    const drivePublicUrl = `https://drive.google.com/drive/folders/${folderId}`;
-    const res = await fetch(drivePublicUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      },
-      cache: "no-store",
-    });
+    const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
 
-    if (!res.ok) {
+    if (!clientEmail || !privateKey) {
       return NextResponse.json(
-        { error: "Không thể kết nối tới Google Drive. Hãy đảm bảo thư mục đã bật quyền xem công khai." },
-        { status: 400 }
+        { error: "Chưa cấu hình Google Service Account. Vui lòng thêm GOOGLE_SERVICE_ACCOUNT_EMAIL và GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY vào file .env và chia sẻ thư mục với email Service Account." },
+        { status: 500 }
       );
     }
 
-    const htmlContent = await res.text();
+    const auth = new google.auth.JWT({
+      email: clientEmail,
+      key: privateKey.replace(/\\n/g, "\n"),
+      scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+    });
 
-    // 4. SỬ DỤNG REGEX ĐỔI MỚI: Bóc tách chính xác mảng dữ liệu cấu trúc tệp tin của Google Drive
-    // Chuỗi khởi tạo tệp tin của Google Drive có cấu trúc ID bắt đầu bằng ký tự chuẩn và độ dài chuỗi cố định
-    const regex = /(?:\/file\/d\/|id=)([a-zA-Z0-9_-]{25,})/g;
-    const files: any[] = [];
-    let matchArray;
+    const drive = google.drive({ version: "v3", auth });
 
-    while ((matchArray = regex.exec(htmlContent)) !== null) {
-      const id = matchArray[1];
+    const listRes = await drive.files.list({
+      q: `'${folderId}' in parents and trashed=false and (mimeType contains 'image/' or mimeType contains 'video/')`,
+      fields: "files(id, name, mimeType, size)",
+      pageSize: 1000,
+      includeItemsFromAllDrives: true,
+      supportsAllDrives: true,
+    });
 
-      // Lọc bỏ các ID hệ thống trùng lặp hoặc ID của chính thư mục cha
-      if (id !== folderId && !files.some((f) => f.id === id)) {
-        // Tạo tên tệp tin tạm thời từ chuỗi ID ngẫu nhiên
-        const fallbackName = `drive_image_${id.substring(0, 6)}.jpg`;
-        files.push({
-          id,
-          name: fallbackName,
-          mimeType: "image/jpeg"
-        });
-      }
-    }
+    const files = listRes.data.files || [];
 
     if (files.length === 0) {
       return NextResponse.json(
-        { error: "Không tìm thấy dữ liệu tệp tin. Hãy đảm bảo thư mục đã được cấu hình 'Bất kỳ ai có liên kết đều có thể xem'." },
+        { error: "Không tìm thấy file nào. Hãy đảm bảo đã chia sẻ thư mục với email Service Account với quyền Viewer." },
         { status: 400 }
       );
     }
 
     const results = [];
 
-    // 5. Sử dụng cổng trích xuất xuất ảnh thô công khai (uc?export=view) để bypass hotlinking
     for (const file of files) {
       try {
         const fileUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
+        const mimeType = file.mimeType || "image/jpeg";
 
         const media = await createMediaItem({
-          filename: file.name,
-          originalName: `Google Drive ${file.id}`,
-          mimeType: file.mimeType,
-          size: 0,
-          url: fileUrl, // Lưu link công khai tuyệt đối vào DB để mọi Client đều xem được
+          filename: file.name || `drive_${file.id}`,
+          originalName: file.name || `Google Drive ${file.id}`,
+          mimeType,
+          size: file.size ? parseInt(file.size) : 0,
+          url: fileUrl,
           folder,
-          alt: "ACD Architecture Media",
+          alt: file.name?.replace(/\.[^/.]+$/, "") || "ACD Media",
         });
 
         results.push(media);
       } catch (e) {
-        console.error("Lỗi khi import file đơn lẻ từ Drive:", file.id, e);
+        console.error("Error importing file:", file.id, e);
       }
     }
 
