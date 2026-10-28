@@ -38,7 +38,7 @@ export default function AdminMediaPage() {
   const [importAlt, setImportAlt] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [previewImages, setPreviewImages] = useState<any[]>([]);
-  const [loadingPreview, setLoadingPreview] = useState(false)
+  const [loadingPreview, setLoadingPreview] = useState(false);
 
   // Edit metadata modal
   const [editingItem, setEditingItem] = useState<any | null>(null);
@@ -165,7 +165,8 @@ export default function AdminMediaPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa hình ảnh này khỏi Media Library?")) return;
+    if (!confirm("Bạn có chắc chắn muốn xóa hình ảnh này khỏi Media Library?"))
+      return;
 
     try {
       const res = await fetch(`/api/media/${id}`, { method: "DELETE" });
@@ -192,8 +193,8 @@ export default function AdminMediaPage() {
             Media Library Dùng Chung
           </h1>
           <p className="text-xs text-slate-600">
-            Kho ảnh tập trung cho toàn bộ hệ thống. Đổi tên ảnh hoặc sửa mô tả sẽ tự động đồng bộ mọi
-            dự án đang sử dụng.
+            Kho ảnh tập trung cho toàn bộ hệ thống. Đổi tên ảnh hoặc sửa mô tả
+            sẽ tự động đồng bộ mọi dự án đang sử dụng.
           </p>
         </div>
 
@@ -210,7 +211,7 @@ export default function AdminMediaPage() {
             onClick={() => setUrlModalOpen(true)}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-thuy-850 text-slate-200 hover:text-[#142338] hover:bg-thuy-800 border border-thuy-700 text-xs font-semibold transition-all"
           >
-            <LinkIcon className="w-3.5 h-3.5 text-thuy-400" />
+            <LinkIcon className="w-3.5 h-3.5 text-black" />
             <span>Thêm Ảnh/Video</span>
           </button>
         </div>
@@ -221,10 +222,11 @@ export default function AdminMediaPage() {
         <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
           <button
             onClick={() => setSelectedFolder("all")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedFolder === "all"
-              ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-              : "bg-thuy-900 text-slate-600 hover:text-[#142338] border border-thuy-750"
-              }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+              selectedFolder === "all"
+                ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
+                : "bg-thuy-900 text-slate-600 hover:text-[#142338] border border-thuy-750"
+            }`}
           >
             Tất cả ({mediaList.length})
           </button>
@@ -232,10 +234,11 @@ export default function AdminMediaPage() {
             <button
               key={f}
               onClick={() => setSelectedFolder(f)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap capitalize transition-all ${selectedFolder === f
-                ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                : "bg-thuy-900 text-slate-600 hover:text-[#142338] border border-thuy-750"
-                }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap capitalize transition-all ${
+                selectedFolder === f
+                  ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
+                  : "bg-thuy-900 text-slate-600 hover:text-[#142338] border border-thuy-750"
+              }`}
             >
               <Folder className="w-3.5 h-3.5" />
               <span>{f}</span>
@@ -264,7 +267,8 @@ export default function AdminMediaPage() {
           </div>
         ) : mediaList.length === 0 ? (
           <div className="text-center py-20 rounded-2xl bg-thuy-850/50 border border-thuy-800 text-xs text-slate-600">
-            Không tìm thấy hình ảnh nào. Nhấn Upload hoặc Thêm từ Pinterest ở trên.
+            Không tìm thấy hình ảnh nào. Nhấn Upload hoặc Thêm từ Pinterest ở
+            trên.
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -314,7 +318,9 @@ export default function AdminMediaPage() {
                     <p className="font-medium text-[11px] text-[#142338] truncate leading-snug">
                       {item.filename}
                     </p>
-                    <p className="text-[10px] text-slate-600 truncate">{item.alt}</p>
+                    <p className="text-[10px] text-slate-600 truncate">
+                      {item.alt}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -326,11 +332,19 @@ export default function AdminMediaPage() {
       {/* Modal 1: Upload Local File */}
       {uploadModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setUploadModalOpen(false)} />
+          <div
+            className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm"
+            onClick={() => setUploadModalOpen(false)}
+          />
           <div className="relative z-10 w-full max-w-md bg-thuy-900 border border-thuy-700 rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-[#142338]">Upload File Ảnh Vật Lý</h3>
-              <button onClick={() => setUploadModalOpen(false)} className="text-slate-600 hover:text-[#142338]">
+              <h3 className="font-semibold text-base text-[#142338]">
+                Upload File Ảnh Vật Lý
+              </h3>
+              <button
+                onClick={() => setUploadModalOpen(false)}
+                className="text-slate-600 hover:text-[#142338]"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -344,12 +358,19 @@ export default function AdminMediaPage() {
                   accept="image/*"
                   onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
                 />
-                <label htmlFor="admin-upload-file" className="cursor-pointer space-y-2 block">
+                <label
+                  htmlFor="admin-upload-file"
+                  className="cursor-pointer space-y-2 block"
+                >
                   <Upload className="w-8 h-8 mx-auto text-thuy-400" />
                   <p className="text-xs text-[#142338] font-medium">
-                    {uploadFile ? uploadFile.name : "Nhấn để chọn ảnh từ máy tính"}
+                    {uploadFile
+                      ? uploadFile.name
+                      : "Nhấn để chọn ảnh từ máy tính"}
                   </p>
-                  <span className="text-[10px] text-slate-600 block">Lưu trữ vào /public/uploads/</span>
+                  <span className="text-[10px] text-slate-600 block">
+                    Lưu trữ vào /public/uploads/
+                  </span>
                 </label>
               </div>
 
@@ -365,7 +386,9 @@ export default function AdminMediaPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Mô tả ảnh (Alt):</label>
+                <label className="text-xs text-slate-700">
+                  Mô tả ảnh (Alt):
+                </label>
                 <input
                   type="text"
                   value={uploadAlt}
@@ -391,18 +414,28 @@ export default function AdminMediaPage() {
       {/* Modal 2: Import Pinterest / CDN Link */}
       {urlModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setUrlModalOpen(false)} />
+          <div
+            className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm"
+            onClick={() => setUrlModalOpen(false)}
+          />
           <div className="relative z-10 w-full max-w-lg bg-thuy-900 border border-thuy-700 rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-[#142338]">Thêm Ảnh/Video Từ Link</h3>
-              <button onClick={() => setUrlModalOpen(false)} className="text-slate-600 hover:text-[#142338]">
+              <h3 className="font-semibold text-base text-black">
+                Thêm Ảnh/Video Từ Link
+              </h3>
+              <button
+                onClick={() => setUrlModalOpen(false)}
+                className="text-slate-600 hover:text-[#142338]"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleUrlSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Đường dẫn ảnh trực tiếp (URL) hoặc Link Thư Mục Drive:</label>
+                <label className="text-xs text-slate-700">
+                  Đường dẫn ảnh trực tiếp (URL) hoặc Link Thư Mục Drive:
+                </label>
                 <input
                   type="url"
                   required
@@ -416,7 +449,8 @@ export default function AdminMediaPage() {
               {/* Khung xử lý Preview thông minh */}
               {importUrl && (
                 <div className="relative w-full h-40 rounded-xl overflow-hidden border border-thuy-750 bg-thuy-950 flex flex-col justify-center">
-                  {importUrl.includes("/folders/") || importUrl.includes("://google.com") ? (
+                  {importUrl.includes("/folders/") ||
+                  importUrl.includes("://google.com") ? (
                     // NẾU LÀ LINK THƯ MỤC DRIVE: Hiển thị trạng thái quét hoặc danh sách ảnh thu nhỏ
                     loadingPreview ? (
                       <div className="flex flex-col items-center justify-center gap-2 text-slate-600 text-xs">
@@ -428,14 +462,25 @@ export default function AdminMediaPage() {
                       <div className="p-3 h-full flex flex-col justify-between">
                         <div className="grid grid-cols-5 gap-2 overflow-y-auto max-h-[100px] p-0.5">
                           {previewImages.map((img, idx) => (
-                            <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-thuy-700 bg-thuy-900">
-                              <img src={`https://google.com{img.id}`} alt="preview-item" className="w-full h-full object-cover" />
+                            <div
+                              key={idx}
+                              className="relative aspect-square rounded-lg overflow-hidden border border-thuy-700 bg-thuy-900"
+                            >
+                              <img
+                                src={`https://google.com{img.id}`}
+                                alt="preview-item"
+                                className="w-full h-full object-cover"
+                              />
                             </div>
                           ))}
                         </div>
                         <div className="text-[10px] text-emerald-400 font-medium flex items-center gap-1.5 mt-2 bg-emerald-500/5 p-2 rounded-lg border border-emerald-500/10">
                           <Folder className="w-3.5 h-3.5" />
-                          <span>Đã nhận diện & quét thành công {previewImages.length} ảnh từ Google Drive. Sẵn sàng lưu!</span>
+                          <span>
+                            Đã nhận diện & quét thành công{" "}
+                            {previewImages.length} ảnh từ Google Drive. Sẵn sàng
+                            lưu!
+                          </span>
                         </div>
                       </div>
                     ) : (
@@ -443,20 +488,33 @@ export default function AdminMediaPage() {
                         <div className="w-7 h-7 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
                           <X className="w-3.5 h-3.5 text-red-400" />
                         </div>
-                        <p className="text-xs text-[#142338] font-medium">Không thể quét dữ liệu xem trước</p>
-                        <span className="text-[10px] text-slate-500 block">Hãy đảm bảo thư mục Drive đã bật chế độ công khai (Anyone with the link).</span>
+                        <p className="text-xs text-[#142338] font-medium">
+                          Không thể quét dữ liệu xem trước
+                        </p>
+                        <span className="text-[10px] text-slate-500 block">
+                          Hãy đảm bảo thư mục Drive đã bật chế độ công khai
+                          (Anyone with the link).
+                        </span>
                       </div>
                     )
                   ) : (
                     // NẾU LÀ LINK FILE ẢNH ĐƠN LẺ: Tự động dùng cổng uc?export=view để hiển thị mượt mà
                     (() => {
                       let computedSrc = importUrl;
-                      const driveMatch = importUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                      const driveMatch = importUrl.match(
+                        /\/d\/([a-zA-Z0-9_-]+)/,
+                      );
                       if (driveMatch) {
                         computedSrc = `https://google.com{driveMatch[1]}`;
                       }
                       return (
-                        <Image src={computedSrc} alt="Preview" fill className="object-cover" unoptimized />
+                        <Image
+                          src={computedSrc}
+                          alt="Preview"
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
                       );
                     })()
                   )}
@@ -464,7 +522,9 @@ export default function AdminMediaPage() {
               )}
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Tên file nhận diện:</label>
+                <label className="text-xs text-slate-700">
+                  Tên file nhận diện:
+                </label>
                 <input
                   type="text"
                   value={importFilename}
@@ -486,7 +546,9 @@ export default function AdminMediaPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Mô tả ảnh (Alt):</label>
+                <label className="text-xs text-slate-700">
+                  Mô tả ảnh (Alt):
+                </label>
                 <input
                   type="text"
                   value={importAlt}
@@ -505,11 +567,10 @@ export default function AdminMediaPage() {
                 <span>
                   {isImporting
                     ? "Đang lưu dữ liệu vào hệ thống..."
-                    : (importUrl.includes("/folders/") || importUrl.includes("://google.com")
+                    : importUrl.includes("/folders/") ||
+                        importUrl.includes("://google.com")
                       ? `Import Hàng Loạt ${previewImages.length > 0 ? `(${previewImages.length} ảnh)` : ""}`
-                      : "Thêm Vào Thư Viện"
-                    )
-                  }
+                      : "Thêm Vào Thư Viện"}
                 </span>
               </button>
             </form>
@@ -520,22 +581,38 @@ export default function AdminMediaPage() {
       {/* Modal 3: Edit Metadata / Rename File */}
       {editingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setEditingItem(null)} />
+          <div
+            className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm"
+            onClick={() => setEditingItem(null)}
+          />
           <div className="relative z-10 w-full max-w-md bg-thuy-900 border border-thuy-700 rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-[#142338]">Đổi Tên & Sửa Metadata Media</h3>
-              <button onClick={() => setEditingItem(null)} className="text-slate-600 hover:text-[#142338]">
+              <h3 className="font-semibold text-base text-[#142338]">
+                Đổi Tên & Sửa Metadata Media
+              </h3>
+              <button
+                onClick={() => setEditingItem(null)}
+                className="text-slate-600 hover:text-[#142338]"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleUpdateMetadata} className="space-y-4">
               <div className="relative w-full h-36 rounded-xl overflow-hidden border border-thuy-750 bg-thuy-950">
-                <Image src={editingItem.url} alt="Editing preview" fill className="object-cover" unoptimized />
+                <Image
+                  src={editingItem.url}
+                  alt="Editing preview"
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Tên file (Filename):</label>
+                <label className="text-xs text-slate-700">
+                  Tên file (Filename):
+                </label>
                 <input
                   type="text"
                   required
@@ -546,7 +623,9 @@ export default function AdminMediaPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Thư mục (Folder):</label>
+                <label className="text-xs text-slate-700">
+                  Thư mục (Folder):
+                </label>
                 <input
                   type="text"
                   value={editFolder}
@@ -556,7 +635,9 @@ export default function AdminMediaPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Mô tả hiển thị (Alt text):</label>
+                <label className="text-xs text-slate-700">
+                  Mô tả hiển thị (Alt text):
+                </label>
                 <input
                   type="text"
                   value={editAlt}
@@ -578,7 +659,9 @@ export default function AdminMediaPage() {
                   disabled={isUpdating}
                   className="flex-1 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110 shadow-glow-cyan flex items-center justify-center gap-1.5"
                 >
-                  {isUpdating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  {isUpdating && (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  )}
                   <span>Lưu Thay Đổi</span>
                 </button>
               </div>
@@ -589,4 +672,3 @@ export default function AdminMediaPage() {
     </div>
   );
 }
-
