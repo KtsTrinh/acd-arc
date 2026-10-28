@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { createMediaItem } from "@/lib/storage";
 import { DRIVE_FOLDER_REGEX } from "@/lib/media-url";
-import { google } from "googleapis";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
 export async function POST(request: Request) {
   try {
@@ -31,75 +33,80 @@ export async function POST(request: Request) {
 
     const folderId = match[1];
 
-    const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-    const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+    // Try to fetch public folder page
+    const res = await fetch(`https://drive.google.com/drive/folders/${folderId}`, {
+      headers: {
+        "User-Agent": USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Referer": "https://drive.google.com/",
+      },
+      cache: "no-store",
+      redirect: "follow",
+    });
 
-    if (!clientEmail || !privateKey) {
+    if (!res.ok) {
       return NextResponse.json(
-        { error: "Chưa cấu hình Google Service Account. Vui lòng thêm GOOGLE_SERVICE_ACCOUNT_EMAIL và GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY vào file .env và chia sẻ thư mục với email Service Account." },
-        { status: 500 }
+        { error: "Không thể truy cập thư mục. Vui lòng đảm bảo thư mục đã bật 'Bất kỳ ai có liên kết đều có thể xem'." },
+        { status: 400 }
       );
     }
 
-    const auth = new google.auth.JWT({
-      email: clientEmail,
-      key: privateKey.replace(/\\n/g, "\n"),
-      scopes: ["https://www.googleapis.com/auth/drive.readonly"],
-    });
+    const html = await res.text();
 
-    const drive = google.drive({ version: "v3", auth });
+    // Extract file IDs
+    const ids = new Set<string>();
+    const patterns = [
+      /\/file\/d\/([a-zA-Z0-9_-]{25,})/g,
+      /\["([a-zA-Z0-9_-]{25,})","/g,
+      /id['"]\s*[:=]\s*['"]([a-zA-Z0-9_-]{25,})['"]/g,
+    ];
 
-    const listRes = await drive.files.list({
-      q: `'${folderId}' in parents and trashed=false and (mimeType contains 'image/' or mimeType contains 'video/')`,
-      fields: "files(id, name, mimeType, size)",
-      pageSize: 1000,
-      includeItemsFromAllDrives: true,
-      supportsAllDrives: true,
-    });
+    for (const pattern of patterns) {
+      let m;
+      while ((m = pattern.exec(html)) !== null) {
+        const id = m[1];
+        if (id && id !== folderId && id.length >= 25 && id.length <= 60) {
+          ids.add(id);
+        }
+      }
+    }
 
-    const files = listRes.data.files || [];
+    const files = Array.from(ids).slice(0, 100).map((id) => ({
+      id,
+      name: `drive_${id.substring(0, 8)}.jpg`,
+      mimeType: "image/jpeg",
+    }));
 
     if (files.length === 0) {
       return NextResponse.json(
-        { error: "Không tìm thấy file nào. Hãy đảm bảo đã chia sẻ thư mục với email Service Account với quyền Viewer." },
+        { error: "Không tìm thấy ảnh. Google đã chặn việc trích xuất. Vui lòng tải thủ công từng ảnh hoặc sử dụng link ảnh trực tiếp." },
         { status: 400 }
       );
     }
 
     const results = [];
-
     for (const file of files) {
       try {
-        const fileUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
-        const mimeType = file.mimeType || "image/jpeg";
-
+        const fileUrl = `https://lh3.googleusercontent.com/d/${file.id}=w2048`;
         const media = await createMediaItem({
-          filename: file.name || `drive_${file.id}`,
-          originalName: file.name || `Google Drive ${file.id}`,
-          mimeType,
-          size: file.size ? parseInt(file.size) : 0,
+          filename: file.name,
+          originalName: `Google Drive ${file.id}`,
+          mimeType: file.mimeType,
+          size: 0,
           url: fileUrl,
           folder,
-          alt: file.name?.replace(/\.[^/.]+$/, "") || "ACD Media",
+          alt: "ACD Media",
         });
-
         results.push(media);
       } catch (e) {
-        console.error("Error importing file:", file.id, e);
+        console.error(e);
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      count: results.length,
-      total: files.length,
-      media: results,
-    });
+    return NextResponse.json({ success: true, count: results.length, total: files.length, media: results });
   } catch (error: any) {
     console.error("Import drive folder error:", error);
-    return NextResponse.json(
-      { error: error.message || "Lỗi khi import thư mục Google Drive." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Lỗi khi import thư mục Google Drive." }, { status: 500 });
   }
 }
