@@ -137,6 +137,8 @@ export default function MediaPickerModal({
   const [externalAlt, setExternalAlt] = useState("");
   const [externalSource, setExternalSource] = useState("pinterest");
   const [isImporting, setIsImporting] = useState(false);
+  const [driveFolderUrl, setDriveFolderUrl] = useState("");
+  const [driveImporting, setDriveImporting] = useState(false);
 
   const isVideoItem = (item: MediaItem) => {
     if (item.mimeType && item.mimeType.startsWith("video/")) return true;
