@@ -207,7 +207,7 @@ export default function OrderDetailPage({
                 <span className="text-slate-400 block text-[10px]">
                   Số tài khoản:
                 </span>
-                <span className="font-bold text-thuy-400 text-sm font-mono">
+                <span className="font-bold text-white text-sm font-mono">
                   1903 8888 666888
                 </span>
               </div>
