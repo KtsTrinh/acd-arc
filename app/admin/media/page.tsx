@@ -420,7 +420,7 @@ export default function AdminMediaPage() {
           />
           <div className="relative z-10 w-full max-w-lg bg-thuy-900 border border-thuy-700 rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-black">
+              <h3 className="font-semibold text-base text-white">
                 Thêm Ảnh/Video Từ Link
               </h3>
               <button
@@ -433,7 +433,7 @@ export default function AdminMediaPage() {
 
             <form onSubmit={handleUrlSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">
+                <label className="text-xs text-white">
                   Đường dẫn ảnh trực tiếp (URL) hoặc Link Thư Mục Drive:
                 </label>
                 <input
@@ -522,7 +522,7 @@ export default function AdminMediaPage() {
               )}
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">
+                <label className="text-xs text-white">
                   Tên file nhận diện:
                 </label>
                 <input
@@ -561,7 +561,7 @@ export default function AdminMediaPage() {
               <button
                 type="submit"
                 disabled={!importUrl || isImporting || loadingPreview}
-                className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 shadow-glow-cyan"
+                className="w-full py-2.5 rounded-xl bg-thuy-400 text-white font-bold text-xs uppercase hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 shadow-glow-cyan"
               >
                 {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>
