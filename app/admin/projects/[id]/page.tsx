@@ -154,7 +154,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
   };
 
   if (loading) {
-    return <div className="py-20 text-center text-slate-400">Đang tải thông tin dự án...</div>;
+    return <div className="py-20 text-center text-slate-600">Đang tải thông tin dự án...</div>;
   }
 
   if (!project) {
@@ -175,7 +175,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         <div className="space-y-1">
           <Link
             href="/admin/catalog?tab=MANAGE"
-            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-thuy-400"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-thuy-400"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Danh sách dự án</span>
@@ -189,7 +189,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           <Link
             href={`/projects/${project.slug}`}
             target="_blank"
-            className="px-3.5 py-2 rounded-xl bg-thuy-850 text-slate-300 hover:text-white border border-thuy-700 text-xs font-semibold flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-xl bg-thuy-850 text-slate-700 hover:text-white border border-thuy-700 text-xs font-semibold flex items-center gap-1.5"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             <span>Xem Public</span>
@@ -219,7 +219,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
               <ImageIcon className="w-5 h-5 text-thuy-400" />
               <span>Gallery Kéo-Thả (dnd-kit Sortable)</span>
             </h2>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-600">
               Kéo thả các thẻ để đổi thứ tự hiển thị. Nhấn biểu tượng ngôi sao để chọn làm ảnh Cover.
               Thay đổi được lưu tự động không cần reload trang.
             </p>
@@ -251,7 +251,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Tên dự án *:</label>
+              <label className="text-xs text-slate-700 font-medium">Tên dự án *:</label>
               <input
                 type="text"
                 required
@@ -262,7 +262,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Slug URL:</label>
+              <label className="text-xs text-slate-700 font-medium">Slug URL:</label>
               <input
                 type="text"
                 required
@@ -273,7 +273,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Mô tả tóm tắt:</label>
+              <label className="text-xs text-slate-700 font-medium">Mô tả tóm tắt:</label>
               <input
                 type="text"
                 value={shortDesc}
@@ -283,7 +283,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Nội dung bài viết chi tiết:</label>
+              <label className="text-xs text-slate-700 font-medium">Nội dung bài viết chi tiết:</label>
               <textarea
                 rows={6}
                 value={description}
@@ -293,7 +293,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Danh mục:</label>
+              <label className="text-xs text-slate-700">Danh mục:</label>
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
@@ -308,7 +308,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Loại công trình:</label>
+              <label className="text-xs text-slate-700">Loại công trình:</label>
               <input
                 type="text"
                 value={buildingType}
@@ -318,7 +318,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Phong cách:</label>
+              <label className="text-xs text-slate-700">Phong cách:</label>
               <input
                 type="text"
                 value={style}
@@ -328,7 +328,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Diện tích (m²):</label>
+              <label className="text-xs text-slate-700">Diện tích (m²):</label>
               <input
                 type="number"
                 value={area}
@@ -338,7 +338,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Năm thiết kế:</label>
+              <label className="text-xs text-slate-700">Năm thiết kế:</label>
               <input
                 type="number"
                 value={year}
@@ -348,7 +348,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Địa điểm:</label>
+              <label className="text-xs text-slate-700">Địa điểm:</label>
               <input
                 type="text"
                 value={location}
@@ -358,7 +358,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300">Chủ đầu tư:</label>
+              <label className="text-xs text-slate-700">Chủ đầu tư:</label>
               <input
                 type="text"
                 value={client}
@@ -370,7 +370,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
 
           {/* Tags */}
           <div className="space-y-2 pt-2">
-            <label className="text-xs text-slate-300 font-medium block">Chọn thẻ Tags:</label>
+            <label className="text-xs text-slate-700 font-medium block">Chọn thẻ Tags:</label>
             <div className="flex flex-wrap gap-2">
               {tags.map((t) => {
                 const isSelected = selectedTagIds.includes(t.id);
@@ -382,7 +382,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                       isSelected
                         ? "bg-thuy-400 text-thuy-950 font-bold"
-                        : "bg-thuy-900 text-slate-400 border border-thuy-700 hover:text-white"
+                        : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-white"
                     }`}
                   >
                     #{t.name}
@@ -396,7 +396,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           <div className="pt-4 border-t border-thuy-750 flex items-center justify-between">
             <div>
               <span className="text-xs font-semibold text-white block">Ảnh Cover Dự Án</span>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-slate-600">
                 {coverMedia ? coverMedia.filename : "Chưa có ảnh cover"}
               </span>
             </div>

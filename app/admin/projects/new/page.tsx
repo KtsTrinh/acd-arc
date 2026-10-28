@@ -133,7 +133,7 @@ export default function NewProjectPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Tên dự án *:</label>
+              <label className="text-xs text-slate-700 font-medium">Tên dự án *:</label>
               <input
                 type="text"
                 required
@@ -145,7 +145,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Đường dẫn tĩnh (Slug):</label>
+              <label className="text-xs text-slate-700 font-medium">Đường dẫn tĩnh (Slug):</label>
               <input
                 type="text"
                 required
@@ -156,7 +156,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">Mô tả tóm tắt:</label>
+              <label className="text-xs text-slate-700 font-medium">Mô tả tóm tắt:</label>
               <input
                 type="text"
                 value={shortDesc}
@@ -166,7 +166,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-300 font-medium">BÀI VIẾT CHI TIẾT DỰ ÁN:</label>
+              <label className="text-xs text-slate-700 font-medium">BÀI VIẾT CHI TIẾT DỰ ÁN:</label>
               <textarea
                 rows={6}
                 value={description}
@@ -186,7 +186,7 @@ export default function NewProjectPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Danh mục:</label>
+              <label className="text-xs text-slate-700">Danh mục:</label>
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
@@ -201,7 +201,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Loại công trình:</label>
+              <label className="text-xs text-slate-700">Loại công trình:</label>
               <input
                 type="text"
                 value={buildingType}
@@ -212,7 +212,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Phong cách:</label>
+              <label className="text-xs text-slate-700">Phong cách:</label>
               <input
                 type="text"
                 value={style}
@@ -223,7 +223,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Diện tích (m²):</label>
+              <label className="text-xs text-slate-700">Diện tích (m²):</label>
               <input
                 type="number"
                 value={area}
@@ -234,7 +234,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Năm hoàn thành:</label>
+              <label className="text-xs text-slate-700">Năm hoàn thành:</label>
               <input
                 type="number"
                 value={year}
@@ -244,7 +244,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300">Địa điểm:</label>
+              <label className="text-xs text-slate-700">Địa điểm:</label>
               <input
                 type="text"
                 value={location}
@@ -257,7 +257,7 @@ export default function NewProjectPage() {
 
           {/* Tags */}
           <div className="space-y-2 pt-2">
-            <label className="text-xs text-slate-300 font-medium block">Chọn thẻ Tags:</label>
+            <label className="text-xs text-slate-700 font-medium block">Chọn thẻ Tags:</label>
             <div className="flex flex-wrap gap-2">
               {tags.map((t) => {
                 const isSelected = selectedTagIds.includes(t.id);
@@ -268,7 +268,7 @@ export default function NewProjectPage() {
                     onClick={() => toggleTag(t.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${isSelected
                       ? "bg-thuy-400 text-thuy-950 font-bold shadow-sm"
-                      : "bg-thuy-900 text-slate-400 border border-thuy-700 hover:text-white"
+                      : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-white"
                       }`}
                   >
                     #{t.name}
@@ -311,7 +311,7 @@ export default function NewProjectPage() {
               className="border-2 border-dashed border-thuy-750 hover:border-thuy-400 rounded-2xl p-8 text-center cursor-pointer bg-thuy-900/40"
             >
               <ImageIcon className="w-8 h-8 mx-auto text-slate-500 mb-2" />
-              <p className="text-xs text-slate-300">Nhấp hoặc thả ảnh đại diện dự án từ Media Library</p>
+              <p className="text-xs text-slate-700">Nhấp hoặc thả ảnh đại diện dự án từ Media Library</p>
             </div>
           )}
         </div>
@@ -320,7 +320,7 @@ export default function NewProjectPage() {
         <div className="flex justify-end gap-3 pt-4">
           <Link
             href="/admin/catalog?tab=MANAGE"
-            className="px-5 py-2.5 rounded-xl bg-thuy-850 text-slate-300 hover:text-white text-xs font-semibold border border-thuy-750"
+            className="px-5 py-2.5 rounded-xl bg-thuy-850 text-slate-700 hover:text-white text-xs font-semibold border border-thuy-750"
           >
             Hủy
           </Link>

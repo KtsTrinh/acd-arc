@@ -252,7 +252,7 @@ export default function AdminCatalogClient({
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
             Danh Mục Sản Phẩm
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-600">
             Gộp Dự Án Kiến Trúc · Danh Mục Dự Án · Sản Phẩm &amp; File 3D/CAD — gồm 4 nhóm: Dự án
             kiến trúc, Nội thất, Xây dựng và File kỹ thuật số.
           </p>
@@ -270,7 +270,7 @@ export default function AdminCatalogClient({
       </div>
 
       {/* Policy banner */}
-      <div className="p-4 rounded-2xl bg-thuy-850/70 border border-thuy-750 flex flex-col sm:flex-row sm:items-center gap-3 text-xs text-slate-300">
+      <div className="p-4 rounded-2xl bg-thuy-850/70 border border-thuy-750 flex flex-col sm:flex-row sm:items-center gap-3 text-xs text-slate-700">
         <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
         <p>
           File/link tải về chỉ mở cho <b className="text-white">đúng tài khoản đã thanh toán</b>.
@@ -304,7 +304,7 @@ export default function AdminCatalogClient({
               className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
                 isActive
                   ? "bg-thuy-400 text-thuy-950 border-thuy-400 shadow-glow-cyan"
-                  : "bg-thuy-850 text-slate-300 border-thuy-750 hover:border-thuy-500"
+                  : "bg-thuy-850 text-slate-700 border-thuy-750 hover:border-thuy-500"
               }`}
             >
               {group.label}
@@ -323,7 +323,7 @@ export default function AdminCatalogClient({
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
             activeTab === "MANAGE"
               ? "bg-thuy-400 text-thuy-950 border-thuy-400 shadow-glow-cyan"
-              : "bg-thuy-850 text-slate-300 border-thuy-750 hover:border-thuy-500"
+              : "bg-thuy-850 text-slate-700 border-thuy-750 hover:border-thuy-500"
           }`}
         >
           <FolderTree className="w-3.5 h-3.5 inline mr-1.5" />
@@ -332,7 +332,7 @@ export default function AdminCatalogClient({
       </div>
 
       {loading ? (
-        <div className="py-16 text-center text-slate-400 text-xs flex items-center justify-center gap-2">
+        <div className="py-16 text-center text-slate-600 text-xs flex items-center justify-center gap-2">
           <Loader2 className="w-4 h-4 animate-spin" /> Đang tải danh mục sản phẩm...
         </div>
       ) : activeTab === "MANAGE" ? (
@@ -364,14 +364,14 @@ export default function AdminCatalogClient({
               <h3 className="font-semibold text-base text-white">
                 {form.id ? "Cập nhật mục danh mục" : "Thêm mục danh mục sản phẩm"}
               </h3>
-              <button onClick={() => setForm(null)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setForm(null)} className="text-slate-600 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSave} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Tên mục *:</label>
+                <label className="text-xs text-slate-700">Tên mục *:</label>
                 <input
                   type="text"
                   required
@@ -389,7 +389,7 @@ export default function AdminCatalogClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300">Giá bán (VNĐ) *:</label>
+                  <label className="text-xs text-slate-700">Giá bán (VNĐ) *:</label>
                   <input
                     type="number"
                     required
@@ -400,7 +400,7 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300">Giá so sánh:</label>
+                  <label className="text-xs text-slate-700">Giá so sánh:</label>
                   <input
                     type="number"
                     value={form.comparePrice}
@@ -410,7 +410,7 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300">Nhóm danh mục:</label>
+                  <label className="text-xs text-slate-700">Nhóm danh mục:</label>
                   <select
                     value={form.type}
                     onChange={(e) => updateForm({ type: e.target.value })}
@@ -433,7 +433,7 @@ export default function AdminCatalogClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300">Định dạng file:</label>
+                  <label className="text-xs text-slate-700">Định dạng file:</label>
                   <input
                     type="text"
                     value={form.fileFormat}
@@ -443,7 +443,7 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300">Dung lượng:</label>
+                  <label className="text-xs text-slate-700">Dung lượng:</label>
                   <input
                     type="text"
                     value={form.fileSize}
@@ -461,11 +461,11 @@ export default function AdminCatalogClient({
                 </h4>
 
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300">
+                  <label className="text-xs text-slate-700">
                     Tải file trực tiếp lên kho private (tối đa 4MB):
                   </label>
                   <div className="flex items-center gap-2">
-                    <label className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-slate-300 cursor-pointer hover:border-thuy-500">
+                    <label className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-slate-700 cursor-pointer hover:border-thuy-500">
                       <Upload className="w-3.5 h-3.5" />
                       <span className="truncate">
                         {form.fileName || "Chọn file (zip, dwg, skp, rar...)"}
@@ -490,7 +490,7 @@ export default function AdminCatalogClient({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-300 flex items-center gap-1.5">
+                  <label className="text-xs text-slate-700 flex items-center gap-1.5">
                     <Link2 className="w-3.5 h-3.5" /> Link tải nội bộ (Google Drive/Dropbox/CDN):
                   </label>
                   <input
@@ -508,7 +508,7 @@ export default function AdminCatalogClient({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs text-slate-300 flex items-center gap-1.5">
+                    <label className="text-xs text-slate-700 flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" /> Thời hạn link sau khi thanh toán:
                     </label>
                     <select
@@ -524,7 +524,7 @@ export default function AdminCatalogClient({
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs text-slate-300">Dự án hiển thị liên kết:</label>
+                    <label className="text-xs text-slate-700">Dự án hiển thị liên kết:</label>
                     <select
                       value={form.projectId}
                       onChange={(e) => updateForm({ projectId: e.target.value })}
@@ -540,7 +540,7 @@ export default function AdminCatalogClient({
                   </div>
                 </div>
 
-                <label className="flex items-center gap-2 text-xs text-slate-300">
+                <label className="flex items-center gap-2 text-xs text-slate-700">
                   <input
                     type="checkbox"
                     checked={form.requiresPayment}
@@ -553,7 +553,7 @@ export default function AdminCatalogClient({
 
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs text-slate-300">Ảnh thumbnail (URL):</label>
+                  <label className="text-xs text-slate-700">Ảnh thumbnail (URL):</label>
                   <button
                     type="button"
                     onClick={() => setMediaPickerOpen(true)}
@@ -572,7 +572,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Mô tả sản phẩm:</label>
+                <label className="text-xs text-slate-700">Mô tả sản phẩm:</label>
                 <textarea
                   rows={3}
                   value={form.description}
@@ -583,7 +583,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <label className="flex items-center gap-2 text-xs text-slate-300">
+                <label className="flex items-center gap-2 text-xs text-slate-700">
                   <input
                     type="checkbox"
                     checked={form.active}
@@ -592,7 +592,7 @@ export default function AdminCatalogClient({
                   />
                   Đang kinh doanh
                 </label>
-                <label className="flex items-center gap-2 text-xs text-slate-300">
+                <label className="flex items-center gap-2 text-xs text-slate-700">
                   <input
                     type="checkbox"
                     checked={form.featured}
@@ -650,7 +650,7 @@ function CatalogTable({
 
   if (items.length === 0) {
     return (
-      <div className="py-16 text-center text-slate-400 text-xs rounded-2xl bg-thuy-850/50 border border-thuy-750">
+      <div className="py-16 text-center text-slate-600 text-xs rounded-2xl bg-thuy-850/50 border border-thuy-750">
         <Package className="w-8 h-8 mx-auto mb-3 text-slate-600" />
         Nhóm <b className="text-white">{group?.label}</b> chưa có mục nào. Bấm “Thêm mục” để
         tạo mục danh mục đầu tiên.
@@ -662,7 +662,7 @@ function CatalogTable({
     <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
-          <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+          <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
             <tr>
               <th className="py-3 px-5">Ảnh</th>
               <th className="py-3 px-5">Tên mục</th>
@@ -695,14 +695,14 @@ function CatalogTable({
                 </td>
                 <td className="py-3.5 px-5">
                   <span className="font-bold text-white block text-sm">{p.name}</span>
-                  <span className="text-[10px] text-slate-400 font-mono block">
+                  <span className="text-[10px] text-slate-600 font-mono block">
                     /products/{p.slug}
                   </span>
                   <span className="text-[10px] text-thuy-300 mt-1 inline-block px-2 py-0.5 rounded-full bg-thuy-800 border border-thuy-700">
                     {PRODUCT_TYPE_LABELS[p.type] || p.type}
                   </span>
                   {p.project && (
-                    <span className="text-[10px] text-slate-400 block mt-1">
+                    <span className="text-[10px] text-slate-600 block mt-1">
                       Dự án: {p.project.title}
                     </span>
                   )}
@@ -710,13 +710,13 @@ function CatalogTable({
                 <td className="py-3.5 px-5 font-bold text-thuy-400 text-sm">
                   {formatVND(p.price)}
                 </td>
-                <td className="py-3.5 px-5 text-slate-300">
+                <td className="py-3.5 px-5 text-slate-700">
                   {p.fileKey || p.downloadLinkUrl ? (
                     <>
                       <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
                         <Check className="w-3.5 h-3.5" /> Đã cấu hình
                       </div>
-                      <span className="text-[10px] text-slate-400 font-mono block truncate max-w-[220px]">
+                      <span className="text-[10px] text-slate-600 font-mono block truncate max-w-[220px]">
                         {p.fileName || p.fileKey || "Link nội bộ"}
                       </span>
                       <span className="text-[10px] text-slate-500">
@@ -729,7 +729,7 @@ function CatalogTable({
                     </span>
                   )}
                 </td>
-                <td className="py-3.5 px-5 text-slate-300">
+                <td className="py-3.5 px-5 text-slate-700">
                   {p.downloadExpiresMinutes || 5} phút
                 </td>
                 <td className="py-3.5 px-5">
@@ -737,7 +737,7 @@ function CatalogTable({
                     className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                       p.active
                         ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
-                        : "bg-thuy-800 text-slate-400 border-thuy-700"
+                        : "bg-thuy-800 text-slate-600 border-thuy-700"
                     }`}
                   >
                     {p.active ? "Đang bán" : "Đang ẩn"}
@@ -747,14 +747,14 @@ function CatalogTable({
                   <div className="inline-flex gap-1.5">
                     <button
                       onClick={() => onEdit(p)}
-                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-300 border border-thuy-700"
+                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-700 border border-thuy-700"
                       title="Sửa"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => onDelete(p.id, p.name)}
-                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-400 border border-thuy-700"
+                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
                       title="Xoá"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -834,7 +834,7 @@ function ManagePanel({
           <h2 className="font-bold text-sm text-white flex items-center gap-2">
             <FolderTree className="w-4 h-4 text-thuy-400" /> Danh Mục Dự Án Hiển Thị
           </h2>
-          <span className="text-[10px] text-slate-400">
+          <span className="text-[10px] text-slate-600">
             Phân loại dự án trên website (biệt thự, nhà phố, nội thất...)
           </span>
         </div>
@@ -871,7 +871,7 @@ function ManagePanel({
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+            <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
                 <th className="py-3 px-5">Tên danh mục</th>
                 <th className="py-3 px-5">Slug</th>
@@ -883,16 +883,16 @@ function ManagePanel({
               {categories.map((c) => (
                 <tr key={c.id} className="hover:bg-thuy-800/40">
                   <td className="py-3 px-5 font-bold text-white">{c.name}</td>
-                  <td className="py-3 px-5 text-slate-400 font-mono text-[10px]">
+                  <td className="py-3 px-5 text-slate-600 font-mono text-[10px]">
                     {c.slug}
                   </td>
-                  <td className="py-3 px-5 text-slate-300">
+                  <td className="py-3 px-5 text-slate-700">
                     {c._count?.projects ?? 0}
                   </td>
                   <td className="py-3 px-5 text-right">
                     <button
                       onClick={() => deleteCategory(c.id, c.name)}
-                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-400 border border-thuy-700"
+                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
                       title="Xoá"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -928,7 +928,7 @@ function ManagePanel({
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+            <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
                 <th className="py-3 px-5">Ảnh</th>
                 <th className="py-3 px-5">Tên dự án</th>
@@ -961,11 +961,11 @@ function ManagePanel({
                     </td>
                     <td className="py-3 px-5">
                       <span className="font-bold text-white block">{p.title}</span>
-                      <span className="text-[10px] text-slate-400 font-mono">
+                      <span className="text-[10px] text-slate-600 font-mono">
                         /projects/{p.slug}
                       </span>
                     </td>
-                    <td className="py-3 px-5 text-slate-300">
+                    <td className="py-3 px-5 text-slate-700">
                       {p.category?.name || "—"}
                     </td>
                     <td className="py-3 px-5">
@@ -985,7 +985,7 @@ function ManagePanel({
                     <td className="py-3 px-5 text-right">
                       <Link
                         href={`/admin/projects/${p.id}`}
-                        className="inline-block p-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-300 border border-thuy-700"
+                        className="inline-block p-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-700 border border-thuy-700"
                         title="Sửa dự án"
                       >
                         <Pencil className="w-3.5 h-3.5" />

@@ -210,7 +210,7 @@ export default async function AdminDashboardPage() {
                         {o.downloads.length} Token Active
                       </span>
                     ) : (
-                      <span className="text-slate-400">Chưa cấp</span>
+                      <span className="text-slate-600">Chưa cấp</span>
                     )}
                   </td>
                   <td className="py-3.5 px-5 text-right">

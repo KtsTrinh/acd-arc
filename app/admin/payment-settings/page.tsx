@@ -5,7 +5,7 @@ import { CreditCard, Save, Loader2, CheckCircle2, AlertTriangle } from "lucide-r
 
 const inputCls =
   "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400 transition-colors";
-const labelCls = "block text-xs text-slate-300 font-medium mb-1.5";
+const labelCls = "block text-xs text-slate-700 font-medium mb-1.5";
 
 const bankList = [
   { code: "VCB", shortName: "Vietcombank" },
@@ -94,7 +94,7 @@ export default function AdminPaymentSettingsPage() {
 
   if (checkingAuth || loading) {
     return (
-      <div className="flex items-center justify-center py-24 gap-3 text-slate-400 text-xs">
+      <div className="flex items-center justify-center py-24 gap-3 text-slate-600 text-xs">
         <Loader2 className="w-4 h-4 animate-spin" />
         <span>Đang tải cấu hình tài khoản thanh toán...</span>
       </div>
@@ -103,7 +103,7 @@ export default function AdminPaymentSettingsPage() {
 
   if (!isSuperAdmin) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-3 text-slate-400">
+      <div className="flex flex-col items-center justify-center py-24 gap-3 text-slate-600">
         <AlertTriangle className="w-6 h-6 text-red-400" />
         <p className="text-sm">Chỉ tài khoản Super Admin mới có quyền truy cập trang này.</p>
       </div>
@@ -123,7 +123,7 @@ export default function AdminPaymentSettingsPage() {
           <CreditCard className="w-6 h-6 text-cyan-400" />
           Cấu Hình Tài Khoản Thanh Toán
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-slate-600 mt-1">
           Quản lý thông tin tài khoản ngân hàng dùng để hiển thị QR thanh toán cho khách hàng.
         </p>
       </div>

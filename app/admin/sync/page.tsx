@@ -94,7 +94,7 @@ export default function AdminSyncPage() {
               <GitBranch className="w-4 h-4 text-thuy-400" />
               Đồng Bộ Mã Nguồn (CMS → GitHub → Vercel)
             </h2>
-            <p className="text-xs text-slate-400 mt-1.5">
+            <p className="text-xs text-slate-600 mt-1.5">
               Mỗi lần bạn thay đổi nội dung trong CMS, bấm nút bên dưới (hoặc bật tự
               động đồng bộ) để ghi nội dung ra thư mục <code className="text-thuy-300">content/</code>{" "}
               trong mã nguồn, push lên GitHub. Vercel tự động deploy lại từ nhánh{" "}
@@ -116,7 +116,7 @@ export default function AdminSyncPage() {
                 autoSync ? "text-thuy-400" : "text-slate-500"
               }`}
             />
-            <span className="text-xs text-slate-300">
+            <span className="text-xs text-slate-700">
               Tự động đồng bộ mã nguồn sau mỗi lần lưu trong CMS
             </span>
             <span
@@ -138,7 +138,7 @@ export default function AdminSyncPage() {
       </div>
 
       {loading ? (
-        <div className="p-8 rounded-2xl bg-thuy-850 border border-thuy-750 flex items-center justify-center gap-2 text-slate-400 text-xs">
+        <div className="p-8 rounded-2xl bg-thuy-850 border border-thuy-750 flex items-center justify-center gap-2 text-slate-600 text-xs">
           <Loader2 className="w-4 h-4 animate-spin text-thuy-400" />
           Đang kiểm tra cấu hình...
         </div>
@@ -206,19 +206,19 @@ export default function AdminSyncPage() {
                     >
                       {lastSync.sha.slice(0, 7)}
                     </a>{" "}
-                    <span className="text-slate-400">
+                    <span className="text-slate-600">
                       ·{" "}
                       {new Date(lastSync.at).toLocaleString("vi-VN")}
                     </span>
                   </p>
                 ) : (
-                  <p className="text-xs text-slate-400">Chưa có lần đồng bộ nào.</p>
+                  <p className="text-xs text-slate-600">Chưa có lần đồng bộ nào.</p>
                 )}
               </div>
               <button
                 type="button"
                 onClick={loadStatus}
-                className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1.5"
+                className="text-[11px] text-slate-600 hover:text-white flex items-center gap-1.5"
               >
                 <RefreshCw className="w-3 h-3" /> Làm mới
               </button>
@@ -251,7 +251,7 @@ export default function AdminSyncPage() {
               <button
                 type="button"
                 onClick={loadStatus}
-                className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1.5"
+                className="text-[11px] text-slate-600 hover:text-white flex items-center gap-1.5"
               >
                 <RefreshCw className="w-3 h-3" /> Làm mới
               </button>
@@ -283,7 +283,7 @@ export default function AdminSyncPage() {
               <Terminal className="w-4 h-4 text-thuy-400" />
               Đồng bộ trong VSCode
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-600">
               Khi mở thư mục này trong VSCode, task{" "}
               <b className="text-slate-200">A-C-D: Theo dõi đồng bộ CMS</b> tự chạy và
               kéo commit mới từ CMS về máy mỗi 30 giây — không cần thao tác tay.
