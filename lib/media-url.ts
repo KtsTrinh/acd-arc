@@ -5,6 +5,8 @@ export type HeroVideoSource =
 
 export const DRIVE_ID_REGEX =
   /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([a-zA-Z0-9_-]+)/;
+export const DRIVE_FOLDER_REGEX =
+  /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/;
 
 const YOUTUBE_ID_REGEX =
   /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/;
@@ -19,8 +21,10 @@ const VIDEO_FILE_REGEX = /\.(mp4|webm|mov|m4v|ogv)(\?.*)?$/i;
 export function normalizeMediaUrl(url: string): string {
   const trimmed = (url || "").trim();
   if (!trimmed) return "";
-  const drive = trimmed.match(DRIVE_ID_REGEX);
-  if (drive) return `https://drive.google.com/uc?export=download&id=${drive[1]}`;
+  const driveFolder = trimmed.match(DRIVE_FOLDER_REGEX);
+  if (driveFolder) {
+    return trimmed;
+  }
   return trimmed;
 }
 
