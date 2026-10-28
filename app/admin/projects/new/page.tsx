@@ -105,17 +105,18 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-20">
-      <div className="flex items-center justify-between">
-        <Link
-          href="/admin/catalog?tab=MANAGE"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-thuy-400"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Quay lại danh sách dự án</span>
-        </Link>
-        <h1 className="font-display font-bold text-xl text-white">Thêm Dự Án Kiến Trúc Mới</h1>
-      </div>
+    <div className="min-h-screen bg-slate-50 -m-6 p-6">
+      <div className="max-w-5xl mx-auto space-y-6 pb-20">
+        <div className="flex items-center justify-between">
+          <Link
+            href="/admin/catalog?tab=MANAGE"
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Quay lại danh sách dự án</span>
+          </Link>
+          <h1 className="font-display font-bold text-2xl text-slate-900">Thêm Dự Án Kiến Trúc Mới</h1>
+        </div>
 
       {error && (
         <div className="p-3.5 rounded-xl bg-red-950/70 border border-red-700 text-red-300 text-xs">
