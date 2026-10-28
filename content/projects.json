@@ -2788,18 +2788,8 @@
       "slug": "biet-thu-villa",
       "name": "Biệt Thự & Villa Nghỉ Dưỡng"
     },
-    "cover": {
-      "filename": "villa-tho-sandstone.jpg",
-      "url": "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=1600&q=80",
-      "alt": "Biệt thự đá sa thạch và tone đất mộc vững chãi - Hợp Mệnh Thổ"
-    },
+    "cover": null,
     "gallery": [
-      {
-        "filename": "villa-tho-sandstone.jpg",
-        "url": "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=1600&q=80",
-        "alt": "Biệt thự đá sa thạch và tone đất mộc vững chãi - Hợp Mệnh Thổ",
-        "sortOrder": 0
-      },
       {
         "filename": "villa-zen-exterior.jpg",
         "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80",
@@ -2831,18 +2821,8 @@
       "slug": "biet-thu-villa",
       "name": "Biệt Thự & Villa Nghỉ Dưỡng"
     },
-    "cover": {
-      "filename": "villa-hoa-sunlight.jpg",
-      "url": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1600&q=80",
-      "alt": "Biệt thự tràn ngập ánh sáng và lam chắn nắng nghệ thuật - Hợp Mệnh Hỏa"
-    },
+    "cover": null,
     "gallery": [
-      {
-        "filename": "villa-hoa-sunlight.jpg",
-        "url": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1600&q=80",
-        "alt": "Biệt thự tràn ngập ánh sáng và lam chắn nắng nghệ thuật - Hợp Mệnh Hỏa",
-        "sortOrder": 0
-      },
       {
         "filename": "villa-living-atrium.jpg",
         "url": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1600&q=80",
@@ -2885,12 +2865,6 @@
         "url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600&q=80",
         "alt": "Biệt thự sinh thái gỗ tự nhiên và cây nhiệt đới - Hợp Mệnh Mộc",
         "sortOrder": 0
-      },
-      {
-        "filename": "townhouse-minimalist-facade.jpg",
-        "url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600&q=80",
-        "alt": "Nhà phố kiến trúc lam chắn nắng bê tông trần",
-        "sortOrder": 1
       }
     ],
     "tags": [
