@@ -72,15 +72,15 @@ export default function AdminUsersPage() {
                 <tr key={u.id} className="hover:bg-thuy-800/40">
                   <td className="py-3.5 px-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-thuy-750 flex items-center justify-center font-bold text-[#142338] text-xs">
+                      <div className="w-8 h-8 rounded-full bg-thuy-750 flex items-center justify-center font-bold text-white text-xs">
                         {u.name ? u.name[0].toUpperCase() : "U"}
                       </div>
-                      <span className="font-semibold text-[#142338]">
+                      <span className="font-semibold text-white">
                         {u.name || "Chưa đặt tên"}
                       </span>
                     </div>
                   </td>
-                  <td className="py-3.5 px-5 font-mono text-slate-700">
+                  <td className="py-3.5 px-5 font-mono text-white">
                     {u.email}
                   </td>
                   <td className="py-3.5 px-5">
