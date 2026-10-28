@@ -52,7 +52,9 @@ export default function AdminSyncPage() {
       if (typeof data.autoSync === "boolean") setAutoSync(data.autoSync);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Không tải được trạng thái đồng bộ."
+        err instanceof Error
+          ? err.message
+          : "Không tải được trạng thái đồng bộ.",
       );
     } finally {
       setLoading(false);
@@ -95,9 +97,10 @@ export default function AdminSyncPage() {
               Đồng Bộ Mã Nguồn (CMS → GitHub → Vercel)
             </h2>
             <p className="text-xs text-slate-600 mt-1.5">
-              Mỗi lần bạn thay đổi nội dung trong CMS, bấm nút bên dưới (hoặc bật tự
-              động đồng bộ) để ghi nội dung ra thư mục <code className="text-thuy-300">content/</code>{" "}
-              trong mã nguồn, push lên GitHub. Vercel tự động deploy lại từ nhánh{" "}
+              Mỗi lần bạn thay đổi nội dung trong CMS, bấm nút bên dưới (hoặc
+              bật tự động đồng bộ) để ghi nội dung ra thư mục{" "}
+              <code className="text-thuy-300">content/</code> trong mã nguồn,
+              push lên GitHub. Vercel tự động deploy lại từ nhánh{" "}
               <code className="text-thuy-300">{github?.branch || "main"}</code>.
             </p>
           </div>
@@ -150,7 +153,9 @@ export default function AdminSyncPage() {
       ) : (
         <>
           <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
-            <h3 className="font-semibold text-sm text-[#142338]">Kết nối GitHub</h3>
+            <h3 className="font-semibold text-sm text-[#142338]">
+              Kết nối GitHub
+            </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="p-3.5 rounded-xl bg-thuy-900 border border-thuy-750">
@@ -207,12 +212,13 @@ export default function AdminSyncPage() {
                       {lastSync.sha.slice(0, 7)}
                     </a>{" "}
                     <span className="text-slate-600">
-                      ·{" "}
-                      {new Date(lastSync.at).toLocaleString("vi-VN")}
+                      · {new Date(lastSync.at).toLocaleString("vi-VN")}
                     </span>
                   </p>
                 ) : (
-                  <p className="text-xs text-slate-600">Chưa có lần đồng bộ nào.</p>
+                  <p className="text-xs text-slate-600">
+                    Chưa có lần đồng bộ nào.
+                  </p>
                 )}
               </div>
               <button
@@ -229,13 +235,17 @@ export default function AdminSyncPage() {
                 <Info className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
                 <div className="text-xs text-amber-200 space-y-1">
                   <p>
-                    Thiếu secret <code className="text-thuy-300">GITHUB_TOKEN</code> trên
-                    Vercel. Thêm token có quyền <b>Contents: Read &amp; write</b> cho repo{" "}
-                    {github?.repo} để nút đồng bộ hoạt động.
+                    Thiếu secret{" "}
+                    <code className="text-thuy-300">GITHUB_TOKEN</code> trên
+                    Vercel. Thêm token có quyền{" "}
+                    <b>Contents: Read &amp; write</b> cho repo {github?.repo} để
+                    nút đồng bộ hoạt động.
                   </p>
                   <p className="text-amber-300/70">
-                    Trong lúc chưa có token, bạn vẫn có thể kéo source về máy bằng lệnh{" "}
-                    <code className="text-thuy-300">npm run cms:sync</code> rồi commit thủ công.
+                    Trong lúc chưa có token, bạn vẫn có thể kéo source về máy
+                    bằng lệnh{" "}
+                    <code className="text-thuy-300">npm run cms:sync</code> rồi
+                    commit thủ công.
                   </p>
                 </div>
               </div>
@@ -272,9 +282,9 @@ export default function AdminSyncPage() {
             </div>
 
             <p className="text-[11px] text-slate-500">
-              Tổng {files.length} file · {(totalSize / 1024).toFixed(1)} KB. Không
-              export tài khoản người dùng, đơn hàng, token tải file và khóa file
-              sản phẩm (dữ liệu nhạy cảm).
+              Tổng {files.length} file · {(totalSize / 1024).toFixed(1)} KB.
+              Không export tài khoản người dùng, đơn hàng, token tải file và
+              khóa file sản phẩm (dữ liệu nhạy cảm).
             </p>
           </div>
 
@@ -285,11 +295,12 @@ export default function AdminSyncPage() {
             </h3>
             <p className="text-xs text-slate-600">
               Khi mở thư mục này trong VSCode, task{" "}
-              <b className="text-slate-200">A-C-D: Theo dõi đồng bộ CMS</b> tự chạy và
-              kéo commit mới từ CMS về máy mỗi 30 giây — không cần thao tác tay.
+              <b className="text-slate-800">A-C-D: Theo dõi đồng bộ CMS</b> tự
+              chạy và kéo commit mới từ CMS về máy mỗi 30 giây — không cần thao
+              tác tay.
             </p>
             <pre className="p-4 rounded-xl bg-thuy-950 border border-thuy-750 text-[11px] text-emerald-300 overflow-x-auto">
-{`npm run cms:watch          # theo dõi + tự git pull (tương đương task VSCode)
+              {`npm run cms:watch          # theo dõi + tự git pull (tương đương task VSCode)
 npm run cms:sync          # kéo về + commit + push thủ công
 npm run cms:sync -- --dry-run   # chỉ kéo về, không commit`}
             </pre>
