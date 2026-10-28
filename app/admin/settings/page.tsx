@@ -2,8 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
-import { resolveHeroVideo, playableVideoUrl, resolveVideoFit } from "@/lib/media-url";
+import MediaPickerModal, {
+  MediaItem,
+} from "@/components/media/MediaPickerModal";
+import {
+  resolveHeroVideo,
+  playableVideoUrl,
+  resolveVideoFit,
+} from "@/lib/media-url";
 import CmsSyncButton from "@/components/admin/CmsSyncButton";
 
 import {
@@ -21,10 +27,14 @@ import {
   Trash2,
 } from "lucide-react";
 
-
 type TabKey = "system" | "seo" | "script";
 
-const TABS: { key: TabKey; label: string; sub: string; icon: typeof Settings }[] = [
+const TABS: {
+  key: TabKey;
+  label: string;
+  sub: string;
+  icon: typeof Settings;
+}[] = [
   {
     key: "system",
     label: "Cấu Hình Hệ Thống",
@@ -54,7 +64,10 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "ok" | "err";
+    text: string;
+  } | null>(null);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
   const [mediaTarget, setMediaTarget] = useState<
     "heroBackgroundImage" | "heroBackgroundVideo" | "heroVideoPoster"
@@ -66,7 +79,9 @@ export default function AdminSettingsPage() {
       .then((data) => {
         if (data.settings) setSettings(data.settings);
       })
-      .catch(() => setMessage({ type: "err", text: "Không tải được cấu hình." }))
+      .catch(() =>
+        setMessage({ type: "err", text: "Không tải được cấu hình." }),
+      )
       .finally(() => setLoading(false));
   }, []);
 
@@ -78,7 +93,7 @@ export default function AdminSettingsPage() {
 
   const heroVideoFit = resolveVideoFit(
     settings.heroVideoFit || "cover",
-    settings.heroVideoAspect || ""
+    settings.heroVideoAspect || "",
   );
 
   // Đọc kích thước thật của video để chọn cách hiển thị (tránh phóng to/cắt)
@@ -93,10 +108,7 @@ export default function AdminSettingsPage() {
     probe.onloadedmetadata = () => {
       if (cancelled) return;
       if (probe.videoWidth && probe.videoHeight) {
-        update(
-          "heroVideoAspect",
-          `${probe.videoWidth}x${probe.videoHeight}`
-        );
+        update("heroVideoAspect", `${probe.videoWidth}x${probe.videoHeight}`);
       }
     };
     probe.src = playableVideoUrl(url);
@@ -143,9 +155,10 @@ export default function AdminSettingsPage() {
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
           Cấu Hình Hệ Thống
         </h1>
-          <p className="text-xs text-slate-600">
-            Quản lý thông tin website, tối ưu SEO và mã nhúng quảng cáo hiển thị trên mọi trang.
-          </p>
+        <p className="text-xs text-slate-600">
+          Quản lý thông tin website, tối ưu SEO và mã nhúng quảng cáo hiển thị
+          trên mọi trang.
+        </p>
       </div>
 
       {/* Tabs */}
@@ -177,7 +190,9 @@ export default function AdminSettingsPage() {
                   {t.label}
                 </span>
               </div>
-              <span className="text-[11px] text-slate-600 leading-relaxed block">{t.sub}</span>
+              <span className="text-[11px] text-slate-600 leading-relaxed block">
+                {t.sub}
+              </span>
             </button>
           );
         })}
@@ -320,7 +335,7 @@ export default function AdminSettingsPage() {
                 onClick={() => update("heroBackgroundType", opt.key)}
                 className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
                   (settings.heroBackgroundType || "image") === opt.key
-                    ? "bg-thuy-400 text-thuy-950 font-bold"
+                    ? "bg-thuy-400 text-white font-bold"
                     : "text-slate-600 hover:text-[#142338]"
                 }`}
               >
@@ -345,7 +360,9 @@ export default function AdminSettingsPage() {
                       <video
                         src={heroVideoPreview.src}
                         className={`w-full h-full object-center ${
-                          heroVideoFit === "contain" ? "object-contain" : "object-cover"
+                          heroVideoFit === "contain"
+                            ? "object-contain"
+                            : "object-cover"
                         }`}
                         autoPlay
                         muted
@@ -370,7 +387,9 @@ export default function AdminSettingsPage() {
                   <input
                     type="text"
                     value={settings.heroBackgroundVideo || ""}
-                    onChange={(e) => update("heroBackgroundVideo", e.target.value)}
+                    onChange={(e) =>
+                      update("heroBackgroundVideo", e.target.value)
+                    }
                     className={inputCls}
                     placeholder="https://assets.mixkit.co/videos/.../hero.mp4"
                   />
@@ -398,13 +417,13 @@ export default function AdminSettingsPage() {
                     )}
                   </div>
                   <p className="text-[10px] text-slate-500">
-                    Hỗ trợ lấy từ nhiều nguồn: Mixkit, Coverr, Pexels Videos, Cloudinary,
-                    Bunny CDN hoặc bất kỳ link .mp4/.webm trực tiếp. Video tự chạy lặp, tắt
-                    tiếng, không điều khiển.
+                    Hỗ trợ lấy từ nhiều nguồn: Mixkit, Coverr, Pexels Videos,
+                    Cloudinary, Bunny CDN hoặc bất kỳ link .mp4/.webm trực tiếp.
+                    Video tự chạy lặp, tắt tiếng, không điều khiển.
                   </p>
                   <p className="text-[10px] text-thuy-300/80">
-                    Link Google Drive, YouTube hoặc Vimeo được tự động chuyển đổi sang nguồn
-                    phát được — chỉ cần dán link gốc.
+                    Link Google Drive, YouTube hoặc Vimeo được tự động chuyển
+                    đổi sang nguồn phát được — chỉ cần dán link gốc.
                   </p>
 
                   <div className="space-y-2 pt-1">
@@ -414,12 +433,14 @@ export default function AdminSettingsPage() {
                       onChange={(e) => update("heroVideoFit", e.target.value)}
                       className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
                     >
-                      <option value="cover">Phủ kín toàn bộ nền (khuyến nghị)</option>
+                      <option value="cover">
+                        Phủ kín toàn bộ nền (khuyến nghị)
+                      </option>
                       <option value="contain">Vừa khung (không cắt mép)</option>
                     </select>
                     <p className="text-[10px] text-slate-500">
-                      “Phủ kín” cho video phủ trọn màn hình như nền. Video không có ảnh poster
-                      nên không bị nháy ảnh trước khi video chạy.
+                      “Phủ kín” cho video phủ trọn màn hình như nền. Video không
+                      có ảnh poster nên không bị nháy ảnh trước khi video chạy.
                     </p>
                     {settings.heroVideoAspect && (
                       <p className="text-[10px] text-slate-600">
@@ -445,7 +466,9 @@ export default function AdminSettingsPage() {
                     <input
                       type="text"
                       value={settings.heroBackgroundVideoMobile || ""}
-                      onChange={(e) => update("heroBackgroundVideoMobile", e.target.value)}
+                      onChange={(e) =>
+                        update("heroBackgroundVideoMobile", e.target.value)
+                      }
                       className={inputCls}
                       placeholder="https://.../hero-mobile.mp4"
                     />
@@ -474,7 +497,9 @@ export default function AdminSettingsPage() {
                     <input
                       type="text"
                       value={settings.heroVideoPoster || ""}
-                      onChange={(e) => update("heroVideoPoster", e.target.value)}
+                      onChange={(e) =>
+                        update("heroVideoPoster", e.target.value)
+                      }
                       className={inputCls}
                       placeholder="https://... (URL ảnh poster)"
                     />
@@ -494,21 +519,27 @@ export default function AdminSettingsPage() {
                   <div className="space-y-2">
                     <label className={labelCls}>
                       Mã nhúng video (YouTube / Vimeo){" "}
-                      <span className="text-slate-500 font-normal">— tùy chọn</span>
+                      <span className="text-slate-500 font-normal">
+                        — tùy chọn
+                      </span>
                     </label>
                     <textarea
                       rows={4}
                       value={settings.heroVideoEmbedCode || ""}
-                      onChange={(e) => update("heroVideoEmbedCode", e.target.value)}
+                      onChange={(e) =>
+                        update("heroVideoEmbedCode", e.target.value)
+                      }
                       className={`${inputCls} font-mono leading-relaxed`}
-                      placeholder={'<iframe src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID" ...></iframe>'}
+                      placeholder={
+                        '<iframe src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID" ...></iframe>'
+                      }
                     />
                     <p className="text-[10px] text-slate-500">
                       Dùng khi không có link file trực tiếp. Nhớ thêm{" "}
                       <code className="text-thuy-300">autoplay=1</code>,{" "}
                       <code className="text-thuy-300">mute=1</code>,{" "}
-                      <code className="text-thuy-300">loop=1</code> để video chạy lặp không
-                      tiếng.
+                      <code className="text-thuy-300">loop=1</code> để video
+                      chạy lặp không tiếng.
                     </p>
                   </div>
                 </div>
@@ -531,7 +562,8 @@ export default function AdminSettingsPage() {
                   className="w-full accent-thuy-400"
                 />
                 <p className="text-[10px] text-slate-500">
-                  Tăng giá trị để phủ tối hơn, giúp chữ và menu dễ đọc hơn trên video nền.
+                  Tăng giá trị để phủ tối hơn, giúp chữ và menu dễ đọc hơn trên
+                  video nền.
                 </p>
               </div>
             </div>
@@ -561,7 +593,9 @@ export default function AdminSettingsPage() {
                   <input
                     type="text"
                     value={settings.heroBackgroundImage || ""}
-                    onChange={(e) => update("heroBackgroundImage", e.target.value)}
+                    onChange={(e) =>
+                      update("heroBackgroundImage", e.target.value)
+                    }
                     className={inputCls}
                     placeholder="https://... (URL ảnh nền hero)"
                   />
@@ -600,9 +634,13 @@ export default function AdminSettingsPage() {
                       </span>
                     </label>
                     <div className="relative aspect-[9/16] max-h-[240px] rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750">
-                      {settings.heroBackgroundImageMobile || settings.heroBackgroundImage ? (
+                      {settings.heroBackgroundImageMobile ||
+                      settings.heroBackgroundImage ? (
                         <Image
-                          src={settings.heroBackgroundImageMobile || settings.heroBackgroundImage}
+                          src={
+                            settings.heroBackgroundImageMobile ||
+                            settings.heroBackgroundImage
+                          }
                           alt="Hero mobile preview"
                           fill
                           className="object-cover"
@@ -618,7 +656,9 @@ export default function AdminSettingsPage() {
                     <input
                       type="text"
                       value={settings.heroBackgroundImageMobile || ""}
-                      onChange={(e) => update("heroBackgroundImageMobile", e.target.value)}
+                      onChange={(e) =>
+                        update("heroBackgroundImageMobile", e.target.value)
+                      }
                       className={inputCls}
                       placeholder="https://... (URL ảnh nền mobile)"
                     />
@@ -637,11 +677,14 @@ export default function AdminSettingsPage() {
                       max={100}
                       step={5}
                       value={settings.heroOverlayOpacity || "60"}
-                      onChange={(e) => update("heroOverlayOpacity", e.target.value)}
+                      onChange={(e) =>
+                        update("heroOverlayOpacity", e.target.value)
+                      }
                       className="w-full accent-thuy-400"
                     />
                     <p className="text-[10px] text-slate-500">
-                      Tăng giá trị để phủ tối hơn, giúp chữ và menu dễ đọc hơn trên ảnh nền.
+                      Tăng giá trị để phủ tối hơn, giúp chữ và menu dễ đọc hơn
+                      trên ảnh nền.
                     </p>
                   </div>
                 </div>
@@ -654,7 +697,8 @@ export default function AdminSettingsPage() {
             <div className="flex-1">
               <p className="text-xs font-semibold text-white">Chế Độ Bảo Trì</p>
               <p className="text-[11px] text-slate-300">
-                Bật để tạm ẩn nội dung website và hiển thị trang thông báo bảo trì.
+                Bật để tạm ẩn nội dung website và hiển thị trang thông báo bảo
+                trì.
               </p>
             </div>
             <select
@@ -709,7 +753,9 @@ export default function AdminSettingsPage() {
                 onChange={(e) => update("seoKeywords", e.target.value)}
                 className={inputCls}
               />
-              <p className="text-[10px] text-slate-500 mt-1">Ngăn cách bằng dấu phẩy.</p>
+              <p className="text-[10px] text-slate-500 mt-1">
+                Ngăn cách bằng dấu phẩy.
+              </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -761,7 +807,9 @@ export default function AdminSettingsPage() {
               <input
                 type="text"
                 value={settings.googleSiteVerification || ""}
-                onChange={(e) => update("googleSiteVerification", e.target.value)}
+                onChange={(e) =>
+                  update("googleSiteVerification", e.target.value)
+                }
                 className={inputCls}
                 placeholder="<meta name='google-site-verification' content='...'>"
               />
@@ -776,9 +824,11 @@ export default function AdminSettingsPage() {
           <div className="flex items-start gap-3 p-4 rounded-xl bg-thuy-900 border border-thuy-700">
             <Info className="w-4 h-4 text-thuy-400 flex-shrink-0 mt-0.5" />
             <p className="text-[11px] text-slate-600 leading-relaxed">
-              Dán mã quảng cáo Google AdSense hoặc bất kỳ dịch vụ quảng cáo/kiểm tra nào vào đây.
-              Mã sẽ được chèn vào <b className="text-slate-200">&lt;head&gt;</b> của{" "}
-              <b className="text-slate-200">mọi trang</b> của website, kích hoạt ngay sau khi lưu.
+              Dán mã quảng cáo Google AdSense hoặc bất kỳ dịch vụ quảng cáo/kiểm
+              tra nào vào đây. Mã sẽ được chèn vào{" "}
+              <b className="text-slate-200">&lt;head&gt;</b> của{" "}
+              <b className="text-slate-200">mọi trang</b> của website, kích hoạt
+              ngay sau khi lưu.
             </p>
           </div>
 
@@ -792,23 +842,28 @@ export default function AdminSettingsPage() {
               placeholder={`<!-- Google AdSense -->\n<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXX" crossorigin="anonymous" data-ad-client="ca-pub-XXXXXXXXXXXXXXX"></script>`}
             />
             <p className="text-[10px] text-slate-500">
-              Được chèn vào thẻ &lt;head&gt; của mọi trang. Phù hợp cho Google AdSense, Google
-              Tag Manager, Facebook Pixel, Microsoft Clarity...
+              Được chèn vào thẻ &lt;head&gt; của mọi trang. Phù hợp cho Google
+              AdSense, Google Tag Manager, Facebook Pixel, Microsoft Clarity...
             </p>
           </div>
 
           <div className="space-y-1.5">
-            <label className={labelCls}>Mã chèn thân trang (Body Embed Code)</label>
+            <label className={labelCls}>
+              Mã chèn thân trang (Body Embed Code)
+            </label>
             <textarea
               rows={8}
               value={settings.bodyEmbedCode || ""}
               onChange={(e) => update("bodyEmbedCode", e.target.value)}
               className={`${inputCls} font-mono leading-relaxed`}
-              placeholder={'<!-- Mã chèn trước thẻ </body> -->\n<script>\n  // your script here\n</script>'}
+              placeholder={
+                "<!-- Mã chèn trước thẻ </body> -->\n<script>\n  // your script here\n</script>"
+              }
             />
             <p className="text-[10px] text-slate-500">
-              Được chèn ngay trước thẻ đóng &lt;/body&gt;. Dùng cho mã cần chạy sau khi tải trang
-              (ví dụ: adsense auto ads, chat widget, event tracking).
+              Được chèn ngay trước thẻ đóng &lt;/body&gt;. Dùng cho mã cần chạy
+              sau khi tải trang (ví dụ: adsense auto ads, chat widget, event
+              tracking).
             </p>
           </div>
         </div>
@@ -832,10 +887,7 @@ export default function AdminSettingsPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <CmsSyncButton
-            label="Đồng bộ mã nguồn"
-            className="shrink-0"
-          />
+          <CmsSyncButton label="Đồng bộ mã nguồn" className="shrink-0" />
           <button
             type="submit"
             disabled={saving}
