@@ -412,7 +412,7 @@ export default function AdminSettingsPage() {
                     <select
                       value={settings.heroVideoFit || "cover"}
                       onChange={(e) => update("heroVideoFit", e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
+                      className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
                     >
                       <option value="cover">Phủ kín toàn bộ nền (khuyến nghị)</option>
                       <option value="contain">Vừa khung (không cắt mép)</option>
@@ -652,15 +652,15 @@ export default function AdminSettingsPage() {
           <div className="pt-2 flex items-center gap-3 p-4 rounded-xl bg-thuy-900 border border-thuy-750">
             <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
             <div className="flex-1">
-              <p className="text-xs font-semibold text-[#142338]">Chế Độ Bảo Trì</p>
-              <p className="text-[11px] text-slate-600">
+              <p className="text-xs font-semibold text-white">Chế Độ Bảo Trì</p>
+              <p className="text-[11px] text-slate-300">
                 Bật để tạm ẩn nội dung website và hiển thị trang thông báo bảo trì.
               </p>
             </div>
             <select
               value={settings.maintenanceMode || "false"}
               onChange={(e) => update("maintenanceMode", e.target.value)}
-              className="px-3 py-2 rounded-xl bg-thuy-950 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
+              className="px-3 py-2 rounded-xl bg-thuy-950 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
             >
               <option value="false">Tắt</option>
               <option value="true">Bật</option>
