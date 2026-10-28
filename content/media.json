@@ -1,17 +1,5 @@
 [
   {
-    "id": "media_interior_2",
-    "filename": "interior-kitchen-marble.jpg",
-    "originalName": "Black Marble Kitchen Island",
-    "mimeType": "image/jpeg",
-    "size": 0,
-    "url": "https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=1600&q=80",
-    "folder": "interior",
-    "width": 1600,
-    "height": 1067,
-    "alt": "Đảo bếp đá cẩm thạch đen và ánh sáng băng xanh"
-  },
-  {
     "id": "media_interior_1",
     "filename": "interior-dark-luxury-lounge.jpg",
     "originalName": "Dark Luxury Minimalist Lounge",
