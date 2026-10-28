@@ -32,17 +32,21 @@ export async function POST(request: Request) {
     }
 
     const folderId = match[1];
-    // Try to access public folder
-    const listUrl = `https://drive.google.com/drive/folders/${folderId}`;
-    
-    // Use Google Drive API v3 if available via public access - fallback to scraping
-    // Try simple approach: fetch folder page
-    const res = await fetch(listUrl, {
+    // Try alternative: use Google Drive API v3 without key for public folders
+    try {
+      const apiUrl = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&fields=files(id,name,mimeType)&key=AIzaSyDummy`;
+      // This won't work without key, skip
+    } catch {}
+
+    // Try to fetch via different approach - get folder view
+    const res = await fetch(`https://drive.google.com/drive/folders/${folderId}?usp=sharing`, {
       headers: {
         "User-Agent": USER_AGENT,
-        "Accept": "text/html,application/xhtml+xml",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
       },
       cache: "no-store",
+      redirect: "follow",
     });
 
     if (!res.ok) {
@@ -51,18 +55,19 @@ export async function POST(request: Request) {
 
     const html = await res.text();
     
-    // Extract file IDs from page
+    // Try to find file IDs in different formats
     const fileIds: string[] = [];
     const patterns = [
-      /\/file\/d\/([a-zA-Z0-9_-]+)/g,
-      /"([a-zA-Z0-9_-]{25,})"/g,
+      /\/file\/d\/([a-zA-Z0-9_-]{25,})/g,
+      /id['"]?\s*[:=]\s*['"]([a-zA-Z0-9_-]{25,})['"]/g,
+      /\[\"([a-zA-Z0-9_-]{25,})\"/g,
     ];
     
     for (const pattern of patterns) {
       let m;
       while ((m = pattern.exec(html)) !== null) {
         const id = m[1];
-        if (id.length >= 25 && id.length <= 50 && !fileIds.includes(id)) {
+        if (id.length >= 25 && id.length <= 60 && !fileIds.includes(id) && id !== folderId) {
           fileIds.push(id);
         }
       }
