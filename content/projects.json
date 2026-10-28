@@ -2893,19 +2893,8 @@
       "slug": "biet-thu-villa",
       "name": "Biệt Thự & Villa Nghỉ Dưỡng"
     },
-    "cover": {
-      "filename": "villa-mariana-water-hero.jpg",
-      "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=85",
-      "alt": "Kiến trúc Biệt Thự Mariana với hồ nước phong thủy ban đêm"
-    },
-    "gallery": [
-      {
-        "filename": "villa-mariana-water-hero.jpg",
-        "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=85",
-        "alt": "Kiến trúc Biệt Thự Mariana với hồ nước phong thủy ban đêm",
-        "sortOrder": 0
-      }
-    ],
+    "cover": null,
+    "gallery": [],
     "tags": [
       "menh-thuy",
       "hien-dai",
