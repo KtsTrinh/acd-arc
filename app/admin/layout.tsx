@@ -18,18 +18,41 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: 'var(--admin-background, #F3F8FC)' }}>
+    <div
+      className="flex min-h-screen"
+      style={{ backgroundColor: "var(--admin-background, #F3F8FC)" }}
+    >
       <AdminSidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 border-b px-6 sm:px-8 flex items-center justify-between sticky top-0 z-30 backdrop-blur-xl" style={{ backgroundColor: 'rgba(255,255,255,0.9)', borderColor: 'var(--admin-border, #E1EAF2)' }}>
+        <header
+          className="h-16 border-b px-6 sm:px-8 flex items-center justify-between sticky top-0 z-30 backdrop-blur-xl"
+          style={{
+            backgroundColor: "rgba(255,255,255,0.9)",
+            borderColor: "var(--admin-border, #E1EAF2)",
+          }}
+        >
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-sm" style={{ color: 'var(--admin-text-secondary, #526780)' }}>Hệ Thống Trực Tuyến ACD Studio</span>
+            <span
+              className="text-sm"
+              style={{ color: "var(--admin-text-secondary, #526780)" }}
+            >
+              Hệ Thống Trực Tuyến ACD Studio
+            </span>
           </div>
 
           <div className="flex items-center gap-3 text-sm">
-            <span style={{ color: 'var(--admin-text-muted, #8192A8)' }}>Đang quản trị:</span>
-            <span className="font-medium px-3 py-1.5 rounded-lg border shadow-sm" style={{ color: 'var(--admin-text-primary, #142338)', backgroundColor: 'var(--admin-surface, #FFFFFF)', borderColor: 'var(--admin-border, #E1EAF2)' }}>
+            <span style={{ color: "var(--admin-text-muted, #8192A8)" }}>
+              Đang quản trị:
+            </span>
+            <span
+              className="font-medium px-3 py-1.5 rounded-lg border shadow-sm"
+              style={{
+                color: "var(--admin-text-primary, #142338)",
+                backgroundColor: "var(--admin-surface, #FFFFFF)",
+                borderColor: "var(--admin-border, #E1EAF2)",
+              }}
+            >
               {user.name} ({user.email})
             </span>
           </div>
@@ -38,10 +61,5 @@ export default async function AdminLayout({
         <main className="flex-1 p-6 sm:p-8 overflow-y-auto">{children}</main>
       </div>
     </div>
-
-        <main className="flex-1 p-6 sm:p-8 overflow-y-auto">{children}</main>
-      </div>
-    </div>
   );
 }
-
