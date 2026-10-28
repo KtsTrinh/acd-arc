@@ -10,7 +10,7 @@ import {
   ShoppingCart,
   ShoppingBag,
   RefreshCw,
-  search,
+  Search,
   TrendingUp,
   LayoutList,
 } from "lucide-react";
@@ -38,9 +38,9 @@ const DEVICE_BADGE: Record<string, string> = {
 };
 
 export default function AdminCustomersPage() {
-  const [tab, setTab] = useState('all');
-  const [range, setRange] = useState('7d');
-  const [search, setSearch] = useState('');
+  const [tab, setTab] = useState("all");
+  const [range, setRange] = useState("7d");
+  const [search, setSearch] = useState("");
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -70,7 +70,7 @@ export default function AdminCustomersPage() {
         setRefreshing(false);
       }
     },
-    [range, search]
+    [range, search],
   );
 
   useEffect(() => {
@@ -156,7 +156,9 @@ export default function AdminCustomersPage() {
           disabled={refreshing}
           className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-thuy-800 text-slate-200 hover:text-white hover:bg-thuy-750 border border-thuy-700 text-xs font-semibold transition-all self-start sm:self-auto"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`}
+          />
           <span>Làm Mới</span>
         </button>
       </div>
@@ -430,7 +432,9 @@ export default function AdminCustomersPage() {
                           </td>
                           <td className="py-3.5 px-5 font-mono text-[10px] text-slate-400 max-w-[220px]">
                             <p className="truncate">{s.landingPath || "/"}</p>
-                            <p className="truncate text-thuy-400">{s.lastPath}</p>
+                            <p className="truncate text-thuy-400">
+                              {s.lastPath}
+                            </p>
                           </td>
                           <td className="py-3.5 px-5 text-slate-400 text-[11px]">
                             {formatDateTime(s.firstSeenAt)}
@@ -570,16 +574,22 @@ export default function AdminCustomersPage() {
                           <p className="text-[11px] text-thuy-300 font-mono">
                             {c.email || "-"}
                           </p>
-                          <p className="text-[10px] text-slate-400">{c.phone || "-"}</p>
+                          <p className="text-[10px] text-slate-400">
+                            {c.phone || "-"}
+                          </p>
                           {c.address && (
-                            <p className="text-[10px] text-slate-500">{c.address}</p>
+                            <p className="text-[10px] text-slate-500">
+                              {c.address}
+                            </p>
                           )}
                         </td>
                         <td className="py-3.5 px-5 text-slate-300 capitalize">
                           {c.provider || "local"}
                         </td>
                         <td className="py-3.5 px-5">
-                          <span className="font-bold text-white">{c.visits}</span>
+                          <span className="font-bold text-white">
+                            {c.visits}
+                          </span>
                           <span className="block text-[10px] text-slate-500">
                             {c.pageViews} lượt xem
                           </span>
@@ -605,8 +615,8 @@ export default function AdminCustomersPage() {
                           {c.lastVisitAt
                             ? formatDateTime(c.lastVisitAt)
                             : c.lastOrderAt
-                            ? formatDateTime(c.lastOrderAt)
-                            : "—"}
+                              ? formatDateTime(c.lastOrderAt)
+                              : "—"}
                         </td>
                       </tr>
                     ))}
@@ -667,11 +677,15 @@ export default function AdminCustomersPage() {
                             {b.email}
                           </p>
                           {b.phone && (
-                            <p className="text-[10px] text-slate-500">{b.phone}</p>
+                            <p className="text-[10px] text-slate-500">
+                              {b.phone}
+                            </p>
                           )}
                         </td>
                         <td className="py-3.5 px-5">
-                          <span className="font-bold text-white">{b.orderCount}</span>
+                          <span className="font-bold text-white">
+                            {b.orderCount}
+                          </span>
                           <span className="block text-[10px] text-slate-500">
                             {b.paidCount} đã thanh toán
                           </span>
@@ -746,7 +760,9 @@ export default function AdminCustomersPage() {
                       {cartTop.map((c: any, idx: number) => (
                         <tr key={idx} className="hover:bg-thuy-800/40">
                           <td className="py-3.5 px-5">
-                            <p className="font-bold text-white">{c.productName}</p>
+                            <p className="font-bold text-white">
+                              {c.productName}
+                            </p>
                             {c.productSlug && (
                               <p className="text-[10px] text-slate-500 font-mono">
                                 /products/{c.productSlug}
