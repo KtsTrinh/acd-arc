@@ -1,17 +1,5 @@
 [
   {
-    "id": "media_penthouse_1",
-    "filename": "penthouse-skyline-view.jpg",
-    "originalName": "Penthouse Panoramic River View",
-    "mimeType": "image/jpeg",
-    "size": 0,
-    "url": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600&q=80",
-    "folder": "penthouse",
-    "width": 1600,
-    "height": 1067,
-    "alt": "Penthouse hướng nhìn toàn cảnh sông Sài Gòn"
-  },
-  {
     "id": "media_interior_2",
     "filename": "interior-kitchen-marble.jpg",
     "originalName": "Black Marble Kitchen Island",
