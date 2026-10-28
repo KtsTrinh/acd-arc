@@ -10,7 +10,7 @@ import {
   ShoppingCart,
   ShoppingBag,
   RefreshCw,
-  Search,
+  search,
   TrendingUp,
   LayoutList,
 } from "lucide-react";
@@ -38,6 +38,9 @@ const DEVICE_BADGE: Record<string, string> = {
 };
 
 export default function AdminCustomersPage() {
+  const [tab, setTab] = useState('all');
+  const [range, setRange] = useState('7d');
+  const [search, setSearch] = useState('');
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
