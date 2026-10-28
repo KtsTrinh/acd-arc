@@ -2854,19 +2854,8 @@
       "slug": "nha-pho-hien-dai",
       "name": "Nhà Phố Hiện Đại"
     },
-    "cover": {
-      "filename": "villa-moc-teakwood.jpg",
-      "url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600&q=80",
-      "alt": "Biệt thự sinh thái gỗ tự nhiên và cây nhiệt đới - Hợp Mệnh Mộc"
-    },
-    "gallery": [
-      {
-        "filename": "villa-moc-teakwood.jpg",
-        "url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600&q=80",
-        "alt": "Biệt thự sinh thái gỗ tự nhiên và cây nhiệt đới - Hợp Mệnh Mộc",
-        "sortOrder": 0
-      }
-    ],
+    "cover": null,
+    "gallery": [],
     "tags": [
       "menh-moc",
       "tropical-modern"
