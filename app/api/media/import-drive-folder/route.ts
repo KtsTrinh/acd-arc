@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     // 5. Sử dụng cổng trích xuất xuất ảnh thô công khai (uc?export=view) để bypass hotlinking
     for (const file of files) {
       try {
-        const fileUrl = `https://google.com{file.id}`;
+        const fileUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
 
         const media = await createMediaItem({
           filename: file.name,
