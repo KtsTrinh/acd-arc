@@ -336,7 +336,7 @@ export default function AdminSettingsPage() {
                 className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
                   (settings.heroBackgroundType || "image") === opt.key
                     ? "bg-thuy-400 text-white font-bold"
-                    : "text-slate-600 hover:text-[#142338]"
+                    : "text-white hover:text-white"
                 }`}
               >
                 {opt.label}
