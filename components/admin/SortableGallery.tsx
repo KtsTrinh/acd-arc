@@ -91,7 +91,7 @@ function SortableCard({
       <div
         {...attributes}
         {...listeners}
-        className="absolute top-2 left-2 p-1.5 rounded-lg bg-thuy-950/80 backdrop-blur-sm text-slate-300 hover:text-white cursor-grab active:cursor-grabbing border border-thuy-700/80 transition-colors"
+        className="absolute top-2 left-2 p-1.5 rounded-lg bg-thuy-950/80 backdrop-blur-sm text-slate-300 hover:text-[#142338] cursor-grab active:cursor-grabbing border border-thuy-700/80 transition-colors"
         title="Kéo thả để đổi thứ tự"
       >
         <GripVertical className="w-4 h-4" />

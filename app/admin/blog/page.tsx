@@ -80,7 +80,7 @@ export default function AdminBlogPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
+          <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
             Quản Lý Tạp Chí & Bài Viết Kiến Trúc
           </h1>
           <p className="text-xs text-slate-600">
@@ -125,7 +125,7 @@ export default function AdminBlogPage() {
                     </div>
                   </td>
                   <td className="py-3.5 px-5">
-                    <span className="font-bold text-white block text-sm">{post.title}</span>
+                    <span className="font-bold text-[#142338] block text-sm">{post.title}</span>
                     <span className="text-[10px] text-slate-600 font-mono">/blog/{post.slug}</span>
                   </td>
                   <td className="py-3.5 px-5 font-semibold text-thuy-400">
@@ -156,8 +156,8 @@ export default function AdminBlogPage() {
           <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
           <div className="relative z-10 w-full max-w-2xl bg-thuy-900 border border-thuy-700 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-white">Soạn Thảo Bài Viết Mới</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-600 hover:text-white">
+              <h3 className="font-semibold text-base text-[#142338]">Soạn Thảo Bài Viết Mới</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-600 hover:text-[#142338]">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -171,7 +171,7 @@ export default function AdminBlogPage() {
                   value={title}
                   onChange={(e) => handleTitleChange(e.target.value)}
                   placeholder="Ấn vào đây để nhập tiêu đề bài viết..."
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -191,7 +191,7 @@ export default function AdminBlogPage() {
                   value={coverUrl}
                   onChange={(e) => setCoverUrl(e.target.value)}
                   placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -202,7 +202,7 @@ export default function AdminBlogPage() {
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
                   placeholder="Tóm tắt ngắn nội dung bài viết khoảng 1-2 câu..."
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -214,7 +214,7 @@ export default function AdminBlogPage() {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Nhập nội dung bài viết kiến trúc, phân tích giải pháp thiết kế tại đây..."
-                  className="w-full p-3.5 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white leading-relaxed"
+                  className="w-full p-3.5 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338] leading-relaxed"
                 />
               </div>
 

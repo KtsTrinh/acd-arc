@@ -81,7 +81,7 @@ export default async function AdminDashboardPage() {
         <div className="flex flex-wrap items-center gap-2.5">
           <Link
             href="/admin/projects/new"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-[#087EA4] to-[#22C7E8] text-white font-medium text-xs hover:shadow-[0_4px_16px_rgba(34,199,232,0.25)] transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-[#087EA4] to-[#22C7E8] text-[#142338] font-medium text-xs hover:shadow-[0_4px_16px_rgba(34,199,232,0.25)] transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Thêm Dự Án Mới</span>

@@ -46,7 +46,7 @@ const TABS: { key: TabKey; label: string; sub: string; icon: typeof Settings }[]
 ];
 
 const inputCls =
-  "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400 transition-colors";
+  "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400 transition-colors";
 const labelCls = "block text-xs text-slate-700 font-medium mb-1.5";
 
 export default function AdminSettingsPage() {
@@ -140,7 +140,7 @@ export default function AdminSettingsPage() {
   return (
     <form onSubmit={handleSave} className="space-y-6 max-w-5xl">
       <div>
-        <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
+        <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
           Cấu Hình Hệ Thống
         </h1>
           <p className="text-xs text-slate-600">
@@ -172,7 +172,7 @@ export default function AdminSettingsPage() {
                   className={`w-4 h-4 ${isActive ? "text-thuy-400" : "text-slate-600 group-hover:text-thuy-400"}`}
                 />
                 <span
-                  className={`text-xs font-bold ${isActive ? "text-white" : "text-slate-200"}`}
+                  className={`text-xs font-bold ${isActive ? "text-[#142338]" : "text-slate-200"}`}
                 >
                   {t.label}
                 </span>
@@ -186,7 +186,7 @@ export default function AdminSettingsPage() {
       {/* TAB 1: SYSTEM */}
       {tab === "system" && (
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-5">
-          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3">
+          <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-3">
             1.1. Thông Tin Studio
           </h2>
 
@@ -221,7 +221,7 @@ export default function AdminSettingsPage() {
             </div>
           </div>
 
-          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3 pt-2">
+          <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-3 pt-2">
             1.2. Thông Tin Liên Hệ
           </h2>
 
@@ -265,7 +265,7 @@ export default function AdminSettingsPage() {
             </div>
           </div>
 
-          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3 pt-2">
+          <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-3 pt-2">
             1.3. Mạng Xã Hội
           </h2>
 
@@ -302,7 +302,7 @@ export default function AdminSettingsPage() {
             </div>
           </div>
 
-          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3 pt-2">
+          <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-3 pt-2">
             1.4. Nền Hero (Ảnh / Video)
           </h2>
 
@@ -321,7 +321,7 @@ export default function AdminSettingsPage() {
                 className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
                   (settings.heroBackgroundType || "image") === opt.key
                     ? "bg-thuy-400 text-thuy-950 font-bold"
-                    : "text-slate-600 hover:text-white"
+                    : "text-slate-600 hover:text-[#142338]"
                 }`}
               >
                 {opt.label}
@@ -381,7 +381,7 @@ export default function AdminSettingsPage() {
                         setMediaTarget("heroBackgroundVideo");
                         setIsMediaModalOpen(true);
                       }}
-                      className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-white border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+                      className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-[#142338] border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
                     >
                       <Upload className="w-3.5 h-3.5 text-thuy-400" />
                       <span>Chọn video từ Media Library</span>
@@ -412,7 +412,7 @@ export default function AdminSettingsPage() {
                     <select
                       value={settings.heroVideoFit || "cover"}
                       onChange={(e) => update("heroVideoFit", e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
+                      className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
                     >
                       <option value="cover">Phủ kín toàn bộ nền (khuyến nghị)</option>
                       <option value="contain">Vừa khung (không cắt mép)</option>
@@ -484,7 +484,7 @@ export default function AdminSettingsPage() {
                         setMediaTarget("heroVideoPoster");
                         setIsMediaModalOpen(true);
                       }}
-                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-white border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-[#142338] border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
                     >
                       <Upload className="w-3.5 h-3.5 text-thuy-400" />
                       <span>Chọn poster từ Media Library</span>
@@ -572,7 +572,7 @@ export default function AdminSettingsPage() {
                         setMediaTarget("heroBackgroundImage");
                         setIsMediaModalOpen(true);
                       }}
-                      className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-white border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+                      className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-[#142338] border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
                     >
                       <Upload className="w-3.5 h-3.5 text-thuy-400" />
                       <span>Chọn từ Media Library</span>
@@ -652,7 +652,7 @@ export default function AdminSettingsPage() {
           <div className="pt-2 flex items-center gap-3 p-4 rounded-xl bg-thuy-900 border border-thuy-750">
             <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
             <div className="flex-1">
-              <p className="text-xs font-semibold text-white">Chế Độ Bảo Trì</p>
+              <p className="text-xs font-semibold text-[#142338]">Chế Độ Bảo Trì</p>
               <p className="text-[11px] text-slate-600">
                 Bật để tạm ẩn nội dung website và hiển thị trang thông báo bảo trì.
               </p>
@@ -660,7 +660,7 @@ export default function AdminSettingsPage() {
             <select
               value={settings.maintenanceMode || "false"}
               onChange={(e) => update("maintenanceMode", e.target.value)}
-              className="px-3 py-2 rounded-xl bg-thuy-950 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
+              className="px-3 py-2 rounded-xl bg-thuy-950 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
             >
               <option value="false">Tắt</option>
               <option value="true">Bật</option>
@@ -672,7 +672,7 @@ export default function AdminSettingsPage() {
       {/* TAB 2: SEO */}
       {tab === "seo" && (
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-5">
-          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3">
+          <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-3">
             2.1. Meta Tags Cơ Bản
           </h2>
 
@@ -738,7 +738,7 @@ export default function AdminSettingsPage() {
             </div>
           </div>
 
-          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3 pt-2">
+          <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-3 pt-2">
             2.2. Xác Minh & Đo Lường
           </h2>
 

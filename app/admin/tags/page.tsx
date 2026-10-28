@@ -51,7 +51,7 @@ export default function AdminTagsPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
+        <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
           Quản Lý Thẻ Phân Loại (Tags)
         </h1>
         <p className="text-xs text-slate-600">
@@ -67,7 +67,7 @@ export default function AdminTagsPage() {
             placeholder="Tên thẻ tag mới (ví dụ: Biệt Thự, Hiện Đại, Wabi-Sabi, Hậu Hiện Đại...)"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
+            className="flex-1 px-4 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
           />
           <button
             type="submit"

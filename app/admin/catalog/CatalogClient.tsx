@@ -249,7 +249,7 @@ export default function AdminCatalogClient({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
+          <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
             Danh Mục Sản Phẩm
           </h1>
           <p className="text-xs text-slate-600">
@@ -273,8 +273,8 @@ export default function AdminCatalogClient({
       <div className="p-4 rounded-2xl bg-thuy-850/70 border border-thuy-750 flex flex-col sm:flex-row sm:items-center gap-3 text-xs text-slate-700">
         <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
         <p>
-          File/link tải về chỉ mở cho <b className="text-white">đúng tài khoản đã thanh toán</b>.
-          Link tự xuất hiện trong vòng <b className="text-white">5 phút</b> kể từ lúc đơn hàng
+          File/link tải về chỉ mở cho <b className="text-[#142338]">đúng tài khoản đã thanh toán</b>.
+          Link tự xuất hiện trong vòng <b className="text-[#142338]">5 phút</b> kể từ lúc đơn hàng
           được xác nhận thanh toán, hết hạn sau 5 phút và tối đa 5 lượt tải. Link gốc do quản
           trị cấu hình được phát qua máy chủ nên khách không thể chia sẻ cho người khác tải.
         </p>
@@ -361,10 +361,10 @@ export default function AdminCatalogClient({
           />
           <div className="relative z-10 w-full max-w-2xl bg-thuy-900 border border-thuy-700 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-white">
+              <h3 className="font-semibold text-base text-[#142338]">
                 {form.id ? "Cập nhật mục danh mục" : "Thêm mục danh mục sản phẩm"}
               </h3>
-              <button onClick={() => setForm(null)} className="text-slate-600 hover:text-white">
+              <button onClick={() => setForm(null)} className="text-slate-600 hover:text-[#142338]">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -383,7 +383,7 @@ export default function AdminCatalogClient({
                     })
                   }
                   placeholder="Trọn bộ hồ sơ thiết kế biệt thự hiện đại 3 tầng"
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -396,7 +396,7 @@ export default function AdminCatalogClient({
                     value={form.price}
                     onChange={(e) => updateForm({ price: e.target.value })}
                     placeholder="850000"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -406,7 +406,7 @@ export default function AdminCatalogClient({
                     value={form.comparePrice}
                     onChange={(e) => updateForm({ comparePrice: e.target.value })}
                     placeholder="1200000"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -414,7 +414,7 @@ export default function AdminCatalogClient({
                   <select
                     value={form.type}
                     onChange={(e) => updateForm({ type: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                   >
                     {CATALOG_GROUPS.map((g) => (
                       <option key={g.key} value={g.types[0]}>
@@ -439,7 +439,7 @@ export default function AdminCatalogClient({
                     value={form.fileFormat}
                     onChange={(e) => updateForm({ fileFormat: e.target.value })}
                     placeholder="AutoCAD .DWG / 3ds Max 2024"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -449,7 +449,7 @@ export default function AdminCatalogClient({
                     value={form.fileSize}
                     onChange={(e) => updateForm({ fileSize: e.target.value })}
                     placeholder="185 MB / 1.2 GB"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                   />
                 </div>
               </div>
@@ -498,7 +498,7 @@ export default function AdminCatalogClient({
                     value={form.downloadLinkUrl}
                     onChange={(e) => updateForm({ downloadLinkUrl: e.target.value })}
                     placeholder="https://drive.google.com/... (dán link chia sẻ nội bộ)"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                   />
                   <p className="text-[10px] text-slate-500">
                     Link này KHÔNG được hiển thị cho khách. Máy chủ sẽ phát lại file qua
@@ -514,7 +514,7 @@ export default function AdminCatalogClient({
                     <select
                       value={form.downloadExpiresMinutes}
                       onChange={(e) => updateForm({ downloadExpiresMinutes: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                     >
                       {EXPIRY_OPTIONS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
@@ -528,7 +528,7 @@ export default function AdminCatalogClient({
                     <select
                       value={form.projectId}
                       onChange={(e) => updateForm({ projectId: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                     >
                       <option value="">— Không liên kết —</option>
                       {projects.map((p) => (
@@ -567,7 +567,7 @@ export default function AdminCatalogClient({
                   value={form.thumbnail}
                   onChange={(e) => updateForm({ thumbnail: e.target.value })}
                   placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -578,7 +578,7 @@ export default function AdminCatalogClient({
                   value={form.description}
                   onChange={(e) => updateForm({ description: e.target.value })}
                   placeholder="Chi tiết các file đính kèm..."
-                  className="w-full p-3 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full p-3 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -652,7 +652,7 @@ function CatalogTable({
     return (
       <div className="py-16 text-center text-slate-600 text-xs rounded-2xl bg-thuy-850/50 border border-thuy-750">
         <Package className="w-8 h-8 mx-auto mb-3 text-slate-600" />
-        Nhóm <b className="text-white">{group?.label}</b> chưa có mục nào. Bấm “Thêm mục” để
+        Nhóm <b className="text-[#142338]">{group?.label}</b> chưa có mục nào. Bấm “Thêm mục” để
         tạo mục danh mục đầu tiên.
       </div>
     );
@@ -694,7 +694,7 @@ function CatalogTable({
                   </div>
                 </td>
                 <td className="py-3.5 px-5">
-                  <span className="font-bold text-white block text-sm">{p.name}</span>
+                  <span className="font-bold text-[#142338] block text-sm">{p.name}</span>
                   <span className="text-[10px] text-slate-600 font-mono block">
                     /products/{p.slug}
                   </span>
@@ -831,7 +831,7 @@ function ManagePanel({
       {/* Danh mục dự án */}
       <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
         <div className="px-5 py-4 border-b border-thuy-750 flex items-center justify-between">
-          <h2 className="font-bold text-sm text-white flex items-center gap-2">
+          <h2 className="font-bold text-sm text-[#142338] flex items-center gap-2">
             <FolderTree className="w-4 h-4 text-thuy-400" /> Danh Mục Dự Án Hiển Thị
           </h2>
           <span className="text-[10px] text-slate-600">
@@ -847,13 +847,13 @@ function ManagePanel({
             value={catName}
             onChange={(e) => setCatName(e.target.value)}
             placeholder="Tên danh mục *"
-            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
           />
           <input
             value={catDesc}
             onChange={(e) => setCatDesc(e.target.value)}
             placeholder="Mô tả ngắn"
-            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
           />
           <button
             type="submit"
@@ -882,7 +882,7 @@ function ManagePanel({
             <tbody className="divide-y divide-thuy-750/60">
               {categories.map((c) => (
                 <tr key={c.id} className="hover:bg-thuy-800/40">
-                  <td className="py-3 px-5 font-bold text-white">{c.name}</td>
+                  <td className="py-3 px-5 font-bold text-[#142338]">{c.name}</td>
                   <td className="py-3 px-5 text-slate-600 font-mono text-[10px]">
                     {c.slug}
                   </td>
@@ -915,7 +915,7 @@ function ManagePanel({
       {/* Dự án hiển thị */}
       <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
         <div className="px-5 py-4 border-b border-thuy-750 flex items-center justify-between">
-          <h2 className="font-bold text-sm text-white flex items-center gap-2">
+          <h2 className="font-bold text-sm text-[#142338] flex items-center gap-2">
             <Building2 className="w-4 h-4 text-thuy-400" /> Dự Án Kiến Trúc Hiển Thị
           </h2>
           <Link
@@ -960,7 +960,7 @@ function ManagePanel({
                       </div>
                     </td>
                     <td className="py-3 px-5">
-                      <span className="font-bold text-white block">{p.title}</span>
+                      <span className="font-bold text-[#142338] block">{p.title}</span>
                       <span className="text-[10px] text-slate-600 font-mono">
                         /projects/{p.slug}
                       </span>

@@ -127,7 +127,7 @@ export default function AdminOrdersPage() {
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 statusFilter === st
                   ? "bg-white400 text-thuy-950 shadow-glow-cyan"
-                  : "bg-white900 text-slate-600 hover:text-white border border-slate-200750"
+                  : "bg-white900 text-slate-600 hover:text-[#142338] border border-slate-200750"
               }`}
             >
               {st === "ALL" ? "Tất Cả" : st}
@@ -142,7 +142,7 @@ export default function AdminOrdersPage() {
             placeholder="Tìm theo mã đơn, email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-white900 border border-slate-200700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-slate-200400"
+            className="w-full pl-9 pr-3 py-2 rounded-xl bg-white900 border border-slate-200700 text-xs text-[#142338] placeholder-slate-400 focus:outline-none focus:border-slate-200400"
           />
         </div>
       </div>
@@ -166,7 +166,7 @@ export default function AdminOrdersPage() {
               {orders.map((o) => (
                 <tr key={o.id} className="hover:bg-white800/40">
                   <td className="py-4 px-5">
-                    <span className="font-mono font-bold text-white text-sm block">
+                    <span className="font-mono font-bold text-[#142338] text-sm block">
                       #{o.orderNumber}
                     </span>
                     <span className="text-[10px] text-slate-600">
@@ -175,7 +175,7 @@ export default function AdminOrdersPage() {
                   </td>
 
                   <td className="py-4 px-5">
-                    <p className="font-bold text-white">{o.customerName}</p>
+                    <p className="font-bold text-[#142338]">{o.customerName}</p>
                     <p className="text-[10px] text-thuy-300 font-mono">{o.customerEmail}</p>
                     {o.customerPhone && (
                       <p className="text-[10px] text-slate-600">{o.customerPhone}</p>

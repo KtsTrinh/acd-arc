@@ -90,7 +90,7 @@ export default function AdminSyncPage() {
       <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-5">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="font-semibold text-sm text-white flex items-center gap-2">
+            <h2 className="font-semibold text-sm text-[#142338] flex items-center gap-2">
               <GitBranch className="w-4 h-4 text-thuy-400" />
               Đồng Bộ Mã Nguồn (CMS → GitHub → Vercel)
             </h2>
@@ -150,14 +150,14 @@ export default function AdminSyncPage() {
       ) : (
         <>
           <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
-            <h3 className="font-semibold text-sm text-white">Kết nối GitHub</h3>
+            <h3 className="font-semibold text-sm text-[#142338]">Kết nối GitHub</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="p-3.5 rounded-xl bg-thuy-900 border border-thuy-750">
                 <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
                   Repository
                 </p>
-                <p className="text-xs text-white font-semibold break-all">
+                <p className="text-xs text-[#142338] font-semibold break-all">
                   {github?.repo || "-"}
                 </p>
               </div>
@@ -165,7 +165,7 @@ export default function AdminSyncPage() {
                 <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
                   Nhánh deploy
                 </p>
-                <p className="text-xs text-white font-semibold">
+                <p className="text-xs text-[#142338] font-semibold">
                   {github?.branch || "main"}
                 </p>
               </div>
@@ -197,7 +197,7 @@ export default function AdminSyncPage() {
                   Lần đồng bộ gần nhất
                 </p>
                 {lastSync?.sha ? (
-                  <p className="text-xs text-white">
+                  <p className="text-xs text-[#142338]">
                     <a
                       href={lastSync.url}
                       target="_blank"
@@ -218,7 +218,7 @@ export default function AdminSyncPage() {
               <button
                 type="button"
                 onClick={loadStatus}
-                className="text-[11px] text-slate-600 hover:text-white flex items-center gap-1.5"
+                className="text-[11px] text-slate-600 hover:text-[#142338] flex items-center gap-1.5"
               >
                 <RefreshCw className="w-3 h-3" /> Làm mới
               </button>
@@ -244,14 +244,14 @@ export default function AdminSyncPage() {
 
           <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-white flex items-center gap-2">
+              <h3 className="font-semibold text-sm text-[#142338] flex items-center gap-2">
                 <FileCode2 className="w-4 h-4 text-thuy-400" />
                 File sẽ được ghi vào mã nguồn
               </h3>
               <button
                 type="button"
                 onClick={loadStatus}
-                className="text-[11px] text-slate-600 hover:text-white flex items-center gap-1.5"
+                className="text-[11px] text-slate-600 hover:text-[#142338] flex items-center gap-1.5"
               >
                 <RefreshCw className="w-3 h-3" /> Làm mới
               </button>
@@ -279,7 +279,7 @@ export default function AdminSyncPage() {
           </div>
 
           <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-3">
-            <h3 className="font-semibold text-sm text-white flex items-center gap-2">
+            <h3 className="font-semibold text-sm text-[#142338] flex items-center gap-2">
               <Terminal className="w-4 h-4 text-thuy-400" />
               Đồng bộ trong VSCode
             </h3>

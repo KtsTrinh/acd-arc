@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { CreditCard, Save, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 
 const inputCls =
-  "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400 transition-colors";
+  "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400 transition-colors";
 const labelCls = "block text-xs text-slate-700 font-medium mb-1.5";
 
 const bankList = [
@@ -119,7 +119,7 @@ export default function AdminPaymentSettingsPage() {
   return (
     <form onSubmit={handleSave} className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="font-display font-bold text-2xl sm:text-3xl text-white flex items-center gap-2">
+        <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338] flex items-center gap-2">
           <CreditCard className="w-6 h-6 text-cyan-400" />
           Cấu Hình Tài Khoản Thanh Toán
         </h1>
@@ -129,7 +129,7 @@ export default function AdminPaymentSettingsPage() {
       </div>
 
       <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-5">
-        <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-3">
+        <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-3">
           Thông Tin Tài Khoản Ngân Hàng
         </h2>
 

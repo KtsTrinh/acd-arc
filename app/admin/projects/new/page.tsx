@@ -127,7 +127,7 @@ export default function NewProjectPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Info Card */}
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
-          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-2">
+          <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-2">
             1. Thông Tin Cơ Bản & Định Danh
           </h2>
 
@@ -140,7 +140,7 @@ export default function NewProjectPage() {
                 value={title}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 placeholder="The Aqua Horizon Villa"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
               />
             </div>
 
@@ -161,7 +161,7 @@ export default function NewProjectPage() {
                 type="text"
                 value={shortDesc}
                 placeholder="Bài viết tóm tắt ngắn về dự án, giải pháp kiến trúc và phong thủy..."
-                className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -172,7 +172,7 @@ export default function NewProjectPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Ấn vào đây để nhập nội dung, giải pháp kỹ thuật, vật liệu..."
-                className="w-full p-3.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white leading-relaxed"
+                className="w-full p-3.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] leading-relaxed"
               />
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function NewProjectPage() {
 
         {/* Specifications & Classification */}
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
-          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-2">
+          <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-2">
             2. Thông Số Kỹ Thuật & Phân Loại
           </h2>
 
@@ -190,7 +190,7 @@ export default function NewProjectPage() {
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -207,7 +207,7 @@ export default function NewProjectPage() {
                 value={buildingType}
                 onChange={(e) => setBuildingType(e.target.value)}
                 placeholder="Biệt thự, Nhà phố, Penthouse..."
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -218,7 +218,7 @@ export default function NewProjectPage() {
                 value={style}
                 onChange={(e) => setStyle(e.target.value)}
                 placeholder="Modern, Minimalist, Wabi-Sabi..."
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -229,7 +229,7 @@ export default function NewProjectPage() {
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
                 placeholder="450"
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -239,7 +239,7 @@ export default function NewProjectPage() {
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -250,7 +250,7 @@ export default function NewProjectPage() {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Hạ Long, Quảng Ninh"
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
           </div>
@@ -268,7 +268,7 @@ export default function NewProjectPage() {
                     onClick={() => toggleTag(t.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${isSelected
                       ? "bg-thuy-400 text-thuy-950 font-bold shadow-sm"
-                      : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-white"
+                      : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
                       }`}
                   >
                     #{t.name}
@@ -282,7 +282,7 @@ export default function NewProjectPage() {
         {/* Cover Picker Card */}
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-4">
           <div className="flex items-center justify-between border-b border-thuy-750 pb-2">
-            <h2 className="font-semibold text-sm text-white">
+            <h2 className="font-semibold text-sm text-[#142338]">
               3. Ảnh Đại Diện (Cover Image)
             </h2>
             <button
@@ -300,7 +300,7 @@ export default function NewProjectPage() {
               <button
                 type="button"
                 onClick={() => setCoverMedia(null)}
-                className="absolute top-2 right-2 p-1.5 rounded-lg bg-thuy-950/80 text-red-400 hover:text-white"
+                className="absolute top-2 right-2 p-1.5 rounded-lg bg-thuy-950/80 text-red-400 hover:text-[#142338]"
               >
                 Gỡ ảnh
               </button>
@@ -320,7 +320,7 @@ export default function NewProjectPage() {
         <div className="flex justify-end gap-3 pt-4">
           <Link
             href="/admin/catalog?tab=MANAGE"
-            className="px-5 py-2.5 rounded-xl bg-thuy-850 text-slate-700 hover:text-white text-xs font-semibold border border-thuy-750"
+            className="px-5 py-2.5 rounded-xl bg-thuy-850 text-slate-700 hover:text-[#142338] text-xs font-semibold border border-thuy-750"
           >
             Hủy
           </Link>

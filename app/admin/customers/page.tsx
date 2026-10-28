@@ -142,7 +142,7 @@ export default function AdminCustomersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
+          <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
             Khách Hàng &amp; Truy Cập
           </h1>
           <p className="text-xs text-slate-600">
@@ -154,7 +154,7 @@ export default function AdminCustomersPage() {
         <button
           onClick={() => fetchAnalytics()}
           disabled={refreshing}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-thuy-800 text-slate-200 hover:text-white hover:bg-thuy-750 border border-thuy-700 text-xs font-semibold transition-all self-start sm:self-auto"
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-thuy-800 text-slate-200 hover:text-[#142338] hover:bg-thuy-750 border border-thuy-700 text-xs font-semibold transition-all self-start sm:self-auto"
         >
           <RefreshCw
             className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`}
@@ -181,7 +181,7 @@ export default function AdminCustomersPage() {
                 </div>
               </div>
               <div>
-                <span className="font-display font-extrabold text-xl text-white block">
+                <span className="font-display font-extrabold text-xl text-[#142338] block">
                   {s.value}
                 </span>
                 <span className="text-[10px] text-slate-600 mt-0.5 block">
@@ -204,7 +204,7 @@ export default function AdminCustomersPage() {
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
                 tab === t.id
                   ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                  : "text-slate-600 hover:text-white"
+                  : "text-slate-600 hover:text-[#142338]"
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -227,7 +227,7 @@ export default function AdminCustomersPage() {
               <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
                 <div className="p-5 border-b border-thuy-750 flex items-center justify-between">
                   <div>
-                    <h2 className="font-semibold text-base text-white flex items-center gap-2">
+                    <h2 className="font-semibold text-base text-[#142338] flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                       Khách Đang Truy Cập
                     </h2>
@@ -268,7 +268,7 @@ export default function AdminCustomersPage() {
                           <td className="py-3.5 px-5">
                             {s.user ? (
                               <>
-                                <p className="font-bold text-white">
+                                <p className="font-bold text-[#142338]">
                                   {s.user.name || "Khách hàng"}
                                 </p>
                                 <p className="text-[10px] text-thuy-300 font-mono">
@@ -331,7 +331,7 @@ export default function AdminCustomersPage() {
                       className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                         range === r.id
                           ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                          : "bg-thuy-900 text-slate-600 hover:text-white border border-thuy-750"
+                          : "bg-thuy-900 text-slate-600 hover:text-[#142338] border border-thuy-750"
                       }`}
                     >
                       {r.label}
@@ -346,7 +346,7 @@ export default function AdminCustomersPage() {
                     placeholder="Tìm email, tên, IP, đường dẫn..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-thuy-400"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] placeholder-slate-400 focus:outline-none focus:border-thuy-400"
                   />
                 </div>
               </div>
@@ -354,7 +354,7 @@ export default function AdminCustomersPage() {
               {/* Lịch sử truy cập */}
               <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
                 <div className="p-5 border-b border-thuy-750">
-                  <h2 className="font-semibold text-base text-white flex items-center gap-2">
+                  <h2 className="font-semibold text-base text-[#142338] flex items-center gap-2">
                     <LayoutList className="w-4 h-4 text-thuy-400" />
                     Lịch Sử Truy Cập
                   </h2>
@@ -393,7 +393,7 @@ export default function AdminCustomersPage() {
                           <td className="py-3.5 px-5">
                             {s.user ? (
                               <>
-                                <p className="font-bold text-white">
+                                <p className="font-bold text-[#142338]">
                                   {s.user.name || "Khách hàng"}
                                 </p>
                                 <p className="text-[10px] text-thuy-300 font-mono">
@@ -455,7 +455,7 @@ export default function AdminCustomersPage() {
               {/* Trang được xem nhiều */}
               <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
                 <div className="p-5 border-b border-thuy-750">
-                  <h2 className="font-semibold text-base text-white flex items-center gap-2">
+                  <h2 className="font-semibold text-base text-[#142338] flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-thuy-400" />
                     Trang Được Xem Nhiều
                   </h2>
@@ -485,7 +485,7 @@ export default function AdminCustomersPage() {
                           <td className="py-3 px-5 font-mono text-[11px] text-thuy-300">
                             {p.path}
                           </td>
-                          <td className="py-3 px-5 font-bold text-white">
+                          <td className="py-3 px-5 font-bold text-[#142338]">
                             {p.views}
                           </td>
                           <td className="py-3 px-5 text-slate-700">
@@ -505,7 +505,7 @@ export default function AdminCustomersPage() {
             <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
               <div className="p-5 border-b border-thuy-750 flex items-center justify-between">
                 <div>
-                  <h2 className="font-semibold text-base text-white">
+                  <h2 className="font-semibold text-base text-[#142338]">
                     Thông Tin Từng Khách Hàng
                   </h2>
                   <p className="text-xs text-slate-600">
@@ -561,7 +561,7 @@ export default function AdminCustomersPage() {
                               )}
                             </div>
                             <div>
-                              <p className="font-bold text-white">
+                              <p className="font-bold text-[#142338]">
                                 {c.name || "Chưa đặt tên"}
                               </p>
                               <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-thuy-500/20 text-thuy-300 border border-thuy-500/40">
@@ -587,7 +587,7 @@ export default function AdminCustomersPage() {
                           {c.provider || "local"}
                         </td>
                         <td className="py-3.5 px-5">
-                          <span className="font-bold text-white">
+                          <span className="font-bold text-[#142338]">
                             {c.visits}
                           </span>
                           <span className="block text-[10px] text-slate-500">
@@ -598,7 +598,7 @@ export default function AdminCustomersPage() {
                           {formatDuration(c.durationSec)}
                         </td>
                         <td className="py-3.5 px-5">
-                          <span className="font-bold text-white">
+                          <span className="font-bold text-[#142338]">
                             {c.orderCount}
                           </span>
                           <span className="block text-[10px] text-slate-500">
@@ -631,7 +631,7 @@ export default function AdminCustomersPage() {
             <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
               <div className="p-5 border-b border-thuy-750 flex items-center justify-between">
                 <div>
-                  <h2 className="font-semibold text-base text-white">
+                  <h2 className="font-semibold text-base text-[#142338]">
                     Đơn Hàng Khách Từng Mua
                   </h2>
                   <p className="text-xs text-slate-600">
@@ -641,7 +641,7 @@ export default function AdminCustomersPage() {
                 </div>
                 <Link
                   href="/admin/orders"
-                  className="px-2.5 py-0.5 rounded-full bg-thuy-800 text-thuy-300 border border-thuy-700 text-[10px] font-bold hover:text-white transition-colors"
+                  className="px-2.5 py-0.5 rounded-full bg-thuy-800 text-thuy-300 border border-thuy-700 text-[10px] font-bold hover:text-[#142338] transition-colors"
                 >
                   XEM TẤT CẢ ĐƠN
                 </Link>
@@ -672,7 +672,7 @@ export default function AdminCustomersPage() {
                     {buyers.map((b: any, idx: number) => (
                       <tr key={idx} className="hover:bg-thuy-800/40">
                         <td className="py-3.5 px-5">
-                          <p className="font-bold text-white">{b.name}</p>
+                          <p className="font-bold text-[#142338]">{b.name}</p>
                           <p className="text-[10px] text-thuy-300 font-mono">
                             {b.email}
                           </p>
@@ -683,7 +683,7 @@ export default function AdminCustomersPage() {
                           )}
                         </td>
                         <td className="py-3.5 px-5">
-                          <span className="font-bold text-white">
+                          <span className="font-bold text-[#142338]">
                             {b.orderCount}
                           </span>
                           <span className="block text-[10px] text-slate-500">
@@ -726,7 +726,7 @@ export default function AdminCustomersPage() {
             <div className="space-y-6">
               <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
                 <div className="p-5 border-b border-thuy-750">
-                  <h2 className="font-semibold text-base text-white flex items-center gap-2">
+                  <h2 className="font-semibold text-base text-[#142338] flex items-center gap-2">
                     <ShoppingCart className="w-4 h-4 text-thuy-400" />
                     Sản Phẩm Khách Cho Vào Giỏ
                   </h2>
@@ -760,7 +760,7 @@ export default function AdminCustomersPage() {
                       {cartTop.map((c: any, idx: number) => (
                         <tr key={idx} className="hover:bg-thuy-800/40">
                           <td className="py-3.5 px-5">
-                            <p className="font-bold text-white">
+                            <p className="font-bold text-[#142338]">
                               {c.productName}
                             </p>
                             {c.productSlug && (
@@ -772,7 +772,7 @@ export default function AdminCustomersPage() {
                           <td className="py-3.5 px-5 text-thuy-400 font-bold">
                             {formatVND(c.price)}
                           </td>
-                          <td className="py-3.5 px-5 font-bold text-white">
+                          <td className="py-3.5 px-5 font-bold text-[#142338]">
                             {c.adds}
                           </td>
                           <td className="py-3.5 px-5 text-slate-700">
@@ -790,7 +790,7 @@ export default function AdminCustomersPage() {
 
               <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
                 <div className="p-5 border-b border-thuy-750">
-                  <h2 className="font-semibold text-base text-white">
+                  <h2 className="font-semibold text-base text-[#142338]">
                     Khách Vừa Thêm Vào Giỏ
                   </h2>
                 </div>
@@ -821,7 +821,7 @@ export default function AdminCustomersPage() {
                           <td className="py-3.5 px-5">
                             {e.user ? (
                               <>
-                                <p className="font-bold text-white">
+                                <p className="font-bold text-[#142338]">
                                   {e.user.name || "Khách hàng"}
                                 </p>
                                 <p className="text-[10px] text-thuy-300 font-mono">

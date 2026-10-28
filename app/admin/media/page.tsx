@@ -188,7 +188,7 @@ export default function AdminMediaPage() {
       {/* Header and Action Buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
+          <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
             Media Library Dùng Chung
           </h1>
           <p className="text-xs text-slate-600">
@@ -208,7 +208,7 @@ export default function AdminMediaPage() {
 
           <button
             onClick={() => setUrlModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-thuy-850 text-slate-200 hover:text-white hover:bg-thuy-800 border border-thuy-700 text-xs font-semibold transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-thuy-850 text-slate-200 hover:text-[#142338] hover:bg-thuy-800 border border-thuy-700 text-xs font-semibold transition-all"
           >
             <LinkIcon className="w-3.5 h-3.5 text-thuy-400" />
             <span>Thêm Ảnh/Video</span>
@@ -223,7 +223,7 @@ export default function AdminMediaPage() {
             onClick={() => setSelectedFolder("all")}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedFolder === "all"
               ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-              : "bg-thuy-900 text-slate-600 hover:text-white border border-thuy-750"
+              : "bg-thuy-900 text-slate-600 hover:text-[#142338] border border-thuy-750"
               }`}
           >
             Tất cả ({mediaList.length})
@@ -234,7 +234,7 @@ export default function AdminMediaPage() {
               onClick={() => setSelectedFolder(f)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap capitalize transition-all ${selectedFolder === f
                 ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                : "bg-thuy-900 text-slate-600 hover:text-white border border-thuy-750"
+                : "bg-thuy-900 text-slate-600 hover:text-[#142338] border border-thuy-750"
                 }`}
             >
               <Folder className="w-3.5 h-3.5" />
@@ -250,7 +250,7 @@ export default function AdminMediaPage() {
             placeholder="Tìm theo tên file, alt..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-thuy-400"
+            className="w-full pl-9 pr-3 py-2 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] placeholder-slate-400 focus:outline-none focus:border-thuy-400"
           />
         </div>
       </div>
@@ -311,7 +311,7 @@ export default function AdminMediaPage() {
                   </div>
 
                   <div className="space-y-0.5">
-                    <p className="font-medium text-[11px] text-white truncate leading-snug">
+                    <p className="font-medium text-[11px] text-[#142338] truncate leading-snug">
                       {item.filename}
                     </p>
                     <p className="text-[10px] text-slate-600 truncate">{item.alt}</p>
@@ -329,8 +329,8 @@ export default function AdminMediaPage() {
           <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setUploadModalOpen(false)} />
           <div className="relative z-10 w-full max-w-md bg-thuy-900 border border-thuy-700 rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-white">Upload File Ảnh Vật Lý</h3>
-              <button onClick={() => setUploadModalOpen(false)} className="text-slate-600 hover:text-white">
+              <h3 className="font-semibold text-base text-[#142338]">Upload File Ảnh Vật Lý</h3>
+              <button onClick={() => setUploadModalOpen(false)} className="text-slate-600 hover:text-[#142338]">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -346,7 +346,7 @@ export default function AdminMediaPage() {
                 />
                 <label htmlFor="admin-upload-file" className="cursor-pointer space-y-2 block">
                   <Upload className="w-8 h-8 mx-auto text-thuy-400" />
-                  <p className="text-xs text-white font-medium">
+                  <p className="text-xs text-[#142338] font-medium">
                     {uploadFile ? uploadFile.name : "Nhấn để chọn ảnh từ máy tính"}
                   </p>
                   <span className="text-[10px] text-slate-600 block">Lưu trữ vào /public/uploads/</span>
@@ -360,7 +360,7 @@ export default function AdminMediaPage() {
                   value={uploadFolder}
                   onChange={(e) => setUploadFolder(e.target.value)}
                   placeholder="villa, townhouse, interior..."
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -371,7 +371,7 @@ export default function AdminMediaPage() {
                   value={uploadAlt}
                   onChange={(e) => setUploadAlt(e.target.value)}
                   placeholder="Mô tả chuẩn SEO..."
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -394,8 +394,8 @@ export default function AdminMediaPage() {
           <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setUrlModalOpen(false)} />
           <div className="relative z-10 w-full max-w-lg bg-thuy-900 border border-thuy-700 rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-white">Thêm Ảnh/Video Từ Link</h3>
-              <button onClick={() => setUrlModalOpen(false)} className="text-slate-600 hover:text-white">
+              <h3 className="font-semibold text-base text-[#142338]">Thêm Ảnh/Video Từ Link</h3>
+              <button onClick={() => setUrlModalOpen(false)} className="text-slate-600 hover:text-[#142338]">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -409,7 +409,7 @@ export default function AdminMediaPage() {
                   placeholder="Dán link ảnh Pinterest, Unsplash hoặc đường dẫn thư mục Google Drive..."
                   value={importUrl}
                   onChange={(e) => setImportUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -443,7 +443,7 @@ export default function AdminMediaPage() {
                         <div className="w-7 h-7 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
                           <X className="w-3.5 h-3.5 text-red-400" />
                         </div>
-                        <p className="text-xs text-white font-medium">Không thể quét dữ liệu xem trước</p>
+                        <p className="text-xs text-[#142338] font-medium">Không thể quét dữ liệu xem trước</p>
                         <span className="text-[10px] text-slate-500 block">Hãy đảm bảo thư mục Drive đã bật chế độ công khai (Anyone with the link).</span>
                       </div>
                     )
@@ -470,7 +470,7 @@ export default function AdminMediaPage() {
                   value={importFilename}
                   onChange={(e) => setImportFilename(e.target.value)}
                   placeholder="villa-facade.jpg"
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -481,7 +481,7 @@ export default function AdminMediaPage() {
                   value={importFolder}
                   onChange={(e) => setImportFolder(e.target.value)}
                   placeholder="villa, townhouse, interior..."
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -492,7 +492,7 @@ export default function AdminMediaPage() {
                   value={importAlt}
                   onChange={(e) => setImportAlt(e.target.value)}
                   placeholder="Biệt thự phong cách..."
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -523,8 +523,8 @@ export default function AdminMediaPage() {
           <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setEditingItem(null)} />
           <div className="relative z-10 w-full max-w-md bg-thuy-900 border border-thuy-700 rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-white">Đổi Tên & Sửa Metadata Media</h3>
-              <button onClick={() => setEditingItem(null)} className="text-slate-600 hover:text-white">
+              <h3 className="font-semibold text-base text-[#142338]">Đổi Tên & Sửa Metadata Media</h3>
+              <button onClick={() => setEditingItem(null)} className="text-slate-600 hover:text-[#142338]">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -541,7 +541,7 @@ export default function AdminMediaPage() {
                   required
                   value={editFilename}
                   onChange={(e) => setEditFilename(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -551,7 +551,7 @@ export default function AdminMediaPage() {
                   type="text"
                   value={editFolder}
                   onChange={(e) => setEditFolder(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 
@@ -561,7 +561,7 @@ export default function AdminMediaPage() {
                   type="text"
                   value={editAlt}
                   onChange={(e) => setEditAlt(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
               </div>
 

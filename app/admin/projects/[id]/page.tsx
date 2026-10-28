@@ -160,7 +160,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
   if (!project) {
     return (
       <div className="py-20 text-center space-y-3">
-        <h2 className="text-white">Không tìm thấy dự án.</h2>
+        <h2 className="text-[#142338]">Không tìm thấy dự án.</h2>
         <Link href="/admin/catalog?tab=MANAGE" className="text-thuy-400 text-xs">
           Quay lại danh sách
         </Link>
@@ -180,7 +180,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Danh sách dự án</span>
           </Link>
-          <h1 className="font-display font-bold text-2xl text-white">
+          <h1 className="font-display font-bold text-2xl text-[#142338]">
             Chỉnh Sửa Dự Án: {project.title}
           </h1>
         </div>
@@ -189,7 +189,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           <Link
             href={`/projects/${project.slug}`}
             target="_blank"
-            className="px-3.5 py-2 rounded-xl bg-thuy-850 text-slate-700 hover:text-white border border-thuy-700 text-xs font-semibold flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-xl bg-thuy-850 text-slate-700 hover:text-[#142338] border border-thuy-700 text-xs font-semibold flex items-center gap-1.5"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             <span>Xem Public</span>
@@ -215,7 +215,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
       <div className="p-6 rounded-3xl bg-thuy-850 border border-thuy-750 space-y-5 shadow-2xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-thuy-750 pb-3">
           <div>
-            <h2 className="font-display font-bold text-lg text-white flex items-center gap-2">
+            <h2 className="font-display font-bold text-lg text-[#142338] flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-thuy-400" />
               <span>Gallery Kéo-Thả (dnd-kit Sortable)</span>
             </h2>
@@ -245,7 +245,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
       {/* SECTION 2: PROJECT METADATA FORM */}
       <form onSubmit={handleSaveDetails} className="space-y-6">
         <div className="p-6 rounded-3xl bg-thuy-850 border border-thuy-750 space-y-4 shadow-xl">
-          <h2 className="font-semibold text-sm text-white border-b border-thuy-750 pb-2">
+          <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-2">
             Thông Tin Chi Tiết & Thông Số Kỹ Thuật
           </h2>
 
@@ -257,7 +257,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                 required
                 value={title}
                 onChange={(e) => { setTitle(e.target.value); setSlug(slugify(e.target.value)); }}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
               />
             </div>
 
@@ -278,7 +278,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                 type="text"
                 value={shortDesc}
                 onChange={(e) => setShortDesc(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -288,7 +288,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                 rows={6}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-3.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white leading-relaxed"
+                className="w-full p-3.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] leading-relaxed"
               />
             </div>
 
@@ -297,7 +297,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -313,7 +313,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                 type="text"
                 value={buildingType}
                 onChange={(e) => setBuildingType(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -323,7 +323,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                 type="text"
                 value={style}
                 onChange={(e) => setStyle(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -333,7 +333,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                 type="number"
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -343,7 +343,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -353,7 +353,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -363,7 +363,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                 type="text"
                 value={client}
                 onChange={(e) => setClient(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
           </div>
@@ -382,7 +382,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                       isSelected
                         ? "bg-thuy-400 text-thuy-950 font-bold"
-                        : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-white"
+                        : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
                     }`}
                   >
                     #{t.name}
@@ -395,7 +395,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           {/* Cover Selector */}
           <div className="pt-4 border-t border-thuy-750 flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold text-white block">Ảnh Cover Dự Án</span>
+              <span className="text-xs font-semibold text-[#142338] block">Ảnh Cover Dự Án</span>
               <span className="text-[11px] text-slate-600">
                 {coverMedia ? coverMedia.filename : "Chưa có ảnh cover"}
               </span>
