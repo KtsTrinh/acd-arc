@@ -1338,18 +1338,8 @@
       "slug": "nha-pho-hien-dai",
       "name": "Nhà Phố Hiện Đại"
     },
-    "cover": {
-      "filename": "pinterest-28.jpg",
-      "url": "https://i.pinimg.com/736x/ad/58/98/ad5898564994bb2fa49d320d00e7db9f.jpg",
-      "alt": "Hình ảnh Pinterest 29"
-    },
+    "cover": null,
     "gallery": [
-      {
-        "filename": "pinterest-28.jpg",
-        "url": "https://i.pinimg.com/736x/ad/58/98/ad5898564994bb2fa49d320d00e7db9f.jpg",
-        "alt": "Hình ảnh Pinterest 29",
-        "sortOrder": 0
-      },
       {
         "filename": "pinterest-0.jpg",
         "url": "https://i.pinimg.com/736x/ef/ec/58/efec58efa298d13dca0dde95e2528f20.jpg",
@@ -1401,12 +1391,6 @@
         "sortOrder": 0
       },
       {
-        "filename": "pinterest-28.jpg",
-        "url": "https://i.pinimg.com/736x/ad/58/98/ad5898564994bb2fa49d320d00e7db9f.jpg",
-        "alt": "Hình ảnh Pinterest 29",
-        "sortOrder": 1
-      },
-      {
         "filename": "pinterest-0.jpg",
         "url": "https://i.pinimg.com/736x/ef/ec/58/efec58efa298d13dca0dde95e2528f20.jpg",
         "alt": "Hình ảnh Pinterest 1",
@@ -1455,12 +1439,6 @@
         "url": "https://i.pinimg.com/736x/0c/1c/e4/0c1ce4c2a622001510a06d4ab435f767.jpg",
         "alt": "Hình ảnh Pinterest 28",
         "sortOrder": 1
-      },
-      {
-        "filename": "pinterest-28.jpg",
-        "url": "https://i.pinimg.com/736x/ad/58/98/ad5898564994bb2fa49d320d00e7db9f.jpg",
-        "alt": "Hình ảnh Pinterest 29",
-        "sortOrder": 2
       }
     ],
     "tags": [
