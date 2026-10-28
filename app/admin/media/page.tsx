@@ -222,8 +222,8 @@ export default function AdminMediaPage() {
           <button
             onClick={() => setSelectedFolder("all")}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedFolder === "all"
-                ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-750"
+              ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
+              : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-750"
               }`}
           >
             Tất cả ({mediaList.length})
@@ -233,8 +233,8 @@ export default function AdminMediaPage() {
               key={f}
               onClick={() => setSelectedFolder(f)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap capitalize transition-all ${selectedFolder === f
-                  ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                  : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-750"
+                ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
+                : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-750"
                 }`}
             >
               <Folder className="w-3.5 h-3.5" />
@@ -392,9 +392,9 @@ export default function AdminMediaPage() {
       {urlModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setUrlModalOpen(false)} />
-          <div className="relative z-10 w-full max-w-md bg-thuy-900 border border-thuy-700 rounded-2xl p-6 shadow-2xl space-y-4">
+          <div className="relative z-10 w-full max-w-lg bg-thuy-900 border border-thuy-700 rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-white">Thêm Ảnh/Video</h3>
+              <h3 className="font-semibold text-base text-white">Thêm Ảnh/Video Từ Link</h3>
               <button onClick={() => setUrlModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
@@ -402,20 +402,64 @@ export default function AdminMediaPage() {
 
             <form onSubmit={handleUrlSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Đường dẫn ảnh trực tiếp (URL):</label>
+                <label className="text-xs text-slate-300">Đường dẫn ảnh trực tiếp (URL) hoặc Link Thư Mục Drive:</label>
                 <input
                   type="url"
                   required
-                  placeholder="https://i.pinimg.com/... hoặc https://images.unsplash.com/..."
+                  placeholder="Dán link ảnh Pinterest, Unsplash hoặc đường dẫn thư mục Google Drive..."
                   value={importUrl}
                   onChange={(e) => setImportUrl(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
 
+              {/* Khung xử lý Preview thông minh */}
               {importUrl && (
-                <div className="relative w-full h-32 rounded-xl overflow-hidden border border-thuy-750 bg-thuy-950">
-                  <Image src={importUrl} alt="Preview" fill className="object-cover" unoptimized />
+                <div className="relative w-full h-40 rounded-xl overflow-hidden border border-thuy-750 bg-thuy-950 flex flex-col justify-center">
+                  {importUrl.includes("/folders/") || importUrl.includes("://google.com") ? (
+                    // NẾU LÀ LINK THƯ MỤC DRIVE: Hiển thị trạng thái quét hoặc danh sách ảnh thu nhỏ
+                    loadingPreview ? (
+                      <div className="flex flex-col items-center justify-center gap-2 text-slate-400 text-xs">
+                        <Loader2 className="w-5 h-5 animate-spin text-cyan-400" />
+                        <span>Đang quét danh sách ảnh trong thư mục...</span>
+                      </div>
+                    ) : previewImages.length > 0 ? (
+                      // Nếu đã quét xong ngầm, render lưới ảnh nhỏ để admin biết thư mục có bao nhiêu ảnh
+                      <div className="p-3 h-full flex flex-col justify-between">
+                        <div className="grid grid-cols-5 gap-2 overflow-y-auto max-h-[100px] p-0.5">
+                          {previewImages.map((img, idx) => (
+                            <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-thuy-700 bg-thuy-900">
+                              <img src={`https://google.com{img.id}`} alt="preview-item" className="w-full h-full object-cover" />
+                            </div>
+                          ))}
+                        </div>
+                        <div className="text-[10px] text-emerald-400 font-medium flex items-center gap-1.5 mt-2 bg-emerald-500/5 p-2 rounded-lg border border-emerald-500/10">
+                          <Folder className="w-3.5 h-3.5" />
+                          <span>Đã nhận diện & quét thành công {previewImages.length} ảnh từ Google Drive. Sẵn sàng lưu!</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center space-y-1">
+                        <div className="w-7 h-7 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
+                          <X className="w-3.5 h-3.5 text-red-400" />
+                        </div>
+                        <p className="text-xs text-white font-medium">Không thể quét dữ liệu xem trước</p>
+                        <span className="text-[10px] text-slate-500 block">Hãy đảm bảo thư mục Drive đã bật chế độ công khai (Anyone with the link).</span>
+                      </div>
+                    )
+                  ) : (
+                    // NẾU LÀ LINK FILE ẢNH ĐƠN LẺ: Tự động dùng cổng uc?export=view để hiển thị mượt mà
+                    (() => {
+                      let computedSrc = importUrl;
+                      const driveMatch = importUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                      if (driveMatch) {
+                        computedSrc = `https://google.com{driveMatch[1]}`;
+                      }
+                      return (
+                        <Image src={computedSrc} alt="Preview" fill className="object-cover" unoptimized />
+                      );
+                    })()
+                  )}
                 </div>
               )}
 
@@ -454,11 +498,19 @@ export default function AdminMediaPage() {
 
               <button
                 type="submit"
-                disabled={!importUrl || isImporting}
+                disabled={!importUrl || isImporting || loadingPreview}
                 className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 shadow-glow-cyan"
               >
                 {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{isImporting ? "Đang import..." : "Thêm Vào Thư Viện"}</span>
+                <span>
+                  {isImporting
+                    ? "Đang lưu dữ liệu vào hệ thống..."
+                    : (importUrl.includes("/folders/") || importUrl.includes("://google.com")
+                      ? `Import Hàng Loạt ${previewImages.length > 0 ? `(${previewImages.length} ảnh)` : ""}`
+                      : "Thêm Vào Thư Viện"
+                    )
+                  }
+                </span>
               </button>
             </form>
           </div>
