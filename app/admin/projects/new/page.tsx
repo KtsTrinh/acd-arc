@@ -349,6 +349,7 @@ export default function NewProjectPage() {
         title="Chọn ảnh đại diện dự án"
       />
     </div>
+    </div>
   );
 }
 
