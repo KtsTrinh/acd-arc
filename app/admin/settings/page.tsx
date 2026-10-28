@@ -47,7 +47,7 @@ const TABS: { key: TabKey; label: string; sub: string; icon: typeof Settings }[]
 
 const inputCls =
   "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400 transition-colors";
-const labelCls = "block text-xs text-slate-300 font-medium mb-1.5";
+const labelCls = "block text-xs text-slate-700 font-medium mb-1.5";
 
 export default function AdminSettingsPage() {
   const [tab, setTab] = useState<TabKey>("system");
@@ -130,7 +130,7 @@ export default function AdminSettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24 gap-3 text-slate-400 text-xs">
+      <div className="flex items-center justify-center py-24 gap-3 text-slate-600 text-xs">
         <Loader2 className="w-4 h-4 animate-spin" />
         <span>Đang tải cấu hình hệ thống...</span>
       </div>
@@ -143,9 +143,9 @@ export default function AdminSettingsPage() {
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
           Cấu Hình Hệ Thống
         </h1>
-        <p className="text-xs text-slate-400">
-          Quản lý thông tin website, tối ưu SEO và mã nhúng quảng cáo hiển thị trên mọi trang.
-        </p>
+          <p className="text-xs text-slate-600">
+            Quản lý thông tin website, tối ưu SEO và mã nhúng quảng cáo hiển thị trên mọi trang.
+          </p>
       </div>
 
       {/* Tabs */}
@@ -169,7 +169,7 @@ export default function AdminSettingsPage() {
             >
               <div className="flex items-center gap-2.5 mb-1.5">
                 <Icon
-                  className={`w-4 h-4 ${isActive ? "text-thuy-400" : "text-slate-400 group-hover:text-thuy-400"}`}
+                  className={`w-4 h-4 ${isActive ? "text-thuy-400" : "text-slate-600 group-hover:text-thuy-400"}`}
                 />
                 <span
                   className={`text-xs font-bold ${isActive ? "text-white" : "text-slate-200"}`}
@@ -177,7 +177,7 @@ export default function AdminSettingsPage() {
                   {t.label}
                 </span>
               </div>
-              <span className="text-[11px] text-slate-400 leading-relaxed block">{t.sub}</span>
+              <span className="text-[11px] text-slate-600 leading-relaxed block">{t.sub}</span>
             </button>
           );
         })}
@@ -321,7 +321,7 @@ export default function AdminSettingsPage() {
                 className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
                   (settings.heroBackgroundType || "image") === opt.key
                     ? "bg-thuy-400 text-thuy-950 font-bold"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-600 hover:text-white"
                 }`}
               >
                 {opt.label}
@@ -390,7 +390,7 @@ export default function AdminSettingsPage() {
                       <button
                         type="button"
                         onClick={() => update("heroBackgroundVideo", "")}
-                        className="px-3 py-2 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-400 hover:text-red-300 border border-thuy-700 transition-all"
+                        className="px-3 py-2 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-600 hover:text-red-300 border border-thuy-700 transition-all"
                         title="Xóa video nền"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -422,7 +422,7 @@ export default function AdminSettingsPage() {
                       nên không bị nháy ảnh trước khi video chạy.
                     </p>
                     {settings.heroVideoAspect && (
-                      <p className="text-[10px] text-slate-400">
+                      <p className="text-[10px] text-slate-600">
                         Kích thước video hiện tại:{" "}
                         <b className="text-thuy-300">
                           {settings.heroVideoAspect.replace("x", " x ")}
@@ -581,7 +581,7 @@ export default function AdminSettingsPage() {
                       <button
                         type="button"
                         onClick={() => update("heroBackgroundImage", "")}
-                        className="px-3 py-2 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-400 hover:text-red-300 border border-thuy-700 transition-all"
+                        className="px-3 py-2 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-600 hover:text-red-300 border border-thuy-700 transition-all"
                         title="Xóa ảnh nền"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -653,7 +653,7 @@ export default function AdminSettingsPage() {
             <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
             <div className="flex-1">
               <p className="text-xs font-semibold text-white">Chế Độ Bảo Trì</p>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-600">
                 Bật để tạm ẩn nội dung website và hiển thị trang thông báo bảo trì.
               </p>
             </div>
@@ -775,7 +775,7 @@ export default function AdminSettingsPage() {
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-5">
           <div className="flex items-start gap-3 p-4 rounded-xl bg-thuy-900 border border-thuy-700">
             <Info className="w-4 h-4 text-thuy-400 flex-shrink-0 mt-0.5" />
-            <p className="text-[11px] text-slate-400 leading-relaxed">
+            <p className="text-[11px] text-slate-600 leading-relaxed">
               Dán mã quảng cáo Google AdSense hoặc bất kỳ dịch vụ quảng cáo/kiểm tra nào vào đây.
               Mã sẽ được chèn vào <b className="text-slate-200">&lt;head&gt;</b> của{" "}
               <b className="text-slate-200">mọi trang</b> của website, kích hoạt ngay sau khi lưu.

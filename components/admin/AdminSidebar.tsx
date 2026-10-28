@@ -93,7 +93,7 @@ export default function AdminSidebar() {
               href={item.href}
               className={`group relative flex items-center justify-between px-3 py-2.5 text-xs font-medium transition-all duration-200 ease rounded-[10px] ${isActive
                 ? "text-white font-semibold"
-                : "text-slate-300 hover:text-white hover:bg-white/5"
+                : "text-slate-700 hover:text-white hover:bg-white/5"
                 }`}
               style={
                 isActive
@@ -106,7 +106,7 @@ export default function AdminSidebar() {
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r bg-cyan-400" />
                 )}
                 <Icon
-                  className={`w-4 h-4 ${isActive ? "text-cyan-300" : "text-slate-400 group-hover:text-white transition-colors"} ${isActive ? "ml-2" : ""
+                  className={`w-4 h-4 ${isActive ? "text-cyan-300" : "text-slate-600 group-hover:text-white transition-colors"} ${isActive ? "ml-2" : ""
                     }`}
                 />
                 <span className={isActive ? "ml-2" : ""}>{item.label}</span>
@@ -121,10 +121,10 @@ export default function AdminSidebar() {
         <Link
           href="/"
           target="_blank"
-          className="flex items-center justify-between px-3 py-2 rounded-lg text-xs text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
+          className="flex items-center justify-between px-3 py-2 rounded-lg text-xs text-slate-700 hover:text-white hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+            <ExternalLink className="w-3.5 h-3.5 text-slate-600" />
             <span>Xem Website Khách Hàng</span>
           </div>
         </Link>
