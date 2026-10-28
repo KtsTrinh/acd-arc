@@ -209,7 +209,7 @@ export default function AdminMediaPage() {
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-thuy-850 text-slate-200 hover:text-white hover:bg-thuy-800 border border-thuy-700 text-xs font-semibold transition-all"
           >
             <LinkIcon className="w-3.5 h-3.5 text-thuy-400" />
-            <span>Thêm Từ Pinterest/CDN</span>
+            <span>Thêm Ảnh/Video</span>
           </button>
         </div>
       </div>
@@ -219,11 +219,10 @@ export default function AdminMediaPage() {
         <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
           <button
             onClick={() => setSelectedFolder("all")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-              selectedFolder === "all"
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedFolder === "all"
                 ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
                 : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-750"
-            }`}
+              }`}
           >
             Tất cả ({mediaList.length})
           </button>
@@ -231,11 +230,10 @@ export default function AdminMediaPage() {
             <button
               key={f}
               onClick={() => setSelectedFolder(f)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap capitalize transition-all ${
-                selectedFolder === f
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap capitalize transition-all ${selectedFolder === f
                   ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
                   : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-750"
-              }`}
+                }`}
             >
               <Folder className="w-3.5 h-3.5" />
               <span>{f}</span>
