@@ -2,20 +2,37 @@
 
 import { useState, useEffect } from "react";
 
-// Định nghĩa kiểu dữ liệu cho User để TypeScript hiểu thuộc tính .role
 export interface User {
-    name: string;
+    id?: string;
+    name?: string | null;
+    email?: string | null;
     role: "SUPER_ADMIN" | "ADMIN" | "USER";
+    avatar?: string | null;
 }
 
 export function useAuth() {
-    // Thay đổi giá trị role ở đây để test giao diện hiển thị ẩn/hiện menu thanh toán
-    const [user, setUser] = useState<User | null>({
-        name: "Quản trị viên",
-        role: "SUPER_ADMIN",
-    });
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await fetch("/api/auth/me", { cache: "no-store" });
+                if (res.ok) {
+                    const data = await res.json();
+                    setUser(data.user || null);
+                } else {
+                    setUser(null);
+                }
+            } catch (error) {
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     return {
         user,
