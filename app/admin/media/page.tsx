@@ -37,6 +37,8 @@ export default function AdminMediaPage() {
   const [importFolder, setImportFolder] = useState("pinterest");
   const [importAlt, setImportAlt] = useState("");
   const [isImporting, setIsImporting] = useState(false);
+  const [previewImages, setPreviewImages] = useState<any[]>([]);
+  const [loadingPreview, setLoadingPreview] = useState(false)
 
   // Edit metadata modal
   const [editingItem, setEditingItem] = useState<any | null>(null);
