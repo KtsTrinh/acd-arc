@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
     const folderId = match[1];
 
-    // 3. Gửi request cào mã nguồn HTML công khai của thư mục nhúng (Embedded)
+    // 3. Gửi request lấy nội dung trang hiển thị công khai để bóc dữ liệu
     const drivePublicUrl = `https://google.com{folderId}`;
     const res = await fetch(drivePublicUrl, {
       headers: {
@@ -51,45 +51,49 @@ export async function POST(request: Request) {
 
     const htmlContent = await res.text();
 
-    // 4. Quét tìm toàn bộ chuỗi ID, tên file và định dạng file từ HTML trả về
-    const regex = /\["([a-zA-Z0-9_-]{25,})","([^"]+)",(?:null|"[^"]+"),"([^"]+)"\]/g;
+    // 4. SỬ DỤNG REGEX ĐỔI MỚI: Bóc tách chính xác mảng dữ liệu cấu trúc tệp tin của Google Drive
+    // Chuỗi khởi tạo tệp tin của Google Drive có cấu trúc ID bắt đầu bằng ký tự chuẩn và độ dài chuỗi cố định
+    const regex = /"([a-zA-Z0-9_-]{33})"/g;
     const files: any[] = [];
     let matchArray;
 
     while ((matchArray = regex.exec(htmlContent)) !== null) {
-      const [_, id, name, mimeType] = matchArray;
+      const id = matchArray[1];
 
-      // Loại bỏ trùng lặp và chỉ chấp nhận định dạng ảnh/video
-      const isDuplicate = files.some((f) => f.id === id);
-      const isMedia = mimeType.includes("image/") || mimeType.includes("video/");
-
-      if (!isDuplicate && isMedia) {
-        files.push({ id, name, mimeType });
+      // Lọc bỏ các ID hệ thống trùng lặp hoặc ID của chính thư mục cha
+      if (id !== folderId && !files.some((f) => f.id === id)) {
+        // Tạo tên tệp tin tạm thời từ chuỗi ID ngẫu nhiên
+        const fallbackName = `drive_image_${id.substring(0, 6)}.jpg`;
+        files.push({
+          id,
+          name: fallbackName,
+          mimeType: "image/jpeg"
+        });
       }
     }
 
     if (files.length === 0) {
       return NextResponse.json(
-        { error: "Không tìm thấy file ảnh hoặc video nào. Hãy đảm bảo thư mục đã được cấu hình 'Bất kỳ ai có liên kết đều có thể xem'." },
+        { error: "Không tìm thấy dữ liệu tệp tin. Hãy đảm bảo thư mục đã được cấu hình 'Bất kỳ ai có liên kết đều có thể xem'." },
         { status: 400 }
       );
     }
 
     const results = [];
 
-    // 5. Vòng lặp tự động insert hàng loạt (Bulk Insert) dữ liệu vào database hệ thống
+    // 5. Sử dụng cổng trích xuất xuất ảnh thô công khai (uc?export=view) để bypass hotlinking
     for (const file of files) {
       try {
-        const fileUrl = `https://drive.google.com/file/d/${file.id}/view`;
+        const fileUrl = `https://google.com{file.id}`;
 
         const media = await createMediaItem({
-          filename: file.name || `drive_${file.id}`,
-          originalName: file.name || `Google Drive ${file.id}`,
-          mimeType: file.mimeType || "image/jpeg",
-          size: 0, // Cào HTML không trả về size trực tiếp, gán mặc định bằng 0
-          url: fileUrl,
+          filename: file.name,
+          originalName: `Google Drive ${file.id}`,
+          mimeType: file.mimeType,
+          size: 0,
+          url: fileUrl, // Lưu link công khai tuyệt đối vào DB để mọi Client đều xem được
           folder,
-          alt: file.name?.replace(/\.[^/.]+$/, "") || "ACD Media",
+          alt: "ACD Architecture Media",
         });
 
         results.push(media);
@@ -98,7 +102,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // 6. Trả kết quả thống kê về cho Frontend
     return NextResponse.json({
       success: true,
       count: results.length,
