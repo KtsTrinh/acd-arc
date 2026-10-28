@@ -56,7 +56,7 @@ const TABS: {
 ];
 
 const inputCls =
-  "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400 transition-colors";
+  "w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400 transition-colors";
 const labelCls = "block text-xs text-slate-700 font-medium mb-1.5";
 
 export default function AdminSettingsPage() {
