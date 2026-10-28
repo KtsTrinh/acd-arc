@@ -1,17 +1,5 @@
 [
   {
-    "id": "media_townhouse_1",
-    "filename": "townhouse-minimalist-facade.jpg",
-    "originalName": "Townhouse Concrete and Louvers",
-    "mimeType": "image/jpeg",
-    "size": 0,
-    "url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600&q=80",
-    "folder": "townhouse",
-    "width": 1600,
-    "height": 1067,
-    "alt": "Nhà phố kiến trúc lam chắn nắng bê tông trần"
-  },
-  {
     "id": "media_tho_stone",
     "filename": "villa-tho-sandstone.jpg",
     "originalName": "Earth Sandstone and Basalt Villa",
