@@ -96,11 +96,6 @@ export default function AdminUsersPage() {
                       ) : (
                         <User className="w-3 h-3" />
                       )}
-                      {u.role === "SUPER_ADMIN" ? (
-                        <Shield className="w-3 h-3 text-slate-300" />
-                      ) : (
-                        <User className="w-3 h-3" />
-                      )}
                       <span>{u.role}</span>
                     </span>
                   </td>
