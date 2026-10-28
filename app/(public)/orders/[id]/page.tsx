@@ -17,7 +17,11 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-export default function OrderDetailPage({ params }: { params: { id: string } }) {
+export default function OrderDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
@@ -30,8 +34,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       if (data.orders && data.orders.length > 0) {
         // Find exact matching order by id or orderNumber
         const found =
-          data.orders.find((o: any) => o.id === params.id || o.orderNumber === params.id) ||
-          data.orders[0];
+          data.orders.find(
+            (o: any) => o.id === params.id || o.orderNumber === params.id,
+          ) || data.orders[0];
         setOrder(found);
       }
     } catch (err) {
@@ -106,10 +111,16 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           <div className="flex items-center gap-3.5">
             <div
               className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                isPaid ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
+                isPaid
+                  ? "bg-emerald-500/20 text-emerald-400"
+                  : "bg-amber-500/20 text-amber-400"
               }`}
             >
-              {isPaid ? <CheckCircle2 className="w-6 h-6" /> : <Clock className="w-6 h-6" />}
+              {isPaid ? (
+                <CheckCircle2 className="w-6 h-6" />
+              ) : (
+                <Clock className="w-6 h-6" />
+              )}
             </div>
             <div>
               <span className="text-[11px] uppercase tracking-wider text-slate-400 block">
@@ -124,7 +135,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           </div>
 
           <div className="text-left sm:text-right">
-            <span className="text-xs text-slate-400 block">Tổng thanh toán:</span>
+            <span className="text-xs text-slate-400 block">
+              Tổng thanh toán:
+            </span>
             <span className="font-display font-bold text-2xl text-thuy-400 text-glow">
               {formatVND(order.total)}
             </span>
@@ -137,7 +150,8 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             <div className="flex items-center gap-2 text-xs text-amber-300">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <span>
-                Vui lòng hoàn tất chuyển khoản theo nội dung bên dưới để mở khóa link tải file.
+                Vui lòng hoàn tất chuyển khoản theo nội dung bên dưới để mở khóa
+                link tải file.
               </span>
             </div>
             <button
@@ -145,7 +159,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
               disabled={isSimulatingPayment}
               className="px-4 py-2 rounded-xl bg-emerald-500 text-thuy-950 font-bold text-xs hover:brightness-110 transition-all flex items-center gap-2 shadow-md"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isSimulatingPayment ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-3.5 h-3.5 ${isSimulatingPayment ? "animate-spin" : ""}`}
+              />
               <span>Mô Phỏng Đã Nhận Tiền (Chuyển Thành PAID)</span>
             </button>
           </div>
@@ -165,8 +181,12 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             <div className="p-4 rounded-xl bg-white text-center flex flex-col items-center justify-center max-w-[240px] mx-auto w-full shadow-lg">
               <div className="w-48 h-48 bg-slate-100 flex flex-col items-center justify-center rounded-lg border border-slate-300 p-2">
                 <QrCode className="w-28 h-28 text-slate-800" />
-                <span className="text-[10px] text-slate-600 font-bold mt-2">VIETQR PRO</span>
-                <span className="text-[9px] text-slate-500 font-mono">{order.orderNumber}</span>
+                <span className="text-[10px] text-slate-600 font-bold mt-2">
+                  VIETQR PRO
+                </span>
+                <span className="text-[9px] text-slate-500 font-mono">
+                  {order.orderNumber}
+                </span>
               </div>
               <span className="text-[11px] text-slate-700 font-semibold mt-2">
                 Quét mã để thanh toán tự động
@@ -176,19 +196,33 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             {/* Account Details */}
             <div className="space-y-3 text-xs">
               <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                <span className="text-slate-400 block text-[10px]">Ngân hàng:</span>
-                <span className="font-bold text-white text-sm">Techcombank - CN Sài Gòn</span>
+                <span className="text-slate-400 block text-[10px]">
+                  Ngân hàng:
+                </span>
+                <span className="font-bold text-white text-sm">
+                  Techcombank - CN Sài Gòn
+                </span>
               </div>
               <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                <span className="text-slate-400 block text-[10px]">Số tài khoản:</span>
-                <span className="font-bold text-thuy-400 text-sm font-mono">1903 8888 666888</span>
+                <span className="text-slate-400 block text-[10px]">
+                  Số tài khoản:
+                </span>
+                <span className="font-bold text-thuy-400 text-sm font-mono">
+                  1903 8888 666888
+                </span>
               </div>
               <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                <span className="text-slate-400 block text-[10px]">Chủ tài khoản:</span>
-                <span className="font-bold text-white text-sm">ACD ARCHITECTURE STUDIO</span>
+                <span className="text-slate-400 block text-[10px]">
+                  Chủ tài khoản:
+                </span>
+                <span className="font-bold text-white text-sm">
+                  ACD ARCHITECTURE STUDIO
+                </span>
               </div>
               <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                <span className="text-slate-400 block text-[10px]">Nội dung chuyển khoản (Bắt buộc):</span>
+                <span className="text-slate-400 block text-[10px]">
+                  Nội dung chuyển khoản (Bắt buộc):
+                </span>
                 <span className="font-bold text-emerald-400 text-sm font-mono">
                   {order.orderNumber}
                 </span>
@@ -224,10 +258,13 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 const downloadUrl = `/api/downloads/${dl.token}`;
                 const remainingMs =
                   new Date(dl.expiresAt).getTime() - new Date().getTime();
-                const remainingMinutes = Math.max(0, Math.floor(remainingMs / 60000));
+                const remainingMinutes = Math.max(
+                  0,
+                  Math.floor(remainingMs / 60000),
+                );
                 const remainingSeconds = Math.max(
                   0,
-                  Math.floor((remainingMs % 60000) / 1000)
+                  Math.floor((remainingMs % 60000) / 1000),
                 );
                 const isExpired = remainingMs <= 0;
 
@@ -249,18 +286,21 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                               <>
                                 Hạn tải còn lại:{" "}
                                 <b className="text-emerald-400">
-                                  {remainingMinutes} phút {remainingSeconds} giây
+                                  {remainingMinutes} phút {remainingSeconds}{" "}
+                                  giây
                                 </b>
                               </>
                             )}
                           </span>
                         </div>
                         <h3 className="font-semibold text-sm sm:text-base text-white">
-                          {dl.product?.name || "Gói tài nguyên hồ sơ thiết kế kèm theo đơn hàng"}
+                          {dl.product?.name ||
+                            "Gói tài nguyên hồ sơ thiết kế kèm theo đơn hàng"}
                         </h3>
                         <p className="text-xs text-slate-400">
                           Lượt tải đã dùng:{" "}
-                          <b className="text-white">{dl.downloadCount}</b> / {dl.maxDownloads} lần
+                          <b className="text-white">{dl.downloadCount}</b> /{" "}
+                          {dl.maxDownloads} lần
                         </p>
                       </div>
 
@@ -281,11 +321,17 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                         Mã token: {dl.token} · gắn với tài khoản đã thanh toán
                       </span>
                       <button
-                        onClick={() => copyToClipboard(`${window.location.origin}${downloadUrl}`)}
+                        onClick={() =>
+                          copyToClipboard(
+                            `${window.location.origin}${downloadUrl}`,
+                          )
+                        }
                         className="text-thuy-400 hover:text-white transition-colors flex items-center gap-1 self-start sm:self-auto"
                       >
                         <Copy className="w-3.5 h-3.5" />
-                        <span>{copiedToken ? "Đã copy link ✓" : "Copy link tải"}</span>
+                        <span>
+                          {copiedToken ? "Đã copy link ✓" : "Copy link tải"}
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -317,7 +363,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           </div>
           <div className="space-y-1">
             <span className="text-slate-400">Thời gian tạo:</span>
-            <p className="font-medium text-white">{formatDateTime(order.createdAt)}</p>
+            <p className="font-medium text-white">
+              {formatDateTime(order.createdAt)}
+            </p>
           </div>
           <div className="space-y-1">
             <span className="text-slate-400">Hình thức thanh toán:</span>
@@ -328,4 +376,3 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
     </div>
   );
 }
-
