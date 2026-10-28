@@ -1,17 +1,5 @@
 [
   {
-    "id": "media_townhouse_2",
-    "filename": "townhouse-interior-zen.jpg",
-    "originalName": "Townhouse Courtyard Sky Light",
-    "mimeType": "image/jpeg",
-    "size": 0,
-    "url": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1600&q=80",
-    "folder": "townhouse",
-    "width": 1600,
-    "height": 1067,
-    "alt": "Giếng trời nhà phố lấy sáng tự nhiên kết hợp tiểu cảnh nước"
-  },
-  {
     "id": "media_townhouse_1",
     "filename": "townhouse-minimalist-facade.jpg",
     "originalName": "Townhouse Concrete and Louvers",
