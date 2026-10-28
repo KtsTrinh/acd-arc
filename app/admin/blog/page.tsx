@@ -5,7 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Plus, Trash2, BookOpen, ExternalLink, Loader2, X } from "lucide-react";
 import { slugify, formatDateTime } from "@/lib/utils";
-import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
+import MediaPickerModal, {
+  MediaItem,
+} from "@/components/media/MediaPickerModal";
 
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -84,7 +86,8 @@ export default function AdminBlogPage() {
             Quản Lý Tạp Chí & Bài Viết Kiến Trúc
           </h1>
           <p className="text-xs text-slate-600">
-            Nghiên cứu phong thủy hình thái, xu hướng thiết kế, biến tất cả bài viết thành vũ khí truyền thông siêu hạng.
+            Nghiên cứu phong thủy hình thái, xu hướng thiết kế, biến tất cả bài
+            viết thành vũ khí truyền thông siêu hạng.
           </p>
         </div>
 
@@ -101,7 +104,7 @@ export default function AdminBlogPage() {
       <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+            <thead className="bg-thuy-900/80 text-white uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
                 <th className="py-3 px-5">ẢNH BÌA</th>
                 <th className="py-3 px-5">TIÊU ĐỀ BÀI VIẾT</th>
@@ -116,7 +119,13 @@ export default function AdminBlogPage() {
                   <td className="py-3.5 px-5">
                     <div className="relative w-16 h-12 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
                       {post.coverUrl ? (
-                        <Image src={post.coverUrl} alt={post.title} fill className="object-cover" unoptimized />
+                        <Image
+                          src={post.coverUrl}
+                          alt={post.title}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-600">
                           <BookOpen className="w-4 h-4" />
@@ -125,8 +134,12 @@ export default function AdminBlogPage() {
                     </div>
                   </td>
                   <td className="py-3.5 px-5">
-                    <span className="font-bold text-[#142338] block text-sm">{post.title}</span>
-                    <span className="text-[10px] text-slate-600 font-mono">/blog/{post.slug}</span>
+                    <span className="font-bold text-[#142338] block text-sm">
+                      {post.title}
+                    </span>
+                    <span className="text-[10px] text-slate-600 font-mono">
+                      /blog/{post.slug}
+                    </span>
                   </td>
                   <td className="py-3.5 px-5 font-semibold text-thuy-400">
                     {post.views} lượt xem
@@ -153,18 +166,28 @@ export default function AdminBlogPage() {
       {/* Modal Create Post */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
+          <div
+            className="fixed inset-0 bg-thuy-950/80 backdrop-blur-sm"
+            onClick={() => setIsModalOpen(false)}
+          />
           <div className="relative z-10 w-full max-w-2xl bg-thuy-900 border border-thuy-700 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-[#142338]">Soạn Thảo Bài Viết Mới</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-600 hover:text-[#142338]">
+              <h3 className="font-semibold text-base text-[#142338]">
+                Soạn Thảo Bài Viết Mới
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-slate-600 hover:text-[#142338]"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Tiêu đề bài viết *:</label>
+                <label className="text-xs text-slate-700">
+                  Tiêu đề bài viết *:
+                </label>
                 <input
                   type="text"
                   required
@@ -177,7 +200,9 @@ export default function AdminBlogPage() {
 
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs text-slate-700">Ảnh bìa bài viết (URL):</label>
+                  <label className="text-xs text-slate-700">
+                    Ảnh bìa bài viết (URL):
+                  </label>
                   <button
                     type="button"
                     onClick={() => setMediaPickerOpen(true)}
@@ -196,7 +221,9 @@ export default function AdminBlogPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Tóm tắt ngắn (Excerpt):</label>
+                <label className="text-xs text-slate-700">
+                  Tóm tắt ngắn (Excerpt):
+                </label>
                 <input
                   type="text"
                   value={excerpt}
@@ -207,7 +234,9 @@ export default function AdminBlogPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Nội dung chi tiết *:</label>
+                <label className="text-xs text-slate-700">
+                  Nội dung chi tiết *:
+                </label>
                 <textarea
                   rows={8}
                   required
@@ -245,4 +274,3 @@ export default function AdminBlogPage() {
     </div>
   );
 }
-
