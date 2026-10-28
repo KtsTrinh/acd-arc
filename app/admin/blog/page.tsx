@@ -83,7 +83,7 @@ export default function AdminBlogPage() {
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
             Quản Lý Tạp Chí & Bài Viết Kiến Trúc
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-600">
             Nghiên cứu phong thủy hình thái, xu hướng thiết kế, biến tất cả bài viết thành vũ khí truyền thông siêu hạng.
           </p>
         </div>
@@ -101,7 +101,7 @@ export default function AdminBlogPage() {
       <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+            <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
                 <th className="py-3 px-5">ẢNH BÌA</th>
                 <th className="py-3 px-5">TIÊU ĐỀ BÀI VIẾT</th>
@@ -126,12 +126,12 @@ export default function AdminBlogPage() {
                   </td>
                   <td className="py-3.5 px-5">
                     <span className="font-bold text-white block text-sm">{post.title}</span>
-                    <span className="text-[10px] text-slate-400 font-mono">/blog/{post.slug}</span>
+                    <span className="text-[10px] text-slate-600 font-mono">/blog/{post.slug}</span>
                   </td>
                   <td className="py-3.5 px-5 font-semibold text-thuy-400">
                     {post.views} lượt xem
                   </td>
-                  <td className="py-3.5 px-5 text-slate-300">
+                  <td className="py-3.5 px-5 text-slate-700">
                     {formatDateTime(post.createdAt)}
                   </td>
                   <td className="py-3.5 px-5 text-right">
@@ -157,14 +157,14 @@ export default function AdminBlogPage() {
           <div className="relative z-10 w-full max-w-2xl bg-thuy-900 border border-thuy-700 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
               <h3 className="font-semibold text-base text-white">Soạn Thảo Bài Viết Mới</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-600 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Tiêu đề bài viết *:</label>
+                <label className="text-xs text-slate-700">Tiêu đề bài viết *:</label>
                 <input
                   type="text"
                   required
@@ -177,7 +177,7 @@ export default function AdminBlogPage() {
 
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs text-slate-300">Ảnh bìa bài viết (URL):</label>
+                  <label className="text-xs text-slate-700">Ảnh bìa bài viết (URL):</label>
                   <button
                     type="button"
                     onClick={() => setMediaPickerOpen(true)}
@@ -196,7 +196,7 @@ export default function AdminBlogPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Tóm tắt ngắn (Excerpt):</label>
+                <label className="text-xs text-slate-700">Tóm tắt ngắn (Excerpt):</label>
                 <input
                   type="text"
                   value={excerpt}
@@ -207,7 +207,7 @@ export default function AdminBlogPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-300">Nội dung chi tiết *:</label>
+                <label className="text-xs text-slate-700">Nội dung chi tiết *:</label>
                 <textarea
                   rows={8}
                   required

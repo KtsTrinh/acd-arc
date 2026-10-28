@@ -54,7 +54,7 @@ export default function AdminTagsPage() {
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
           Quản Lý Thẻ Phân Loại (Tags)
         </h1>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-slate-600">
           Gắn nhãn phong cách và đặc điểm kiến trúc cho dự án và bài viết.
         </p>
       </div>

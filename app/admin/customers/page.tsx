@@ -145,7 +145,7 @@ export default function AdminCustomersPage() {
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
             Khách Hàng &amp; Truy Cập
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-600">
             Theo dõi khách đang truy cập, lịch sử truy cập, đơn hàng và hành vi
             thêm vào giỏ
           </p>
@@ -173,7 +173,7 @@ export default function AdminCustomersPage() {
               className="p-4 rounded-2xl bg-thuy-850/90 border border-thuy-750 flex flex-col justify-between space-y-3"
             >
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-medium text-slate-400">
+                <span className="text-[11px] font-medium text-slate-600">
                   {s.label}
                 </span>
                 <div className="p-1.5 rounded-lg bg-thuy-900 border border-thuy-700">
@@ -184,7 +184,7 @@ export default function AdminCustomersPage() {
                 <span className="font-display font-extrabold text-xl text-white block">
                   {s.value}
                 </span>
-                <span className="text-[10px] text-slate-400 mt-0.5 block">
+                <span className="text-[10px] text-slate-600 mt-0.5 block">
                   {s.sub}
                 </span>
               </div>
@@ -204,7 +204,7 @@ export default function AdminCustomersPage() {
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
                 tab === t.id
                   ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-600 hover:text-white"
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -215,7 +215,7 @@ export default function AdminCustomersPage() {
       </div>
 
       {loading ? (
-        <div className="py-16 text-center text-slate-400 text-xs">
+        <div className="py-16 text-center text-slate-600 text-xs">
           Đang tải dữ liệu khách hàng...
         </div>
       ) : (
@@ -231,7 +231,7 @@ export default function AdminCustomersPage() {
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                       Khách Đang Truy Cập
                     </h2>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-600">
                       Cập nhật tự động mỗi 30 giây
                     </p>
                   </div>
@@ -242,7 +242,7 @@ export default function AdminCustomersPage() {
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+                    <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
                       <tr>
                         <th className="py-3 px-5">Khách</th>
                         <th className="py-3 px-5">Đang Xem</th>
@@ -277,7 +277,7 @@ export default function AdminCustomersPage() {
                               </>
                             ) : (
                               <>
-                                <p className="font-bold text-slate-300">
+                                <p className="font-bold text-slate-700">
                                   Khách ẩn danh
                                 </p>
                                 <p className="text-[10px] text-slate-500 font-mono">
@@ -293,7 +293,7 @@ export default function AdminCustomersPage() {
                             <span
                               className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                                 DEVICE_BADGE[s.device] ||
-                                "bg-slate-800 text-slate-300 border border-slate-700"
+                                "bg-slate-800 text-slate-700 border border-slate-700"
                               }`}
                             >
                               {s.device || "Khác"}
@@ -302,16 +302,16 @@ export default function AdminCustomersPage() {
                               {s.browser} · {s.os}
                             </span>
                           </td>
-                          <td className="py-3.5 px-5 font-mono text-[11px] text-slate-400">
+                          <td className="py-3.5 px-5 font-mono text-[11px] text-slate-600">
                             {s.ip || "unknown"}
                           </td>
-                          <td className="py-3.5 px-5 text-slate-300">
+                          <td className="py-3.5 px-5 text-slate-700">
                             {formatDuration(s.durationSec)}
                             <span className="block text-[10px] text-slate-500">
                               {s.pageViews} lượt xem
                             </span>
                           </td>
-                          <td className="py-3.5 px-5 text-slate-400 text-[11px]">
+                          <td className="py-3.5 px-5 text-slate-600 text-[11px]">
                             {formatDateTime(s.lastSeenAt)}
                           </td>
                         </tr>
@@ -331,7 +331,7 @@ export default function AdminCustomersPage() {
                       className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                         range === r.id
                           ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                          : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-750"
+                          : "bg-thuy-900 text-slate-600 hover:text-white border border-thuy-750"
                       }`}
                     >
                       {r.label}
@@ -340,7 +340,7 @@ export default function AdminCustomersPage() {
                 </div>
 
                 <div className="relative w-full sm:w-72">
-                  <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                  <Search className="w-4 h-4 absolute left-3 top-3 text-slate-600" />
                   <input
                     type="text"
                     placeholder="Tìm email, tên, IP, đường dẫn..."
@@ -358,7 +358,7 @@ export default function AdminCustomersPage() {
                     <LayoutList className="w-4 h-4 text-thuy-400" />
                     Lịch Sử Truy Cập
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-600">
                     Mỗi phiên ghi lại thiết bị, đường dẫn, IP và tổng thời gian
                     ở lại website
                   </p>
@@ -366,7 +366,7 @@ export default function AdminCustomersPage() {
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+                    <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
                       <tr>
                         <th className="py-3 px-5">Khách</th>
                         <th className="py-3 px-5">Lượt Xem</th>
@@ -402,7 +402,7 @@ export default function AdminCustomersPage() {
                               </>
                             ) : (
                               <>
-                                <p className="font-bold text-slate-300">
+                                <p className="font-bold text-slate-700">
                                   Khách ẩn danh
                                 </p>
                                 <p className="text-[10px] text-slate-500 font-mono">
@@ -414,14 +414,14 @@ export default function AdminCustomersPage() {
                           <td className="py-3.5 px-5 font-bold text-thuy-400">
                             {s.pageViews}
                           </td>
-                          <td className="py-3.5 px-5 text-slate-300">
+                          <td className="py-3.5 px-5 text-slate-700">
                             {formatDuration(s.durationSec)}
                           </td>
                           <td className="py-3.5 px-5">
                             <span
                               className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                                 DEVICE_BADGE[s.device] ||
-                                "bg-slate-800 text-slate-300 border border-slate-700"
+                                "bg-slate-800 text-slate-700 border border-slate-700"
                               }`}
                             >
                               {s.device || "Khác"}
@@ -430,16 +430,16 @@ export default function AdminCustomersPage() {
                               {s.browser} · {s.os}
                             </span>
                           </td>
-                          <td className="py-3.5 px-5 font-mono text-[10px] text-slate-400 max-w-[220px]">
+                          <td className="py-3.5 px-5 font-mono text-[10px] text-slate-600 max-w-[220px]">
                             <p className="truncate">{s.landingPath || "/"}</p>
                             <p className="truncate text-thuy-400">
                               {s.lastPath}
                             </p>
                           </td>
-                          <td className="py-3.5 px-5 text-slate-400 text-[11px]">
+                          <td className="py-3.5 px-5 text-slate-600 text-[11px]">
                             {formatDateTime(s.firstSeenAt)}
                           </td>
-                          <td className="py-3.5 px-5 text-slate-400 text-[11px]">
+                          <td className="py-3.5 px-5 text-slate-600 text-[11px]">
                             {formatDateTime(s.lastSeenAt)}
                             {s.isLive && (
                               <span className="ml-1.5 inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -462,7 +462,7 @@ export default function AdminCustomersPage() {
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+                    <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
                       <tr>
                         <th className="py-3 px-5">Đường Dẫn</th>
                         <th className="py-3 px-5">Lượt Xem</th>
@@ -488,7 +488,7 @@ export default function AdminCustomersPage() {
                           <td className="py-3 px-5 font-bold text-white">
                             {p.views}
                           </td>
-                          <td className="py-3 px-5 text-slate-300">
+                          <td className="py-3 px-5 text-slate-700">
                             {formatDuration(p.avgDurationSec)}
                           </td>
                         </tr>
@@ -508,7 +508,7 @@ export default function AdminCustomersPage() {
                   <h2 className="font-semibold text-base text-white">
                     Thông Tin Từng Khách Hàng
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-600">
                     Hồ sơ khách đã đăng ký kèm lượt truy cập, thời gian ở lại
                     website và lịch sử mua hàng
                   </p>
@@ -520,7 +520,7 @@ export default function AdminCustomersPage() {
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+                  <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
                     <tr>
                       <th className="py-3 px-5">Khách Hàng</th>
                       <th className="py-3 px-5">Liên Hệ</th>
@@ -574,7 +574,7 @@ export default function AdminCustomersPage() {
                           <p className="text-[11px] text-thuy-300 font-mono">
                             {c.email || "-"}
                           </p>
-                          <p className="text-[10px] text-slate-400">
+                          <p className="text-[10px] text-slate-600">
                             {c.phone || "-"}
                           </p>
                           {c.address && (
@@ -583,7 +583,7 @@ export default function AdminCustomersPage() {
                             </p>
                           )}
                         </td>
-                        <td className="py-3.5 px-5 text-slate-300 capitalize">
+                        <td className="py-3.5 px-5 text-slate-700 capitalize">
                           {c.provider || "local"}
                         </td>
                         <td className="py-3.5 px-5">
@@ -594,7 +594,7 @@ export default function AdminCustomersPage() {
                             {c.pageViews} lượt xem
                           </span>
                         </td>
-                        <td className="py-3.5 px-5 text-slate-300">
+                        <td className="py-3.5 px-5 text-slate-700">
                           {formatDuration(c.durationSec)}
                         </td>
                         <td className="py-3.5 px-5">
@@ -608,10 +608,10 @@ export default function AdminCustomersPage() {
                         <td className="py-3.5 px-5 font-bold text-thuy-400">
                           {formatVND(c.totalSpent)}
                         </td>
-                        <td className="py-3.5 px-5 text-slate-300">
+                        <td className="py-3.5 px-5 text-slate-700">
                           {c.cartAdds} lượt
                         </td>
-                        <td className="py-3.5 px-5 text-slate-400 text-[11px]">
+                        <td className="py-3.5 px-5 text-slate-600 text-[11px]">
                           {c.lastVisitAt
                             ? formatDateTime(c.lastVisitAt)
                             : c.lastOrderAt
@@ -634,7 +634,7 @@ export default function AdminCustomersPage() {
                   <h2 className="font-semibold text-base text-white">
                     Đơn Hàng Khách Từng Mua
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-600">
                     Tổng hợp theo từng khách: số đơn, tổng chi tiêu và sản phẩm
                     đã mua
                   </p>
@@ -649,7 +649,7 @@ export default function AdminCustomersPage() {
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+                  <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
                     <tr>
                       <th className="py-3 px-5">Khách Hàng</th>
                       <th className="py-3 px-5">Số Đơn</th>
@@ -698,7 +698,7 @@ export default function AdminCustomersPage() {
                             {b.items.slice(0, 4).map((item: any, i: number) => (
                               <p
                                 key={i}
-                                className="text-[11px] text-slate-300 truncate"
+                                className="text-[11px] text-slate-700 truncate"
                               >
                                 • {item.name} x{item.quantity}
                               </p>
@@ -710,7 +710,7 @@ export default function AdminCustomersPage() {
                             )}
                           </div>
                         </td>
-                        <td className="py-3.5 px-5 text-slate-400 text-[11px]">
+                        <td className="py-3.5 px-5 text-slate-600 text-[11px]">
                           {formatDateTime(b.lastOrderAt)}
                         </td>
                       </tr>
@@ -730,14 +730,14 @@ export default function AdminCustomersPage() {
                     <ShoppingCart className="w-4 h-4 text-thuy-400" />
                     Sản Phẩm Khách Cho Vào Giỏ
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-600">
                     Sản phẩm được khách hàng thêm vào giỏ nhiều nhất
                   </p>
                 </div>
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+                    <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
                       <tr>
                         <th className="py-3 px-5">Sản Phẩm</th>
                         <th className="py-3 px-5">Giá</th>
@@ -775,7 +775,7 @@ export default function AdminCustomersPage() {
                           <td className="py-3.5 px-5 font-bold text-white">
                             {c.adds}
                           </td>
-                          <td className="py-3.5 px-5 text-slate-300">
+                          <td className="py-3.5 px-5 text-slate-700">
                             {c.visitors}
                           </td>
                           <td className="py-3.5 px-5 font-bold text-emerald-400">
@@ -796,7 +796,7 @@ export default function AdminCustomersPage() {
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+                    <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
                       <tr>
                         <th className="py-3 px-5">Khách</th>
                         <th className="py-3 px-5">Sản Phẩm</th>
@@ -830,7 +830,7 @@ export default function AdminCustomersPage() {
                               </>
                             ) : (
                               <>
-                                <p className="font-bold text-slate-300">
+                                <p className="font-bold text-slate-700">
                                   Khách ẩn danh
                                 </p>
                                 <p className="text-[10px] text-slate-500 font-mono">
@@ -849,13 +849,13 @@ export default function AdminCustomersPage() {
                             <span
                               className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                                 DEVICE_BADGE[e.device] ||
-                                "bg-slate-800 text-slate-300 border border-slate-700"
+                                "bg-slate-800 text-slate-700 border border-slate-700"
                               }`}
                             >
                               {e.device || "Khác"}
                             </span>
                           </td>
-                          <td className="py-3.5 px-5 text-slate-400 text-[11px]">
+                          <td className="py-3.5 px-5 text-slate-600 text-[11px]">
                             {formatDateTime(e.createdAt)}
                           </td>
                         </tr>
