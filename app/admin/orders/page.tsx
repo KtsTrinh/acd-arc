@@ -110,7 +110,7 @@ export default function AdminOrdersPage() {
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
             Quản Lý Đơn Hàng & Cấp Quyền Tải File
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-600">
             Theo dõi trạng thái thanh toán, tự động sinh mã Token tải file bảo mật cho đúng tài
             khoản đã thanh toán (mặc định hiệu lực 5 phút, tối đa 5 lượt tải)
           </p>
@@ -118,7 +118,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-thuy-850 border border-thuy-750 flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div className="p-4 rounded-2xl bg-white850 border border-slate-200750 flex flex-col sm:flex-row gap-4 items-center justify-between">
         <div className="flex items-center gap-2">
           {["ALL", "PAID", "PENDING", "CANCELLED"].map((st) => (
             <button
@@ -126,8 +126,8 @@ export default function AdminOrdersPage() {
               onClick={() => setStatusFilter(st)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 statusFilter === st
-                  ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                  : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-750"
+                  ? "bg-white400 text-thuy-950 shadow-glow-cyan"
+                  : "bg-white900 text-slate-600 hover:text-white border border-slate-200750"
               }`}
             >
               {st === "ALL" ? "Tất Cả" : st}
@@ -136,22 +136,22 @@ export default function AdminOrdersPage() {
         </div>
 
         <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3 top-3 text-slate-600" />
           <input
             type="text"
             placeholder="Tìm theo mã đơn, email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-thuy-400"
+            className="w-full pl-9 pr-3 py-2 rounded-xl bg-white900 border border-slate-200700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-slate-200400"
           />
         </div>
       </div>
 
       {/* Orders Table */}
-      <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
+      <div className="rounded-2xl bg-white850 border border-slate-200750 overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+            <thead className="bg-white900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-200750">
               <tr>
                 <th className="py-3 px-5">Mã Đơn Hàng</th>
                 <th className="py-3 px-5">Khách Hàng & Liên Hệ</th>
@@ -164,12 +164,12 @@ export default function AdminOrdersPage() {
             </thead>
             <tbody className="divide-y divide-thuy-750/60">
               {orders.map((o) => (
-                <tr key={o.id} className="hover:bg-thuy-800/40">
+                <tr key={o.id} className="hover:bg-white800/40">
                   <td className="py-4 px-5">
                     <span className="font-mono font-bold text-white text-sm block">
                       #{o.orderNumber}
                     </span>
-                    <span className="text-[10px] text-slate-400">
+                    <span className="text-[10px] text-slate-600">
                       {formatDateTime(o.createdAt)}
                     </span>
                   </td>
@@ -178,14 +178,14 @@ export default function AdminOrdersPage() {
                     <p className="font-bold text-white">{o.customerName}</p>
                     <p className="text-[10px] text-thuy-300 font-mono">{o.customerEmail}</p>
                     {o.customerPhone && (
-                      <p className="text-[10px] text-slate-400">{o.customerPhone}</p>
+                      <p className="text-[10px] text-slate-600">{o.customerPhone}</p>
                     )}
                   </td>
 
                   <td className="py-4 px-5 max-w-xs">
                     <div className="space-y-1">
                       {o.items.map((it: any) => (
-                        <div key={it.id} className="text-[11px] text-slate-300 truncate">
+                        <div key={it.id} className="text-[11px] text-slate-700 truncate">
                           • {it.productName || it.product?.name}
                         </div>
                       ))}
@@ -222,7 +222,7 @@ export default function AdminOrdersPage() {
                           ✓ {o.downloads.length} Token Tải Đang Active
                         </span>
                         {o.downloads.map((d: any) => (
-                          <div key={d.id} className="text-[10px] text-slate-400 font-mono">
+                          <div key={d.id} className="text-[10px] text-slate-600 font-mono">
                             Đã tải: {d.downloadCount}/{d.maxDownloads} lần
                           </div>
                         ))}
@@ -238,7 +238,7 @@ export default function AdminOrdersPage() {
                         <button
                           onClick={() => handleRegenerateLinks(o.id)}
                           disabled={updatingId === o.id}
-                          className="p-2 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-thuy-300 inline-flex items-center gap-1 text-xs disabled:opacity-50"
+                          className="p-2 rounded-lg bg-white800 hover:bg-white700 text-thuy-300 inline-flex items-center gap-1 text-xs disabled:opacity-50"
                           title="Cấp lại link tải mới cho khách"
                         >
                           <RefreshCw
@@ -252,7 +252,7 @@ export default function AdminOrdersPage() {
                       <Link
                         href={`/orders/${o.id}`}
                         target="_blank"
-                        className="p-2 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-200 inline-flex items-center gap-1 text-xs"
+                        className="p-2 rounded-lg bg-white800 hover:bg-white700 text-slate-200 inline-flex items-center gap-1 text-xs"
                         title="Xem trang nhận file khách hàng"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -261,7 +261,7 @@ export default function AdminOrdersPage() {
                       <button
                         onClick={() => handleDeleteOrder(o.id, o.orderNumber)}
                         disabled={updatingId === o.id}
-                        className="p-2 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-400 inline-flex items-center gap-1 text-xs disabled:opacity-50"
+                        className="p-2 rounded-lg bg-white800 hover:bg-red-950 hover:text-red-400 text-slate-600 inline-flex items-center gap-1 text-xs disabled:opacity-50"
                         title="Xoá đơn hàng"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
