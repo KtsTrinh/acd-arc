@@ -119,7 +119,7 @@ export default function AdminSyncPage() {
                 autoSync ? "text-thuy-400" : "text-slate-500"
               }`}
             />
-            <span className="text-xs text-slate-700">
+            <span className="text-xs text-white">
               Tự động đồng bộ mã nguồn sau mỗi lần lưu trong CMS
             </span>
             <span
@@ -162,7 +162,7 @@ export default function AdminSyncPage() {
                 <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
                   Repository
                 </p>
-                <p className="text-xs text-[#142338] font-semibold break-all">
+                <p className="text-xs text-emerald-400 font-semibold break-all">
                   {github?.repo || "-"}
                 </p>
               </div>
@@ -170,7 +170,7 @@ export default function AdminSyncPage() {
                 <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
                   Nhánh deploy
                 </p>
-                <p className="text-xs text-[#142338] font-semibold">
+                <p className="text-xs text-emerald-400 font-semibold">
                   {github?.branch || "main"}
                 </p>
               </div>
