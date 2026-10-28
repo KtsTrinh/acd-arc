@@ -2822,14 +2822,7 @@
       "name": "Biệt Thự & Villa Nghỉ Dưỡng"
     },
     "cover": null,
-    "gallery": [
-      {
-        "filename": "villa-living-atrium.jpg",
-        "url": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1600&q=80",
-        "alt": "Phòng khách thông tầng phong cách Modern Luxury",
-        "sortOrder": 1
-      }
-    ],
+    "gallery": [],
     "tags": [
       "menh-hoa",
       "hien-dai"
