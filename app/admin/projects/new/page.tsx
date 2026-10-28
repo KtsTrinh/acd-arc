@@ -301,7 +301,7 @@ export default function NewProjectPage() {
                 onClick={() => setCoverMedia(null)}
                 className="absolute top-2 right-2 p-1.5 rounded-lg bg-thuy-950/80 text-red-400 hover:text-white"
               >
-                Gá»¡ áº£nh
+                Gỡ ảnh
               </button>
             </div>
           ) : (
