@@ -170,14 +170,14 @@ export default function AdminMediaPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         alert(data.error || "Không thể xóa media.");
-        await fetchMedia();
+        window.location.reload();
         return;
       }
-      await fetchMedia();
+      window.location.reload();
     } catch (err) {
       console.error(err);
       alert("Không thể xóa media.");
-      await fetchMedia();
+      window.location.reload();
     }
   };
 
