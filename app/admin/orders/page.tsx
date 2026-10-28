@@ -107,10 +107,10 @@ export default function AdminOrdersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-white">
-            Quản Lý Đơn Hàng & Cấp Quyền Tải File
+          <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
+            Quản Lý Đơn Hàng & Cấp Tải
           </h1>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-[#526780]">
             Theo dõi trạng thái thanh toán, tự động sinh mã Token tải file bảo mật cho đúng tài
             khoản đã thanh toán (mặc định hiệu lực 5 phút, tối đa 5 lượt tải)
           </p>
@@ -118,7 +118,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-white850 border border-slate-200750 flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div className="p-4 rounded-2xl bg-white border border-[#E1EAF2] flex flex-col sm:flex-row gap-4 items-center justify-between">
         <div className="flex items-center gap-2">
           {["ALL", "PAID", "PENDING", "CANCELLED"].map((st) => (
             <button
