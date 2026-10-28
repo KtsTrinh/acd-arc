@@ -2789,14 +2789,7 @@
       "name": "Biệt Thự & Villa Nghỉ Dưỡng"
     },
     "cover": null,
-    "gallery": [
-      {
-        "filename": "villa-zen-exterior.jpg",
-        "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80",
-        "alt": "Mặt tiền biệt thự đá xám và kính phản chiếu nước",
-        "sortOrder": 1
-      }
-    ],
+    "gallery": [],
     "tags": [
       "menh-tho",
       "toi-gian"
@@ -2911,12 +2904,6 @@
         "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=85",
         "alt": "Kiến trúc Biệt Thự Mariana với hồ nước phong thủy ban đêm",
         "sortOrder": 0
-      },
-      {
-        "filename": "villa-zen-exterior.jpg",
-        "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80",
-        "alt": "Mặt tiền biệt thự đá xám và kính phản chiếu nước",
-        "sortOrder": 1
       }
     ],
     "tags": [
