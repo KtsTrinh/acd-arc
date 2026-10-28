@@ -87,8 +87,8 @@ export default function AdminUsersPage() {
                     <span
                       className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                         u.role === "ADMIN"
-                          ? "bg-thuy-500/20 text-thuy-300 border border-thuy-500/40"
-                          : "bg-slate-800 text-slate-700 border border-slate-700"
+                          ? "bg-thuy-500/20 text-white border border-thuy-500/40"
+                          : "bg-slate-800 text-white border border-slate-700"
                       }`}
                     >
                       {u.role === "ADMIN" ? (

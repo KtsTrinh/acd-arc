@@ -117,7 +117,7 @@ export default function AdminSidebar() {
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#22C7E8] to-[#087EA4] flex items-center justify-center font-display font-extrabold text-white text-sm shadow-[0_4px_16px_rgba(34,199,232,0.25)]">
             ACD
           </div>
-          <div>
+          <div className="flex flex-col items-center text-center">
             <span className="font-display font-bold text-sm tracking-wide text-white block leading-tight">
               ADMIN CMS
             </span>
