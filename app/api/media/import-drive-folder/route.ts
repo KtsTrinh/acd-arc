@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
     const folderId = match[1];
 
-    // 3. KHÔI PHỤC: Gửi request lấy nội dung trang hiển thị công khai để bóc dữ liệu từ đúng Google Drive
+    // 3. Gửi request lấy nội dung trang hiển thị công khai để bóc dữ liệu
     const drivePublicUrl = `https://google.com{folderId}`;
     const res = await fetch(drivePublicUrl, {
       headers: {
@@ -52,6 +52,7 @@ export async function POST(request: Request) {
     const htmlContent = await res.text();
 
     // 4. SỬ DỤNG REGEX ĐỔI MỚI: Bóc tách chính xác mảng dữ liệu cấu trúc tệp tin của Google Drive
+    // Chuỗi khởi tạo tệp tin của Google Drive có cấu trúc ID bắt đầu bằng ký tự chuẩn và độ dài chuỗi cố định
     const regex = /"([a-zA-Z0-9_-]{33})"/g;
     const files: any[] = [];
     let matchArray;
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
 
     const results = [];
 
-    // 5. KHÔI PHỤC: Sử dụng cổng trích xuất xuất ảnh thô công khai (uc?export=view) của Google Drive để bypass hotlinking
+    // 5. Sử dụng cổng trích xuất xuất ảnh thô công khai (uc?export=view) để bypass hotlinking
     for (const file of files) {
       try {
         const fileUrl = `https://google.com{file.id}`;
