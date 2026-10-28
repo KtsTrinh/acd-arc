@@ -9,4 +9,3 @@ for i,l in enumerate(lines):
         lines[i]='              <label className="text-xs text-slate-300">Năm hoàn thành:</label>\n'
 open(p,'w',encoding='utf-8').write(''.join(lines))
 print('done')
-PY
