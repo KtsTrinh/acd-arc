@@ -345,7 +345,7 @@ export default function NewProjectPage() {
         }}
         multiple={false}
         selectedIds={coverMedia ? [coverMedia.id] : []}
-        title="Chá»n áº£nh Ä‘áº¡i diá»‡n dá»± Ã¡n"
+        title="Chọn ảnh đại diện dự án"
       />
     </div>
   );
