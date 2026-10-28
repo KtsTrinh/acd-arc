@@ -56,10 +56,10 @@ export default function AdminSidebar() {
 
   return (
     <aside
-      className="w-64 flex flex-col h-screen sticky top-0 z-20 border-r border-slate-800"
+      className="w-64 flex flex-col h-screen sticky top-0 z-20 border-r"
       style={{
-        background: "#0b1528",
-        boxShadow: "none",
+        backgroundColor: 'var(--admin-sidebar, #081426)',
+        borderColor: 'rgba(255,255,255,0.08)',
       }}
     >
       {/* Brand Header */}
