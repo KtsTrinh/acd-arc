@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     const where: any = {};
 
     // If not admin, only return user's own orders
-    if (!user || user.role !== "ADMIN") {
+    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
       if (!user) {
         return NextResponse.json({ orders: [] });
       }
