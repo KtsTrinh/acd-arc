@@ -91,7 +91,7 @@ export default function AdminUsersPage() {
                           : "bg-slate-800 text-white border border-slate-700"
                       }`}
                     >
-                      {u.role === "ADMIN" ? (
+                      {u.role === "SUPER_ADMIN" ? (
                         <Shield className="w-3 h-3 text-thuy-400" />
                       ) : (
                         <User className="w-3 h-3" />
