@@ -5,9 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import SortableGallery from "@/components/admin/SortableGallery";
-import MediaPickerModal, {
-  MediaItem,
-} from "@/components/media/MediaPickerModal";
+import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
 import { slugify } from "@/lib/utils";
 import {
   ArrowLeft,
@@ -19,11 +17,7 @@ import {
   Star,
 } from "lucide-react";
 
-export default function EditProjectPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function EditProjectPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [project, setProject] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
@@ -136,12 +130,7 @@ export default function EditProjectPage({
   };
 
   const handleDeleteProject = async () => {
-    if (
-      !confirm(
-        "Bạn có chắc chắn muốn xóa dự án này? Thao tác không thể hoàn tác.",
-      )
-    )
-      return;
+    if (!confirm("Bạn có chắc chắn muốn xóa dự án này? Thao tác không thể hoàn tác.")) return;
 
     try {
       await fetch(`/api/projects/${params.id}`, { method: "DELETE" });
@@ -165,21 +154,14 @@ export default function EditProjectPage({
   };
 
   if (loading) {
-    return (
-      <div className="py-20 text-center text-slate-600">
-        Đang tải thông tin dự án...
-      </div>
-    );
+    return <div className="py-20 text-center text-slate-600">Đang tải thông tin dự án...</div>;
   }
 
   if (!project) {
     return (
       <div className="py-20 text-center space-y-3">
         <h2 className="text-[#142338]">Không tìm thấy dự án.</h2>
-        <Link
-          href="/admin/catalog?tab=MANAGE"
-          className="text-thuy-400 text-xs"
-        >
+        <Link href="/admin/catalog?tab=MANAGE" className="text-thuy-400 text-xs">
           Quay lại danh sách
         </Link>
       </div>
@@ -238,9 +220,8 @@ export default function EditProjectPage({
               <span>Gallery Kéo-Thả (dnd-kit Sortable)</span>
             </h2>
             <p className="text-xs text-slate-600">
-              Kéo thả các thẻ để đổi thứ tự hiển thị. Nhấn biểu tượng ngôi sao
-              để chọn làm ảnh Cover. Thay đổi được lưu tự động không cần reload
-              trang.
+              Kéo thả các thẻ để đổi thứ tự hiển thị. Nhấn biểu tượng ngôi sao để chọn làm ảnh Cover.
+              Thay đổi được lưu tự động không cần reload trang.
             </p>
           </div>
         </div>
@@ -270,25 +251,18 @@ export default function EditProjectPage({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-700 font-medium">
-                Tên dự án *:
-              </label>
+              <label className="text-xs text-slate-700 font-medium">Tên dự án *:</label>
               <input
                 type="text"
                 required
                 value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                  setSlug(slugify(e.target.value));
-                }}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
+                onChange={(e) => { setTitle(e.target.value); setSlug(slugify(e.target.value)); }}
+                className="w-full px-3.5 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
               />
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-700 font-medium">
-                Slug URL:
-              </label>
+              <label className="text-xs text-slate-700 font-medium">Slug URL:</label>
               <input
                 type="text"
                 required
@@ -299,9 +273,7 @@ export default function EditProjectPage({
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-700 font-medium">
-                Mô tả tóm tắt:
-              </label>
+              <label className="text-xs text-slate-700 font-medium">Mô tả tóm tắt:</label>
               <input
                 type="text"
                 value={shortDesc}
@@ -311,9 +283,7 @@ export default function EditProjectPage({
             </div>
 
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs text-slate-700 font-medium">
-                Nội dung bài viết chi tiết:
-              </label>
+              <label className="text-xs text-slate-700 font-medium">Nội dung bài viết chi tiết:</label>
               <textarea
                 rows={6}
                 value={description}
@@ -327,7 +297,7 @@ export default function EditProjectPage({
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -343,7 +313,7 @@ export default function EditProjectPage({
                 type="text"
                 value={buildingType}
                 onChange={(e) => setBuildingType(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -353,7 +323,7 @@ export default function EditProjectPage({
                 type="text"
                 value={style}
                 onChange={(e) => setStyle(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -363,7 +333,7 @@ export default function EditProjectPage({
                 type="number"
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -373,7 +343,7 @@ export default function EditProjectPage({
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -383,7 +353,7 @@ export default function EditProjectPage({
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
               />
             </div>
 
@@ -400,9 +370,7 @@ export default function EditProjectPage({
 
           {/* Tags */}
           <div className="space-y-2 pt-2">
-            <label className="text-xs text-slate-700 font-medium block">
-              Chọn thẻ Tags:
-            </label>
+            <label className="text-xs text-slate-700 font-medium block">Chọn thẻ Tags:</label>
             <div className="flex flex-wrap gap-2">
               {tags.map((t) => {
                 const isSelected = selectedTagIds.includes(t.id);
@@ -427,9 +395,7 @@ export default function EditProjectPage({
           {/* Cover Selector */}
           <div className="pt-4 border-t border-thuy-750 flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold text-[#142338] block">
-                Ảnh Cover Dự Án
-              </span>
+              <span className="text-xs font-semibold text-[#142338] block">Ảnh Cover Dự Án</span>
               <span className="text-[11px] text-slate-600">
                 {coverMedia ? coverMedia.filename : "Chưa có ảnh cover"}
               </span>
@@ -468,3 +434,4 @@ export default function EditProjectPage({
     </div>
   );
 }
+
