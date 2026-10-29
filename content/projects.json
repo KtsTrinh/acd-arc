@@ -12,10 +12,7 @@
     "style": "Modern Luxury",
     "buildingType": "Biệt thự nghỉ dưỡng",
     "isFeatured": true,
-    "category": {
-      "slug": "biet-thu-villa",
-      "name": "Biệt Thự & Villa Nghỉ Dưỡng"
-    },
+    "category": null,
     "cover": null,
     "gallery": [],
     "tags": [],
@@ -2762,10 +2759,7 @@
     "style": "Earth Architecture • Phong Thủy Mệnh Thổ",
     "buildingType": "Biệt thự nghỉ dưỡng đồi",
     "isFeatured": true,
-    "category": {
-      "slug": "biet-thu-villa",
-      "name": "Biệt Thự & Villa Nghỉ Dưỡng"
-    },
+    "category": null,
     "cover": null,
     "gallery": [],
     "tags": [
@@ -2788,10 +2782,7 @@
     "style": "Contemporary • Phong Thủy Mệnh Hỏa",
     "buildingType": "Biệt thự đồi sinh thái",
     "isFeatured": true,
-    "category": {
-      "slug": "biet-thu-villa",
-      "name": "Biệt Thự & Villa Nghỉ Dưỡng"
-    },
+    "category": null,
     "cover": null,
     "gallery": [],
     "tags": [
@@ -2840,10 +2831,7 @@
     "style": "Minimalist Luxury • Phong Thủy Mệnh Kim",
     "buildingType": "Biệt thự đơn lập cao cấp",
     "isFeatured": true,
-    "category": {
-      "slug": "biet-thu-villa",
-      "name": "Biệt Thự & Villa Nghỉ Dưỡng"
-    },
+    "category": null,
     "cover": null,
     "gallery": [],
     "tags": [
@@ -2867,10 +2855,7 @@
     "style": "Modern Luxury • Phong Thủy Mệnh Thủy",
     "buildingType": "Biệt thự nghỉ dưỡng đơn lập",
     "isFeatured": true,
-    "category": {
-      "slug": "biet-thu-villa",
-      "name": "Biệt Thự & Villa Nghỉ Dưỡng"
-    },
+    "category": null,
     "cover": null,
     "gallery": [],
     "tags": [
