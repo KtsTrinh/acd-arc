@@ -90,7 +90,8 @@ export async function PATCH(request: Request) {
       if (tgRole !== "ADMIN") {
         return NextResponse.json({ error: "Chỉ có thể chuyển nhượng quyền cho tài khoản Admin" }, { status: 400 });
       }
-      const [updatedTarget] = await prisma.$transaction([
+      
+      const [updatedTarget, demotedCurrent] = await prisma.$transaction([
         prisma.user.update({
           where: { id: target.id },
           data: { role: "SUPER_ADMIN" },
@@ -102,7 +103,14 @@ export async function PATCH(request: Request) {
           select: { id: true, name: true, email: true, role: true }
         }),
       ]);
-      return NextResponse.json({ success: true, user: updatedTarget, transferred: true });
+
+      return NextResponse.json({ 
+        success: true, 
+        user: updatedTarget, 
+        transferred: true,
+        shouldSignOut: true, // 🔥 Thêm cờ này để báo cho Client biết phải Logout ngay lập tức
+        message: "Chuyển nhượng quyền lực thành công. Hệ thống sẽ đăng xuất để cập nhật lại quyền."
+      });
     }
 
     // 2. NGĂN CHẶN CÁC HÀNH VI TỰ THAY ĐỔI QUYỀN LỰC CHÍNH MÌNH
