@@ -120,7 +120,8 @@ export async function PATCH(request: Request) {
         "auth-token", 
         "accessToken", 
         "next-auth.session-token", 
-        "__Secure-next-auth.session-token"
+        "__Secure-next-auth.session-token",
+        "acd_session_token"
       ];
 
       cookieNames.forEach(name => {

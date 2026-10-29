@@ -199,7 +199,6 @@ export async function provisionOAuthUser(
       where: { id: existingAccount.userId },
       data: {
         ...(await buildProfileUpdate(profile, existingAccount.userId)),
-        ...(isAdminEmail(profile.email) ? { role: "SUPER_ADMIN" } : {}),
       },
     });
   }
@@ -217,7 +216,6 @@ export async function provisionOAuthUser(
       where: { id: matchedUser.id },
       data: {
         ...(await buildProfileUpdate(profile, matchedUser.id)),
-        ...(isAdminEmail(profile.email) ? { role: "SUPER_ADMIN" } : {}),
       },
     });
   }
