@@ -108,6 +108,27 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Chỉ Super Admin mới có thể chuyển nhượng quyền" }, { status: 403 });
     }
 
+    // Xử lý chuyển nhượng quyền Super Admin: chỉ cho phép khi Super Admin hiện tại chuyển quyền cho Admin khác
+    if (curRole === "SUPER_ADMIN" && role === "SUPER_ADMIN" && target.id !== currentUser.id) {
+      if (tgRole !== "ADMIN") {
+        return NextResponse.json({ error: "Chỉ có thể chuyển nhượng quyền cho tài khoản Admin" }, { status: 400 });
+      }
+      // Thực hiện chuyển nhượng: hạ cấp Super Admin hiện tại xuống USER, nâng cấp target lên SUPER_ADMIN
+      const [updatedTarget, demotedCurrent] = await prisma.$transaction([
+        prisma.user.update({
+          where: { id: target.id },
+          data: { role: "SUPER_ADMIN" },
+          select: { id: true, name: true, email: true, role: true }
+        }),
+        prisma.user.update({
+          where: { id: currentUser.id },
+          data: { role: "USER" },
+          select: { id: true, name: true, email: true, role: true }
+        }),
+      ]);
+      return NextResponse.json({ success: true, user: updatedTarget, transferred: true });
+    }
+
     // 4. KIỂM SOÁT QUYỀN HẠN CỦA ADMIN THÔNG THƯỜNG
     if (curRole === "ADMIN") {
       // Admin không được phép nâng cấp một USER bình thường lên thẳng ADMIN
@@ -118,6 +139,11 @@ export async function PATCH(request: Request) {
       if (role !== tgRole) {
         return NextResponse.json({ error: "Chỉ Super Admin mới có quyền thay đổi phân quyền" }, { status: 403 });
       }
+    }
+
+    // Ngăn tạo thêm Super Admin ngoài trường hợp chuyển nhượng
+    if (role === "SUPER_ADMIN" && curRole !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Chỉ Super Admin mới có thể chuyển nhượng quyền" }, { status: 403 });
     }
 
     // === TẤT CẢ LOGIC HỢP LỆ -> TIẾN HÀNH CẬP NHẬT DATABASE ===
