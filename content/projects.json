@@ -785,18 +785,8 @@
       "slug": "nha-pho-hien-dai",
       "name": "Nhà Phố Hiện Đại"
     },
-    "cover": {
-      "filename": "pinterest-10.jpg",
-      "url": "https://i.pinimg.com/736x/d5/72/da/d572da3293e42fbf24aed9bd60ae8fd4.jpg",
-      "alt": "Hình ảnh Pinterest 11"
-    },
+    "cover": null,
     "gallery": [
-      {
-        "filename": "pinterest-10.jpg",
-        "url": "https://i.pinimg.com/736x/d5/72/da/d572da3293e42fbf24aed9bd60ae8fd4.jpg",
-        "alt": "Hình ảnh Pinterest 11",
-        "sortOrder": 0
-      },
       {
         "filename": "pinterest-11.jpg",
         "url": "https://i.pinimg.com/736x/99/9c/17/999c172f28c24090698b0c04f86bd445.jpg",
@@ -848,12 +838,6 @@
         "sortOrder": 0
       },
       {
-        "filename": "pinterest-10.jpg",
-        "url": "https://i.pinimg.com/736x/d5/72/da/d572da3293e42fbf24aed9bd60ae8fd4.jpg",
-        "alt": "Hình ảnh Pinterest 11",
-        "sortOrder": 1
-      },
-      {
         "filename": "pinterest-11.jpg",
         "url": "https://i.pinimg.com/736x/99/9c/17/999c172f28c24090698b0c04f86bd445.jpg",
         "alt": "Hình ảnh Pinterest 12",
@@ -902,12 +886,6 @@
         "url": "https://i.pinimg.com/736x/12/71/ab/1271abd2fe2d6338c4177bba2a2bbdb1.jpg",
         "alt": "Hình ảnh Pinterest 10",
         "sortOrder": 1
-      },
-      {
-        "filename": "pinterest-10.jpg",
-        "url": "https://i.pinimg.com/736x/d5/72/da/d572da3293e42fbf24aed9bd60ae8fd4.jpg",
-        "alt": "Hình ảnh Pinterest 11",
-        "sortOrder": 2
       }
     ],
     "tags": [
@@ -2213,18 +2191,8 @@
       "slug": "nha-pho-hien-dai",
       "name": "Nhà Phố Hiện Đại"
     },
-    "cover": {
-      "filename": "pinterest-10.jpg",
-      "url": "https://i.pinimg.com/736x/d5/72/da/d572da3293e42fbf24aed9bd60ae8fd4.jpg",
-      "alt": "Hình ảnh Pinterest 11"
-    },
+    "cover": null,
     "gallery": [
-      {
-        "filename": "pinterest-10.jpg",
-        "url": "https://i.pinimg.com/736x/d5/72/da/d572da3293e42fbf24aed9bd60ae8fd4.jpg",
-        "alt": "Hình ảnh Pinterest 11",
-        "sortOrder": 0
-      },
       {
         "filename": "pinterest-11.jpg",
         "url": "https://i.pinimg.com/736x/99/9c/17/999c172f28c24090698b0c04f86bd445.jpg",
@@ -2276,12 +2244,6 @@
         "sortOrder": 0
       },
       {
-        "filename": "pinterest-10.jpg",
-        "url": "https://i.pinimg.com/736x/d5/72/da/d572da3293e42fbf24aed9bd60ae8fd4.jpg",
-        "alt": "Hình ảnh Pinterest 11",
-        "sortOrder": 1
-      },
-      {
         "filename": "pinterest-11.jpg",
         "url": "https://i.pinimg.com/736x/99/9c/17/999c172f28c24090698b0c04f86bd445.jpg",
         "alt": "Hình ảnh Pinterest 12",
@@ -2330,12 +2292,6 @@
         "url": "https://i.pinimg.com/736x/12/71/ab/1271abd2fe2d6338c4177bba2a2bbdb1.jpg",
         "alt": "Hình ảnh Pinterest 10",
         "sortOrder": 1
-      },
-      {
-        "filename": "pinterest-10.jpg",
-        "url": "https://i.pinimg.com/736x/d5/72/da/d572da3293e42fbf24aed9bd60ae8fd4.jpg",
-        "alt": "Hình ảnh Pinterest 11",
-        "sortOrder": 2
       }
     ],
     "tags": [
