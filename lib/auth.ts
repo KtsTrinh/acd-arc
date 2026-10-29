@@ -172,6 +172,13 @@ export async function provisionOAuthUser(
     expires_at: tokens.expiresIn ? Math.floor(Date.now() / 1000) + tokens.expiresIn : null,
   };
 
+  const adminEmails = (process.env.ADMIN_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  const isAdminEmail = (email?: string | null) =>
+    Boolean(email && adminEmails.includes(email.toLowerCase()));
+
   const existingAccount = await prisma.account.findUnique({
     where: {
       provider_providerAccountId: {
@@ -192,7 +199,7 @@ export async function provisionOAuthUser(
       where: { id: existingAccount.userId },
       data: {
         ...(await buildProfileUpdate(profile, existingAccount.userId)),
-        ...((process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com,trinhhogntu.kts@gmail.com").split(",").map(e=>e.trim().toLowerCase()).includes((profile.email||"").toLowerCase()) ? { role: "SUPER_ADMIN" } : {}),
+        ...(isAdminEmail(profile.email) ? { role: "SUPER_ADMIN" } : {}),
       },
     });
   }
@@ -200,13 +207,6 @@ export async function provisionOAuthUser(
   const matchedUser = profile.email
     ? await prisma.user.findUnique({ where: { email: profile.email } })
     : null;
-
-  const adminEmails = (process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com,trinhhogntu.kts@gmail.com")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  const isAdminEmail = (email?: string | null) =>
-    Boolean(email && adminEmails.includes(email.toLowerCase()));
 
   if (matchedUser) {
     await prisma.account.create({
@@ -217,14 +217,19 @@ export async function provisionOAuthUser(
       where: { id: matchedUser.id },
       data: {
         ...(await buildProfileUpdate(profile, matchedUser.id)),
-        ...((process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com,trinhhogntu.kts@gmail.com").split(",").map(e=>e.trim().toLowerCase()).includes((profile.email||"").toLowerCase()) ? { role: "SUPER_ADMIN" } : {}),
+        ...(isAdminEmail(profile.email) ? { role: "SUPER_ADMIN" } : {}),
       },
     });
   }
 
   const created = await prisma.user.create({
     data: {
-      role: (process.env.ADMIN_EMAILS || "trinhhongtu.kts@gmail.com,trinhhogntu.kts@gmail.com").split(",").map(e=>e.trim().toLowerCase()).includes((profile.email||"").toLowerCase()) ? "SUPER_ADMIN" : (await prisma.user.count({ where: { role: "ADMIN" } })) === 0 && (await prisma.user.count({ where: { role: "SUPER_ADMIN" } })) === 0 ? "SUPER_ADMIN" : "USER",
+      role: isAdminEmail(profile.email)
+        ? "SUPER_ADMIN"
+        : (await prisma.user.count({ where: { role: "ADMIN" } })) === 0 &&
+          (await prisma.user.count({ where: { role: "SUPER_ADMIN" } })) === 0
+          ? "SUPER_ADMIN"
+          : "USER",
       provider: profile.provider,
       providerId: profile.providerId,
       ...(await buildProfileUpdate(profile, null)),
