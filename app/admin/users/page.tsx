@@ -31,12 +31,11 @@ export default function AdminUsersPage() {
   }, []);
 
   const handleTransfer = async (userId: string) => {
-    if (!confirm("Chuyển nhượng toàn quyền Super Admin cho tài khoản này? Tài khoản hiện tại của bạn sẽ bị hạ xuống Admin.")) return;
+    if (!confirm("Chuyển nhượng toàn quyền Super Admin cho tài khoản này? Tài khoản hiện tại của bạn sẽ bị hạ xuống User.")) return;
     setUpdatingId(userId);
     try {
       const res = await fetch("/api/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: userId, role: "SUPER_ADMIN" }) });
       if (res.ok) {
-        await fetch("/api/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: currentUser.id, role: "ADMIN" }) });
         window.location.reload();
         return;
       } else {
