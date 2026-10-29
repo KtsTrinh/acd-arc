@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email đã được sử dụng." }, { status: 400 });
     }
     const user = await prisma.user.create({
-      data: { name, email, role, password: null },
+      data: { name, email, role },
     });
     return NextResponse.json({ success: true, user: { id: user.id, name: user.name, email: user.email, role: user.role } }, { status: 201 });
   } catch (error) {
