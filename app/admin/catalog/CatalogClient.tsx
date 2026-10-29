@@ -9,7 +9,9 @@ import {
   PRODUCT_TYPE_LABELS,
   getCatalogGroupOfType,
 } from "@/lib/catalog";
-import MediaPickerModal, { MediaItem } from "@/components/media/MediaPickerModal";
+import MediaPickerModal, {
+  MediaItem,
+} from "@/components/media/MediaPickerModal";
 import {
   Plus,
   Trash2,
@@ -83,7 +85,7 @@ export default function AdminCatalogClient({
   initialTab?: string;
 }) {
   const [activeTab, setActiveTab] = useState(
-    initialTab && initialTab !== "ALL" ? initialTab : "ARCHITECTURE"
+    initialTab && initialTab !== "ALL" ? initialTab : "ARCHITECTURE",
   );
   const [items, setItems] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
@@ -93,9 +95,10 @@ export default function AdminCatalogClient({
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
-  const [notice, setNotice] = useState<{ type: "ok" | "err"; text: string } | null>(
-    null
-  );
+  const [notice, setNotice] = useState<{
+    type: "ok" | "err";
+    text: string;
+  } | null>(null);
 
   const fetchAll = useCallback(async () => {
     try {
@@ -163,7 +166,10 @@ export default function AdminCatalogClient({
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/api/products/file", { method: "POST", body: fd });
+      const res = await fetch("/api/products/file", {
+        method: "POST",
+        body: fd,
+      });
       const data = await res.json();
       if (data.success) {
         updateForm({
@@ -171,7 +177,10 @@ export default function AdminCatalogClient({
           fileName: data.fileName,
           fileSize: data.fileSize,
         });
-        setNotice({ type: "ok", text: `Đã tải file "${data.fileName}" lên kho private.` });
+        setNotice({
+          type: "ok",
+          text: `Đã tải file "${data.fileName}" lên kho private.`,
+        });
       } else {
         setNotice({ type: "err", text: data.error || "Không tải được file." });
       }
@@ -200,7 +209,10 @@ export default function AdminCatalogClient({
         fileKey: form.fileKey || null,
         fileName: form.fileName || null,
         downloadLinkUrl: form.downloadLinkUrl || null,
-        downloadExpiresMinutes: parseInt(form.downloadExpiresMinutes || "5", 10),
+        downloadExpiresMinutes: parseInt(
+          form.downloadExpiresMinutes || "5",
+          10,
+        ),
         thumbnail: form.thumbnail,
         projectId: form.projectId || null,
         requiresPayment: form.requiresPayment,
@@ -214,7 +226,7 @@ export default function AdminCatalogClient({
           method: form.id ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        }
+        },
       );
       const data = await res.json();
       if (data.success) {
@@ -253,8 +265,8 @@ export default function AdminCatalogClient({
             Danh Mục Sản Phẩm
           </h1>
           <p className="text-xs text-slate-600">
-            Gộp Dự Án Kiến Trúc · Danh Mục Dự Án · Sản Phẩm &amp; File 3D/CAD — gồm 4 nhóm: Dự án
-            kiến trúc, Nội thất, Xây dựng và File kỹ thuật số.
+            Gộp Dự Án Kiến Trúc · Danh Mục Dự Án · Sản Phẩm &amp; File 3D/CAD —
+            gồm 4 nhóm: Dự án kiến trúc, Nội thất, Xây dựng và File kỹ thuật số.
           </p>
         </div>
 
@@ -273,10 +285,12 @@ export default function AdminCatalogClient({
       <div className="p-4 rounded-2xl bg-thuy-850/70 border border-thuy-750 flex flex-col sm:flex-row sm:items-center gap-3 text-xs text-slate-700">
         <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
         <p>
-          File/link tải về chỉ mở cho <b className="text-[#142338]">đúng tài khoản đã thanh toán</b>.
-          Link tự xuất hiện trong vòng <b className="text-[#142338]">5 phút</b> kể từ lúc đơn hàng
-          được xác nhận thanh toán, hết hạn sau 5 phút và tối đa 5 lượt tải. Link gốc do quản
-          trị cấu hình được phát qua máy chủ nên khách không thể chia sẻ cho người khác tải.
+          File/link tải về chỉ mở cho{" "}
+          <b className="text-[#142338]">đúng tài khoản đã thanh toán</b>. Link
+          tự xuất hiện trong vòng <b className="text-[#142338]">5 phút</b> kể từ
+          lúc đơn hàng được xác nhận thanh toán, hết hạn sau 5 phút và tối đa 5
+          lượt tải. Link gốc do quản trị cấu hình được phát qua máy chủ nên
+          khách không thể chia sẻ cho người khác tải.
         </p>
       </div>
 
@@ -295,7 +309,9 @@ export default function AdminCatalogClient({
       {/* Tabs */}
       <div className="flex flex-wrap gap-2">
         {CATALOG_GROUPS.map((group) => {
-          const count = items.filter((i) => group.types.includes(i.type)).length;
+          const count = items.filter((i) =>
+            group.types.includes(i.type),
+          ).length;
           const isActive = activeTab === group.key;
           return (
             <button
@@ -333,7 +349,8 @@ export default function AdminCatalogClient({
 
       {loading ? (
         <div className="py-16 text-center text-slate-600 text-xs flex items-center justify-center gap-2">
-          <Loader2 className="w-4 h-4 animate-spin" /> Đang tải danh mục sản phẩm...
+          <Loader2 className="w-4 h-4 animate-spin" /> Đang tải danh mục sản
+          phẩm...
         </div>
       ) : activeTab === "MANAGE" ? (
         <ManagePanel
@@ -362,9 +379,14 @@ export default function AdminCatalogClient({
           <div className="relative z-10 w-full max-w-2xl bg-thuy-900 border border-thuy-700 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
               <h3 className="font-semibold text-base text-[#142338]">
-                {form.id ? "Cập nhật mục danh mục" : "Thêm mục danh mục sản phẩm"}
+                {form.id
+                  ? "Cập nhật mục danh mục"
+                  : "Thêm mục danh mục sản phẩm"}
               </h3>
-              <button onClick={() => setForm(null)} className="text-slate-600 hover:text-[#142338]">
+              <button
+                onClick={() => setForm(null)}
+                className="text-slate-600 hover:text-[#142338]"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -389,7 +411,9 @@ export default function AdminCatalogClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-700">Giá bán (VNĐ) *:</label>
+                  <label className="text-xs text-slate-700">
+                    Giá bán (VNĐ) *:
+                  </label>
                   <input
                     type="number"
                     required
@@ -404,13 +428,17 @@ export default function AdminCatalogClient({
                   <input
                     type="number"
                     value={form.comparePrice}
-                    onChange={(e) => updateForm({ comparePrice: e.target.value })}
+                    onChange={(e) =>
+                      updateForm({ comparePrice: e.target.value })
+                    }
                     placeholder="1200000"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-700">Nhóm danh mục:</label>
+                  <label className="text-xs text-slate-700">
+                    Nhóm danh mục:
+                  </label>
                   <select
                     value={form.type}
                     onChange={(e) => updateForm({ type: e.target.value })}
@@ -433,7 +461,9 @@ export default function AdminCatalogClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-700">Định dạng file:</label>
+                  <label className="text-xs text-slate-700">
+                    Định dạng file:
+                  </label>
                   <input
                     type="text"
                     value={form.fileFormat}
@@ -457,7 +487,8 @@ export default function AdminCatalogClient({
               {/* File download configuration */}
               <div className="p-4 rounded-2xl bg-thuy-850/60 border border-thuy-750 space-y-3">
                 <h4 className="text-xs font-bold text-thuy-300 flex items-center gap-2">
-                  <Download className="w-4 h-4" /> File &amp; link tải cho khách đã thanh toán
+                  <Download className="w-4 h-4" /> File &amp; link tải cho khách
+                  đã thanh toán
                 </h4>
 
                 <div className="space-y-1">
@@ -480,7 +511,9 @@ export default function AdminCatalogClient({
                         }}
                       />
                     </label>
-                    {uploading && <Loader2 className="w-4 h-4 animate-spin text-thuy-400" />}
+                    {uploading && (
+                      <Loader2 className="w-4 h-4 animate-spin text-thuy-400" />
+                    )}
                   </div>
                   {form.fileKey && (
                     <p className="text-[10px] text-emerald-400 font-mono truncate">
@@ -491,29 +524,36 @@ export default function AdminCatalogClient({
 
                 <div className="space-y-1">
                   <label className="text-xs text-slate-700 flex items-center gap-1.5">
-                    <Link2 className="w-3.5 h-3.5" /> Link tải nội bộ (Google Drive/Dropbox/CDN):
+                    <Link2 className="w-3.5 h-3.5" /> Link tải nội bộ (Google
+                    Drive/Dropbox/CDN):
                   </label>
                   <input
                     type="url"
                     value={form.downloadLinkUrl}
-                    onChange={(e) => updateForm({ downloadLinkUrl: e.target.value })}
+                    onChange={(e) =>
+                      updateForm({ downloadLinkUrl: e.target.value })
+                    }
                     placeholder="https://drive.google.com/... (dán link chia sẻ nội bộ)"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                   />
                   <p className="text-[10px] text-slate-500">
-                    Link này KHÔNG được hiển thị cho khách. Máy chủ sẽ phát lại file qua
-                    /api/downloads sau khi kiểm tra đúng tài khoản đã thanh toán.
+                    Link này KHÔNG được hiển thị cho khách. Máy chủ sẽ phát lại
+                    file qua /api/downloads sau khi kiểm tra đúng tài khoản đã
+                    thanh toán.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs text-slate-700 flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5" /> Thời hạn link sau khi thanh toán:
+                      <Clock className="w-3.5 h-3.5" /> Thời hạn link sau khi
+                      thanh toán:
                     </label>
                     <select
                       value={form.downloadExpiresMinutes}
-                      onChange={(e) => updateForm({ downloadExpiresMinutes: e.target.value })}
+                      onChange={(e) =>
+                        updateForm({ downloadExpiresMinutes: e.target.value })
+                      }
                       className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                     >
                       {EXPIRY_OPTIONS.map((opt) => (
@@ -524,10 +564,14 @@ export default function AdminCatalogClient({
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs text-slate-700">Dự án hiển thị liên kết:</label>
+                    <label className="text-xs text-slate-700">
+                      Dự án hiển thị liên kết:
+                    </label>
                     <select
                       value={form.projectId}
-                      onChange={(e) => updateForm({ projectId: e.target.value })}
+                      onChange={(e) =>
+                        updateForm({ projectId: e.target.value })
+                      }
                       className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                     >
                       <option value="">— Không liên kết —</option>
@@ -544,7 +588,9 @@ export default function AdminCatalogClient({
                   <input
                     type="checkbox"
                     checked={form.requiresPayment}
-                    onChange={(e) => updateForm({ requiresPayment: e.target.checked })}
+                    onChange={(e) =>
+                      updateForm({ requiresPayment: e.target.checked })
+                    }
                     className="accent-thuy-400"
                   />
                   Bắt buộc thanh toán mới được tải (khuyến nghị bật)
@@ -553,7 +599,9 @@ export default function AdminCatalogClient({
 
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs text-slate-700">Ảnh thumbnail (URL):</label>
+                  <label className="text-xs text-slate-700">
+                    Ảnh thumbnail (URL):
+                  </label>
                   <button
                     type="button"
                     onClick={() => setMediaPickerOpen(true)}
@@ -572,7 +620,9 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Mô tả sản phẩm:</label>
+                <label className="text-xs text-slate-700">
+                  Mô tả sản phẩm:
+                </label>
                 <textarea
                   rows={3}
                   value={form.description}
@@ -652,8 +702,8 @@ function CatalogTable({
     return (
       <div className="py-16 text-center text-slate-600 text-xs rounded-2xl bg-thuy-850/50 border border-thuy-750">
         <Package className="w-8 h-8 mx-auto mb-3 text-slate-600" />
-        Nhóm <b className="text-[#142338]">{group?.label}</b> chưa có mục nào. Bấm “Thêm mục” để
-        tạo mục danh mục đầu tiên.
+        Nhóm <b className="text-[#142338]">{group?.label}</b> chưa có mục nào.
+        Bấm “Thêm mục” để tạo mục danh mục đầu tiên.
       </div>
     );
   }
@@ -694,7 +744,9 @@ function CatalogTable({
                   </div>
                 </td>
                 <td className="py-3.5 px-5">
-                  <span className="font-bold text-[#142338] block text-sm">{p.name}</span>
+                  <span className="font-bold text-[#142338] block text-sm">
+                    {p.name}
+                  </span>
                   <span className="text-[10px] text-slate-600 font-mono block">
                     /products/{p.slug}
                   </span>
@@ -821,7 +873,7 @@ function ManagePanel({
     onNotice(
       data.success
         ? { type: "ok", text: "Đã xoá danh mục." }
-        : { type: "err", text: data.error || "Không xoá được." }
+        : { type: "err", text: data.error || "Không xoá được." },
     );
     if (data.success) onRefresh();
   };
@@ -832,7 +884,8 @@ function ManagePanel({
       <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
         <div className="px-5 py-4 border-b border-thuy-750 flex items-center justify-between">
           <h2 className="font-bold text-sm text-[#142338] flex items-center gap-2">
-            <FolderTree className="w-4 h-4 text-thuy-400" /> Danh Mục Dự Án Hiển Thị
+            <FolderTree className="w-4 h-4 text-thuy-400" /> Danh Mục Dự Án Hiển
+            Thị
           </h2>
           <span className="text-[10px] text-slate-600">
             Phân loại dự án trên website (biệt thự, nhà phố, nội thất...)
@@ -871,7 +924,7 @@ function ManagePanel({
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+            <thead className="bg-thuy-900/80 text-white uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
                 <th className="py-3 px-5">Tên danh mục</th>
                 <th className="py-3 px-5">Slug</th>
@@ -882,7 +935,9 @@ function ManagePanel({
             <tbody className="divide-y divide-thuy-750/60">
               {categories.map((c) => (
                 <tr key={c.id} className="hover:bg-thuy-800/40">
-                  <td className="py-3 px-5 font-bold text-[#142338]">{c.name}</td>
+                  <td className="py-3 px-5 font-bold text-[#142338]">
+                    {c.name}
+                  </td>
                   <td className="py-3 px-5 text-slate-600 font-mono text-[10px]">
                     {c.slug}
                   </td>
@@ -902,7 +957,10 @@ function ManagePanel({
               ))}
               {categories.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="py-6 text-center text-slate-500 text-xs">
+                  <td
+                    colSpan={4}
+                    className="py-6 text-center text-slate-500 text-xs"
+                  >
                     Chưa có danh mục dự án nào.
                   </td>
                 </tr>
@@ -916,7 +974,8 @@ function ManagePanel({
       <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
         <div className="px-5 py-4 border-b border-thuy-750 flex items-center justify-between">
           <h2 className="font-bold text-sm text-[#142338] flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-thuy-400" /> Dự Án Kiến Trúc Hiển Thị
+            <Building2 className="w-4 h-4 text-thuy-400" /> Dự Án Kiến Trúc Hiển
+            Thị
           </h2>
           <Link
             href="/admin/projects/new"
@@ -928,7 +987,7 @@ function ManagePanel({
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+            <thead className="bg-thuy-900/80 text-white uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
               <tr>
                 <th className="py-3 px-5">Ảnh</th>
                 <th className="py-3 px-5">Tên dự án</th>
@@ -960,7 +1019,9 @@ function ManagePanel({
                       </div>
                     </td>
                     <td className="py-3 px-5">
-                      <span className="font-bold text-[#142338] block">{p.title}</span>
+                      <span className="font-bold text-[#142338] block">
+                        {p.title}
+                      </span>
                       <span className="text-[10px] text-slate-600 font-mono">
                         /projects/{p.slug}
                       </span>
@@ -970,7 +1031,9 @@ function ManagePanel({
                     </td>
                     <td className="py-3 px-5">
                       {linked.length === 0 ? (
-                        <span className="text-[10px] text-slate-500">Chưa gắn mục bán</span>
+                        <span className="text-[10px] text-slate-500">
+                          Chưa gắn mục bán
+                        </span>
                       ) : (
                         linked.map((l) => (
                           <span
@@ -996,7 +1059,10 @@ function ManagePanel({
               })}
               {projects.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-6 text-center text-slate-500 text-xs">
+                  <td
+                    colSpan={5}
+                    className="py-6 text-center text-slate-500 text-xs"
+                  >
                     Chưa có dự án nào.
                   </td>
                 </tr>

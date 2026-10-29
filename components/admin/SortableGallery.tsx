@@ -240,7 +240,7 @@ export default function SortableGallery({
       {/* Top action bar */}
       <div className="flex items-center justify-between p-3.5 rounded-xl bg-thuy-850 border border-thuy-700/80">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-200">
+          <span className="text-xs font-semibold text-slate-800">
             Tổng cộng: <b className="text-thuy-400">{items.length}</b> ảnh gallery
           </span>
           {isSaving && (
@@ -257,7 +257,7 @@ export default function SortableGallery({
           className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110 transition-all shadow-glow-cyan"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>+ Thêm từ Media Library</span>
+          <span>Thêm từ Media Library</span>
         </button>
       </div>
 

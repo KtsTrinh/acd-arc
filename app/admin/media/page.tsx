@@ -267,8 +267,7 @@ export default function AdminMediaPage() {
           </div>
         ) : mediaList.length === 0 ? (
           <div className="text-center py-20 rounded-2xl bg-thuy-850/50 border border-thuy-800 text-xs text-slate-600">
-            Không tìm thấy hình ảnh nào. Nhấn Upload hoặc Thêm từ Pinterest ở
-            trên.
+            Không tìm thấy hình ảnh nào. Nhấn Upload hoặc Thêm từ Ảnh ở trên.
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
