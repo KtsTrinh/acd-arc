@@ -38,7 +38,7 @@ export async function PATCH(
       );
     }
 
-    const isAdmin = ((user.role === "ADMIN" || user.role === "SUPER_ADMIN") || user.role === "SUPER_ADMIN");
+    const isAdmin = user.role === "ADMIN" || (user.role as string) === "SUPER_ADMIN";
     const isOwner = Boolean(order.userId) && order.userId === user.id;
 
     // Chỉ quản trị viên hoặc chủ đơn (mô phỏng thanh toán) được đổi trạng thái
@@ -99,7 +99,7 @@ export async function DELETE(
 ) {
   try {
     const user = await getCurrentUser();
-    if (!user || ((user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") && user.role !== "SUPER_ADMIN")) {
+    if (!user || (user.role !== "ADMIN" && (user.role as string) !== "SUPER_ADMIN")) {
       return NextResponse.json(
         { error: "Chỉ quản trị viên mới được xoá đơn hàng." },
         { status: 403 }
@@ -137,7 +137,7 @@ export async function POST(
 ) {
   try {
     const user = await getCurrentUser();
-    if (!user || ((user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") && user.role !== "SUPER_ADMIN")) {
+    if (!user || (user.role !== "ADMIN" && (user.role as string) !== "SUPER_ADMIN")) {
       return NextResponse.json(
         { error: "Chỉ quản trị viên mới được cấp lại link tải." },
         { status: 403 }
