@@ -98,6 +98,7 @@ export async function POST(request: Request) {
       downloadLinkUrl,
       downloadExpiresMinutes,
       projectId,
+      galleryMediaIds,
     } = body;
 
     if (!name || price === undefined) {
@@ -133,8 +134,27 @@ export async function POST(request: Request) {
       },
     });
 
-    const sync = await triggerCmsAutoSync(`thêm sản phẩm "${product.name}"`);
-    return NextResponse.json({ success: true, product, sync });
+    // Attach initial gallery media if provided
+    if (galleryMediaIds && Array.isArray(galleryMediaIds) && galleryMediaIds.length > 0) {
+      await prisma.projectMedia.createMany({
+        data: galleryMediaIds.map((mediaId: string, index: number) => ({
+          productId: product.id,
+          mediaId,
+          sortOrder: index,
+        })),
+      });
+    }
+
+    const createdProduct = await prisma.product.findUnique({
+      where: { id: product.id },
+      include: {
+        project: { select: { id: true, title: true, slug: true } },
+        gallery: { include: { media: true }, orderBy: { sortOrder: "asc" } },
+      },
+    });
+
+    const sync = await triggerCmsAutoSync(`thêm sản phẩm "${createdProduct?.name ?? ""}"`);
+    return NextResponse.json({ success: true, product: createdProduct, sync });
   } catch (error) {
     console.error("Error creating product:", error);
     return NextResponse.json(

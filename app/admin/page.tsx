@@ -8,7 +8,6 @@ import {
   ShoppingBag,
   TrendingUp,
   ArrowRight,
-  Plus,
   Image as ImageIcon,
   CheckCircle2,
   Clock,
@@ -78,15 +77,7 @@ export default async function AdminDashboardPage() {
           <p className="text-sm text-[#526780] mt-1">Hệ thống quản trị kiến trúc ACD: Portfolio, Media Library dùng chung & Thương mại điện tử</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <Link
-            href="/admin/projects/new"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-[#087EA4] to-[#22C7E8] text-[#142338] font-medium text-xs hover:shadow-[0_4px_16px_rgba(34,199,232,0.25)] transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Thêm Dự Án Mới</span>
-          </Link>
-
+        <div className="flex items-center gap-2.5">
           <Link
             href="/admin/media"
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-[#142338] border border-[#E1EAF2] text-xs font-medium hover:border-[#22C7E8] hover:text-[#087EA4] transition-all"

@@ -28,6 +28,10 @@ import {
   Clock,
   ShieldCheck,
   Package,
+  Star,
+  Image as ImageIcon,
+  Video as VideoIcon,
+  GripVertical,
 } from "lucide-react";
 
 interface ItemForm {
@@ -79,6 +83,13 @@ const EXPIRY_OPTIONS = [
   { value: "1440", label: "24 giờ" },
 ];
 
+interface GalleryItem {
+  id: string; // projectMedia id
+  mediaId: string;
+  sortOrder: number;
+  media: MediaItem;
+}
+
 export default function AdminCatalogClient({
   initialTab,
 }: {
@@ -99,6 +110,16 @@ export default function AdminCatalogClient({
     type: "ok" | "err";
     text: string;
   } | null>(null);
+
+  /* ------------------------------------------------------------------ */
+  /* Gallery state                                                      */
+  /* ------------------------------------------------------------------ */
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [galleryMediaPickerOpen, setGalleryMediaPickerOpen] = useState(false);
+  const [galleryCoverMediaId, setGalleryCoverMediaId] = useState<string | null>(
+    null
+  );
+  const [gallerySaving, setGallerySaving] = useState(false);
 
   const fetchAll = useCallback(async () => {
     try {
@@ -130,12 +151,7 @@ export default function AdminCatalogClient({
     return items.filter((i) => group.types.includes(i.type));
   }, [items, activeTab]);
 
-  const openCreate = (groupKey: string) => {
-    const group = CATALOG_GROUPS.find((g) => g.key === groupKey);
-    setForm({ ...EMPTY_FORM, type: group?.types[0] || "ARCHITECTURE" });
-  };
-
-  const openEdit = (item: any) => {
+  const openEdit = async (item: any) => {
     setForm({
       id: item.id,
       name: item.name || "",
@@ -156,6 +172,42 @@ export default function AdminCatalogClient({
       active: item.active !== false,
       featured: Boolean(item.featured),
     });
+
+    // Load gallery items for this product
+    try {
+      const res = await fetch(`/api/products/${item.id}/gallery`);
+      const data = await res.json();
+      if (data.gallery) {
+        const mapped: GalleryItem[] = data.gallery.map((g: any, idx: number) => ({
+          id: g.id,
+          mediaId: g.mediaId,
+          sortOrder: g.sortOrder ?? idx,
+          media: {
+            id: g.media.id,
+            filename: g.media.filename,
+            originalName: g.media.originalName,
+            url: g.media.url,
+            folder: g.media.folder,
+            alt: g.media.alt,
+            mimeType: g.media.mimeType,
+          },
+        }));
+        setGalleryItems(mapped);
+        // Use first item as cover if no cover set
+        if (mapped.length > 0) {
+          setGalleryCoverMediaId(mapped[0].mediaId);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load product gallery:", err);
+    }
+  };
+
+  const openCreate = (groupKey: string) => {
+    const group = CATALOG_GROUPS.find((g) => g.key === groupKey);
+    setForm({ ...EMPTY_FORM, type: group?.types[0] || "ARCHITECTURE" });
+    setGalleryItems([]);
+    setGalleryCoverMediaId(null);
   };
 
   const updateForm = (patch: Partial<ItemForm>) =>
@@ -225,8 +277,11 @@ export default function AdminCatalogClient({
         {
           method: form.id ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        },
+          body: JSON.stringify({
+            ...payload,
+            galleryMediaIds: galleryItems.map((g) => g.mediaId),
+          }),
+        }
       );
       const data = await res.json();
       if (data.success) {
@@ -256,6 +311,130 @@ export default function AdminCatalogClient({
     }
   };
 
+  /* ------------------------------------------------------------------ */
+  /* Gallery CRUD                                                       */
+  /* ------------------------------------------------------------------ */
+
+  const isVideoItem = (item: MediaItem) => {
+    if (item.mimeType && item.mimeType.startsWith("video/")) return true;
+    return /\.(mp4|webm|mov|avi)(\?|$)/i.test(item.url || "");
+  };
+
+  const handleGalleryAdd = async (selected: MediaItem | MediaItem[]) => {
+    const mediaArray = Array.isArray(selected) ? selected : [selected];
+    if (mediaArray.length === 0) return;
+    if (!form?.id) return;
+
+    setGallerySaving(true);
+    try {
+      const res = await fetch(`/api/products/${form.id}/gallery`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mediaIds: mediaArray.map((m) => m.id),
+        }),
+      });
+      const data = await res.json();
+      if (data.gallery) {
+        const mapped: GalleryItem[] = data.gallery.map((g: any, idx: number) => ({
+          id: g.id,
+          mediaId: g.mediaId,
+          sortOrder: g.sortOrder ?? idx,
+          media: {
+            id: g.media.id,
+            filename: g.media.filename,
+            originalName: g.media.originalName,
+            url: g.media.url,
+            folder: g.media.folder,
+            alt: g.media.alt,
+            mimeType: g.media.mimeType,
+          },
+        }));
+        setGalleryItems(mapped);
+        if (!galleryCoverMediaId && mapped.length > 0) {
+          setGalleryCoverMediaId(mapped[0].mediaId);
+        }
+        setNotice({ type: "ok", text: `Đã thêm ${mediaArray.length} mục vào Gallery.` });
+      }
+    } catch (err) {
+      console.error("Failed to add to product gallery:", err);
+      setNotice({ type: "err", text: "Không thêm được vào Gallery." });
+    } finally {
+      setGallerySaving(false);
+    }
+  };
+
+  const handleGalleryDelete = async (mediaId: string) => {
+    if (!confirm("Bạn có chắc muốn gỡ mục này khỏi Gallery?")) return;
+    if (!form?.id) return;
+
+    setGallerySaving(true);
+    try {
+      const res = await fetch(
+        `/api/products/${form.id}/gallery?mediaId=${mediaId}`,
+        { method: "DELETE" }
+      );
+      const data = await res.json();
+      if (data.gallery) {
+        const mapped: GalleryItem[] = data.gallery.map((g: any, idx: number) => ({
+          id: g.id,
+          mediaId: g.mediaId,
+          sortOrder: g.sortOrder ?? idx,
+          media: {
+            id: g.media.id,
+            filename: g.media.filename,
+            originalName: g.media.originalName,
+            url: g.media.url,
+            folder: g.media.folder,
+            alt: g.media.alt,
+            mimeType: g.media.mimeType,
+          },
+        }));
+        setGalleryItems(mapped);
+        if (galleryCoverMediaId === mediaId) {
+          setGalleryCoverMediaId(mapped.length > 0 ? mapped[0].mediaId : null);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to delete gallery item:", err);
+    } finally {
+      setGallerySaving(false);
+    }
+  };
+
+  const handleGalleryReorder = async (reordered: GalleryItem[]) => {
+    if (!form?.id) return;
+    setGalleryItems(reordered);
+    setGallerySaving(true);
+    try {
+      await fetch(`/api/products/${form.id}/gallery`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: reordered.map((item) => ({
+            mediaId: item.mediaId,
+            sortOrder: item.sortOrder,
+          })),
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to save gallery order:", err);
+    } finally {
+      setGallerySaving(false);
+    }
+  };
+
+  const handleGalleryCover = (mediaId: string) => {
+    setGalleryCoverMediaId(mediaId);
+    if (form?.id) {
+      fetch(`/api/products/${form.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ thumbnail: null }),
+      }).catch(console.error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -276,7 +455,7 @@ export default function AdminCatalogClient({
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan transition-all self-start sm:self-auto"
           >
             <Plus className="w-4 h-4" />
-            <span>Thêm mục</span>
+            <span>Thêm Sản Phẩm Mới</span>
           </button>
         )}
       </div>
@@ -613,6 +792,123 @@ export default function AdminCatalogClient({
                 />
               </div>
 
+              {/* Product Gallery */}
+              <div className="p-4 rounded-2xl bg-thuy-850/60 border border-thuy-750 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h4 className="text-xs font-bold text-thuy-300 flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4" />
+                      Thư viện Hình Ảnh Video
+                    </h4>
+                    <p className="text-[10px] text-slate-500">
+                      Chọn ảnh/video từ Media Library hoặc nhập link bên ngoài.
+                      Hỗ trợ định dạng ảnh và video.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setGalleryMediaPickerOpen(true)}
+                    disabled={gallerySaving}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110 disabled:opacity-50 shadow-glow-cyan"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Thêm từ Media Library</span>
+                  </button>
+                </div>
+
+                {gallerySaving && (
+                  <div className="flex items-center justify-center py-4 text-xs text-slate-400">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Đang đồng bộ Gallery...
+                  </div>
+                )}
+
+                {galleryItems.length === 0 && !gallerySaving ? (
+                  <div className="text-center py-12 border-2 border-dashed border-thuy-800 rounded-xl bg-thuy-900/40">
+                    <p className="text-xs text-slate-400 mb-3">
+                      Chưa có ảnh/video nào trong Gallery.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setGalleryMediaPickerOpen(true)}
+                      className="px-4 py-2 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700"
+                    >
+                      + Chọn từ Media Library
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {galleryItems.map((item) => {
+                      const itemIsVideo = isVideoItem(item.media);
+                      const isCover = galleryCoverMediaId === item.mediaId;
+                      return (
+                        <div
+                          key={item.mediaId}
+                          className={`group relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950 border-2 transition-all shadow-sm ${isCover ? "border-amber-400 ring-2 ring-amber-400/20" : "border-thuy-700 hover:border-thuy-500"}`}
+                        >
+                          {itemIsVideo ? (
+                            <video
+                              src={item.media.url}
+                              muted
+                              loop
+                              playsInline
+                              preload="metadata"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Image
+                              src={item.media.url}
+                              alt={item.media.alt || item.media.filename}
+                              fill
+                              className="object-cover"
+                              unoptimized
+                            />
+                          )}
+
+                          {itemIsVideo && (
+                            <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-thuy-300 uppercase">
+                              Video
+                            </div>
+                          )}
+
+                          {/* Cover star */}
+                          <button
+                            type="button"
+                            onClick={() => handleGalleryCover(item.mediaId)}
+                            className={`absolute top-2 right-2 p-1.5 rounded-lg backdrop-blur-sm transition-all border ${
+                              isCover
+                                ? "bg-amber-400 text-thuy-950 border-amber-300 font-bold"
+                                : "bg-thuy-950/80 text-slate-400 hover:text-amber-300 border-thuy-700"
+                            }`}
+                            title={isCover ? "Đang là ảnh đại diện" : "Đặt làm ảnh đại diện"}
+                          >
+                            <Star
+                              className={`w-4 h-4 ${isCover ? "fill-thuy-950" : ""}`}
+                            />
+                          </button>
+
+                          {/* Delete */}
+                          <button
+                            type="button"
+                            onClick={() => handleGalleryDelete(item.mediaId)}
+                            className="absolute top-2 left-2 p-1.5 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-900 border border-red-800 text-xs transition-colors"
+                            title="Xóa khỏi gallery"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+
+                          {/* Filename + sort order */}
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-thuy-950 via-thuy-950/70 to-transparent p-2.5 flex items-center justify-between opacity-90 group-hover:opacity-100 transition-opacity">
+                            <span className="text-[11px] text-slate-200 truncate max-w-[120px]">
+                              #{item.sortOrder + 1} {item.media.filename}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
               <div className="space-y-1">
                 <label className="text-xs text-slate-700">
                   Mô tả sản phẩm:
@@ -660,7 +956,7 @@ export default function AdminCatalogClient({
         </div>
       )}
 
-      {/* Media Picker */}
+      {/* Media Picker for thumbnail */}
       <MediaPickerModal
         isOpen={mediaPickerOpen}
         onClose={() => setMediaPickerOpen(false)}
@@ -671,6 +967,17 @@ export default function AdminCatalogClient({
         }}
         multiple={false}
         title="Chọn ảnh thumbnail từ Media Library"
+      />
+
+      {/* Media Picker for Gallery */}
+      <MediaPickerModal
+        isOpen={galleryMediaPickerOpen}
+        onClose={() => setGalleryMediaPickerOpen(false)}
+        onSelect={handleGalleryAdd}
+        multiple={true}
+        selectedIds={galleryItems.map((i) => i.mediaId)}
+        title="Chọn ảnh/video vào Gallery sản phẩm"
+        mediaType="all"
       />
     </div>
   );

@@ -20,6 +20,7 @@ export async function GET(
       },
       include: {
         project: { select: { id: true, title: true, slug: true } },
+        gallery: { include: { media: true }, orderBy: { sortOrder: "asc" } },
       },
     });
 
@@ -76,6 +77,7 @@ export async function PATCH(
       downloadLinkUrl,
       downloadExpiresMinutes,
       projectId,
+      galleryMediaIds,
     } = body;
 
     const updateData: any = {};
@@ -103,8 +105,28 @@ export async function PATCH(
       data: updateData,
     });
 
-    const sync = await triggerCmsAutoSync(`cập nhật sản phẩm "${updated.name}"`);
-    return NextResponse.json({ success: true, product: updated, sync });
+    // Replace gallery media if provided
+    if (galleryMediaIds && Array.isArray(galleryMediaIds)) {
+      await prisma.projectMedia.deleteMany({ where: { productId: id } });
+      await prisma.projectMedia.createMany({
+        data: galleryMediaIds.map((mediaId: string, index: number) => ({
+          productId: id,
+          mediaId,
+          sortOrder: index,
+        })),
+      });
+    }
+
+    const finalProduct = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        project: { select: { id: true, title: true, slug: true } },
+        gallery: { include: { media: true }, orderBy: { sortOrder: "asc" } },
+      },
+    });
+
+    const sync = await triggerCmsAutoSync(`cập nhật sản phẩm "${finalProduct?.name ?? ""}"`);
+    return NextResponse.json({ success: true, product: finalProduct, sync });
   } catch (error) {
     console.error("Error updating product:", error);
     return NextResponse.json(

@@ -51,12 +51,10 @@ export async function POST(
 
     for (const mediaId of mediaIds) {
       // Avoid duplicate linking
-      const exists = await prisma.projectMedia.findUnique({
+      const exists = await prisma.projectMedia.findFirst({
         where: {
-          projectId_mediaId: {
-            projectId: id,
-            mediaId,
-          },
+          projectId: id,
+          mediaId,
         },
       });
 
@@ -106,21 +104,19 @@ export async function PUT(
     }
 
     // Update in transaction
-    await prisma.$transaction(
-      items.map((item: { mediaId: string; sortOrder: number }) =>
-        prisma.projectMedia.update({
-          where: {
-            projectId_mediaId: {
-              projectId: id,
-              mediaId: item.mediaId,
-            },
-          },
-          data: {
-            sortOrder: item.sortOrder,
-          },
-        })
-      )
-    );
+    await prisma.$transaction(async (prisma) => {
+      for (const item of items) {
+        const record = await prisma.projectMedia.findFirst({
+          where: { projectId: id, mediaId: item.mediaId },
+        });
+        if (record) {
+          await prisma.projectMedia.update({
+            where: { id: record.id },
+            data: { sortOrder: item.sortOrder },
+          });
+        }
+      }
+    });
 
     const updatedGallery = await prisma.projectMedia.findMany({
       where: { projectId: id },
@@ -156,12 +152,10 @@ export async function DELETE(
       );
     }
 
-    await prisma.projectMedia.delete({
+    await prisma.projectMedia.deleteMany({
       where: {
-        projectId_mediaId: {
-          projectId: id,
-          mediaId,
-        },
+        projectId: id,
+        mediaId,
       },
     });
 

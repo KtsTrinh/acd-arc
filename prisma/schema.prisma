@@ -231,7 +231,7 @@ model Project {
   coverId String?
   cover   Media? @relation("ProjectCover", fields: [coverId], references: [id], onDelete: SetNull)
 
-  gallery ProjectMedia[]
+  gallery ProjectMedia[] @relation("ProjectGallery")
   tags    ProjectTag[]
 
   // Các mục trong "Danh Mục Sản Phẩm" được gắn với dự án hiển thị (nếu có)
@@ -263,16 +263,19 @@ model Media {
 }
 
 model ProjectMedia {
-  id        String @id @default(cuid())
-  projectId String
+  id        String   @id @default(cuid())
+  projectId String?
+  productId String?
   mediaId   String
-  sortOrder Int    @default(0)
+  sortOrder Int      @default(0)
 
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  media   Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  project   Project?   @relation("ProjectGallery", fields: [projectId], references: [id], onDelete: Cascade)
+  product   Product?   @relation("ProductGallery", fields: [productId], references: [id], onDelete: Cascade)
+  media     Media      @relation(fields: [mediaId], references: [id], onDelete: Cascade)
 
-  @@unique([projectId, mediaId])
+  @@unique([projectId, productId, mediaId])
   @@index([projectId, sortOrder])
+  @@index([productId, sortOrder])
 }
 
 model Tag {
@@ -327,6 +330,7 @@ model Product {
 
   orderItems    OrderItem[]
   downloadLinks DownloadLink[]
+  gallery       ProjectMedia[] @relation("ProductGallery")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
