@@ -52,30 +52,31 @@ export default function AdminUsersPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        // Nếu Server phản hồi yêu cầu ép buộc đăng xuất để cập nhật lại Session
-        if (data.shouldSignOut) {
-          alert(
-            data.message ||
-              "Chuyển nhượng quyền thành công! Hệ thống sẽ tự động đăng xuất.",
-          );
+        alert(
+          data.message ||
+            "Chuyển nhượng quyền lực thành công. Hệ thống sẽ đăng xuất để cập nhật lại quyền.",
+        );
 
-          // Xóa sạch dấu vết Session ở LocalStorage / SessionStorage tại Client nếu có
-          localStorage.clear();
-          sessionStorage.clear();
+        // 🔥 1. ĐÁNH SẬP COOKIE NGAY TẠI CLIENT (Xóa tất cả các tên phổ biến)
+        const cookiesToClear = [
+          "token",
+          "session",
+          "auth-token",
+          "accessToken",
+          "next-auth.session-token",
+        ];
+        cookiesToClear.forEach((name) => {
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        });
 
-          // Xóa thủ công Cookie phía Client một lần nữa để chắc chắn
-          document.cookie =
-            "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-          document.cookie =
-            "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        // 🔥 2. XÓA BỘ NHỚ LƯU TRỮ TẠM THỜI
+        localStorage.clear();
+        sessionStorage.clear();
 
-          // Đẩy thẳng người dùng ra trang đăng nhập để triệt tiêu trạng thái cũ
-          window.location.href = "/login";
-          return;
-        }
-
-        // Trường hợp bình thường không cần logout (nếu có)
-        fetchUsers();
+        // 🔥 3. CHUYỂN HƯỚNG CỨNG VỀ TRANG LOGIN (Không dùng reload)
+        window.location.href = "/login";
+        return;
       } else {
         alert(data.error || "Không thể chuyển nhượng quyền");
       }
