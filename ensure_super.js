@@ -2,14 +2,18 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  const keep = 'trinhhongtu.kts@gmail.com'.toLowerCase();
-  // Ensure the account exists and is SUPER_ADMIN
+  const email = process.argv[2];
+  if (!email) {
+    console.log('Usage: node ensure_super.js <email>');
+    process.exit(1);
+  }
+  const keep = email.toLowerCase();
   let user = await prisma.user.findFirst({ where: { email: { equals: keep, mode: 'insensitive' } } });
   if (!user) {
     user = await prisma.user.create({
       data: {
-        name: 'Trinh Hong Tu',
-        email: 'trinhhongtu.kts@gmail.com',
+        name: email,
+        email: keep,
         role: 'SUPER_ADMIN',
         provider: 'local',
         passwordHash: null,
@@ -24,7 +28,6 @@ async function main() {
       console.log('already');
     }
   }
-  // Demote others
   const others = await prisma.user.findMany({ where: { role: 'SUPER_ADMIN' } });
   for (const u of others) {
     if (u.email && u.email.toLowerCase() !== keep) {
