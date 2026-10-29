@@ -26,7 +26,6 @@ export async function GET() {
       },
     });
 
-    // Sắp xếp: SUPER_ADMIN trước, ADMIN, USER
     const roleOrder = { SUPER_ADMIN: 0, ADMIN: 1, USER: 2 };
     users.sort((a, b) => {
       const orderA = roleOrder[a.role as keyof typeof roleOrder] ?? 99;
@@ -42,7 +41,6 @@ export async function GET() {
   }
 }
 
-/** Tạo tài khoản (chỉ SUPER_ADMIN) */
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
@@ -64,7 +62,7 @@ export async function POST(request: Request) {
     const bcrypt = await import("bcryptjs");
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { name, email, role },
+      data: { name, email, password: hashedPassword, role },
     });
     return NextResponse.json({ success: true, user: { id: user.id, name: user.name, email: user.email, role: user.role } }, { status: 201 });
   } catch (error) {
@@ -88,21 +86,30 @@ export async function PATCH(request: Request) {
     if (!target) {
       return NextResponse.json({ error: "Không tìm thấy người dùng." }, { status: 404 });
     }
-    if (target.role === "SUPER_ADMIN" && currentUser.role !== "SUPER_ADMIN") {
-      return NextResponse.json({ error: "Không thể chỉnh sửa tài khoản Super Admin" }, { status: 403 });
-    }
+
     if (role === "SUPER_ADMIN" && currentUser.role !== "SUPER_ADMIN") {
       return NextResponse.json({ error: "Chỉ Super Admin mới có thể chuyển nhượng quyền" }, { status: 403 });
     }
-    if (currentUser.role !== "SUPER_ADMIN" && target.role !== "USER") {
+    if (currentUser.role === "SUPER_ADMIN" && target.role === "ADMIN" && role === "SUPER_ADMIN") {
+      // cho phép chuyển nhượng
+    } else if (currentUser.role === "ADMIN" && target.role === "USER" && role === "ADMIN") {
+      // admin có thể nâng user lên admin? yêu cầu nói "tài khoản admin có thể xóa tài khoản user" - không nói nâng quyền, chỉ super admin nâng
+      return NextResponse.json({ error: "Chỉ Super Admin mới có quyền nâng cấp thành Admin" }, { status: 403 });
+    } else if (currentUser.role !== "SUPER_ADMIN" && target.role !== "USER") {
       return NextResponse.json({ error: "Chỉ Super Admin mới có quyền thay đổi phân quyền" }, { status: 403 });
     }
-    if (currentUser.role === "ADMIN" && target.role === "USER" && role === "ADMIN") {
-      return NextResponse.json({ error: "Chỉ Super Admin mới có quyền nâng cấp thành Admin" }, { status: 403 });
+    if (currentUser.role === "SUPER_ADMIN" && target.role === "USER" && role === "ADMIN") {
+      // super admin nâng user lên admin
+    } else if (currentUser.role === "SUPER_ADMIN" && target.role === "ADMIN" && role === "USER") {
+      // super admin hạ admin xuống user
+    }
+    if (target.role === "SUPER_ADMIN" && currentUser.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Không thể chỉnh sửa tài khoản Super Admin" }, { status: 403 });
     }
     if (currentUser.id === id && currentUser.role === "SUPER_ADMIN" && role !== "SUPER_ADMIN") {
       return NextResponse.json({ error: "Không thể tự hạ quyền của chính mình." }, { status: 400 });
     }
+
     const updated = await prisma.user.update({ where: { id }, data: { role }, select: { id: true, name: true, email: true, role: true } });
     return NextResponse.json({ success: true, user: updated });
   } catch (error) {
@@ -114,8 +121,8 @@ export async function PATCH(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser || currentUser.role !== "SUPER_ADMIN") {
-      return NextResponse.json({ error: "Chỉ Super Admin mới có quyền xóa người dùng." }, { status: 403 });
+    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "SUPER_ADMIN")) {
+      return NextResponse.json({ error: "Không có quyền xóa người dùng." }, { status: 403 });
     }
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -124,6 +131,16 @@ export async function DELETE(request: Request) {
     }
     if (id === currentUser.id) {
       return NextResponse.json({ error: "Không thể tự xóa tài khoản của chính mình." }, { status: 400 });
+    }
+    const target = await prisma.user.findUnique({ where: { id } });
+    if (!target) {
+      return NextResponse.json({ error: "Không tìm thấy người dùng." }, { status: 404 });
+    }
+    if (currentUser.role === "ADMIN" && target.role !== "USER") {
+      return NextResponse.json({ error: "Admin chỉ có thể xóa tài khoản người dùng." }, { status: 403 });
+    }
+    if (currentUser.role === "SUPER_ADMIN" && target.role === "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Không thể xóa tài khoản Super Admin." }, { status: 403 });
     }
     await prisma.user.delete({ where: { id } });
     return NextResponse.json({ success: true });
