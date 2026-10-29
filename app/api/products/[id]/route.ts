@@ -48,7 +48,7 @@ export async function PATCH(
 ) {
   try {
     const user = await getCurrentUser();
-    if (!user || ((user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") && user.role !== "SUPER_ADMIN")) {
+    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
       return NextResponse.json(
         { error: "Chỉ quản trị viên mới được cập nhật sản phẩm." },
         { status: 403 }
@@ -120,7 +120,7 @@ export async function DELETE(
 ) {
   try {
     const user = await getCurrentUser();
-    if (!user || ((user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") && user.role !== "SUPER_ADMIN")) {
+    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
       return NextResponse.json(
         { error: "Chỉ quản trị viên mới được xoá sản phẩm." },
         { status: 403 }
