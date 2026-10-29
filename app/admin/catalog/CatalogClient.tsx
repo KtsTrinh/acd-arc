@@ -712,7 +712,7 @@ function CatalogTable({
     <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
-          <thead className="bg-thuy-900/80 text-slate-600 uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
+          <thead className="bg-thuy-900/80 text-white uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
             <tr>
               <th className="py-3 px-5">Ảnh</th>
               <th className="py-3 px-5">Tên mục</th>
