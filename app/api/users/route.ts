@@ -113,11 +113,24 @@ export async function PATCH(request: Request) {
         message: "Chuyển nhượng quyền lực thành công. Hệ thống sẽ đăng xuất để cập nhật lại quyền."
       });
 
-      // 🔥 ÉP BUỘC SERVER XÓA COOKIE ĐĂNG NHẬP NGAY LẬP TỨC
-      // Hãy thay thế 'token' hoặc 'session' bằng tên cookie Auth thực tế của hệ thống bạn
-      response.cookies.set("token", "", { path: "/", expires: new Date(0) });
-      response.cookies.set("session", "", { path: "/", expires: new Date(0) });
-      response.cookies.set("next-auth.session-token", "", { path: "/", expires: new Date(0) }); // Phòng khi dùng Next-Auth
+      // 🔥 ÉP BUỘC SERVER XÓA SẠCH COOKIE ĐĂNG NHẬP PHỔ BIẾN
+      const cookieNames = [
+        "token", 
+        "session", 
+        "auth-token", 
+        "accessToken", 
+        "next-auth.session-token", 
+        "__Secure-next-auth.session-token"
+      ];
+
+      cookieNames.forEach(name => {
+        response.cookies.set(name, "", { 
+          path: "/", 
+          expires: new Date(0),
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production"
+        });
+      });
 
       return response;
     }

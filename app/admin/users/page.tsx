@@ -273,21 +273,38 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="py-3.5 px-5 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {currentUser?.role === "SUPER_ADMIN" && u.role === "ADMIN" && (
-                          <button onClick={() => handleToggleRole(u.id, u.role)} disabled={updatingId === u.id} className="px-2.5 py-1 rounded-lg bg-white border border-[#E1EAF2] text-xs text-[#142338] hover:border-[#22C7E8]">
-                            Hạ xuống USER
-                          </button>
-                        )}
-                        {currentUser?.role === "SUPER_ADMIN" && u.role === "ADMIN" && (
-                          <button onClick={() => handleTransfer(u.id)} disabled={updatingId === u.id} className="px-2.5 py-1 rounded-lg bg-white border border-[#E1EAF2] text-xs text-[#142338] hover:border-[#22C7E8]">
-                            Chuyển nhượng quyền
-                          </button>
-                        )}
-                        {currentUser?.role === "SUPER_ADMIN" && u.role !== "SUPER_ADMIN" && (
-                          <button onClick={() => handleDelete(u.id, u.name || u.email)} disabled={updatingId === u.id} className="p-1.5 rounded-lg hover:bg-red-50 text-red-500">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
+                        {currentUser?.role === "SUPER_ADMIN" &&
+                          u.role === "ADMIN" && (
+                            <button
+                              onClick={() => handleToggleRole(u.id, u.role)}
+                              disabled={updatingId === u.id}
+                              className="px-2.5 py-1 rounded-lg bg-white border border-[#E1EAF2] text-xs text-[#142338] hover:border-[#22C7E8]"
+                            >
+                              Hạ xuống USER
+                            </button>
+                          )}
+                        {currentUser?.role === "SUPER_ADMIN" &&
+                          u.role === "ADMIN" && (
+                            <button
+                              onClick={() => handleTransfer(u.id)}
+                              disabled={updatingId === u.id}
+                              className="px-2.5 py-1 rounded-lg bg-white border border-[#E1EAF2] text-xs text-[#142338] hover:border-[#22C7E8]"
+                            >
+                              Chuyển nhượng quyền
+                            </button>
+                          )}
+                        {currentUser?.role === "SUPER_ADMIN" &&
+                          u.role !== "SUPER_ADMIN" && (
+                            <button
+                              onClick={() =>
+                                handleDelete(u.id, u.name || u.email)
+                              }
+                              disabled={updatingId === u.id}
+                              className="p-1.5 rounded-lg hover:bg-red-50 text-red-500"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                       </div>
                     </td>
                   </tr>
@@ -298,7 +315,9 @@ export default function AdminUsersPage() {
         </div>
       </div>
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-[#142338]">Tài khoản Người dùng</h2>
+        <h2 className="text-lg font-semibold text-[#142338]">
+          Tài khoản Người dùng
+        </h2>
         <div className="rounded-xl bg-white border border-[#E1EAF2] overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -319,7 +338,9 @@ export default function AdminUsersPage() {
                         <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center font-semibold text-slate-600 text-xs">
                           {u.name ? u.name[0].toUpperCase() : "U"}
                         </div>
-                        <span className="font-medium text-[#142338]">{u.name || "Chưa đặt tên"}</span>
+                        <span className="font-medium text-[#142338]">
+                          {u.name || "Chưa đặt tên"}
+                        </span>
                       </div>
                     </td>
                     <td className="py-3.5 px-5 text-[#526780]">{u.email}</td>
@@ -329,16 +350,29 @@ export default function AdminUsersPage() {
                         <span>{u.role}</span>
                       </span>
                     </td>
-                    <td className="py-3.5 px-5 text-[#526780]">{formatDateTime(u.createdAt)}</td>
+                    <td className="py-3.5 px-5 text-[#526780]">
+                      {formatDateTime(u.createdAt)}
+                    </td>
                     <td className="py-3.5 px-5 text-right">
                       <div className="flex items-center justify-end gap-2">
                         {currentUser?.role === "SUPER_ADMIN" && (
-                          <button onClick={() => handleToggleRole(u.id, u.role)} disabled={updatingId === u.id} className="px-2.5 py-1 rounded-lg bg-white border border-[#E1EAF2] text-xs text-[#142338] hover:border-[#22C7E8]">
+                          <button
+                            onClick={() => handleToggleRole(u.id, u.role)}
+                            disabled={updatingId === u.id}
+                            className="px-2.5 py-1 rounded-lg bg-white border border-[#E1EAF2] text-xs text-[#142338] hover:border-[#22C7E8]"
+                          >
                             Nâng lên ADMIN
                           </button>
                         )}
-                        {(currentUser?.role === "SUPER_ADMIN" || currentUser?.role === "ADMIN") && (
-                          <button onClick={() => handleDelete(u.id, u.name || u.email)} disabled={updatingId === u.id} className="p-1.5 rounded-lg hover:bg-red-50 text-red-500">
+                        {(currentUser?.role === "SUPER_ADMIN" ||
+                          currentUser?.role === "ADMIN") && (
+                          <button
+                            onClick={() =>
+                              handleDelete(u.id, u.name || u.email)
+                            }
+                            disabled={updatingId === u.id}
+                            className="p-1.5 rounded-lg hover:bg-red-50 text-red-500"
+                          >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}
