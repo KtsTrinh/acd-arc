@@ -393,7 +393,7 @@ export default function AdminCatalogClient({
 
             <form onSubmit={handleSave} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">Tên mục *:</label>
+                <label className="text-xs text-white">Tên mục *:</label>
                 <input
                   type="text"
                   required
@@ -411,9 +411,7 @@ export default function AdminCatalogClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-700">
-                    Giá bán (VNĐ) *:
-                  </label>
+                  <label className="text-xs text-white">Giá bán (VNĐ) *:</label>
                   <input
                     type="number"
                     required
@@ -424,7 +422,7 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-700">Giá so sánh:</label>
+                  <label className="text-xs text-white">Giá so sánh:</label>
                   <input
                     type="number"
                     value={form.comparePrice}
@@ -436,9 +434,7 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-700">
-                    Nhóm danh mục:
-                  </label>
+                  <label className="text-xs text-white">Nhóm danh mục:</label>
                   <select
                     value={form.type}
                     onChange={(e) => updateForm({ type: e.target.value })}
@@ -461,9 +457,7 @@ export default function AdminCatalogClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-700">
-                    Định dạng file:
-                  </label>
+                  <label className="text-xs text-white">Định dạng file:</label>
                   <input
                     type="text"
                     value={form.fileFormat}
@@ -473,7 +467,7 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-700">Dung lượng:</label>
+                  <label className="text-xs text-white">Dung lượng:</label>
                   <input
                     type="text"
                     value={form.fileSize}
@@ -492,7 +486,7 @@ export default function AdminCatalogClient({
                 </h4>
 
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-white">
                     Tải file trực tiếp lên kho private (tối đa 4MB):
                   </label>
                   <div className="flex items-center gap-2">
