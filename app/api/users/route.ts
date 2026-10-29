@@ -48,8 +48,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Chỉ Super Admin mới có quyền thêm tài khoản." }, { status: 403 });
     }
     const body = await request.json();
-    const { name, email, password, role = "ADMIN" } = body;
-    if (!name || !email || !password) {
+    const { name, email, role = "ADMIN" } = body;
+    if (!name || !email) {
       return NextResponse.json({ error: "Vui lòng nhập đầy đủ thông tin." }, { status: 400 });
     }
     if (role !== "ADMIN" && role !== "USER") {
@@ -59,10 +59,8 @@ export async function POST(request: Request) {
     if (existing) {
       return NextResponse.json({ error: "Email đã được sử dụng." }, { status: 400 });
     }
-    const bcrypt = await import("bcryptjs");
-    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword, role },
+      data: { name, email, role, password: null },
     });
     return NextResponse.json({ success: true, user: { id: user.id, name: user.name, email: user.email, role: user.role } }, { status: 201 });
   } catch (error) {
@@ -90,18 +88,11 @@ export async function PATCH(request: Request) {
     if (role === "SUPER_ADMIN" && currentUser.role !== "SUPER_ADMIN") {
       return NextResponse.json({ error: "Chỉ Super Admin mới có thể chuyển nhượng quyền" }, { status: 403 });
     }
-    if (currentUser.role === "SUPER_ADMIN" && target.role === "ADMIN" && role === "SUPER_ADMIN") {
-      // cho phép chuyển nhượng
-    } else if (currentUser.role === "ADMIN" && target.role === "USER" && role === "ADMIN") {
-      // admin có thể nâng user lên admin? yêu cầu nói "tài khoản admin có thể xóa tài khoản user" - không nói nâng quyền, chỉ super admin nâng
+    if (currentUser.role === "ADMIN" && target.role === "USER" && role === "ADMIN") {
       return NextResponse.json({ error: "Chỉ Super Admin mới có quyền nâng cấp thành Admin" }, { status: 403 });
-    } else if (currentUser.role !== "SUPER_ADMIN" && target.role !== "USER") {
-      return NextResponse.json({ error: "Chỉ Super Admin mới có quyền thay đổi phân quyền" }, { status: 403 });
     }
-    if (currentUser.role === "SUPER_ADMIN" && target.role === "USER" && role === "ADMIN") {
-      // super admin nâng user lên admin
-    } else if (currentUser.role === "SUPER_ADMIN" && target.role === "ADMIN" && role === "USER") {
-      // super admin hạ admin xuống user
+    if (currentUser.role !== "SUPER_ADMIN" && target.role !== "USER") {
+      return NextResponse.json({ error: "Chỉ Super Admin mới có quyền thay đổi phân quyền" }, { status: 403 });
     }
     if (target.role === "SUPER_ADMIN" && currentUser.role !== "SUPER_ADMIN") {
       return NextResponse.json({ error: "Không thể chỉnh sửa tài khoản Super Admin" }, { status: 403 });
