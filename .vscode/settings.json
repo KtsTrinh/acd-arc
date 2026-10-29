@@ -8,5 +8,6 @@
   "files.autoSave": "afterDelay",
   "files.autoSaveDelay": 1500,
   "editor.formatOnSave": true,
-  "gitdoc.enabled": true
+  "gitdoc.enabled": true,
+  "python.terminal.useEnvFile": true
 }
