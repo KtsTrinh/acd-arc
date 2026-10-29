@@ -99,19 +99,29 @@ export async function PATCH(request: Request) {
         }),
         prisma.user.update({
           where: { id: currentUser.id },
-          data: { role: "USER" },
+          data: { role: "USER" }, // Hoặc ADMIN tùy logic của bạn
           select: { id: true, name: true, email: true, role: true }
         }),
       ]);
 
-      return NextResponse.json({ 
+      // Tạo một JSON response để gửi về cho client
+      const response = NextResponse.json({ 
         success: true, 
         user: updatedTarget, 
         transferred: true,
-        shouldSignOut: true, // 🔥 Thêm cờ này để báo cho Client biết phải Logout ngay lập tức
+        shouldSignOut: true,
         message: "Chuyển nhượng quyền lực thành công. Hệ thống sẽ đăng xuất để cập nhật lại quyền."
       });
+
+      // 🔥 ÉP BUỘC SERVER XÓA COOKIE ĐĂNG NHẬP NGAY LẬP TỨC
+      // Hãy thay thế 'token' hoặc 'session' bằng tên cookie Auth thực tế của hệ thống bạn
+      response.cookies.set("token", "", { path: "/", expires: new Date(0) });
+      response.cookies.set("session", "", { path: "/", expires: new Date(0) });
+      response.cookies.set("next-auth.session-token", "", { path: "/", expires: new Date(0) }); // Phòng khi dùng Next-Auth
+
+      return response;
     }
+
 
     // 2. NGĂN CHẶN CÁC HÀNH VI TỰ THAY ĐỔI QUYỀN LỰC CHÍNH MÌNH
     if (target.id === currentUser.id) {
