@@ -327,7 +327,7 @@ export default function EditProjectPage({
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -343,7 +343,7 @@ export default function EditProjectPage({
                 type="text"
                 value={buildingType}
                 onChange={(e) => setBuildingType(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
 
@@ -353,7 +353,7 @@ export default function EditProjectPage({
                 type="text"
                 value={style}
                 onChange={(e) => setStyle(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
 
@@ -363,7 +363,7 @@ export default function EditProjectPage({
                 type="number"
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
 
@@ -373,7 +373,7 @@ export default function EditProjectPage({
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
 
@@ -383,7 +383,7 @@ export default function EditProjectPage({
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338]"
+                className="w-full px-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white"
               />
             </div>
 
