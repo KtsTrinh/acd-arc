@@ -44,7 +44,7 @@ export default function AdminCustomersPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
 
   const fetchAnalytics = useCallback(
@@ -77,6 +77,11 @@ export default function AdminCustomersPage() {
     fetchAnalytics();
   }, [fetchAnalytics]);
 
+  // Reset trang khi thay doi khoang thoi gian hoac tim kiem
+  useEffect(() => {
+    setPage(1);
+  }, [range, search]);
+
   // Làm mới số khách đang truy cập mỗi 30 giây
   useEffect(() => {
     const timer = setInterval(() => fetchAnalytics(true), 30000);
@@ -91,6 +96,9 @@ export default function AdminCustomersPage() {
   const cartTop = data?.cartTop || [];
   const cartRecent = data?.cartRecent || [];
   const topPages = data?.topPages || [];
+
+  const totalPages = Math.ceil(sessions.length / pageSize) || 1;
+  const paginatedSessions = sessions.slice((page - 1) * pageSize, page * pageSize);
 
   const statCards = [
     {
@@ -388,7 +396,7 @@ export default function AdminCustomersPage() {
                           </td>
                         </tr>
                       )}
-                      {sessions.map((s: any) => (
+                      {paginatedSessions.map((s: any) => (
                         <tr key={s.id} className="hover:bg-thuy-800/40">
                           <td className="py-3.5 px-5">
                             {s.user ? (
@@ -451,6 +459,75 @@ export default function AdminCustomersPage() {
                   </table>
                 </div>
               </div>
+
+              {/* Pagination for Lich Su Truy Cap */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between px-6 py-4 border-t border-thuy-750 bg-thuy-850">
+                  <span className="text-xs text-slate-500">
+                    Trang {page} / {totalPages} · {sessions.length} lượt
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                      disabled={page === 1}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        page === 1
+                          ? "bg-thuy-900 text-slate-600 border border-thuy-750 cursor-not-allowed"
+                          : "bg-thuy-400 text-thuy-950 hover:brightness-110 shadow-glow-cyan"
+                      }`}
+                    >
+                      Trước
+                    </button>
+                    <div className="flex items-center gap-1">
+                      {[...Array(totalPages)].map((_, i) => {
+                        const p = i + 1;
+                        const showEllipsis =
+                          totalPages > 7 &&
+                          p !== 1 &&
+                          p !== totalPages &&
+                          (p < page - 1 || p > page + 1);
+                        if (showEllipsis) {
+                          return (
+                            <span key="ellipsis" className="px-2 py-1.5 text-xs text-slate-500">
+                              …
+                            </span>
+                          );
+                        }
+                        const isVisible =
+                          totalPages <= 7 ||
+                          p === 1 ||
+                          p === totalPages ||
+                          Math.abs(p - page) <= 1;
+                        if (!isVisible) return null;
+                        return (
+                          <button
+                            key={p}
+                            onClick={() => setPage(p)}
+                            className={`w-7 h-7 rounded-lg text-xs font-medium transition-all ${
+                              p === page
+                                ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
+                                : "bg-thuy-900 text-slate-600 hover:bg-thuy-800 hover:text-[#142338] border border-thuy-750"
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                      disabled={page === totalPages}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        page === totalPages
+                          ? "bg-thuy-900 text-slate-600 border border-thuy-750 cursor-not-allowed"
+                          : "bg-thuy-400 text-thuy-950 hover:brightness-110 shadow-glow-cyan"
+                      }`}
+                    >
+                      Tiếp
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Trang được xem nhiều */}
               <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
