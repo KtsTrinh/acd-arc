@@ -49,22 +49,35 @@ export default function AdminUsersPage() {
         body: JSON.stringify({ id: userId, role: "SUPER_ADMIN" }),
       });
 
-      if (res.ok) {
-        // 1. Gọi API lấy lại thông tin mới của chính mình để cập nhật UI Client
-        const meRes = await fetch("/api/auth/me");
-        const meData = await meRes.json();
-        if (meData.user) {
-          setCurrentUser(meData.user); // Quyền của bạn lúc này sẽ chuyển về USER hoặc ADMIN tùy backend xử lý
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        // Nếu Server phản hồi yêu cầu ép buộc đăng xuất để cập nhật lại Session
+        if (data.shouldSignOut) {
+          alert(
+            data.message ||
+              "Chuyển nhượng quyền thành công! Hệ thống sẽ tự động đăng xuất.",
+          );
+
+          // Xóa sạch dấu vết Session ở LocalStorage / SessionStorage tại Client nếu có
+          localStorage.clear();
+          sessionStorage.clear();
+
+          // Xóa thủ công Cookie phía Client một lần nữa để chắc chắn
+          document.cookie =
+            "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          document.cookie =
+            "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+          // Đẩy thẳng người dùng ra trang đăng nhập để triệt tiêu trạng thái cũ
+          window.location.href = "/login";
+          return;
         }
 
-        // 2. Cập nhật lại danh sách toàn bộ user để thấy sự thay đổi
-        await fetchUsers();
-
-        alert("Chuyển nhượng quyền thành công!");
-        return;
+        // Trường hợp bình thường không cần logout (nếu có)
+        fetchUsers();
       } else {
-        const d = await res.json();
-        alert(d.error || "Không thể chuyển nhượng quyền");
+        alert(data.error || "Không thể chuyển nhượng quyền");
       }
     } catch (err) {
       console.error(err);
