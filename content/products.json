@@ -1,19 +1,5 @@
 [
   {
-    "id": "cmvizl6tx001ekmbabh2ky7fm",
-    "name": "Bộ Template Photoshop Trình Bày Mặt Bằng & Diễn Họa Concept Dự Án",
-    "slug": "bo-template-photoshop-mat-bang-dien-hoa",
-    "description": "30 layout PSD phối cảnh mặt bằng sàn, mặt cắt phối cảnh, moodboard vật liệu chuẩn nhận diện thương hiệu kiến trúc sang trọng.",
-    "price": 320000,
-    "comparePrice": 500000,
-    "type": "TEMPLATE",
-    "fileFormat": "Adobe Photoshop (.PSD layered) + Brushes",
-    "fileSize": "620 MB",
-    "thumbnail": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80",
-    "active": true,
-    "featured": false
-  },
-  {
     "id": "cmvizl6te001ckmba1acikda1",
     "name": "Pack 3D Model Biệt Thự Luxury Hồ Bơi (3ds Max + Corona Renderer + SketchUp)",
     "slug": "pack-3d-model-villa-luxury-ho-boi",
