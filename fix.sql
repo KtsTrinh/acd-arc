@@ -1,0 +1,1 @@
+UPDATE User SET role='ADMIN' WHERE role='SUPER_ADMIN' AND LOWER(email) <> 'trinhhongtu.kts@gmail.com';
