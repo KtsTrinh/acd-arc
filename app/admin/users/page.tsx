@@ -31,16 +31,12 @@ export default function AdminUsersPage() {
   }, []);
 
   const handleToggleRole = async (userId: string, currentRole: string) => {
-    // Nếu là SUPER_ADMIN, yêu cầu chuyển nhượng quyền thay vì nâng/hạ thông thường
     if (currentUser?.role === "SUPER_ADMIN" && currentRole !== "SUPER_ADMIN") {
-      const newRole = "SUPER_ADMIN";
       if (!confirm("Chuyển nhượng toàn quyền Super Admin cho tài khoản này? Tài khoản hiện tại của bạn sẽ bị hạ xuống Admin.")) return;
       setUpdatingId(userId);
       try {
-        // Chuyển nhượng: hạ chính mình xuống ADMIN trước? API sẽ ngăn tự hạ - nhưng yêu cầu là chuyển nhượng; ta sẽ set target thành SUPER_ADMIN và cần API cho phép - đã cập nhật API
-        const res = await fetch("/api/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: userId, role: newRole }) });
+        const res = await fetch("/api/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: userId, role: "SUPER_ADMIN" }) });
         if (res.ok) {
-          // hạ tài khoản hiện tại xuống ADMIN
           await fetch("/api/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: currentUser.id, role: "ADMIN" }) });
           window.location.reload();
           return;
@@ -139,9 +135,8 @@ export default function AdminUsersPage() {
                 <th className="py-3 px-5">Tài Khoản</th>
                 <th className="py-3 px-5">Email</th>
                 <th className="py-3 px-5">Vai Trò</th>
-                <th className="py-3 px-5">Số Đơn Hàng</th>
                 <th className="py-3 px-5">Ngày Tạo</th>
-                <th className="py-3 px-5 text-right">Phân Quyền</th>
+                {currentUser?.role === "SUPER_ADMIN" && <th className="py-3 px-5 text-right">Phân Quyền</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E1EAF2]">
@@ -162,27 +157,24 @@ export default function AdminUsersPage() {
                       <span>{u.role}</span>
                     </span>
                   </td>
-                  <td className="py-3.5 px-5 text-[#526780]">{u._count?.orders || 0} đơn</td>
                   <td className="py-3.5 px-5 text-[#526780]">{formatDateTime(u.createdAt)}</td>
-                  <td className="py-3.5 px-5 text-right">
-                    {u.role === "SUPER_ADMIN" ? (
-                      currentUser?.role === "SUPER_ADMIN" && currentUser?.id !== u.id ? (
-                        <button onClick={() => handleToggleRole(u.id, u.role)} disabled={updatingId === u.id} className="px-3 py-1.5 rounded-lg bg-white border border-[#E1EAF2] text-xs font-medium text-[#142338] hover:border-[#22C7E8]">
-                          {updatingId === u.id ? "Đang xử lý..." : "Chuyển nhượng quyền"}
-                        </button>
+                  {currentUser?.role === "SUPER_ADMIN" && (
+                    <td className="py-3.5 px-5 text-right">
+                      {u.role === "SUPER_ADMIN" ? (
+                        currentUser?.id !== u.id ? (
+                          <button onClick={() => handleToggleRole(u.id, u.role)} disabled={updatingId === u.id} className="px-3 py-1.5 rounded-lg bg-white border border-[#E1EAF2] text-xs font-medium text-[#142338] hover:border-[#22C7E8]">
+                            {updatingId === u.id ? "Đang xử lý..." : "Chuyển nhượng quyền"}
+                          </button>
+                        ) : (
+                          <span className="text-xs text-[#8192A8]">Tài khoản cao nhất</span>
+                        )
                       ) : (
-                        <span className="text-xs text-[#8192A8]">Tài khoản cao nhất</span>
-                      )
-                    ) : (
-                      currentUser?.role === "SUPER_ADMIN" ? (
                         <button onClick={() => handleToggleRole(u.id, u.role)} disabled={updatingId === u.id} className="px-3 py-1.5 rounded-lg bg-white border border-[#E1EAF2] text-xs font-medium text-[#142338] hover:border-[#22C7E8]">
                           {updatingId === u.id ? "Đang cập nhật..." : u.role === "ADMIN" ? "Hạ xuống USER" : "Nâng lên ADMIN"}
                         </button>
-                      ) : currentUser?.role === "ADMIN" && u.role === "USER" ? (
-                        <span className="text-xs text-[#8192A8]">Chỉ Super Admin mới có quyền</span>
-                      ) : null
-                    )}
-                  </td>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
