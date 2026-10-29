@@ -84,9 +84,11 @@ export async function POST(request: Request) {
       name,
       slug,
       description,
+      shortDesc,
       price,
       comparePrice,
       type,
+      categoryId,
       fileFormat,
       fileSize,
       fileKey,
@@ -98,6 +100,13 @@ export async function POST(request: Request) {
       downloadLinkUrl,
       downloadExpiresMinutes,
       projectId,
+      location,
+      client,
+      year,
+      area,
+      style,
+      buildingType,
+      tagIds,
       galleryMediaIds,
     } = body;
 
@@ -115,9 +124,11 @@ export async function POST(request: Request) {
         name,
         slug: finalSlug,
         description,
-        price: parseFloat(price),
+        shortDesc: shortDesc || null,
+        price: price ? parseFloat(price) : null,
         comparePrice: comparePrice ? parseFloat(comparePrice) : null,
         type: type || "CAD",
+        categoryId: categoryId || null,
         fileFormat,
         fileSize,
         fileKey,
@@ -131,8 +142,24 @@ export async function POST(request: Request) {
           ? parseInt(downloadExpiresMinutes, 10)
           : 5,
         projectId: projectId || null,
+        location: location || null,
+        client: client || null,
+        year: year ? parseInt(year, 10) : null,
+        area: area ? parseFloat(area) : null,
+        style: style || null,
+        buildingType: buildingType || null,
       },
     });
+
+    // Attach tags if provided
+    if (tagIds && Array.isArray(tagIds) && tagIds.length > 0) {
+      await prisma.productTag.createMany({
+        data: tagIds.map((tagId: string) => ({
+          productId: product.id,
+          tagId,
+        })),
+      });
+    }
 
     // Attach initial gallery media if provided
     if (galleryMediaIds && Array.isArray(galleryMediaIds) && galleryMediaIds.length > 0) {
@@ -150,6 +177,7 @@ export async function POST(request: Request) {
       include: {
         project: { select: { id: true, title: true, slug: true } },
         gallery: { include: { media: true }, orderBy: { sortOrder: "asc" } },
+        tags: { include: { tag: true } },
       },
     });
 

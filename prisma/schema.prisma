@@ -206,6 +206,7 @@ model ProjectCategory {
   image       String?
 
   projects Project[]
+  products Product[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -285,6 +286,7 @@ model Tag {
 
   projects ProjectTag[]
   posts    PostTag[]
+  products ProductTag[]
 
   createdAt DateTime @default(now())
 }
@@ -304,7 +306,8 @@ model Product {
   name        String
   slug        String      @unique
   description String?
-  price       Float
+  shortDesc   String?
+  price       Float?
   comparePrice Float?
   type        ProductType @default(CAD)
   fileFormat  String?     // e.g. "AutoCAD .DWG / 3ds Max / SketchUp"
@@ -328,12 +331,33 @@ model Product {
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
+  categoryId String?
+  category   ProjectCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  location    String?
+  client      String?
+  year        Int?
+  area        Float?
+  style       String?
+  buildingType String?
+
   orderItems    OrderItem[]
   downloadLinks DownloadLink[]
   gallery       ProjectMedia[] @relation("ProductGallery")
+  tags          ProductTag[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ProductTag {
+  productId String
+  tagId     String
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([productId, tagId])
 }
 
 model Order {

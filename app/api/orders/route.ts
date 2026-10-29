@@ -111,11 +111,11 @@ export async function POST(request: Request) {
         );
       }
 
-      calculatedTotal += product.price * (item.quantity || 1);
+      calculatedTotal += (product.price ?? 0) * (item.quantity || 1);
       orderItemsData.push({
         productId: product.id,
         productName: product.name,
-        price: product.price,
+        price: product.price ?? 0,
         quantity: item.quantity || 1,
       });
     }

@@ -38,10 +38,12 @@ interface ItemForm {
   id?: string;
   name: string;
   slug: string;
+  shortDesc: string;
   description: string;
   price: string;
   comparePrice: string;
   type: string;
+  categoryId: string;
   fileFormat: string;
   fileSize: string;
   fileKey: string;
@@ -50,18 +52,28 @@ interface ItemForm {
   downloadExpiresMinutes: string;
   thumbnail: string;
   projectId: string;
+  location: string;
+  client: string;
+  year: string;
+  area: string;
+  style: string;
+  buildingType: string;
+  tagIds: string[];
   requiresPayment: boolean;
   active: boolean;
   featured: boolean;
 }
 
 const EMPTY_FORM: ItemForm = {
+  id: undefined,
   name: "",
   slug: "",
+  shortDesc: "",
   description: "",
   price: "",
   comparePrice: "",
   type: "ARCHITECTURE",
+  categoryId: "",
   fileFormat: "",
   fileSize: "",
   fileKey: "",
@@ -70,6 +82,13 @@ const EMPTY_FORM: ItemForm = {
   downloadExpiresMinutes: "5",
   thumbnail: "",
   projectId: "",
+  location: "",
+  client: "",
+  year: "",
+  area: "",
+  style: "",
+  buildingType: "",
+  tagIds: [],
   requiresPayment: true,
   active: true,
   featured: false,
@@ -101,6 +120,7 @@ export default function AdminCatalogClient({
   const [items, setItems] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [tags, setTags] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<ItemForm | null>(null);
   const [saving, setSaving] = useState(false);
@@ -123,17 +143,20 @@ export default function AdminCatalogClient({
 
   const fetchAll = useCallback(async () => {
     try {
-      const [itemsRes, projectsRes, categoriesRes] = await Promise.all([
+      const [itemsRes, projectsRes, categoriesRes, tagsRes] = await Promise.all([
         fetch("/api/products?includeInactive=1"),
         fetch("/api/projects"),
         fetch("/api/categories"),
+        fetch("/api/tags"),
       ]);
       const itemsData = await itemsRes.json();
       const projectsData = await projectsRes.json();
       const categoriesData = await categoriesRes.json();
+      const tagsData = await tagsRes.json();
       setItems(itemsData.products || []);
       setProjects(projectsData.projects || []);
       setCategories(categoriesData.categories || []);
+      setTags(tagsData.tags || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -156,10 +179,12 @@ export default function AdminCatalogClient({
       id: item.id,
       name: item.name || "",
       slug: item.slug || "",
+      shortDesc: item.shortDesc || "",
       description: item.description || "",
       price: String(item.price ?? ""),
       comparePrice: item.comparePrice != null ? String(item.comparePrice) : "",
       type: item.type,
+      categoryId: item.categoryId || "",
       fileFormat: item.fileFormat || "",
       fileSize: item.fileSize || "",
       fileKey: item.fileKey || "",
@@ -168,6 +193,13 @@ export default function AdminCatalogClient({
       downloadExpiresMinutes: String(item.downloadExpiresMinutes ?? 5),
       thumbnail: item.thumbnail || "",
       projectId: item.projectId || "",
+      location: item.location || "",
+      client: item.client || "",
+      year: item.year ? item.year.toString() : "",
+      area: item.area ? item.area.toString() : "",
+      style: item.style || "",
+      buildingType: item.buildingType || "",
+      tagIds: item.tags?.map((t: any) => t.tagId) || [],
       requiresPayment: item.requiresPayment !== false,
       active: item.active !== false,
       featured: Boolean(item.featured),
@@ -213,6 +245,21 @@ export default function AdminCatalogClient({
   const updateForm = (patch: Partial<ItemForm>) =>
     setForm((prev) => (prev ? { ...prev, ...patch } : prev));
 
+  const toggleTag = (id: string) => {
+    if (!form) return;
+    if (form.tagIds.includes(id)) {
+      setForm((prev: ItemForm | null) => {
+        if (!prev) return prev;
+        return { ...prev, tagIds: prev.tagIds.filter((t) => t !== id) };
+      });
+    } else {
+      setForm((prev: ItemForm | null) => {
+        if (!prev) return prev;
+        return { ...prev, tagIds: [...prev.tagIds, id] };
+      });
+    }
+  };
+
   const handleUploadFile = async (file: File) => {
     setUploading(true);
     try {
@@ -252,10 +299,12 @@ export default function AdminCatalogClient({
       const payload = {
         name: form.name,
         slug: form.slug,
+        shortDesc: form.shortDesc,
         description: form.description,
-        price: parseFloat(form.price || "0"),
+        price: form.price ? parseFloat(form.price) : null,
         comparePrice: form.comparePrice ? parseFloat(form.comparePrice) : null,
         type: form.type,
+        categoryId: form.categoryId || null,
         fileFormat: form.fileFormat,
         fileSize: form.fileSize,
         fileKey: form.fileKey || null,
@@ -267,6 +316,13 @@ export default function AdminCatalogClient({
         ),
         thumbnail: form.thumbnail,
         projectId: form.projectId || null,
+        location: form.location || null,
+        client: form.client || null,
+        year: form.year ? parseInt(form.year, 10) : null,
+        area: form.area ? parseFloat(form.area) : null,
+        style: form.style || null,
+        buildingType: form.buildingType || null,
+        tagIds: form.tagIds,
         requiresPayment: form.requiresPayment,
         active: form.active,
         featured: form.featured,
@@ -590,13 +646,12 @@ export default function AdminCatalogClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-white">Giá bán (VNĐ) *:</label>
+                  <label className="text-xs text-white">Giá bán (VNĐ):</label>
                   <input
                     type="number"
-                    required
                     value={form.price}
                     onChange={(e) => updateForm({ price: e.target.value })}
-                    placeholder="850000"
+                    placeholder="850000 (để trống nếu miễn phí)"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                   />
                 </div>
@@ -631,6 +686,119 @@ export default function AdminCatalogClient({
                     <option value="TEMPLATE">Template (chi tiết)</option>
                     <option value="DOCUMENT">Tài liệu (chi tiết)</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-xs text-white">Mô tả tóm tắt:</label>
+                  <input
+                    type="text"
+                    value={form.shortDesc}
+                    onChange={(e) => updateForm({ shortDesc: e.target.value })}
+                    placeholder="Mô tả ngắn gọn về sản phẩm..."
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Danh mục:</label>
+                  <select
+                    value={form.categoryId}
+                    onChange={(e) => updateForm({ categoryId: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  >
+                    <option value="">— Không phân loại —</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Loại công trình:</label>
+                  <input
+                    type="text"
+                    value={form.buildingType}
+                    onChange={(e) => updateForm({ buildingType: e.target.value })}
+                    placeholder="Biệt thự, nhà phố..."
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Phong cách:</label>
+                  <input
+                    type="text"
+                    value={form.style}
+                    onChange={(e) => updateForm({ style: e.target.value })}
+                    placeholder="Hiện đại, cổ điển..."
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Diện tích (m²):</label>
+                  <input
+                    type="number"
+                    value={form.area}
+                    onChange={(e) => updateForm({ area: e.target.value })}
+                    placeholder="250"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Năm thiết kế:</label>
+                  <input
+                    type="number"
+                    value={form.year}
+                    onChange={(e) => updateForm({ year: e.target.value })}
+                    placeholder="2024"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Địa điểm:</label>
+                  <input
+                    type="text"
+                    value={form.location}
+                    onChange={(e) => updateForm({ location: e.target.value })}
+                    placeholder="Quận 1, TP.HCM..."
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  />
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-xs text-white">Chủ đầu tư:</label>
+                  <input
+                    type="text"
+                    value={form.client}
+                    onChange={(e) => updateForm({ client: e.target.value })}
+                    placeholder="Công ty X..."
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <label className="text-xs text-slate-700 font-medium block">
+                  Chọn thẻ Tags:
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((t) => {
+                    const isSelected = form.tagIds.includes(t.id);
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => toggleTag(t.id)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          isSelected
+                            ? "bg-thuy-400 text-thuy-950 font-bold"
+                            : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
+                        }`}
+                      >
+                        #{t.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

@@ -184,7 +184,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <div className="pt-4 mt-4 border-t border-thuy-800 flex items-center justify-between">
                   <div>
                     <span className="font-bold text-base text-thuy-400">
-                      {formatVND(prod.price)}
+                      {formatVND(prod.price ?? 0)}
                     </span>
                     {prod.comparePrice && (
                       <span className="text-[10px] text-slate-500 line-through block">

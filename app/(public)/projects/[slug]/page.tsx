@@ -233,7 +233,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                 id: item.id,
                 name: item.name,
                 slug: item.slug,
-                price: item.price,
+                price: item.price ?? 0,
                 type: item.type,
                 fileFormat: item.fileFormat,
                 fileSize: item.fileSize,

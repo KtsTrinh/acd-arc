@@ -21,6 +21,7 @@ export async function GET(
       include: {
         project: { select: { id: true, title: true, slug: true } },
         gallery: { include: { media: true }, orderBy: { sortOrder: "asc" } },
+        tags: { include: { tag: true } },
       },
     });
 
@@ -63,9 +64,11 @@ export async function PATCH(
       name,
       slug,
       description,
+      shortDesc,
       price,
       comparePrice,
       type,
+      categoryId,
       fileFormat,
       fileSize,
       fileKey,
@@ -77,6 +80,13 @@ export async function PATCH(
       downloadLinkUrl,
       downloadExpiresMinutes,
       projectId,
+      location,
+      client,
+      year,
+      area,
+      style,
+      buildingType,
+      tagIds,
       galleryMediaIds,
     } = body;
 
@@ -84,9 +94,11 @@ export async function PATCH(
     if (name !== undefined) updateData.name = name;
     if (slug !== undefined) updateData.slug = slugify(slug);
     if (description !== undefined) updateData.description = description;
-    if (price !== undefined) updateData.price = parseFloat(price);
+    if (shortDesc !== undefined) updateData.shortDesc = shortDesc || null;
+    if (price !== undefined) updateData.price = price ? parseFloat(price) : null;
     if (comparePrice !== undefined) updateData.comparePrice = comparePrice ? parseFloat(comparePrice) : null;
     if (type !== undefined) updateData.type = type;
+    if (categoryId !== undefined) updateData.categoryId = categoryId || null;
     if (fileFormat !== undefined) updateData.fileFormat = fileFormat;
     if (fileSize !== undefined) updateData.fileSize = fileSize;
     if (fileKey !== undefined) updateData.fileKey = fileKey;
@@ -99,11 +111,28 @@ export async function PATCH(
     if (downloadExpiresMinutes !== undefined)
       updateData.downloadExpiresMinutes = parseInt(downloadExpiresMinutes, 10) || 5;
     if (projectId !== undefined) updateData.projectId = projectId || null;
+    if (location !== undefined) updateData.location = location || null;
+    if (client !== undefined) updateData.client = client || null;
+    if (year !== undefined) updateData.year = year ? parseInt(year, 10) : null;
+    if (area !== undefined) updateData.area = area ? parseFloat(area) : null;
+    if (style !== undefined) updateData.style = style || null;
+    if (buildingType !== undefined) updateData.buildingType = buildingType || null;
 
     const updated = await prisma.product.update({
       where: { id },
       data: updateData,
     });
+
+    // Replace tags if provided
+    if (tagIds && Array.isArray(tagIds)) {
+      await prisma.productTag.deleteMany({ where: { productId: id } });
+      await prisma.productTag.createMany({
+        data: tagIds.map((tagId: string) => ({
+          productId: id,
+          tagId,
+        })),
+      });
+    }
 
     // Replace gallery media if provided
     if (galleryMediaIds && Array.isArray(galleryMediaIds)) {
@@ -122,6 +151,7 @@ export async function PATCH(
       include: {
         project: { select: { id: true, title: true, slug: true } },
         gallery: { include: { media: true }, orderBy: { sortOrder: "asc" } },
+        tags: { include: { tag: true } },
       },
     });
 
