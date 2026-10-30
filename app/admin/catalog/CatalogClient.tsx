@@ -722,9 +722,20 @@ export default function AdminCatalogClient({
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
+              <div className="space-y-1">
+                <label className="text-xs text-white">Slug: (*)</label>
+                <input
+                  type="text"
+                  required
+                  value={form.slug}
+                  onChange={(e) => updateForm({ slug: e.target.value })}
+                  placeholder="tranh-bo-hso-thiet-ke-biet-thu"
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                />
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="space-y-1 sm:col-span-2">
+                <div className="space-y-1 sm:col-span-1">
                   <label className="text-xs text-white">Nhóm sản phẩm:</label>
                   <select
                     value={form.productGroup}
@@ -792,8 +803,9 @@ export default function AdminCatalogClient({
                     </div>
                   </div>
                 )}
+
                 {form.productGroup && (
-                  <div className="space-y-1 sm:col-span-2">
+                  <div className="space-y-1 sm:col-span-1">
                     <label className="text-xs text-white">Quản lý nhóm:</label>
                     <div className="flex flex-wrap gap-2">
                       {allGroups
@@ -827,7 +839,7 @@ export default function AdminCatalogClient({
                     </div>
                   </div>
                 )}
-                <div className="space-y-1 sm:col-span-2">
+                <div className="space-y-1 sm:col-span-1">
                   <label className="text-xs text-white">Hạng mục:</label>
                   <select
                     value={form.productCategory}
@@ -896,7 +908,7 @@ export default function AdminCatalogClient({
                   </div>
                 )}
                 {form.productGroup && (
-                  <div className="space-y-1 sm:col-span-2">
+                  <div className="space-y-1 sm:col-span-1">
                     <label className="text-xs text-white">
                       Quản lý hạng mục:
                     </label>
