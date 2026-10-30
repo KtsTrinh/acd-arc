@@ -206,7 +206,6 @@ model ProjectCategory {
   image       String?
 
   projects Project[]
-  products Product[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -234,9 +233,6 @@ model Project {
 
   gallery ProjectMedia[] @relation("ProjectGallery")
   tags    ProjectTag[]
-
-  // Các mục trong "Danh Mục Sản Phẩm" được gắn với dự án hiển thị (nếu có)
-  catalogItems Product[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -308,8 +304,10 @@ model Product {
   description String?
   shortDesc   String?
   price       Float?
-  comparePrice Float?
-  type        ProductType @default(CAD)
+  discount    Float?
+  priceAfterDiscount Float?
+  productGroup String?
+  productCategory String?
   fileFormat  String?     // e.g. "AutoCAD .DWG / 3ds Max / SketchUp"
   fileSize    String?     // e.g. "128 MB"
   fileKey     String?     // Secure key in storage/private for download
@@ -317,9 +315,7 @@ model Product {
   thumbnail   String?
   active      Boolean     @default(true)
   featured    Boolean     @default(false)
-  
-  // Trạng thái yêu cầu thanh toán: true = phải thanh toán mới được tải
-  requiresPayment Boolean @default(true)
+   
   // Link tải trực tiếp (dành cho dự án kiến trúc/nội thất: admin up link)
   // Link này KHÔNG bao giờ được trả về cho khách chưa thanh toán,
   // mọi lượt tải đều đi qua /api/downloads/[token] để kiểm tra chủ mua.
@@ -327,19 +323,12 @@ model Product {
   // Thời gian hiệu lực link tải sau khi thanh toán (phút), mặc định 5
   downloadExpiresMinutes Int @default(5)
 
-  // Gắn mục danh mục sản phẩm với dự án hiển thị trên website
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-
-  categoryId String?
-  category   ProjectCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-
   location    String?
   client      String?
   year        Int?
-  area        Float?
+  landArea    Float?
+  buildingArea Float?
   style       String?
-  buildingType String?
 
   orderItems    OrderItem[]
   downloadLinks DownloadLink[]

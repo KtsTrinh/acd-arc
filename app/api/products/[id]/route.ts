@@ -19,7 +19,6 @@ export async function GET(
         OR: [{ id }, { slug: id }],
       },
       include: {
-        project: { select: { id: true, title: true, slug: true } },
         gallery: { include: { media: true }, orderBy: { sortOrder: "asc" } },
         tags: { include: { tag: true } },
       },
@@ -50,7 +49,7 @@ export async function PATCH(
 ) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role === "ADMIN" || user.role === "SUPER_ADMIN")) {
+    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
       return NextResponse.json(
         { error: "Chỉ quản trị viên mới được cập nhật sản phẩm." },
         { status: 403 }
@@ -66,9 +65,10 @@ export async function PATCH(
       description,
       shortDesc,
       price,
-      comparePrice,
-      type,
-      categoryId,
+      discount,
+      priceAfterDiscount,
+      productGroup,
+      productCategory,
       fileFormat,
       fileSize,
       fileKey,
@@ -76,16 +76,14 @@ export async function PATCH(
       thumbnail,
       active,
       featured,
-      requiresPayment,
       downloadLinkUrl,
       downloadExpiresMinutes,
-      projectId,
       location,
       client,
       year,
-      area,
+      landArea,
+      buildingArea,
       style,
-      buildingType,
       tagIds,
       galleryMediaIds,
     } = body;
@@ -96,9 +94,14 @@ export async function PATCH(
     if (description !== undefined) updateData.description = description;
     if (shortDesc !== undefined) updateData.shortDesc = shortDesc || null;
     if (price !== undefined) updateData.price = price ? parseFloat(price) : null;
-    if (comparePrice !== undefined) updateData.comparePrice = comparePrice ? parseFloat(comparePrice) : null;
-    if (type !== undefined) updateData.type = type;
-    if (categoryId !== undefined) updateData.categoryId = categoryId || null;
+    if (discount !== undefined) updateData.discount = discount ? parseFloat(discount) : null;
+    if (priceAfterDiscount !== undefined)
+      updateData.priceAfterDiscount = priceAfterDiscount
+        ? parseFloat(priceAfterDiscount)
+        : null;
+    if (productGroup !== undefined) updateData.productGroup = productGroup || null;
+    if (productCategory !== undefined)
+      updateData.productCategory = productCategory || null;
     if (fileFormat !== undefined) updateData.fileFormat = fileFormat;
     if (fileSize !== undefined) updateData.fileSize = fileSize;
     if (fileKey !== undefined) updateData.fileKey = fileKey;
@@ -106,17 +109,16 @@ export async function PATCH(
     if (thumbnail !== undefined) updateData.thumbnail = thumbnail;
     if (active !== undefined) updateData.active = Boolean(active);
     if (featured !== undefined) updateData.featured = Boolean(featured);
-    if (requiresPayment !== undefined) updateData.requiresPayment = Boolean(requiresPayment);
     if (downloadLinkUrl !== undefined) updateData.downloadLinkUrl = downloadLinkUrl || null;
     if (downloadExpiresMinutes !== undefined)
       updateData.downloadExpiresMinutes = parseInt(downloadExpiresMinutes, 10) || 5;
-    if (projectId !== undefined) updateData.projectId = projectId || null;
     if (location !== undefined) updateData.location = location || null;
     if (client !== undefined) updateData.client = client || null;
     if (year !== undefined) updateData.year = year ? parseInt(year, 10) : null;
-    if (area !== undefined) updateData.area = area ? parseFloat(area) : null;
+    if (landArea !== undefined) updateData.landArea = landArea ? parseFloat(landArea) : null;
+    if (buildingArea !== undefined)
+      updateData.buildingArea = buildingArea ? parseFloat(buildingArea) : null;
     if (style !== undefined) updateData.style = style || null;
-    if (buildingType !== undefined) updateData.buildingType = buildingType || null;
 
     const updated = await prisma.product.update({
       where: { id },
@@ -149,7 +151,6 @@ export async function PATCH(
     const finalProduct = await prisma.product.findUnique({
       where: { id },
       include: {
-        project: { select: { id: true, title: true, slug: true } },
         gallery: { include: { media: true }, orderBy: { sortOrder: "asc" } },
         tags: { include: { tag: true } },
       },
@@ -172,7 +173,7 @@ export async function DELETE(
 ) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role === "ADMIN" || user.role === "SUPER_ADMIN")) {
+    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
       return NextResponse.json(
         { error: "Chỉ quản trị viên mới được xoá sản phẩm." },
         { status: 403 }

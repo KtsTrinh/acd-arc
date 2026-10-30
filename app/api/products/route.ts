@@ -3,16 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
 import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 import { getCurrentUser } from "@/lib/auth";
-import {
-  getTypesOfGroup,
-  sanitizeProduct,
-} from "@/lib/catalog";
+import { sanitizeProduct } from "@/lib/catalog";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type");
     const group = searchParams.get("group");
+    const productGroup = searchParams.get("productGroup");
+    const productCategory = searchParams.get("productCategory");
     const search = searchParams.get("search");
     const featured = searchParams.get("featured");
     const includeInactive = searchParams.get("includeInactive") === "1";
@@ -27,13 +25,14 @@ export async function GET(request: Request) {
       where.active = true;
     }
 
-    if (group && group !== "ALL") {
-      const types = getTypesOfGroup(group);
-      if (types.length > 0) {
-        where.type = { in: types as any };
-      }
-    } else if (type && type !== "ALL") {
-      where.type = type;
+    if (productGroup && productGroup !== "ALL") {
+      where.productGroup = productGroup;
+    } else if (group && group !== "ALL") {
+      where.productGroup = group;
+    }
+
+    if (productCategory && productCategory !== "ALL") {
+      where.productCategory = productCategory;
     }
 
     if (featured === "true") {
@@ -45,14 +44,13 @@ export async function GET(request: Request) {
         { name: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
         { fileFormat: { contains: search, mode: "insensitive" } },
+        { productGroup: { contains: search, mode: "insensitive" } },
+        { productCategory: { contains: search, mode: "insensitive" } },
       ];
     }
 
     const products = await prisma.product.findMany({
       where,
-      include: {
-        project: { select: { id: true, title: true, slug: true } },
-      },
       orderBy: { createdAt: "desc" },
     });
 
@@ -74,7 +72,7 @@ export async function POST(request: Request) {
     const user = await getCurrentUser();
     if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
       return NextResponse.json(
-        { error: "Chỉ quản trị viên mới được tạo mục danh mục sản phẩm." },
+        { error: "Chỉ quản trị viên mới được tạo sản phẩm." },
         { status: 403 }
       );
     }
@@ -86,9 +84,10 @@ export async function POST(request: Request) {
       description,
       shortDesc,
       price,
-      comparePrice,
-      type,
-      categoryId,
+      discount,
+      priceAfterDiscount,
+      productGroup,
+      productCategory,
       fileFormat,
       fileSize,
       fileKey,
@@ -96,23 +95,21 @@ export async function POST(request: Request) {
       thumbnail,
       active,
       featured,
-      requiresPayment,
       downloadLinkUrl,
       downloadExpiresMinutes,
-      projectId,
       location,
       client,
       year,
-      area,
+      landArea,
+      buildingArea,
       style,
-      buildingType,
       tagIds,
       galleryMediaIds,
     } = body;
 
-    if (!name || price === undefined) {
+    if (!name) {
       return NextResponse.json(
-        { error: "Vui lòng nhập tên và giá sản phẩm." },
+        { error: "Vui lòng nhập tên sản phẩm." },
         { status: 400 }
       );
     }
@@ -126,9 +123,12 @@ export async function POST(request: Request) {
         description,
         shortDesc: shortDesc || null,
         price: price ? parseFloat(price) : null,
-        comparePrice: comparePrice ? parseFloat(comparePrice) : null,
-        type: type || "CAD",
-        categoryId: categoryId || null,
+        discount: discount ? parseFloat(discount) : null,
+        priceAfterDiscount: priceAfterDiscount
+          ? parseFloat(priceAfterDiscount)
+          : null,
+        productGroup: productGroup || null,
+        productCategory: productCategory || null,
         fileFormat,
         fileSize,
         fileKey,
@@ -136,18 +136,16 @@ export async function POST(request: Request) {
         thumbnail,
         active: active !== undefined ? Boolean(active) : true,
         featured: Boolean(featured),
-        requiresPayment: requiresPayment !== undefined ? Boolean(requiresPayment) : true,
         downloadLinkUrl: downloadLinkUrl || null,
         downloadExpiresMinutes: downloadExpiresMinutes
           ? parseInt(downloadExpiresMinutes, 10)
           : 5,
-        projectId: projectId || null,
         location: location || null,
         client: client || null,
         year: year ? parseInt(year, 10) : null,
-        area: area ? parseFloat(area) : null,
+        landArea: landArea ? parseFloat(landArea) : null,
+        buildingArea: buildingArea ? parseFloat(buildingArea) : null,
         style: style || null,
-        buildingType: buildingType || null,
       },
     });
 
@@ -175,7 +173,6 @@ export async function POST(request: Request) {
     const createdProduct = await prisma.product.findUnique({
       where: { id: product.id },
       include: {
-        project: { select: { id: true, title: true, slug: true } },
         gallery: { include: { media: true }, orderBy: { sortOrder: "asc" } },
         tags: { include: { tag: true } },
       },
