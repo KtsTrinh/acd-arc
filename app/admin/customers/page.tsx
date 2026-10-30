@@ -462,10 +462,7 @@ export default function AdminCustomersPage() {
 
               {/* Pagination for Lich Su Truy Cap */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-thuy-750 bg-thuy-850">
-                  <span className="text-xs text-slate-500">
-                    Trang {page} / {totalPages} · {sessions.length} lượt
-                  </span>
+                <div className="flex justify-center px-6 py-4 border-t border-thuy-750 bg-thuy-850">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setPage((p) => Math.max(p - 1, 1))}
