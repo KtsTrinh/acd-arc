@@ -116,10 +116,18 @@ export async function POST(request: Request) {
 
     const finalSlug = slug ? slugify(slug) : slugify(name);
 
+    // Đảm bảo slug duy nhất
+    let uniqueSlug = finalSlug;
+    let counter = 1;
+    while (await prisma.product.findUnique({ where: { slug: uniqueSlug } })) {
+      uniqueSlug = `${finalSlug}-${counter}`;
+      counter += 1;
+    }
+
     const product = await prisma.product.create({
       data: {
         name,
-        slug: finalSlug,
+        slug: uniqueSlug,
         description,
         shortDesc: shortDesc || null,
         price: price ? parseFloat(price) : null,
@@ -180,10 +188,11 @@ export async function POST(request: Request) {
 
     const sync = await triggerCmsAutoSync(`thêm sản phẩm "${createdProduct?.name ?? ""}"`);
     return NextResponse.json({ success: true, product: createdProduct, sync });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating product:", error);
+    const message = error?.message || "Lỗi trong quá trình tạo sản phẩm.";
     return NextResponse.json(
-      { error: "Lỗi trong quá trình tạo sản phẩm." },
+      { error: message },
       { status: 500 }
     );
   }

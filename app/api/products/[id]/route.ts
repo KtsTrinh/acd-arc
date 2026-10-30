@@ -158,10 +158,11 @@ export async function PATCH(
 
     const sync = await triggerCmsAutoSync(`cập nhật sản phẩm "${finalProduct?.name ?? ""}"`);
     return NextResponse.json({ success: true, product: finalProduct, sync });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating product:", error);
+    const message = error?.message || "Không thể cập nhật sản phẩm.";
     return NextResponse.json(
-      { error: "Không thể cập nhật sản phẩm." },
+      { error: message },
       { status: 500 }
     );
   }
