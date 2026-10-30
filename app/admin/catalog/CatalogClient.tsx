@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
@@ -825,27 +825,17 @@ export default function AdminCatalogClient({
                         {c}
                       </option>
                     ))}
-                    <option value="+new">+ Thêm hạng mục mới</option>
+                    {showNewCategoryInput ? (
+                      <>
+                        <option value="" disabled hidden>
+                          —
+                        </option>
+                        <option value="+new">+ Thêm hạng mục mới</option>
+                      </>
+                    ) : (
+                      <option value="+new">+ Thêm hạng mục mới</option>
+                    )}
                   </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs text-white">Ảnh thumbnail:</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="url"
-                      value={form.thumbnail}
-                      onChange={(e) => updateForm({ thumbnail: e.target.value })}
-                      placeholder="https://..."
-                      className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setMediaPickerOpen(true)}
-                      className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700 whitespace-nowrap"
-                    >
-                      Thư viện
-                    </button>
-                  </div>
                 </div>
                 {showNewCategoryInput && (
                   <div className="space-y-1 sm:col-span-2">
@@ -954,27 +944,17 @@ export default function AdminCatalogClient({
                 )}
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs text-white">Mô tả tóm tắt:</label>
-                <input
-                  type="text"
-                  value={form.shortDesc}
-                  onChange={(e) => updateForm({ shortDesc: e.target.value })}
-                  placeholder="Mô tả ngắn gọn về sản phẩm..."
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs text-white">Mô tả chi tiết:</label>
-                <textarea
-                  rows={3}
-                  value={form.description}
-                  onChange={(e) => updateForm({ description: e.target.value })}
-                  placeholder="Chi tiết các file đính kèm..."
-                  className="w-full p-3 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                />
-              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-xs text-white">Mô tả tóm tắt:</label>
+                  <input
+                    type="text"
+                    value={form.shortDesc}
+                    onChange={(e) => updateForm({ shortDesc: e.target.value })}
+                    placeholder="Mô tả ngắn gọn về sản phẩm..."
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Địa điểm:</label>
                   <input
@@ -1070,71 +1050,38 @@ export default function AdminCatalogClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-white">Hạng mục:</label>
-                  <select
-                    value={form.productCategory}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (val === "+new") {
-                        setShowNewCategoryInput(true);
-                        updateForm({ productCategory: "" });
-                        return;
-                      }
-                      updateForm({ productCategory: val });
-                    }}
+                  <label className="text-xs text-white">Định dạng file:</label>
+                  <input
+                    type="text"
+                    value={form.fileFormat}
+                    onChange={(e) => updateForm({ fileFormat: e.target.value })}
+                    placeholder="AutoCAD .DWG / 3ds Max 2024"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  >
-                    <option value="">— Chọn hạng mục —</option>
-                    {groupCategories(form.productGroup).map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                    <option value="+new">+ Thêm hạng mục mới</option>
-                  </select>
+                  />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-white">Ảnh thumbnail:</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="url"
-                      value={form.thumbnail}
-                      onChange={(e) => updateForm({ thumbnail: e.target.value })}
-                      placeholder="https://..."
-                      className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setMediaPickerOpen(true)}
-                      className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700 whitespace-nowrap"
-                    >
-                      Thư viện
-                    </button>
-                  </div>
+                  <label className="text-xs text-white">Dung lượng:</label>
+                  <input
+                    type="text"
+                    value={form.fileSize}
+                    onChange={(e) => updateForm({ fileSize: e.target.value })}
+                    placeholder="185 MB / 1.2 GB"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-white">Phong cách:</label>
-                <input
-                  type="text"
-                  value={form.style}
-                  onChange={(e) => updateForm({ style: e.target.value })}
-                  placeholder="Hiện đại, cổ điển..."
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                />
-              </div>
-
-              {/* Product Gallery */}
-              <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs text-white">Ảnh thumbnail:</label>
+                  <label className="text-xs text-white">
+                    Ảnh thumbnail (URL):
+                  </label>
                   <button
                     type="button"
                     onClick={() => setMediaPickerOpen(true)}
                     className="text-[10px] text-thuy-400 hover:underline"
                   >
-                    Thư viện
+                    Chọn từ Media Library
                   </button>
                 </div>
                 <input
@@ -1260,7 +1207,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-white">Mô tả chi tiết:</label>
+                <label className="text-xs text-white">Mô tả sản phẩm:</label>
                 <textarea
                   rows={3}
                   value={form.description}
@@ -1271,6 +1218,24 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="flex flex-wrap gap-4">
+                <label className="flex items-center gap-2 text-xs text-white">
+                  <input
+                    type="checkbox"
+                    checked={form.active}
+                    onChange={(e) => updateForm({ active: e.target.checked })}
+                    className="accent-thuy-400"
+                  />
+                  Đang kinh doanh
+                </label>
+                <label className="flex items-center gap-2 text-xs text-white">
+                  <input
+                    type="checkbox"
+                    checked={form.featured}
+                    onChange={(e) => updateForm({ featured: e.target.checked })}
+                    className="accent-thuy-400"
+                  />
+                  Nổi bật
+                </label>
               </div>
 
               {/* Price section */}
