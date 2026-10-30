@@ -688,7 +688,7 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-white">Danh mục:</label>
+                  <label className="text-xs text-white">Hạng mục:</label>
                   <select
                     value={form.categoryId}
                     onChange={(e) => updateForm({ categoryId: e.target.value })}
