@@ -1128,7 +1128,7 @@ export default function AdminCatalogClient({
                 className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan flex items-center justify-center gap-2"
               >
                 {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>Lưu mục danh mục</span>
+                <span>Public sản phẩm</span>
               </button>
             </form>
           </div>
