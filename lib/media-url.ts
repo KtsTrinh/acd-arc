@@ -15,24 +15,41 @@ const VIMEO_ID_REGEX = /vimeo\.com\/(?:video\/)?(\d+)/;
 const VIDEO_FILE_REGEX = /\.(mp4|webm|mov|m4v|ogv)(\?.*)?$/i;
 
 /**
- * Chuẩn hoá link Google Drive về link tải/trực tiếp (Drive share page không
- * phát được trong thẻ <video>).
+ * Chuẩn hoá link Google Drive về link trực tiếp (dùng cho thẻ <img> hoặc <video>).
+ * - Link xem file (file/d/ID/view, open?id=ID) -> uc?export=view&id=ID
+ * - Link thư mục (drive/folders/ID) -> giữ nguyên (dùng cho import thư mục)
+ * - Link uc?export=view&id=ID -> giữ nguyên
  */
+export function normalizeDriveUrl(url: string): string {
+  const trimmed = (url || "").trim();
+  if (!trimmed) return "";
+
+  // Nếu là link thư mục Drive, giữ nguyên
+  if (DRIVE_FOLDER_REGEX.test(trimmed)) return trimmed;
+
+  // Nếu đã là link uc?export=view, giữ nguyên
+  if (/drive\.google\.com\/uc\?export=view/i.test(trimmed)) return trimmed;
+
+  // Nếu là link xem file, chuyển về uc?export=view
+  const driveFile = trimmed.match(DRIVE_ID_REGEX);
+  if (driveFile) {
+    return `https://drive.google.com/uc?export=view&id=${driveFile[1]}`;
+  }
+
+  return trimmed;
+}
+
 export function normalizeMediaUrl(url: string): string {
   const trimmed = (url || "").trim();
   if (!trimmed) return "";
-  const driveFolder = trimmed.match(DRIVE_FOLDER_REGEX);
-  if (driveFolder) {
-    return trimmed;
-  }
-  return trimmed;
+  return normalizeDriveUrl(trimmed);
 }
 
 export function isVideoUrl(url: string): boolean {
   const trimmed = (url || "").trim();
   if (!trimmed) return false;
   if (VIDEO_FILE_REGEX.test(trimmed)) return true;
-  if (DRIVE_ID_REGEX.test(trimmed)) return true;
+  // Không coi tất cả link Drive là video (có thể là ảnh). Chỉ coi là video nếu có đuôi file video.
   return false;
 }
 
@@ -67,7 +84,7 @@ export function resolveHeroVideo(url: string): HeroVideoSource {
   if (DRIVE_ID_REGEX.test(trimmed)) {
     return {
       kind: "file",
-      src: `/api/media/stream?url=${encodeURIComponent(trimmed)}`,
+      src: `/api/media/stream?url=${encodeURIComponent(normalizeDriveUrl(trimmed))}`,
     };
   }
 

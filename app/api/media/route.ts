@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createMediaItem } from "@/lib/storage";
-import { isVideoUrl } from "@/lib/media-url";
+import { isVideoUrl, normalizeMediaUrl } from "@/lib/media-url";
 import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -79,12 +79,14 @@ export async function POST(request: Request) {
             : "video/mp4"
           : "image/jpeg");
 
+      const normalizedUrl = normalizeMediaUrl(url);
+
       const media = await createMediaItem({
         filename: filename || url.split("/").pop()?.split("?")[0] || "media.jpg",
         originalName: filename || "External Media",
         mimeType: detectedMime,
         size: 0,
-        url,
+        url: normalizedUrl,
         folder: folder || "external",
         alt: alt || "ACD Media",
       });

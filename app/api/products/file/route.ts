@@ -17,7 +17,7 @@ const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || user.role !== "ADMIN") {
+    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
       return NextResponse.json(
         { error: "Chỉ quản trị viên mới được tải file lên." },
         { status: 403 }
