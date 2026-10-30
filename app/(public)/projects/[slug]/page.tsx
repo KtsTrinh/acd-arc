@@ -35,11 +35,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     include: {
       category: true,
       cover: true,
-      tags: { include: { tag: true } },
-      gallery: {
-        orderBy: { sortOrder: "asc" },
-        include: { media: true }
-      }
+      tags: true,
+      gallery: true,
     });
 
   if (!project) {
