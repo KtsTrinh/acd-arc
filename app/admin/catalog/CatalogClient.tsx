@@ -141,7 +141,7 @@ export default function AdminCatalogClient({
     }[]
   >([]);
   const [newGroupName, setNewGroupName] = useState("");
-  const [editingNewGroup, setEditingNewGroup] = useState(false);
+  const [showNewGroupInput, setShowNewGroupInput] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
 
@@ -150,13 +150,13 @@ export default function AdminCatalogClient({
   const handleAddGroup = () => {
     const val = newGroupName.trim();
     if (!val || allGroups.includes(val)) {
-      setEditingNewGroup(false);
+      setShowNewGroupInput(false);
       setNewGroupName("");
       return;
     }
     setGroups((prev) => [...prev, val]);
     setNewGroupName("");
-    setEditingNewGroup(false);
+    setShowNewGroupInput(false);
   };
 
   const handleDeleteGroup = (group: string) => {
@@ -728,99 +728,105 @@ export default function AdminCatalogClient({
                   <label className="text-xs text-white">Nhóm sản phẩm:</label>
                   <select
                     value={form.productGroup}
-                    onChange={(e) =>
-                      updateForm({
-                        productGroup: e.target.value,
-                        productCategory: "",
-                      })
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "+new") {
+                        setShowNewGroupInput(true);
+                        updateForm({ productGroup: "" });
+                        return;
+                      }
+                      updateForm({ productGroup: val });
+                    }}
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   >
+                    <option value="">— Chọn nhóm —</option>
                     {allGroups.map((g) => (
                       <option key={g} value={g}>
                         {g}
                       </option>
                     ))}
-                  </select>
-                </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <label className="text-xs text-white">Quản lý nhóm:</label>
-                  <div className="flex items-end gap-2">
-                    {editingNewGroup ? (
+                    {showNewGroupInput ? (
                       <>
-                        <input
-                          autoFocus
-                          value={newGroupName}
-                          onChange={(e) =>
-                            setNewGroupName(e.target.value.trim())
-                          }
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") handleAddGroup();
-                            if (e.key === "Escape") setEditingNewGroup(false);
-                          }}
-                          placeholder="Tên nhóm mới..."
-                          className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                        />
-                        <button
-                          onClick={handleAddGroup}
-                          className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
-                        >
-                          <Plus className="w-3 h-3" />
-                        </button>
-                        <button
-                          onClick={() => setEditingNewGroup(false)}
-                          className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-700 text-slate-400"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
+                        <option value="" disabled hidden>
+                          —
+                        </option>
+                        <option value="+new">+ Thêm nhóm mới</option>
                       </>
                     ) : (
-                      <button
-                        onClick={() => setEditingNewGroup(true)}
-                        className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-700 text-slate-400 border border-thuy-700 text-xs"
-                      >
-                        <Plus className="w-3 h-3" /> Thêm nhóm
-                      </button>
+                      <option value="+new">+ Thêm nhóm mới</option>
                     )}
-                  </div>
+                  </select>
                 </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <label className="text-xs text-white">Danh sách nhóm:</label>
-                  <div className="flex flex-wrap gap-2">
-                    {allGroups.map((g) => {
-                      const used = items.filter(
-                        (i) => i.productGroup === g,
-                      ).length;
-                      const canDelete = used === 0;
-                      return (
-                        <span
-                          key={g}
-                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px]"
-                        >
-                          {g}
-                          {used > 0 && (
-                            <span className="text-amber-400">
-                              {" "}
-                              ({used} mục)
-                            </span>
-                          )}
-                          {canDelete && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteGroup(g);
-                              }}
-                              className="p-0.5 hover:text-red-400"
-                              title="Xoá nhóm"
+                {showNewGroupInput && (
+                  <div className="space-y-1 sm:col-span-2">
+                    <label className="text-xs text-white">
+                      Tên nhóm mới:
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        autoFocus
+                        value={newGroupName}
+                        onChange={(e) =>
+                          setNewGroupName(e.target.value.trim())
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleAddGroup();
+                          if (e.key === "Escape")
+                            setShowNewGroupInput(false);
+                        }}
+                        placeholder="Nhập tên nhóm..."
+                        className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                      />
+                      <button
+                        onClick={handleAddGroup}
+                        className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={() => setShowNewGroupInput(false)}
+                        className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-700 text-slate-400"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {form.productGroup && (
+                  <div className="space-y-1 sm:col-span-2">
+                    <label className="text-xs text-white">Quản lý nhóm:</label>
+                    <div className="flex flex-wrap gap-2">
+                      {allGroups
+                        .filter((g) => !DEFAULT_GROUPS.includes(g))
+                        .map((g) => {
+                          const used = items.filter(
+                            (i) => i.productGroup === g,
+                          ).length;
+                          const canDelete = used === 0;
+                          return (
+                            <span
+                              key={g}
+                              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
                             >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          )}
-                        </span>
-                      );
-                    })}
+                              {g}
+                              {canDelete && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteGroup(g);
+                                  }}
+                                  className="p-0.5 hover:text-red-400"
+                                  title="Xoá nhóm"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              )}
+                            </span>
+                          );
+                        })}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="space-y-1 sm:col-span-2">
                   <label className="text-xs text-white">Hạng mục:</label>
                   <select
