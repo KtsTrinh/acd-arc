@@ -4,12 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import LightboxGallery from "@/components/gallery/LightboxGallery";
-import BuyCatalogItemButton from "@/components/cart/BuyCatalogItemButton";
 import {
   MapPin,
   Calendar,
   Maximize2,
-  Tag,
   Building,
   UserCheck,
   Compass,
@@ -31,6 +29,15 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const project = await prisma.project.findFirst({
     where: {
       OR: [{ slug }, { id: slug }],
+    },
+    include: {
+      category: true,
+      cover: true,
+      tags: { include: { tag: true } },
+      gallery: {
+        orderBy: { sortOrder: "asc" },
+        include: { media: true },
+      },
     },
   });
 
