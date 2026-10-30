@@ -62,7 +62,14 @@ const DEFAULT_GROUPS = ["Thiết kế", "Thi công", "File kỹ thuật số", "
 const DEFAULT_CATEGORIES: Record<string, string[]> = {
   "Thiết kế": ["Kiến trúc", "Nội thất", "Quy hoạch", "Cảnh quan"],
   "Thi công": ["Kiến trúc", "Nội thất"],
-  "File kỹ thuật số": ["Autocad", "PDF", "Photoshop", "Revit", "3dsmax", "Sketchup"],
+  "File kỹ thuật số": [
+    "Autocad",
+    "PDF",
+    "Photoshop",
+    "Revit",
+    "3dsmax",
+    "Sketchup",
+  ],
   "Tài liệu": [],
 };
 
@@ -127,10 +134,12 @@ export default function AdminCatalogClient({
   /* Nhóm sản phẩm & Hạng mục (tự thêm mới)                             */
   /* ------------------------------------------------------------------ */
   const [groups, setGroups] = useState<string[]>([...DEFAULT_GROUPS]);
-  const [customCategories, setCustomCategories] = useState<{
-    name: string;
-    group: string;
-  }[]>([]);
+  const [customCategories, setCustomCategories] = useState<
+    {
+      name: string;
+      group: string;
+    }[]
+  >([]);
   const [newGroupName, setNewGroupName] = useState("");
   const [editingNewGroup, setEditingNewGroup] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -162,7 +171,11 @@ export default function AdminCatalogClient({
     if (!confirm(`Xoá nhóm "${group}"?`)) return;
     setGroups((prev) => prev.filter((g) => g !== group));
     setCustomCategories((prev) => prev.filter((c) => c.group !== group));
-    setItems((prev) => prev.map((i) => (i.productGroup === group ? { ...i, productGroup: "" } : i)));
+    setItems((prev) =>
+      prev.map((i) =>
+        i.productGroup === group ? { ...i, productGroup: "" } : i,
+      ),
+    );
     if (activeTab === group) {
       const next = allGroups.filter((g) => g !== group);
       setActiveTab(next.length ? next[0] : "MANAGE");
@@ -178,7 +191,10 @@ export default function AdminCatalogClient({
     }
     const group = form?.productGroup || "";
     if (!group) {
-      setNotice({ type: "err", text: "Vui lòng chọn nhóm trước khi thêm hạng mục." });
+      setNotice({
+        type: "err",
+        text: "Vui lòng chọn nhóm trước khi thêm hạng mục.",
+      });
       return;
     }
     const exists = customCategories.some(
@@ -281,9 +297,7 @@ export default function AdminCatalogClient({
       price: String(item.price ?? ""),
       discount: item.discount != null ? String(item.discount) : "",
       priceAfterDiscount:
-        item.priceAfterDiscount != null
-          ? String(item.priceAfterDiscount)
-          : "",
+        item.priceAfterDiscount != null ? String(item.priceAfterDiscount) : "",
       productGroup: item.productGroup || "",
       productCategory: item.productCategory || "",
       fileFormat: item.fileFormat || "",
@@ -737,7 +751,9 @@ export default function AdminCatalogClient({
                         <input
                           autoFocus
                           value={newGroupName}
-                          onChange={(e) => setNewGroupName(e.target.value.trim())}
+                          onChange={(e) =>
+                            setNewGroupName(e.target.value.trim())
+                          }
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleAddGroup();
                             if (e.key === "Escape") setEditingNewGroup(false);
@@ -772,15 +788,21 @@ export default function AdminCatalogClient({
                   <label className="text-xs text-white">Danh sách nhóm:</label>
                   <div className="flex flex-wrap gap-2">
                     {allGroups.map((g) => {
-                      const used = items.filter((i) => i.productGroup === g).length;
+                      const used = items.filter(
+                        (i) => i.productGroup === g,
+                      ).length;
                       const canDelete = used === 0;
                       return (
                         <span
                           key={g}
                           className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px]"
                         >
-                          {g}{used > 0 && (
-                            <span className="text-amber-400"> ({used} mục)</span>
+                          {g}
+                          {used > 0 && (
+                            <span className="text-amber-400">
+                              {" "}
+                              ({used} mục)
+                            </span>
                           )}
                           {canDelete && (
                             <button
@@ -834,7 +856,9 @@ export default function AdminCatalogClient({
                 </div>
                 {showNewCategoryInput && (
                   <div className="space-y-1 sm:col-span-2">
-                    <label className="text-xs text-white">Tên hạng mục mới:</label>
+                    <label className="text-xs text-white">
+                      Tên hạng mục mới:
+                    </label>
                     <div className="flex gap-2">
                       <input
                         autoFocus
@@ -867,11 +891,18 @@ export default function AdminCatalogClient({
                 )}
                 {form.productGroup && (
                   <div className="space-y-1 sm:col-span-2">
-                    <label className="text-xs text-white">Quản lý hạng mục:</label>
+                    <label className="text-xs text-white">
+                      Quản lý hạng mục:
+                    </label>
                     <div className="flex flex-wrap gap-2">
                       {customCategories
                         .filter((c) => c.group === form.productGroup)
-                        .filter((c) => !DEFAULT_CATEGORIES[form.productGroup]?.includes(c.name))
+                        .filter(
+                          (c) =>
+                            !DEFAULT_CATEGORIES[form.productGroup]?.includes(
+                              c.name,
+                            ),
+                        )
                         .map((c) => (
                           <span
                             key={c.name}
@@ -937,7 +968,9 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-white">Diện tích đất (m²):</label>
+                  <label className="text-xs text-white">
+                    Diện tích đất (m²):
+                  </label>
                   <input
                     type="number"
                     value={form.landArea}
@@ -947,11 +980,15 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-white">Diện tích xây dựng (m²):</label>
+                  <label className="text-xs text-white">
+                    Diện tích xây dựng (m²):
+                  </label>
                   <input
                     type="number"
                     value={form.buildingArea}
-                    onChange={(e) => updateForm({ buildingArea: e.target.value })}
+                    onChange={(e) =>
+                      updateForm({ buildingArea: e.target.value })
+                    }
                     placeholder="250"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
@@ -1206,7 +1243,9 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-white">Giá sau khi giảm (VNĐ):</label>
+                  <label className="text-xs text-white">
+                    Giá sau khi giảm (VNĐ):
+                  </label>
                   <input
                     type="number"
                     value={form.priceAfterDiscount}
@@ -1367,8 +1406,8 @@ function CatalogTable({
     return (
       <div className="py-16 text-center text-slate-600 text-xs rounded-2xl bg-thuy-850/50 border border-thuy-750">
         <Package className="w-8 h-8 mx-auto mb-3 text-slate-600" />
-        Nhóm <b className="text-[#142338]">{group}</b> chưa có mục nào.
-        Bấm “Thêm mục” để tạo mục danh mục đầu tiên.
+        Nhóm <b className="text-[#142338]">{group}</b> chưa có mục nào. Bấm
+        “Thêm mục” để tạo mục danh mục đầu tiên.
       </div>
     );
   }
