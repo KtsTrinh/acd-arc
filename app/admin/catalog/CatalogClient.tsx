@@ -131,11 +131,79 @@ export default function AdminCatalogClient({
     name: string;
     group: string;
   }[]>([]);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [editingNewGroup, setEditingNewGroup] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
 
   const allGroups = useMemo(
     () => [...DEFAULT_GROUPS, ...customGroups],
     [customGroups],
   );
+
+  const handleAddGroup = () => {
+    const val = newGroupName.trim();
+    if (!val || allGroups.includes(val)) {
+      setEditingNewGroup(false);
+      setNewGroupName("");
+      return;
+    }
+    setCustomGroups((prev) => [...prev, val]);
+    setNewGroupName("");
+    setEditingNewGroup(false);
+  };
+
+  const handleDeleteGroup = (group: string) => {
+    if (DEFAULT_GROUPS.includes(group)) return;
+    if (!confirm(`Xoá nhóm "${group}"? Mục sản phẩm trong nhóm sẽ bị gỡ nhóm.`))
+      return;
+    setCustomGroups((prev) => prev.filter((g) => g !== group));
+    setCustomCategories((prev) => prev.filter((c) => c.group !== group));
+    setItems((prev) => prev.map((i) => (i.productGroup === group ? { ...i, productGroup: "" } : i)));
+    if (activeTab === group) setActiveTab(DEFAULT_GROUPS[0]);
+  };
+
+  const handleAddCategory = () => {
+    const val = newCategoryName.trim();
+    if (!val) {
+      setShowNewCategoryInput(false);
+      setNewCategoryName("");
+      return;
+    }
+    const group = form?.productGroup || "";
+    if (!group) {
+      setNotice({ type: "err", text: "Vui lòng chọn nhóm trước khi thêm hạng mục." });
+      return;
+    }
+    const exists = customCategories.some(
+      (c) => c.group === group && c.name === val,
+    );
+    if (exists) {
+      setShowNewCategoryInput(false);
+      setNewCategoryName("");
+      return;
+    }
+    setCustomCategories((prev) => [...prev, { name: val, group }]);
+    setNewCategoryName("");
+    setShowNewCategoryInput(false);
+    updateForm({ productCategory: val });
+    setNotice({ type: "ok", text: `Đã thêm hạng mục "${val}".` });
+  };
+
+  const handleDeleteCategory = (name: string, group: string) => {
+    if (!confirm(`Xoá hạng mục "${name}"?`)) return;
+    setCustomCategories((prev) =>
+      prev.filter((c) => !(c.name === name && c.group === group)),
+    );
+    setItems((prev) =>
+      prev.map((i) =>
+        i.productCategory === name && i.productGroup === group
+          ? { ...i, productCategory: "" }
+          : i,
+      ),
+    );
+    setNotice({ type: "ok", text: "Đã xoá hạng mục." });
+  };
 
   const groupCategories = (group: string): string[] => {
     const defaults = DEFAULT_CATEGORIES[group] || [];
@@ -580,27 +648,75 @@ export default function AdminCatalogClient({
         {allGroups.map((group) => {
           const count = items.filter((i) => i.productGroup === group).length;
           const isActive = activeTab === group;
+          const isDefault = DEFAULT_GROUPS.includes(group);
           return (
-            <button
-              key={group}
-              onClick={() => setActiveTab(group)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                isActive
-                  ? "bg-thuy-400 text-thuy-950 border-thuy-400 shadow-glow-cyan"
-                  : "bg-thuy-850 text-slate-700 border-thuy-750 hover:border-thuy-500"
-              }`}
-            >
-              {group}
-              <span
-                className={`ml-2 px-1.5 py-0.5 rounded-full text-[10px] ${
-                  isActive ? "bg-thuy-950/20" : "bg-thuy-800 text-thuy-300"
+            <div key={group} className="relative inline-flex items-center gap-1">
+              <button
+                onClick={() => setActiveTab(group)}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                  isActive
+                    ? "bg-thuy-400 text-thuy-950 border-thuy-400 shadow-glow-cyan"
+                    : "bg-thuy-850 text-slate-700 border-thuy-750 hover:border-thuy-500"
                 }`}
               >
-                {count}
-              </span>
-            </button>
+                {group}
+                <span
+                  className={`ml-2 px-1.5 py-0.5 rounded-full text-[10px] ${
+                    isActive ? "bg-thuy-950/20" : "bg-thuy-800 text-thuy-300"
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+              {!isDefault && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteGroup(group);
+                  }}
+                  className="p-1 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
+                  title="Xoá nhóm"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              )}
+            </div>
           );
         })}
+        {editingNewGroup ? (
+          <div className="flex items-center gap-1">
+            <input
+              autoFocus
+              value={newGroupName}
+              onChange={(e) => setNewGroupName(e.target.value.trim())}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleAddGroup();
+                if (e.key === "Escape") setEditingNewGroup(false);
+              }}
+              placeholder="Tên nhóm mới..."
+              className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white w-40"
+            />
+            <button
+              onClick={handleAddGroup}
+              className="px-2.5 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
+            >
+              <Plus className="w-3 h-3" />
+            </button>
+            <button
+              onClick={() => setEditingNewGroup(false)}
+              className="px-2.5 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-700 text-slate-400"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setEditingNewGroup(true)}
+            className="px-4 py-2.5 rounded-xl text-xs font-bold transition-all border bg-thuy-850 text-slate-700 border-thuy-750 hover:border-thuy-500"
+          >
+            <Plus className="w-3 h-3 inline mr-1" /> Thêm nhóm
+          </button>
+        )}
         <button
           onClick={() => setActiveTab("MANAGE")}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
@@ -698,9 +814,15 @@ export default function AdminCatalogClient({
                   <label className="text-xs text-white">Hạng mục:</label>
                   <select
                     value={form.productCategory}
-                    onChange={(e) =>
-                      updateForm({ productCategory: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "+new") {
+                        setShowNewCategoryInput(true);
+                        updateForm({ productCategory: "" });
+                        return;
+                      }
+                      updateForm({ productCategory: val });
+                    }}
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   >
                     <option value="">— Chọn hạng mục —</option>
@@ -709,25 +831,79 @@ export default function AdminCatalogClient({
                         {c}
                       </option>
                     ))}
-                    <option value="+new">+ Thêm hạng mục mới</option>
+                    {showNewCategoryInput ? (
+                      <>
+                        <option value="" disabled hidden>
+                          —
+                        </option>
+                        <option value="+new">+ Thêm hạng mục mới</option>
+                      </>
+                    ) : (
+                      <option value="+new">+ Thêm hạng mục mới</option>
+                    )}
                   </select>
                 </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <label className="text-xs text-white">Tên nhóm mới:</label>
-                  <input
-                    type="text"
-                    value=""
-                    onChange={(e) => {
-                      const val = e.target.value.trim();
-                      if (val && !allGroups.includes(val)) {
-                        setCustomGroups((prev) => [...prev, val]);
-                        updateForm({ productGroup: val, productCategory: "" });
-                      }
-                    }}
-                    placeholder="Nhập tên nhóm sản phẩm mới..."
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
-                </div>
+                {showNewCategoryInput && (
+                  <div className="space-y-1 sm:col-span-2">
+                    <label className="text-xs text-white">Tên hạng mục mới:</label>
+                    <div className="flex gap-2">
+                      <input
+                        autoFocus
+                        value={newCategoryName}
+                        onChange={(e) =>
+                          setNewCategoryName(e.target.value.trim())
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleAddCategory();
+                          if (e.key === "Escape")
+                            setShowNewCategoryInput(false);
+                        }}
+                        placeholder="Nhập tên hạng mục..."
+                        className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                      />
+                      <button
+                        onClick={handleAddCategory}
+                        className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={() => setShowNewCategoryInput(false)}
+                        className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-700 text-slate-400"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {form.productGroup && (
+                  <div className="space-y-1 sm:col-span-2">
+                    <label className="text-xs text-white">Quản lý hạng mục:</label>
+                    <div className="flex flex-wrap gap-2">
+                      {customCategories
+                        .filter((c) => c.group === form.productGroup)
+                        .filter((c) => !DEFAULT_CATEGORIES[form.productGroup]?.includes(c.name))
+                        .map((c) => (
+                          <span
+                            key={c.name}
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
+                          >
+                            {c.name}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteCategory(c.name, c.group);
+                              }}
+                              className="p-0.5 hover:text-red-400"
+                              title="Xoá"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
