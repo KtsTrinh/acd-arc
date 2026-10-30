@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useCartStore } from "@/lib/cart";
 import CartDrawer from "../cart/CartDrawer";
 import {
-  Compass,
   ShoppingBag,
   User,
   Menu,
@@ -18,12 +17,6 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-interface NavLink {
-  label: string;
-  href?: string;
-  children?: NavLink[];
-}
-
 export default function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -31,9 +24,8 @@ export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [userDropdown, setUserDropdown] = useState(false);
-  const [openDesktopSub, setOpenDesktopSub] = useState<Set<string>>(
-    new Set(),
-  );
+  const [groups, setGroups] = useState<string[]>([]);
+  const [groupsLoaded, setGroupsLoaded] = useState(false);
   const [openMobileSub, setOpenMobileSub] = useState<Set<string>>(
     new Set(),
   );
@@ -55,6 +47,16 @@ export default function Navbar() {
       })
       .catch(() => {});
   }, [pathname]);
+
+  useEffect(() => {
+    fetch("/api/products/groups")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.groups) setGroups(data.groups);
+        setGroupsLoaded(true);
+      })
+      .catch(() => setGroupsLoaded(true));
+  }, []);
 
   const handleLogout = async () => {
     await fetch("/api/auth/me", { method: "POST" });
@@ -78,13 +80,8 @@ export default function Navbar() {
     return pathname === href || pathname.startsWith(href);
   };
 
-  const toggleDesktopSub = (key: string) => {
-    setOpenDesktopSub((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+  const isActiveGroup = (group: string) => {
+    return pathname.includes(`productGroup=${encodeURIComponent(group)}`);
   };
 
   const toggleMobileSub = (key: string) => {
@@ -95,41 +92,6 @@ export default function Navbar() {
       return next;
     });
   };
-
-  const navLinks: NavLink[] = [
-    { label: "Trang Chủ", href: "/" },
-    {
-      label: "Dự Án Kiến Trúc",
-      href: "/projects",
-      children: [
-        { label: "Tất Cả", href: "/projects" },
-        { label: "Biệt Thự", href: "/projects?category=biet-thu" },
-        { label: "Nhà Phố", href: "/projects?category=nha-pho" },
-        { label: "Penthouse", href: "/projects?category=penthouse" },
-        { label: "Nội Thất", href: "/projects?category=noi-that" },
-      ],
-    },
-    {
-      label: "Tài Nguyên CAD & 3D",
-      href: "/products",
-      children: [
-        { label: "Tất Cả", href: "/products" },
-        { label: "CAD", href: "/products?type=ARCHITECTURE" },
-        { label: "Mô Hình 3D", href: "/products?type=INTERIOR" },
-        { label: "File Kỹ Thuật", href: "/products?type=CONSTRUCTION" },
-        { label: "Template", href: "/products?type=DIGITAL_FILE" },
-      ],
-    },
-    {
-      label: "Tạp Chí & Phong Thủy",
-      href: "/blog",
-      children: [
-        { label: "Tất Cả", href: "/blog" },
-        { label: "Phong Thủy", href: "/blog?category=phong-thuy" },
-        { label: "Kiến Trúc", href: "/blog?category=kien-truc" },
-      ],
-    },
-  ];
 
   return (
     <>
@@ -160,58 +122,30 @@ export default function Navbar() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-1 bg-thuy-850/60 px-4 py-1.5 rounded-full border border-thuy-700/50 backdrop-blur-sm">
-            {navLinks.map((link) => {
-              const active = isActiveLink(link.href);
-              const hasChildren = link.children && link.children.length > 0;
-              const subOpen = openDesktopSub.has(link.label);
-              return (
-                <div key={link.href || link.label} className="relative group">
-                  <Link
-                    href={link.href || "#"}
-                    onClick={(e) => {
-                      if (hasChildren) e.preventDefault();
-                      toggleDesktopSub(link.label);
-                    }}
-                    className={
-                      active
-                        ? "px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all"
-                        : "px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all"
-                    }
-                  >
-                    {link.label}
-                    {hasChildren && (
-                      <ChevronDown
-                        className={
-                          subOpen
-                            ? "w-3 h-3 ml-1 text-slate-400 transition-transform duration-200 rotate-180"
-                            : "w-3 h-3 ml-1 text-slate-400 transition-transform duration-200"
-                        }
-                      />
-                    )}
-                  </Link>
-                  {hasChildren && subOpen && (
-                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-60 rounded-xl bg-thuy-900 border border-thuy-700 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                      {link.children!.map((child) => {
-                        const childActive = isActiveLink(child.href);
-                        return (
-                          <Link
-                            key={child.href || child.label}
-                            href={child.href || "#"}
-                            className={
-                              childActive
-                                ? "block px-4 py-2 text-xs text-thuy-950 bg-thuy-400 font-semibold transition-colors"
-                                : "block px-4 py-2 text-xs text-slate-300 hover:bg-thuy-800 hover:text-white transition-colors"
-                            }
-                          >
-                            {child.label}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            <Link
+              href="/"
+              className={
+                pathname === "/"
+                  ? "px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all"
+                  : "px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all"
+              }
+            >
+              Trang Chủ
+            </Link>
+            {groupsLoaded &&
+              groups.map((group) => (
+                <Link
+                  key={group}
+                  href={`/products?productGroup=${encodeURIComponent(group)}`}
+                  className={
+                    isActiveGroup(group)
+                      ? "px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all"
+                      : "px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all"
+                  }
+                >
+                  {group}
+                </Link>
+              ))}
           </nav>
 
           <div className="flex items-center gap-3">
@@ -314,60 +248,35 @@ export default function Navbar() {
 
         {mobileMenuOpen && (
           <div className="md:hidden px-4 pt-3 pb-6 bg-thuy-950 border-b border-thuy-700 animate-in slide-in-from-top-4">
-            {navLinks.map((link) => {
-              const hasChildren = link.children && link.children.length > 0;
-              const subOpen = openMobileSub.has(link.label);
-              return (
-                <div key={link.href || link.label} className="mb-1">
-                  <button
-                    onClick={() => {
-                      if (hasChildren) {
-                        toggleMobileSub(link.label);
-                      } else {
-                        setMobileMenuOpen(false);
-                      }
-                    }}
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className={
+                pathname === "/"
+                  ? "block px-4 py-2.5 rounded-lg text-sm font-medium bg-thuy-400 text-thuy-950 font-bold transition-colors"
+                  : "block px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-thuy-850 transition-colors"
+              }
+            >
+              Trang Chủ
+            </Link>
+            {groupsLoaded &&
+              groups.map((group) => {
+                const active = isActiveGroup(group);
+                return (
+                  <Link
+                    key={group}
+                    href={`/products?productGroup=${encodeURIComponent(group)}`}
+                    onClick={() => setMobileMenuOpen(false)}
                     className={
-                      isActiveLink(link.href)
-                        ? "flex items-center justify-between w-full px-4 py-2.5 rounded-lg text-sm font-medium bg-thuy-400 text-thuy-950 font-bold transition-colors"
-                        : "flex items-center justify-between w-full px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-thuy-850 transition-colors"
+                      active
+                        ? "block px-4 py-2.5 rounded-lg text-sm font-medium bg-thuy-400 text-thuy-950 font-bold transition-colors"
+                        : "block px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-thuy-850 transition-colors"
                     }
                   >
-                    <span>{link.label}</span>
-                    {hasChildren && (
-                      <ChevronDown
-                        className={
-                          subOpen
-                            ? "w-4 h-4 text-slate-500 transition-transform duration-200 rotate-180"
-                            : "w-4 h-4 text-slate-500 transition-transform duration-200"
-                        }
-                      />
-                    )}
-                  </button>
-                  {hasChildren && subOpen && (
-                    <div className="pl-4 pt-1 space-y-1">
-                      {link.children!.map((child) => {
-                        const childActive = isActiveLink(child.href);
-                        return (
-                          <Link
-                            key={child.href || child.label}
-                            href={child.href || "#"}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className={
-                              childActive
-                                ? "block px-4 py-2 rounded-lg text-xs text-thuy-950 bg-thuy-400 font-semibold transition-colors"
-                                : "block px-4 py-2 rounded-lg text-xs text-slate-400 hover:bg-thuy-800 hover:text-white transition-colors"
-                            }
-                          >
-                            {child.label}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                    {group}
+                  </Link>
+                );
+              })}
             {user?.role === "ADMIN" && (
               <Link
                 href="/admin"
