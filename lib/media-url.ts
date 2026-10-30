@@ -128,3 +128,8 @@ export function resolveVideoFit(
   void aspect;
   return "cover";
 }
+
+export function getDriveFolderId(url: string): string | null {
+  const match = (url || "").trim().match(DRIVE_FOLDER_REGEX);
+  return match ? match[1] : null;
+}
