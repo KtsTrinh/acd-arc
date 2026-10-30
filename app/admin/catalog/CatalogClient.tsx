@@ -816,7 +816,7 @@ export default function AdminCatalogClient({
 
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-white">
                     Ảnh thumbnail (URL):
                   </label>
                   <button
@@ -950,7 +950,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-slate-700">
+                <label className="text-xs text-white">
                   Mô tả sản phẩm:
                 </label>
                 <textarea
