@@ -32,12 +32,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     where: {
       OR: [{ slug }, { id: slug }],
     },
-    include: {
-      category: true,
-      cover: true,
-      tags: true,
-      gallery: true,
-    });
+  });
 
   if (!project) {
     notFound();
