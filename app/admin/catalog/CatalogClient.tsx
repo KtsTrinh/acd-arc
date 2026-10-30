@@ -126,7 +126,7 @@ export default function AdminCatalogClient({
   /* ------------------------------------------------------------------ */
   /* Nhóm sản phẩm & Hạng mục (tự thêm mới)                             */
   /* ------------------------------------------------------------------ */
-  const [customGroups, setCustomGroups] = useState<string[]>([]);
+  const [groups, setGroups] = useState<string[]>([...DEFAULT_GROUPS]);
   const [customCategories, setCustomCategories] = useState<{
     name: string;
     group: string;
@@ -136,10 +136,7 @@ export default function AdminCatalogClient({
   const [newCategoryName, setNewCategoryName] = useState("");
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
 
-  const allGroups = useMemo(
-    () => [...DEFAULT_GROUPS, ...customGroups],
-    [customGroups],
-  );
+  const allGroups = groups;
 
   const handleAddGroup = () => {
     const val = newGroupName.trim();
@@ -148,19 +145,28 @@ export default function AdminCatalogClient({
       setNewGroupName("");
       return;
     }
-    setCustomGroups((prev) => [...prev, val]);
+    setGroups((prev) => [...prev, val]);
     setNewGroupName("");
     setEditingNewGroup(false);
   };
 
   const handleDeleteGroup = (group: string) => {
-    if (DEFAULT_GROUPS.includes(group)) return;
-    if (!confirm(`Xoá nhóm "${group}"? Mục sản phẩm trong nhóm sẽ bị gỡ nhóm.`))
+    const usedBy = items.filter((i) => i.productGroup === group);
+    if (usedBy.length > 0) {
+      setNotice({
+        type: "err",
+        text: `Không xoá được nhóm "${group}". Có ${usedBy.length} sản phẩm đang thuộc nhóm này.`,
+      });
       return;
-    setCustomGroups((prev) => prev.filter((g) => g !== group));
+    }
+    if (!confirm(`Xoá nhóm "${group}"?`)) return;
+    setGroups((prev) => prev.filter((g) => g !== group));
     setCustomCategories((prev) => prev.filter((c) => c.group !== group));
     setItems((prev) => prev.map((i) => (i.productGroup === group ? { ...i, productGroup: "" } : i)));
-    if (activeTab === group) setActiveTab(DEFAULT_GROUPS[0]);
+    if (activeTab === group) {
+      const next = allGroups.filter((g) => g !== group);
+      setActiveTab(next.length ? next[0] : "MANAGE");
+    }
   };
 
   const handleAddCategory = () => {
@@ -648,7 +654,6 @@ export default function AdminCatalogClient({
         {allGroups.map((group) => {
           const count = items.filter((i) => i.productGroup === group).length;
           const isActive = activeTab === group;
-          const isDefault = DEFAULT_GROUPS.includes(group);
           return (
             <div key={group} className="relative inline-flex items-center gap-1">
               <button
@@ -668,18 +673,16 @@ export default function AdminCatalogClient({
                   {count}
                 </span>
               </button>
-              {!isDefault && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteGroup(group);
-                  }}
-                  className="p-1 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
-                  title="Xoá nhóm"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </button>
-              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteGroup(group);
+                }}
+                className="p-1 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
+                title="Xoá nhóm"
+              >
+                <Trash2 className="w-3 h-3" />
+              </button>
             </div>
           );
         })}
