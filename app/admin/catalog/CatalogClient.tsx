@@ -659,7 +659,7 @@ export default function AdminCatalogClient({
                   <select
                     value={form.type}
                     onChange={(e) => updateForm({ type: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   >
                     {CATALOG_GROUPS.map((g) => (
                       <option key={g.key} value={g.types[0]}>
@@ -684,7 +684,7 @@ export default function AdminCatalogClient({
                     value={form.shortDesc}
                     onChange={(e) => updateForm({ shortDesc: e.target.value })}
                     placeholder="Mô tả ngắn gọn về sản phẩm..."
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
@@ -692,7 +692,7 @@ export default function AdminCatalogClient({
                   <select
                     value={form.categoryId}
                     onChange={(e) => updateForm({ categoryId: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   >
                     <option value="">— Không phân loại —</option>
                     {categories.map((c) => (
@@ -711,7 +711,7 @@ export default function AdminCatalogClient({
                       updateForm({ buildingType: e.target.value })
                     }
                     placeholder="Biệt thự, nhà phố..."
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
@@ -721,7 +721,7 @@ export default function AdminCatalogClient({
                     value={form.style}
                     onChange={(e) => updateForm({ style: e.target.value })}
                     placeholder="Hiện đại, cổ điển..."
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
@@ -731,7 +731,7 @@ export default function AdminCatalogClient({
                     value={form.area}
                     onChange={(e) => updateForm({ area: e.target.value })}
                     placeholder="250"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
@@ -741,7 +741,7 @@ export default function AdminCatalogClient({
                     value={form.year}
                     onChange={(e) => updateForm({ year: e.target.value })}
                     placeholder="2024"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
@@ -751,7 +751,7 @@ export default function AdminCatalogClient({
                     value={form.location}
                     onChange={(e) => updateForm({ location: e.target.value })}
                     placeholder="Quận 1, TP.HCM..."
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1 sm:col-span-2">
@@ -761,7 +761,7 @@ export default function AdminCatalogClient({
                     value={form.client}
                     onChange={(e) => updateForm({ client: e.target.value })}
                     placeholder="Công ty X..."
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
               </div>
@@ -799,7 +799,7 @@ export default function AdminCatalogClient({
                     value={form.fileFormat}
                     onChange={(e) => updateForm({ fileFormat: e.target.value })}
                     placeholder="AutoCAD .DWG / 3ds Max 2024"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
@@ -809,7 +809,7 @@ export default function AdminCatalogClient({
                     value={form.fileSize}
                     onChange={(e) => updateForm({ fileSize: e.target.value })}
                     placeholder="185 MB / 1.2 GB"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
               </div>
@@ -832,7 +832,7 @@ export default function AdminCatalogClient({
                   value={form.thumbnail}
                   onChange={(e) => updateForm({ thumbnail: e.target.value })}
                   placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
 
@@ -958,7 +958,7 @@ export default function AdminCatalogClient({
                   value={form.description}
                   onChange={(e) => updateForm({ description: e.target.value })}
                   placeholder="Chi tiết các file đính kèm..."
-                  className="w-full p-3 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  className="w-full p-3 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
 
