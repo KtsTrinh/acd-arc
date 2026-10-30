@@ -357,6 +357,25 @@ export default function AdminMediaPage() {
                   unoptimized
                 />
 
+                {/* Select checkbox */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleSelectMedia(item.id);
+                  }}
+                  className="absolute top-2 right-2 z-10 p-1 rounded-lg bg-thuy-950/80 backdrop-blur-md border border-thuy-700"
+                >
+                  <div
+                    className={`w-4 h-4 rounded border flex items-center justify-center ${
+                      selectedMediaIds.includes(item.id)
+                        ? "bg-thuy-400 border-thuy-400 text-thuy-950"
+                        : "border-thuy-500"
+                    }`}
+                  >
+                    {selectedMediaIds.includes(item.id) && <Check className="w-3 h-3" />}
+                  </div>
+                </button>
+
                 {/* Folder pill */}
                 <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-thuy-950/80 backdrop-blur-md text-[10px] text-thuy-300 border border-thuy-700 capitalize">
                   {item.folder}
