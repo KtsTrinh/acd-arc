@@ -1,4 +1,4 @@
-﻿import React from "react";
+﻿import React, { useState } from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatVND, formatDateTime } from "@/lib/utils";
@@ -12,12 +12,29 @@ import {
   CheckCircle2,
   Clock,
   ExternalLink,
+  PieChart as PieChartIcon,
+  LineChart as LineChartIcon,
+  BarChart as BarChartIcon,
 } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 
 export const revalidate = 0;
 
 export default async function AdminDashboardPage() {
-  const [projectCount, productCount, orderCount, mediaCount, recentOrders, paidOrders] = await Promise.all([
+  const now = new Date();
+  const sevenDaysAgo = new Date(now);
+  sevenDaysAgo.setDate(now.getDate() - 7);
+
+  const [projectCount, productCount, orderCount, mediaCount, recentOrders, paidOrders, ordersByDay] = await Promise.all([
     prisma.project.count(),
     prisma.product.count(),
     prisma.order.count(),
@@ -32,11 +49,38 @@ export default async function AdminDashboardPage() {
     }),
     prisma.order.findMany({
       where: { status: "PAID" },
-      select: { total: true },
+      select: { total: true, createdAt: true },
+    }),
+    prisma.order.findMany({
+      where: { createdAt: { gte: sevenDaysAgo } },
+      select: { total: true, status: true, createdAt: true },
+      orderBy: { createdAt: "asc" },
     }),
   ]);
 
   const totalRevenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
+
+  const paidCount = ordersByDay.filter((o) => o.status === "PAID").length;
+  const pendingCount = ordersByDay.filter((o) => o.status !== "PAID").length;
+
+  // Group orders by day for last 7 days
+  const dayLabels = ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+  const dayData = dayLabels.map((label, i) => {
+    const targetDate = new Date(now);
+    targetDate.setDate(now.getDate() - (6 - i));
+    targetDate.setHours(0, 0, 0, 0);
+    const nextDay = new Date(targetDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    const dayOrders = ordersByDay.filter((o) => {
+      const d = new Date(o.createdAt);
+      return d >= targetDate && d < nextDay;
+    });
+    const revenue = dayOrders.reduce((sum, o) => sum + (o.status === "PAID" ? o.total : 0), 0);
+    const count = dayOrders.length;
+
+    return { name: label, revenue, count };
+  });
 
   const stats = [
     {
@@ -76,16 +120,6 @@ export default async function AdminDashboardPage() {
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">Dashboard Tổng Quan</h1>
           <p className="text-sm text-[#526780] mt-1">Hệ thống quản trị kiến trúc ACD: Portfolio, Media Library dùng chung & Thương mại điện tử</p>
         </div>
-
-        <div className="flex items-center gap-2.5">
-          <Link
-            href="/admin/media"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-[#142338] border border-[#E1EAF2] text-xs font-medium hover:border-[#22C7E8] hover:text-[#087EA4] transition-all"
-          >
-            <ImageIcon className="w-4 h-4" />
-            <span>Upload Media</span>
-          </Link>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -110,6 +144,64 @@ export default async function AdminDashboardPage() {
             </Link>
           );
         })}
+      </div>
+
+      {/* Biểu đồ */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Doanh thu 7 ngày */}
+        <div className="rounded-xl bg-white border border-[#E1EAF2] overflow-hidden shadow-sm">
+          <div className="p-5 border-b border-[#E1EAF2]">
+            <div className="flex items-center gap-2">
+              <LineChartIcon className="w-4 h-4 text-[#087EA4]" />
+              <h2 className="font-semibold text-base text-[#142338]">Doanh Thu 7 Ngày Gần Đây</h2>
+            </div>
+            <p className="text-xs text-[#526780] mt-1">Tổng đơn đã thanh toán theo ngày</p>
+          </div>
+          <div className="p-4 h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={dayData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E1EAF2" />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#526780" }} axisLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "#526780" }} axisLine={false} />
+                <Tooltip formatter={(value) => formatVND(value)} />
+                <Legend verticalAlign="top" align="right" height={30} />
+                <Line type="monotone" dataKey="revenue" stroke="#087EA4" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Đơn hàng theo trạng thái */}
+        <div className="rounded-xl bg-white border border-[#E1EAF2] overflow-hidden shadow-sm">
+          <div className="p-5 border-b border-[#E1EAF2]">
+            <div className="flex items-center gap-2">
+              <PieChartIcon className="w-4 h-4 text-[#087EA4]" />
+              <h2 className="font-semibold text-base text-[#142338]">Đơn Hàng Theo Trạng Thái</h2>
+            </div>
+            <p className="text-xs text-[#526780] mt-1">7 ngày gần đây</p>
+          </div>
+          <div className="p-4 h-64 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={[
+                    { name: "Đã thanh toán", value: paidCount, fill: "#10B981" },
+                    { name: "Chờ xử lý", value: pendingCount, fill: "#F59E0B" },
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={40}
+                  stroke="#fff"
+                  strokeWidth={2}
+                  label
+                />
+                <Tooltip formatter={(value) => `${value} đơn`} />
+                <Legend verticalAlign="top" align="center" />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-xl bg-white border border-[#E1EAF2] overflow-hidden shadow-sm">
