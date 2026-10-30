@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, Upload, Link as LinkIcon, Search, Check, Folder, Loader2 } from "lucide-react";
-import { playableVideoUrl, isVideoUrl } from "@/lib/media-url";
+import { playableVideoUrl, isVideoUrl, DRIVE_FOLDER_REGEX } from "@/lib/media-url";
 
 export interface MediaItem {
   id: string;
@@ -151,7 +151,7 @@ export default function MediaPickerModal({
     return mediaType === "video" ? isVideo : !isVideo;
   });
 
-  const externalIsVideo = isVideoUrl(externalUrl);
+  const externalIsVideo = isVideoUrl(externalUrl, externalFilename);
   const externalPlayable = externalIsVideo ? playableVideoUrl(externalUrl) : externalUrl;
 
   const fetchMedia = async () => {
@@ -240,6 +240,39 @@ export default function MediaPickerModal({
   const handleUrlSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!externalUrl) return;
+
+    const isFolder = DRIVE_FOLDER_REGEX.test(externalUrl);
+    if (isFolder) {
+      setIsImporting(true);
+      try {
+        const res = await fetch("/api/media/import-folder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: externalUrl, folder: externalFolder }),
+        });
+        const data = await res.json();
+        if (data.success && data.media) {
+          alert(`Đã import thành công ${data.media.length} tệp tin từ thư mục!`);
+          setExternalUrl("");
+          setExternalFilename("");
+          setExternalAlt("");
+          setActiveTab("library");
+          await fetchMedia();
+          if (!multiple && data.media.length > 0) {
+            onSelect(data.media[0]);
+            onClose();
+          }
+        } else {
+          alert(data.error || "Có lỗi xảy ra khi import thư mục.");
+        }
+      } catch (err) {
+        console.error("Import folder error:", err);
+        alert("Không thể kết nối đến máy chủ.");
+      } finally {
+        setIsImporting(false);
+      }
+      return;
+    }
 
     setIsImporting(true);
     try {
@@ -580,7 +613,12 @@ export default function MediaPickerModal({
                 </p>
               </div>
 
-              {externalUrl && externalIsVideo ? (
+              {DRIVE_FOLDER_REGEX.test(externalUrl) ? (
+                <div className="w-full h-40 rounded-xl border border-thuy-700 bg-thuy-950 flex flex-col items-center justify-center text-slate-400 gap-2">
+                  <Folder className="w-8 h-8 text-thuy-400" />
+                  <span className="text-xs">Liên kết Thư mục Google Drive (Sẵn sàng import hàng loạt)</span>
+                </div>
+              ) : externalUrl && externalIsVideo ? (
                 <div className="relative w-full h-40 rounded-xl overflow-hidden border border-thuy-700 bg-thuy-950">
                   <video
                     src={externalPlayable}
