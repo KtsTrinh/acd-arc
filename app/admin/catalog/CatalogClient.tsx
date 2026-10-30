@@ -649,90 +649,6 @@ export default function AdminCatalogClient({
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2">
-        {allGroups.map((group) => {
-          const count = items.filter((i) => i.productGroup === group).length;
-          const isActive = activeTab === group;
-          return (
-            <div key={group} className="relative inline-flex items-center gap-1">
-              <button
-                onClick={() => setActiveTab(group)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                  isActive
-                    ? "bg-thuy-400 text-thuy-950 border-thuy-400 shadow-glow-cyan"
-                    : "bg-thuy-850 text-slate-700 border-thuy-750 hover:border-thuy-500"
-                }`}
-              >
-                {group}
-                <span
-                  className={`ml-2 px-1.5 py-0.5 rounded-full text-[10px] ${
-                    isActive ? "bg-thuy-950/20" : "bg-thuy-800 text-thuy-300"
-                  }`}
-                >
-                  {count}
-                </span>
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteGroup(group);
-                }}
-                className="p-1 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
-                title="Xoá nhóm"
-              >
-                <Trash2 className="w-3 h-3" />
-              </button>
-            </div>
-          );
-        })}
-        {editingNewGroup ? (
-          <div className="flex items-center gap-1">
-            <input
-              autoFocus
-              value={newGroupName}
-              onChange={(e) => setNewGroupName(e.target.value.trim())}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleAddGroup();
-                if (e.key === "Escape") setEditingNewGroup(false);
-              }}
-              placeholder="Tên nhóm mới..."
-              className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white w-40"
-            />
-            <button
-              onClick={handleAddGroup}
-              className="px-2.5 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
-            >
-              <Plus className="w-3 h-3" />
-            </button>
-            <button
-              onClick={() => setEditingNewGroup(false)}
-              className="px-2.5 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-700 text-slate-400"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setEditingNewGroup(true)}
-            className="px-4 py-2.5 rounded-xl text-xs font-bold transition-all border bg-thuy-850 text-slate-700 border-thuy-750 hover:border-thuy-500"
-          >
-            <Plus className="w-3 h-3 inline mr-1" /> Thêm nhóm
-          </button>
-        )}
-        <button
-          onClick={() => setActiveTab("MANAGE")}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
-            activeTab === "MANAGE"
-              ? "bg-thuy-400 text-thuy-950 border-thuy-400 shadow-glow-cyan"
-              : "bg-thuy-850 text-slate-700 border-thuy-750 hover:border-thuy-500"
-          }`}
-        >
-          <FolderTree className="w-3.5 h-3.5 inline mr-1.5" />
-          Danh Mục & Dự Án Hiển Thị
-        </button>
-      </div>
-
       {loading ? (
         <div className="py-16 text-center text-slate-600 text-xs flex items-center justify-center gap-2">
           <Loader2 className="w-4 h-4 animate-spin" /> Đang tải danh mục sản
@@ -812,6 +728,76 @@ export default function AdminCatalogClient({
                       </option>
                     ))}
                   </select>
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-xs text-white">Quản lý nhóm:</label>
+                  <div className="flex items-end gap-2">
+                    {editingNewGroup ? (
+                      <>
+                        <input
+                          autoFocus
+                          value={newGroupName}
+                          onChange={(e) => setNewGroupName(e.target.value.trim())}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleAddGroup();
+                            if (e.key === "Escape") setEditingNewGroup(false);
+                          }}
+                          placeholder="Tên nhóm mới..."
+                          className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                        />
+                        <button
+                          onClick={handleAddGroup}
+                          className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                        <button
+                          onClick={() => setEditingNewGroup(false)}
+                          className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-700 text-slate-400"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => setEditingNewGroup(true)}
+                        className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-700 text-slate-400 border border-thuy-700 text-xs"
+                      >
+                        <Plus className="w-3 h-3" /> Thêm nhóm
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-xs text-white">Danh sách nhóm:</label>
+                  <div className="flex flex-wrap gap-2">
+                    {allGroups.map((g) => {
+                      const used = items.filter((i) => i.productGroup === g).length;
+                      const canDelete = used === 0;
+                      return (
+                        <span
+                          key={g}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px]"
+                        >
+                          {g}{used > 0 && (
+                            <span className="text-amber-400"> ({used} mục)</span>
+                          )}
+                          {canDelete && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteGroup(g);
+                              }}
+                              className="p-0.5 hover:text-red-400"
+                              title="Xoá nhóm"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          )}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
                 <div className="space-y-1 sm:col-span-2">
                   <label className="text-xs text-white">Hạng mục:</label>
