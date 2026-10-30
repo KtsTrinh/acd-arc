@@ -465,7 +465,11 @@ export default function AdminCustomersPage() {
                 <div className="flex justify-center px-6 py-4 border-t border-thuy-750 bg-thuy-850">
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage((p) => Math.max(p - 1, 1));
+                      }}
                       disabled={page === 1}
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                         page === 1
@@ -496,11 +500,15 @@ export default function AdminCustomersPage() {
                           p === totalPages ||
                           Math.abs(p - page) <= 1;
                         if (!isVisible) return null;
-                        return (
-                          <button
-                            key={p}
-                            onClick={() => setPage(p)}
-                            className={`w-7 h-7 rounded-lg text-xs font-medium transition-all ${
+                          return (
+                            <button
+                              key={p}
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setPage(p);
+                              }}
+                              className={`w-7 h-7 rounded-lg text-xs font-medium transition-all ${
                               p === page
                                 ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
                                 : "bg-thuy-900 text-slate-600 hover:bg-thuy-800 hover:text-[#142338] border border-thuy-750"
@@ -512,7 +520,11 @@ export default function AdminCustomersPage() {
                       })}
                     </div>
                     <button
-                      onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage((p) => Math.min(p + 1, totalPages));
+                      }}
                       disabled={page === totalPages}
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                         page === totalPages
