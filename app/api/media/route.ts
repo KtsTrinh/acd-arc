@@ -81,7 +81,9 @@ export async function POST(request: Request) {
 
       const normalizedUrl = normalizeMediaUrl(url);
 
-      const media = await createMediaItem({
+      // KHÔNG lưu vào kho lưu trữ - phát trực tiếp từ nguồn bên ngoài
+      const media = {
+        id: `ext_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
         filename: filename || url.split("/").pop()?.split("?")[0] || "media.jpg",
         originalName: filename || "External Media",
         mimeType: detectedMime,
@@ -89,10 +91,10 @@ export async function POST(request: Request) {
         url: normalizedUrl,
         folder: folder || "external",
         alt: alt || "ACD Media",
-      });
+        createdAt: new Date().toISOString(),
+      };
 
-      const sync = await triggerCmsAutoSync("thêm media mới");
-      return NextResponse.json({ success: true, media, sync });
+      return NextResponse.json({ success: true, media, external: true });
     }
 
     // 2. Case: Uploading physical file via FormData
