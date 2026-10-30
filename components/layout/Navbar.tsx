@@ -18,6 +18,12 @@ import {
   ChevronDown,
 } from "lucide-react";
 
+interface NavLink {
+  label: string;
+  href?: string;
+  children?: NavLink[];
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,6 +31,12 @@ export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [userDropdown, setUserDropdown] = useState(false);
+  const [openDesktopSub, setOpenDesktopSub] = useState<Set<string>>(
+    new Set(),
+  );
+  const [openMobileSub, setOpenMobileSub] = useState<Set<string>>(
+    new Set(),
+  );
   const totalItems = useCartStore((state) => state.totalItems());
 
   useEffect(() => {
@@ -35,7 +47,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fetch current user
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => res.json())
@@ -47,7 +58,6 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await fetch("/api/auth/me", { method: "POST" });
-    // Xóa giỏ hàng để không lẫn sản phẩm giữa các tài khoản trên cùng máy
     useCartStore.getState().clearCart();
     setUser(null);
     setUserDropdown(false);
@@ -62,12 +72,64 @@ export default function Navbar() {
     setCartOpen(true);
   };
 
-  const navLinks = [
+  const isActive = (href?: string) => {
+    if (!href) return false;
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(href);
+  };
+
+  const navLinks: NavLink[] = [
     { label: "Trang Chủ", href: "/" },
-    { label: "Dự Án Kiến Trúc", href: "/projects" },
-    { label: "Tài Nguyên CAD & 3D", href: "/products" },
-    { label: "Tạp Chí & Phong Thủy", href: "/blog" },
+    {
+      label: "Dự Án Kiến Trúc",
+      href: "/projects",
+      children: [
+        { label: "Tất Cả", href: "/projects" },
+        { label: "Biệt Thự", href: "/projects?category=biet-thu" },
+        { label: "Nhà Phố", href: "/projects?category=nha-pho" },
+        { label: "Penthouse", href: "/projects?category=penthouse" },
+        { label: "Nội Thất", href: "/projects?category=noi-that" },
+      ],
+    },
+    {
+      label: "Tài Nguyên CAD & 3D",
+      href: "/products",
+      children: [
+        { label: "Tất Cả", href: "/products" },
+        { label: "CAD", href: "/products?type=ARCHITECTURE" },
+        { label: "Mô Hình 3D", href: "/products?type=INTERIOR" },
+        { label: "File Kỹ Thuật", href: "/products?type=CONSTRUCTION" },
+        { label: "Template", href: "/products?type=DIGITAL_FILE" },
+      ],
+    },
+    {
+      label: "Tạp Chí & Phong Thủy",
+      href: "/blog",
+      children: [
+        { label: "Tất Cả", href: "/blog" },
+        { label: "Phong Thủy", href: "/blog?category=phong-thuy" },
+        { label: "Kiến Trúc", href: "/blog?category=kien-truc" },
+      ],
+    },
   ];
+
+  const toggleDesktopSub = (key: string) => {
+    setOpenDesktopSub((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const toggleMobileSub = (key: string) => {
+    setOpenMobileSub((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   return (
     <>
@@ -101,19 +163,56 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1 bg-thuy-850/60 px-4 py-1.5 rounded-full border border-thuy-700/50 backdrop-blur-sm">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+              const active = isActive(link.href);
+              const hasChildren = link.children && link.children.length > 0;
+              const subOpen = openDesktopSub.has(link.label);
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium transition-all ${
-                    isActive
-                      ? "text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan"
-                      : "text-slate-300 hover:text-white hover:bg-thuy-750/50"
-                  }`}
+                <div
+                  key={link.href || link.label}
+                  className="relative group"
                 >
-                  {link.label}
-                </Link>
+                  <Link
+                    href={link.href || "#"}
+                    onClick={(e) => {
+                      if (hasChildren) e.preventDefault();
+                      toggleDesktopSub(link.label);
+                    }}
+                    className={`px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium transition-all ${
+                      active
+                        ? "text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan"
+                        : "text-slate-300 hover:text-white hover:bg-thuy-750/50"
+                    }`}
+                  >
+                    {link.label}
+                    {hasChildren && (
+                      <ChevronDown
+                        className={`w-3 h-3 ml-1 text-slate-400 transition-transform duration-200 ${
+                          subOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    )}
+                  </Link>
+                  {hasChildren && subOpen && (
+                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-60 rounded-xl bg-thuy-900 border border-thuy-700 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                      {link.children!.map((child) => {
+                        const childActive = isActive(child.href);
+                        return (
+                          <Link
+                            key={child.href || child.label}
+                            href={child.href || "#"}
+                            className={`block px-4 py-2 text-xs text-slate-300 hover:bg-thuy-800 hover:text-white transition-colors ${
+                              childActive
+                                ? "bg-thuy-400 text-thuy-950 font-semibold"
+                                : ""
+                            }`}
+                          >
+                            {child.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </nav>
@@ -224,26 +323,61 @@ export default function Navbar() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden px-4 pt-3 pb-6 bg-thuy-950 border-b border-thuy-700 space-y-2 animate-in slide-in-from-top-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2.5 rounded-lg text-sm font-medium ${
-                  pathname === link.href
-                    ? "bg-thuy-400 text-thuy-950 font-bold"
-                    : "text-slate-300 hover:bg-thuy-850"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="md:hidden px-4 pt-3 pb-6 bg-thuy-950 border-b border-thuy-700 animate-in slide-in-from-top-4">
+            {navLinks.map((link) => {
+              const hasChildren = link.children && link.children.length > 0;
+              const subOpen = openMobileSub.has(link.label);
+              return (
+                <div key={link.href || link.label} className="mb-1">
+                  <button
+                    onClick={() => {
+                      if (hasChildren) {
+                        toggleMobileSub(link.label);
+                      } else {
+                        setMobileMenuOpen(false);
+                      }
+                    }}
+                    className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                      isActive(link.href)
+                        ? "bg-thuy-400 text-thuy-950 font-bold"
+                        : "text-slate-300 hover:bg-thuy-850"
+                    }"
+                  >
+                    <span>{link.label}</span>
+                    {hasChildren && (
+                      <ChevronDown
+                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
+                          subOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    )}
+                  </button>
+                  {hasChildren && subOpen && (
+                    <div className="pl-4 pt-1 space-y-1">
+                      {link.children!.map((child) => (
+                        <Link
+                          key={child.href || child.label}
+                          href={child.href || "#"}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`block px-4 py-2 rounded-lg text-xs text-slate-400 hover:bg-thuy-800 hover:text-white transition-colors ${
+                            isActive(child.href)
+                              ? "bg-thuy-400 text-thuy-950 font-semibold"
+                              : ""
+                          }`}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
             {user?.role === "ADMIN" && (
               <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-2.5 rounded-lg text-sm font-bold text-thuy-400 bg-thuy-900 border border-thuy-700"
+                className="block px-4 py-2.5 rounded-lg text-sm font-bold text-thuy-400 bg-thuy-900 border border-thuy-700 mt-2"
               >
                 Quản trị CMS
               </Link>
@@ -257,4 +391,3 @@ export default function Navbar() {
     </>
   );
 }
-
