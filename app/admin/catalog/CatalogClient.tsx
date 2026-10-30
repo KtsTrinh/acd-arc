@@ -825,17 +825,27 @@ export default function AdminCatalogClient({
                         {c}
                       </option>
                     ))}
-                    {showNewCategoryInput ? (
-                      <>
-                        <option value="" disabled hidden>
-                          —
-                        </option>
-                        <option value="+new">+ Thêm hạng mục mới</option>
-                      </>
-                    ) : (
-                      <option value="+new">+ Thêm hạng mục mới</option>
-                    )}
+                    <option value="+new">+ Thêm hạng mục mới</option>
                   </select>
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-xs text-white">Ảnh thumbnail:</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={form.thumbnail}
+                      onChange={(e) => updateForm({ thumbnail: e.target.value })}
+                      placeholder="https://..."
+                      className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setMediaPickerOpen(true)}
+                      className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700 whitespace-nowrap"
+                    >
+                      Thư viện Hình ảnh/Video
+                    </button>
+                  </div>
                 </div>
                 {showNewCategoryInput && (
                   <div className="space-y-1 sm:col-span-2">
@@ -945,7 +955,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="space-y-1 sm:col-span-2">
+                <div className="space-y-1 sm:col-span-3">
                   <label className="text-xs text-white">Mô tả tóm tắt:</label>
                   <input
                     type="text"
@@ -1207,7 +1217,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-white">Mô tả sản phẩm:</label>
+                <label className="text-xs text-white">Mô tả chi tiết:</label>
                 <textarea
                   rows={3}
                   value={form.description}
@@ -1218,24 +1228,6 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <label className="flex items-center gap-2 text-xs text-white">
-                  <input
-                    type="checkbox"
-                    checked={form.active}
-                    onChange={(e) => updateForm({ active: e.target.checked })}
-                    className="accent-thuy-400"
-                  />
-                  Đang kinh doanh
-                </label>
-                <label className="flex items-center gap-2 text-xs text-white">
-                  <input
-                    type="checkbox"
-                    checked={form.featured}
-                    onChange={(e) => updateForm({ featured: e.target.checked })}
-                    className="accent-thuy-400"
-                  />
-                  Nổi bật
-                </label>
               </div>
 
               {/* Price section */}
