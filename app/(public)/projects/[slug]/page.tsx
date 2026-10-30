@@ -38,15 +38,9 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       tags: { include: { tag: true } },
       gallery: {
         orderBy: { sortOrder: "asc" },
-        include: { media: true },
-      },
-      // Các mục danh mục sản phẩm (hồ sơ kỹ thuật) gắn với dự án này
-      catalogItems: {
-        where: { active: true },
-        orderBy: { createdAt: "desc" },
-      },
-    },
-  });
+        include: { media: true }
+      }
+    });
 
   if (!project) {
     notFound();
@@ -219,30 +213,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           </div>
         </div>
       </div>
-
-      {/* Hồ sơ kỹ thuật của dự án (mục danh mục sản phẩm liên kết) */}
-      {project.catalogItems.length > 0 && (
-        <div className="pt-6 space-y-4">
-          <h2 className="font-display font-bold text-2xl text-white">
-            Hồ Sơ Kỹ Thuật Số Của Công Trình
-          </h2>
-          {project.catalogItems.map((item) => (
-            <BuyCatalogItemButton
-              key={item.id}
-              item={{
-                id: item.id,
-                name: item.name,
-                slug: item.slug,
-                price: item.price ?? 0,
-                type: item.type,
-                fileFormat: item.fileFormat,
-                fileSize: item.fileSize,
-                thumbnail: item.thumbnail,
-              }}
-            />
-          ))}
-        </div>
-      )}
 
       {/* Gallery Section with Lightbox */}
       <div className="pt-10 border-t border-thuy-800 space-y-6">

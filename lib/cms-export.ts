@@ -183,8 +183,6 @@ export async function buildCmsExport(): Promise<CmsExportFile[]> {
         slug: product.slug,
         description: product.description,
         price: product.price,
-        comparePrice: product.comparePrice,
-        type: product.type,
         fileFormat: product.fileFormat,
         fileSize: product.fileSize,
         thumbnail: product.thumbnail,

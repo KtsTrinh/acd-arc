@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { formatVND } from "@/lib/utils";
-import { CATALOG_GROUPS, PRODUCT_TYPE_LABELS } from "@/lib/catalog";
+import { CATALOG_GROUPS } from "@/lib/catalog";
 import {
   Download,
   Filter,
@@ -162,7 +162,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       </div>
                     )}
                     <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-thuy-950/85 backdrop-blur-sm border border-thuy-700 text-[10px] font-bold text-thuy-300">
-                        {PRODUCT_TYPE_LABELS[prod.type] || prod.type}
+                        {prod.productGroup || prod.productCategory || "Tài nguyên"}
                     </span>
                     {prod.fileSize && (
                       <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-thuy-950/85 text-[10px] text-slate-300 border border-thuy-700">
@@ -186,11 +186,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                     <span className="font-bold text-base text-thuy-400">
                       {formatVND(prod.price ?? 0)}
                     </span>
-                    {prod.comparePrice && (
-                      <span className="text-[10px] text-slate-500 line-through block">
-                        {formatVND(prod.comparePrice)}
-                      </span>
-                    )}
                   </div>
 
                   <Link
