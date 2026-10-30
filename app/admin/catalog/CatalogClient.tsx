@@ -804,41 +804,6 @@ export default function AdminCatalogClient({
                   </div>
                 )}
 
-                {form.productGroup && (
-                  <div className="space-y-1 sm:col-span-1">
-                    <label className="text-xs text-white">Quản lý nhóm:</label>
-                    <div className="flex flex-wrap gap-2">
-                      {allGroups
-                        .filter((g) => !DEFAULT_GROUPS.includes(g))
-                        .map((g) => {
-                          const used = items.filter(
-                            (i) => i.productGroup === g,
-                          ).length;
-                          const canDelete = used === 0;
-                          return (
-                            <span
-                              key={g}
-                              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
-                            >
-                              {g}
-                              {canDelete && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteGroup(g);
-                                  }}
-                                  className="p-0.5 hover:text-red-400"
-                                  title="Xoá nhóm"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              )}
-                            </span>
-                          );
-                        })}
-                    </div>
-                  </div>
-                )}
                 <div className="space-y-1 sm:col-span-1">
                   <label className="text-xs text-white">Hạng mục:</label>
                   <select
@@ -904,6 +869,41 @@ export default function AdminCatalogClient({
                       >
                         <X className="w-3 h-3" />
                       </button>
+                    </div>
+                  </div>
+                )}
+                {form.productGroup && (
+                  <div className="space-y-1 sm:col-span-1">
+                    <label className="text-xs text-white">Quản lý nhóm:</label>
+                    <div className="flex flex-wrap gap-2">
+                      {allGroups
+                        .filter((g) => !DEFAULT_GROUPS.includes(g))
+                        .map((g) => {
+                          const used = items.filter(
+                            (i) => i.productGroup === g,
+                          ).length;
+                          const canDelete = used === 0;
+                          return (
+                            <span
+                              key={g}
+                              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
+                            >
+                              {g}
+                              {canDelete && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteGroup(g);
+                                  }}
+                                  className="p-0.5 hover:text-red-400"
+                                  title="Xoá nhóm"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              )}
+                            </span>
+                          );
+                        })}
                     </div>
                   </div>
                 )}
