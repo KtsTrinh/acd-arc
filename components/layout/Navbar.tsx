@@ -72,10 +72,28 @@ export default function Navbar() {
     setCartOpen(true);
   };
 
-  const isActive = (href?: string) => {
+  const isActiveLink = (href?: string) => {
     if (!href) return false;
     if (href === "/") return pathname === "/";
     return pathname === href || pathname.startsWith(href);
+  };
+
+  const toggleDesktopSub = (key: string) => {
+    setOpenDesktopSub((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const toggleMobileSub = (key: string) => {
+    setOpenMobileSub((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
   };
 
   const navLinks: NavLink[] = [
@@ -113,24 +131,6 @@ export default function Navbar() {
     },
   ];
 
-  const toggleDesktopSub = (key: string) => {
-    setOpenDesktopSub((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
-
-  const toggleMobileSub = (key: string) => {
-    setOpenMobileSub((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
-
   return (
     <>
       <header
@@ -141,7 +141,6 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-thuy-400 via-thuy-600 to-thuy-900 p-0.5 shadow-glow-cyan flex items-center justify-center">
               <div className="w-full h-full bg-thuy-950 rounded-[10px] flex items-center justify-center group-hover:bg-transparent transition-colors">
@@ -160,51 +159,49 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1 bg-thuy-850/60 px-4 py-1.5 rounded-full border border-thuy-700/50 backdrop-blur-sm">
             {navLinks.map((link) => {
-              const active = isActive(link.href);
+              const active = isActiveLink(link.href);
               const hasChildren = link.children && link.children.length > 0;
               const subOpen = openDesktopSub.has(link.label);
               return (
-                <div
-                  key={link.href || link.label}
-                  className="relative group"
-                >
+                <div key={link.href || link.label} className="relative group">
                   <Link
                     href={link.href || "#"}
                     onClick={(e) => {
                       if (hasChildren) e.preventDefault();
                       toggleDesktopSub(link.label);
                     }}
-                    className={`px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium transition-all ${
+                    className={
                       active
-                        ? "text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan"
-                        : "text-slate-300 hover:text-white hover:bg-thuy-750/50"
-                    }`}
+                        ? "px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all"
+                        : "px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all"
+                    }
                   >
                     {link.label}
                     {hasChildren && (
                       <ChevronDown
-                        className={`w-3 h-3 ml-1 text-slate-400 transition-transform duration-200 ${
-                          subOpen ? "rotate-180" : ""
-                        }`}
+                        className={
+                          subOpen
+                            ? "w-3 h-3 ml-1 text-slate-400 transition-transform duration-200 rotate-180"
+                            : "w-3 h-3 ml-1 text-slate-400 transition-transform duration-200"
+                        }
                       />
                     )}
                   </Link>
                   {hasChildren && subOpen && (
                     <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-60 rounded-xl bg-thuy-900 border border-thuy-700 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
                       {link.children!.map((child) => {
-                        const childActive = isActive(child.href);
+                        const childActive = isActiveLink(child.href);
                         return (
                           <Link
                             key={child.href || child.label}
                             href={child.href || "#"}
-                            className={`block px-4 py-2 text-xs text-slate-300 hover:bg-thuy-800 hover:text-white transition-colors ${
+                            className={
                               childActive
-                                ? "bg-thuy-400 text-thuy-950 font-semibold"
-                                : ""
-                            }`}
+                                ? "block px-4 py-2 text-xs text-thuy-950 bg-thuy-400 font-semibold transition-colors"
+                                : "block px-4 py-2 text-xs text-slate-300 hover:bg-thuy-800 hover:text-white transition-colors"
+                            }
                           >
                             {child.label}
                           </Link>
@@ -217,9 +214,7 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Right Action Icons */}
           <div className="flex items-center gap-3">
-            {/* Search Link */}
             <Link
               href="/projects"
               className="p-2.5 rounded-full bg-thuy-850/80 hover:bg-thuy-700/80 text-slate-300 hover:text-thuy-300 border border-thuy-700/60 transition-colors"
@@ -228,7 +223,6 @@ export default function Navbar() {
               <Search className="w-4 h-4" />
             </Link>
 
-            {/* Cart Button */}
             <button
               onClick={handleCartOpen}
               className="relative p-2.5 rounded-full bg-thuy-850/80 hover:bg-thuy-700/80 text-slate-300 hover:text-thuy-300 border border-thuy-700/60 transition-colors"
@@ -242,7 +236,6 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* User Profile or Login */}
             {user ? (
               <div className="relative">
                 <button
@@ -258,7 +251,6 @@ export default function Navbar() {
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                 </button>
 
-                {/* Dropdown Menu */}
                 {userDropdown && (
                   <div className="absolute right-0 mt-2 w-52 rounded-xl bg-thuy-900 border border-thuy-700 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-4 py-2 border-b border-thuy-700/60 text-xs">
@@ -311,7 +303,6 @@ export default function Navbar() {
               </Link>
             )}
 
-            {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2.5 rounded-xl bg-thuy-850 text-slate-300 border border-thuy-700"
@@ -321,7 +312,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div className="md:hidden px-4 pt-3 pb-6 bg-thuy-950 border-b border-thuy-700 animate-in slide-in-from-top-4">
             {navLinks.map((link) => {
@@ -337,37 +327,42 @@ export default function Navbar() {
                         setMobileMenuOpen(false);
                       }
                     }}
-                    className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      isActive(link.href)
-                        ? "bg-thuy-400 text-thuy-950 font-bold"
-                        : "text-slate-300 hover:bg-thuy-850"
-                    }"
+                    className={
+                      isActiveLink(link.href)
+                        ? "flex items-center justify-between w-full px-4 py-2.5 rounded-lg text-sm font-medium bg-thuy-400 text-thuy-950 font-bold transition-colors"
+                        : "flex items-center justify-between w-full px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-thuy-850 transition-colors"
+                    }
                   >
                     <span>{link.label}</span>
                     {hasChildren && (
                       <ChevronDown
-                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
-                          subOpen ? "rotate-180" : ""
-                        }`}
+                        className={
+                          subOpen
+                            ? "w-4 h-4 text-slate-500 transition-transform duration-200 rotate-180"
+                            : "w-4 h-4 text-slate-500 transition-transform duration-200"
+                        }
                       />
                     )}
                   </button>
                   {hasChildren && subOpen && (
                     <div className="pl-4 pt-1 space-y-1">
-                      {link.children!.map((child) => (
-                        <Link
-                          key={child.href || child.label}
-                          href={child.href || "#"}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`block px-4 py-2 rounded-lg text-xs text-slate-400 hover:bg-thuy-800 hover:text-white transition-colors ${
-                            isActive(child.href)
-                              ? "bg-thuy-400 text-thuy-950 font-semibold"
-                              : ""
-                          }`}
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
+                      {link.children!.map((child) => {
+                        const childActive = isActiveLink(child.href);
+                        return (
+                          <Link
+                            key={child.href || child.label}
+                            href={child.href || "#"}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={
+                              childActive
+                                ? "block px-4 py-2 rounded-lg text-xs text-thuy-950 bg-thuy-400 font-semibold transition-colors"
+                                : "block px-4 py-2 rounded-lg text-xs text-slate-400 hover:bg-thuy-800 hover:text-white transition-colors"
+                            }
+                          >
+                            {child.label}
+                          </Link>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -386,7 +381,6 @@ export default function Navbar() {
         )}
       </header>
 
-      {/* Cart Drawer */}
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
