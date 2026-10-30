@@ -637,7 +637,7 @@ export default function AdminCatalogClient({
 
             <form onSubmit={handleSave} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-white">Tên mục *:</label>
+                <label className="text-xs text-white">Tên sản phẩm *:</label>
                 <input
                   type="text"
                   required
@@ -655,7 +655,7 @@ export default function AdminCatalogClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1 sm:col-span-3">
-                  <label className="text-xs text-white">Nhóm danh mục:</label>
+                  <label className="text-xs text-white">Nhóm sản phẩm:</label>
                   <select
                     value={form.type}
                     onChange={(e) => updateForm({ type: e.target.value })}
