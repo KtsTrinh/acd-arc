@@ -137,18 +137,20 @@ export default function AdminCatalogClient({
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [galleryMediaPickerOpen, setGalleryMediaPickerOpen] = useState(false);
   const [galleryCoverMediaId, setGalleryCoverMediaId] = useState<string | null>(
-    null
+    null,
   );
   const [gallerySaving, setGallerySaving] = useState(false);
 
   const fetchAll = useCallback(async () => {
     try {
-      const [itemsRes, projectsRes, categoriesRes, tagsRes] = await Promise.all([
-        fetch("/api/products?includeInactive=1"),
-        fetch("/api/projects"),
-        fetch("/api/categories"),
-        fetch("/api/tags"),
-      ]);
+      const [itemsRes, projectsRes, categoriesRes, tagsRes] = await Promise.all(
+        [
+          fetch("/api/products?includeInactive=1"),
+          fetch("/api/projects"),
+          fetch("/api/categories"),
+          fetch("/api/tags"),
+        ],
+      );
       const itemsData = await itemsRes.json();
       const projectsData = await projectsRes.json();
       const categoriesData = await categoriesRes.json();
@@ -210,20 +212,22 @@ export default function AdminCatalogClient({
       const res = await fetch(`/api/products/${item.id}/gallery`);
       const data = await res.json();
       if (data.gallery) {
-        const mapped: GalleryItem[] = data.gallery.map((g: any, idx: number) => ({
-          id: g.id,
-          mediaId: g.mediaId,
-          sortOrder: g.sortOrder ?? idx,
-          media: {
-            id: g.media.id,
-            filename: g.media.filename,
-            originalName: g.media.originalName,
-            url: g.media.url,
-            folder: g.media.folder,
-            alt: g.media.alt,
-            mimeType: g.media.mimeType,
-          },
-        }));
+        const mapped: GalleryItem[] = data.gallery.map(
+          (g: any, idx: number) => ({
+            id: g.id,
+            mediaId: g.mediaId,
+            sortOrder: g.sortOrder ?? idx,
+            media: {
+              id: g.media.id,
+              filename: g.media.filename,
+              originalName: g.media.originalName,
+              url: g.media.url,
+              folder: g.media.folder,
+              alt: g.media.alt,
+              mimeType: g.media.mimeType,
+            },
+          }),
+        );
         setGalleryItems(mapped);
         // Use first item as cover if no cover set
         if (mapped.length > 0) {
@@ -337,7 +341,7 @@ export default function AdminCatalogClient({
             ...payload,
             galleryMediaIds: galleryItems.map((g) => g.mediaId),
           }),
-        }
+        },
       );
       const data = await res.json();
       if (data.success) {
@@ -392,25 +396,30 @@ export default function AdminCatalogClient({
       });
       const data = await res.json();
       if (data.gallery) {
-        const mapped: GalleryItem[] = data.gallery.map((g: any, idx: number) => ({
-          id: g.id,
-          mediaId: g.mediaId,
-          sortOrder: g.sortOrder ?? idx,
-          media: {
-            id: g.media.id,
-            filename: g.media.filename,
-            originalName: g.media.originalName,
-            url: g.media.url,
-            folder: g.media.folder,
-            alt: g.media.alt,
-            mimeType: g.media.mimeType,
-          },
-        }));
+        const mapped: GalleryItem[] = data.gallery.map(
+          (g: any, idx: number) => ({
+            id: g.id,
+            mediaId: g.mediaId,
+            sortOrder: g.sortOrder ?? idx,
+            media: {
+              id: g.media.id,
+              filename: g.media.filename,
+              originalName: g.media.originalName,
+              url: g.media.url,
+              folder: g.media.folder,
+              alt: g.media.alt,
+              mimeType: g.media.mimeType,
+            },
+          }),
+        );
         setGalleryItems(mapped);
         if (!galleryCoverMediaId && mapped.length > 0) {
           setGalleryCoverMediaId(mapped[0].mediaId);
         }
-        setNotice({ type: "ok", text: `Đã thêm ${mediaArray.length} mục vào Gallery.` });
+        setNotice({
+          type: "ok",
+          text: `Đã thêm ${mediaArray.length} mục vào Gallery.`,
+        });
       }
     } catch (err) {
       console.error("Failed to add to product gallery:", err);
@@ -428,24 +437,26 @@ export default function AdminCatalogClient({
     try {
       const res = await fetch(
         `/api/products/${form.id}/gallery?mediaId=${mediaId}`,
-        { method: "DELETE" }
+        { method: "DELETE" },
       );
       const data = await res.json();
       if (data.gallery) {
-        const mapped: GalleryItem[] = data.gallery.map((g: any, idx: number) => ({
-          id: g.id,
-          mediaId: g.mediaId,
-          sortOrder: g.sortOrder ?? idx,
-          media: {
-            id: g.media.id,
-            filename: g.media.filename,
-            originalName: g.media.originalName,
-            url: g.media.url,
-            folder: g.media.folder,
-            alt: g.media.alt,
-            mimeType: g.media.mimeType,
-          },
-        }));
+        const mapped: GalleryItem[] = data.gallery.map(
+          (g: any, idx: number) => ({
+            id: g.id,
+            mediaId: g.mediaId,
+            sortOrder: g.sortOrder ?? idx,
+            media: {
+              id: g.media.id,
+              filename: g.media.filename,
+              originalName: g.media.originalName,
+              url: g.media.url,
+              folder: g.media.folder,
+              alt: g.media.alt,
+              mimeType: g.media.mimeType,
+            },
+          }),
+        );
         setGalleryItems(mapped);
         if (galleryCoverMediaId === mediaId) {
           setGalleryCoverMediaId(mapped.length > 0 ? mapped[0].mediaId : null);
@@ -613,10 +624,8 @@ export default function AdminCatalogClient({
           />
           <div className="relative z-10 w-full max-w-2xl bg-thuy-900 border border-thuy-700 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-thuy-750">
-              <h3 className="font-semibold text-base text-[#142338]">
-                {form.id
-                  ? "Cập nhật mục danh mục"
-                  : "Thêm mục danh mục sản phẩm"}
+              <h3 className="font-semibold text-base text-white">
+                {form.id ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới"}
               </h3>
               <button
                 onClick={() => setForm(null)}
@@ -698,7 +707,9 @@ export default function AdminCatalogClient({
                   <input
                     type="text"
                     value={form.buildingType}
-                    onChange={(e) => updateForm({ buildingType: e.target.value })}
+                    onChange={(e) =>
+                      updateForm({ buildingType: e.target.value })
+                    }
                     placeholder="Biệt thự, nhà phố..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                   />
@@ -842,7 +853,8 @@ export default function AdminCatalogClient({
 
                 {gallerySaving && (
                   <div className="flex items-center justify-center py-4 text-xs text-slate-400">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Đang đồng bộ Gallery...
+                    <Loader2 className="w-4 h-4 animate-spin" /> Đang đồng bộ
+                    Gallery...
                   </div>
                 )}
 
@@ -903,7 +915,11 @@ export default function AdminCatalogClient({
                                 ? "bg-amber-400 text-thuy-950 border-amber-300 font-bold"
                                 : "bg-thuy-950/80 text-slate-400 hover:text-amber-300 border-thuy-700"
                             }`}
-                            title={isCover ? "Đang là ảnh đại diện" : "Đặt làm ảnh đại diện"}
+                            title={
+                              isCover
+                                ? "Đang là ảnh đại diện"
+                                : "Đặt làm ảnh đại diện"
+                            }
                           >
                             <Star
                               className={`w-4 h-4 ${isCover ? "fill-thuy-950" : ""}`}
