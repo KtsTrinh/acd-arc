@@ -645,29 +645,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs text-white">Giá bán (VNĐ):</label>
-                  <input
-                    type="number"
-                    value={form.price}
-                    onChange={(e) => updateForm({ price: e.target.value })}
-                    placeholder="850000 (để trống nếu miễn phí)"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs text-white">Giá so sánh:</label>
-                  <input
-                    type="number"
-                    value={form.comparePrice}
-                    onChange={(e) =>
-                      updateForm({ comparePrice: e.target.value })
-                    }
-                    placeholder="1200000"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
-                  />
-                </div>
-                <div className="space-y-1">
+                <div className="space-y-1 sm:col-span-3">
                   <label className="text-xs text-white">Nhóm danh mục:</label>
                   <select
                     value={form.type}
@@ -825,6 +803,196 @@ export default function AdminCatalogClient({
                 </div>
               </div>
 
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs text-slate-700">
+                    Ảnh thumbnail (URL):
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setMediaPickerOpen(true)}
+                    className="text-[10px] text-thuy-400 hover:underline"
+                  >
+                    Chọn từ Media Library
+                  </button>
+                </div>
+                <input
+                  type="url"
+                  value={form.thumbnail}
+                  onChange={(e) => updateForm({ thumbnail: e.target.value })}
+                  placeholder="https://..."
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                />
+              </div>
+
+              {/* Product Gallery */}
+              <div className="p-4 rounded-2xl bg-thuy-850/60 border border-thuy-750 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h4 className="text-xs font-bold text-thuy-300 flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4" />
+                      Thư viện Hình Ảnh/Video
+                    </h4>
+                    <p className="text-[10px] text-slate-500">
+                      Chọn ảnh/video từ Media Library hoặc nhập link bên ngoài.
+                      Hỗ trợ định dạng ảnh và video.
+                    </p>
+                  </div>
+                </div>
+
+                {gallerySaving && (
+                  <div className="flex items-center justify-center py-4 text-xs text-slate-400">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Đang đồng bộ Gallery...
+                  </div>
+                )}
+
+                {galleryItems.length === 0 && !gallerySaving ? (
+                  <div className="text-center py-12 border-2 border-dashed border-thuy-800 rounded-xl bg-thuy-900/40">
+                    <p className="text-xs text-slate-400 mb-3">
+                      Chưa có ảnh/video nào trong Gallery.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setGalleryMediaPickerOpen(true)}
+                      className="px-4 py-2 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700"
+                    >
+                      Thêm hình ảnh/video
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {galleryItems.map((item) => {
+                      const itemIsVideo = isVideoItem(item.media);
+                      const isCover = galleryCoverMediaId === item.mediaId;
+                      return (
+                        <div
+                          key={item.mediaId}
+                          className={`group relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950 border-2 transition-all shadow-sm ${isCover ? "border-amber-400 ring-2 ring-amber-400/20" : "border-thuy-700 hover:border-thuy-500"}`}
+                        >
+                          {itemIsVideo ? (
+                            <video
+                              src={item.media.url}
+                              muted
+                              loop
+                              playsInline
+                              preload="metadata"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Image
+                              src={item.media.url}
+                              alt={item.media.alt || item.media.filename}
+                              fill
+                              className="object-cover"
+                              unoptimized
+                            />
+                          )}
+
+                          {itemIsVideo && (
+                            <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-thuy-300 uppercase">
+                              Video
+                            </div>
+                          )}
+
+                          {/* Cover star */}
+                          <button
+                            type="button"
+                            onClick={() => handleGalleryCover(item.mediaId)}
+                            className={`absolute top-2 right-2 p-1.5 rounded-lg backdrop-blur-sm transition-all border ${
+                              isCover
+                                ? "bg-amber-400 text-thuy-950 border-amber-300 font-bold"
+                                : "bg-thuy-950/80 text-slate-400 hover:text-amber-300 border-thuy-700"
+                            }`}
+                            title={isCover ? "Đang là ảnh đại diện" : "Đặt làm ảnh đại diện"}
+                          >
+                            <Star
+                              className={`w-4 h-4 ${isCover ? "fill-thuy-950" : ""}`}
+                            />
+                          </button>
+
+                          {/* Delete */}
+                          <button
+                            type="button"
+                            onClick={() => handleGalleryDelete(item.mediaId)}
+                            className="absolute top-2 left-2 p-1.5 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-900 border border-red-800 text-xs transition-colors"
+                            title="Xóa khỏi gallery"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+
+                          {/* Filename + sort order */}
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-thuy-950 via-thuy-950/70 to-transparent p-2.5 flex items-center justify-between opacity-90 group-hover:opacity-100 transition-opacity">
+                            <span className="text-[11px] text-slate-200 truncate max-w-[120px]">
+                              #{item.sortOrder + 1} {item.media.filename}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs text-slate-700">
+                  Mô tả sản phẩm:
+                </label>
+                <textarea
+                  rows={3}
+                  value={form.description}
+                  onChange={(e) => updateForm({ description: e.target.value })}
+                  placeholder="Chi tiết các file đính kèm..."
+                  className="w-full p-3 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                <label className="flex items-center gap-2 text-xs text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={form.active}
+                    onChange={(e) => updateForm({ active: e.target.checked })}
+                    className="accent-thuy-400"
+                  />
+                  Đang kinh doanh
+                </label>
+                <label className="flex items-center gap-2 text-xs text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={form.featured}
+                    onChange={(e) => updateForm({ featured: e.target.checked })}
+                    className="accent-thuy-400"
+                  />
+                  Nổi bật
+                </label>
+              </div>
+
+              {/* Price section */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Giá bán (VNĐ):</label>
+                  <input
+                    type="number"
+                    value={form.price}
+                    onChange={(e) => updateForm({ price: e.target.value })}
+                    placeholder="850000 (để trống nếu miễn phí)"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Giá so sánh:</label>
+                  <input
+                    type="number"
+                    value={form.comparePrice}
+                    onChange={(e) =>
+                      updateForm({ comparePrice: e.target.value })
+                    }
+                    placeholder="1200000"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  />
+                </div>
+              </div>
+
               {/* File download configuration */}
               <div className="p-4 rounded-2xl bg-thuy-850/60 border border-thuy-750 space-y-3">
                 <h4 className="text-xs font-bold text-thuy-300 flex items-center gap-2">
@@ -934,180 +1102,7 @@ export default function AdminCatalogClient({
                     }
                     className="accent-thuy-400"
                   />
-                  Bắt buộc thanh toán mới được tải (khuyến nghị bật)
-                </label>
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs text-slate-700">
-                    Ảnh thumbnail (URL):
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setMediaPickerOpen(true)}
-                    className="text-[10px] text-thuy-400 hover:underline"
-                  >
-                    Chọn từ Media Library
-                  </button>
-                </div>
-                <input
-                  type="url"
-                  value={form.thumbnail}
-                  onChange={(e) => updateForm({ thumbnail: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
-                />
-              </div>
-
-              {/* Product Gallery */}
-              <div className="p-4 rounded-2xl bg-thuy-850/60 border border-thuy-750 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <h4 className="text-xs font-bold text-thuy-300 flex items-center gap-2">
-                      <ImageIcon className="w-4 h-4" />
-                      Thư viện Hình Ảnh Video
-                    </h4>
-                    <p className="text-[10px] text-slate-500">
-                      Chọn ảnh/video từ Media Library hoặc nhập link bên ngoài.
-                      Hỗ trợ định dạng ảnh và video.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setGalleryMediaPickerOpen(true)}
-                    disabled={gallerySaving}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110 disabled:opacity-50 shadow-glow-cyan"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Thêm từ Media Library</span>
-                  </button>
-                </div>
-
-                {gallerySaving && (
-                  <div className="flex items-center justify-center py-4 text-xs text-slate-400">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Đang đồng bộ Gallery...
-                  </div>
-                )}
-
-                {galleryItems.length === 0 && !gallerySaving ? (
-                  <div className="text-center py-12 border-2 border-dashed border-thuy-800 rounded-xl bg-thuy-900/40">
-                    <p className="text-xs text-slate-400 mb-3">
-                      Chưa có ảnh/video nào trong Gallery.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setGalleryMediaPickerOpen(true)}
-                      className="px-4 py-2 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700"
-                    >
-                      + Chọn từ Media Library
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                    {galleryItems.map((item) => {
-                      const itemIsVideo = isVideoItem(item.media);
-                      const isCover = galleryCoverMediaId === item.mediaId;
-                      return (
-                        <div
-                          key={item.mediaId}
-                          className={`group relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950 border-2 transition-all shadow-sm ${isCover ? "border-amber-400 ring-2 ring-amber-400/20" : "border-thuy-700 hover:border-thuy-500"}`}
-                        >
-                          {itemIsVideo ? (
-                            <video
-                              src={item.media.url}
-                              muted
-                              loop
-                              playsInline
-                              preload="metadata"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <Image
-                              src={item.media.url}
-                              alt={item.media.alt || item.media.filename}
-                              fill
-                              className="object-cover"
-                              unoptimized
-                            />
-                          )}
-
-                          {itemIsVideo && (
-                            <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-thuy-300 uppercase">
-                              Video
-                            </div>
-                          )}
-
-                          {/* Cover star */}
-                          <button
-                            type="button"
-                            onClick={() => handleGalleryCover(item.mediaId)}
-                            className={`absolute top-2 right-2 p-1.5 rounded-lg backdrop-blur-sm transition-all border ${
-                              isCover
-                                ? "bg-amber-400 text-thuy-950 border-amber-300 font-bold"
-                                : "bg-thuy-950/80 text-slate-400 hover:text-amber-300 border-thuy-700"
-                            }`}
-                            title={isCover ? "Đang là ảnh đại diện" : "Đặt làm ảnh đại diện"}
-                          >
-                            <Star
-                              className={`w-4 h-4 ${isCover ? "fill-thuy-950" : ""}`}
-                            />
-                          </button>
-
-                          {/* Delete */}
-                          <button
-                            type="button"
-                            onClick={() => handleGalleryDelete(item.mediaId)}
-                            className="absolute top-2 left-2 p-1.5 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-900 border border-red-800 text-xs transition-colors"
-                            title="Xóa khỏi gallery"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-
-                          {/* Filename + sort order */}
-                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-thuy-950 via-thuy-950/70 to-transparent p-2.5 flex items-center justify-between opacity-90 group-hover:opacity-100 transition-opacity">
-                            <span className="text-[11px] text-slate-200 truncate max-w-[120px]">
-                              #{item.sortOrder + 1} {item.media.filename}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs text-slate-700">
-                  Mô tả sản phẩm:
-                </label>
-                <textarea
-                  rows={3}
-                  value={form.description}
-                  onChange={(e) => updateForm({ description: e.target.value })}
-                  placeholder="Chi tiết các file đính kèm..."
-                  className="w-full p-3 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
-                />
-              </div>
-
-              <div className="flex flex-wrap gap-4">
-                <label className="flex items-center gap-2 text-xs text-slate-700">
-                  <input
-                    type="checkbox"
-                    checked={form.active}
-                    onChange={(e) => updateForm({ active: e.target.checked })}
-                    className="accent-thuy-400"
-                  />
-                  Đang kinh doanh
-                </label>
-                <label className="flex items-center gap-2 text-xs text-slate-700">
-                  <input
-                    type="checkbox"
-                    checked={form.featured}
-                    onChange={(e) => updateForm({ featured: e.target.checked })}
-                    className="accent-thuy-400"
-                  />
-                  Nổi bật
+                  Bắt buộc thanh toán mới được tải
                 </label>
               </div>
 
