@@ -19,6 +19,8 @@ import {
 import {
   LineChart,
   Line,
+  PieChart,
+  Pie,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -163,7 +165,7 @@ export default async function AdminDashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#E1EAF2" />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#526780" }} axisLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#526780" }} axisLine={false} />
-                <Tooltip formatter={(value) => formatVND(value)} />
+                <Tooltip formatter={(value) => formatVND(Number(value ?? 0))} />
                 <Legend verticalAlign="top" align="right" height={30} />
                 <Line type="monotone" dataKey="revenue" stroke="#087EA4" strokeWidth={2} dot={false} />
               </LineChart>
@@ -196,7 +198,7 @@ export default async function AdminDashboardPage() {
                   strokeWidth={2}
                   label
                 />
-                <Tooltip formatter={(value) => `${value} đơn`} />
+                <Tooltip formatter={(value) => `${Number(value ?? 0)} đơn`} />
                 <Legend verticalAlign="top" align="center" />
               </PieChart>
             </ResponsiveContainer>
