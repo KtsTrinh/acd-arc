@@ -2,8 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { X, Upload, Link as LinkIcon, Search, Check, Folder, Loader2 } from "lucide-react";
-import { playableVideoUrl, isVideoUrl, DRIVE_FOLDER_REGEX } from "@/lib/media-url";
+import {
+  X,
+  Upload,
+  Link as LinkIcon,
+  Search,
+  Check,
+  Folder,
+  Loader2,
+} from "lucide-react";
+import {
+  playableVideoUrl,
+  isVideoUrl,
+  DRIVE_FOLDER_REGEX,
+} from "@/lib/media-url";
 
 export interface MediaItem {
   id: string;
@@ -53,7 +65,8 @@ const MEDIA_SOURCES = [
     id: "mixkit",
     label: "Mixkit",
     folder: "mixkit",
-    placeholder: "https://assets.mixkit.co/videos/preview/mixkit-xxxx-large.mp4",
+    placeholder:
+      "https://assets.mixkit.co/videos/preview/mixkit-xxxx-large.mp4",
     hint: "Nguồn video miễn phí, link kết thúc bằng .mp4 hoặc .webm.",
   },
   {
@@ -116,7 +129,9 @@ export default function MediaPickerModal({
   title = "Chọn từ Media Library",
   mediaType = "image",
 }: MediaPickerModalProps) {
-  const [activeTab, setActiveTab] = useState<"library" | "upload" | "url">("library");
+  const [activeTab, setActiveTab] = useState<"library" | "upload" | "url">(
+    "library",
+  );
   const [mediaList, setMediaList] = useState<MediaItem[]>([]);
   const [folders, setFolders] = useState<string[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string>("all");
@@ -139,6 +154,10 @@ export default function MediaPickerModal({
   const [isImporting, setIsImporting] = useState(false);
   const [driveFolderUrl, setDriveFolderUrl] = useState("");
   const [driveImporting, setDriveImporting] = useState(false);
+  const externalIsVideo = (isVideoUrl as any)(externalUrl, externalFilename);
+  const externalPlayable = externalIsVideo
+    ? playableVideoUrl(externalUrl)
+    : externalUrl;
 
   const isVideoItem = (item: MediaItem) => {
     if (item.mimeType && item.mimeType.startsWith("video/")) return true;
@@ -150,9 +169,6 @@ export default function MediaPickerModal({
     const isVideo = isVideoItem(item);
     return mediaType === "video" ? isVideo : !isVideo;
   });
-
-  const externalIsVideo = isVideoUrl(externalUrl, externalFilename);
-  const externalPlayable = externalIsVideo ? playableVideoUrl(externalUrl) : externalUrl;
 
   const fetchMedia = async () => {
     setLoading(true);
@@ -236,11 +252,12 @@ export default function MediaPickerModal({
     }
   };
 
-  // Handle External Pinterest/CDN URL
+  // Handle External Pinterest/CDN URL & Google Drive Folder
   const handleUrlSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!externalUrl) return;
 
+    // KIỂM TRA NẾU LÀ IMPORT HÀNG LOẠT TỪ THƯ MỤC DRIVE
     const isFolder = DRIVE_FOLDER_REGEX.test(externalUrl);
     if (isFolder) {
       setIsImporting(true);
@@ -248,18 +265,24 @@ export default function MediaPickerModal({
         const res = await fetch("/api/media/import-folder", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: externalUrl, folder: externalFolder }),
+          body: JSON.stringify({
+            url: externalUrl,
+            folder: externalFolder,
+          }),
         });
         const data = await res.json();
+
         if (data.success && data.media) {
-          alert(`Đã import thành công ${data.media.length} tệp tin từ thư mục!`);
+          alert(
+            `Đã import thành công ${data.media.length} tệp tin từ thư mục!`,
+          );
           setExternalUrl("");
           setExternalFilename("");
           setExternalAlt("");
           setActiveTab("library");
           await fetchMedia();
           if (!multiple && data.media.length > 0) {
-            onSelect(data.media[0]);
+            onSelect(data.media[0]); // Chọn file đầu tiên nếu ở chế độ single-select
             onClose();
           }
         } else {
@@ -271,9 +294,10 @@ export default function MediaPickerModal({
       } finally {
         setIsImporting(false);
       }
-      return;
+      return; // Dừng hàm tại đây, không chạy tiếp logic file đơn lẻ bên dưới
     }
 
+    // LOGIC IMPORT FILE ĐƠN LẺ CŨ CỦA BẠN (GIỮ NGUYÊN)
     setIsImporting(true);
     try {
       const res = await fetch("/api/media", {
@@ -308,7 +332,10 @@ export default function MediaPickerModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="fixed inset-0 bg-thuy-950/80 backdrop-blur-md" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-thuy-950/80 backdrop-blur-md"
+        onClick={onClose}
+      />
 
       <div className="relative z-10 w-full max-w-4xl h-[85vh] bg-thuy-900 border border-thuy-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
@@ -420,7 +447,8 @@ export default function MediaPickerModal({
                 </div>
               ) : filteredMedia.length === 0 ? (
                 <div className="col-span-full text-center py-20 text-slate-400 text-xs">
-                  Không tìm thấy {mediaType === "video" ? "video" : "hình ảnh"} nào phù hợp.
+                  Không tìm thấy {mediaType === "video" ? "video" : "hình ảnh"}{" "}
+                  nào phù hợp.
                 </div>
               ) : (
                 filteredMedia.map((item) => {
@@ -503,7 +531,10 @@ export default function MediaPickerModal({
                 }
                 onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
               />
-              <label htmlFor="file-upload" className="cursor-pointer space-y-3 block">
+              <label
+                htmlFor="file-upload"
+                className="cursor-pointer space-y-3 block"
+              >
                 <div className="w-12 h-12 mx-auto rounded-full bg-thuy-800 flex items-center justify-center text-thuy-400">
                   <Upload className="w-6 h-6" />
                 </div>
@@ -526,7 +557,9 @@ export default function MediaPickerModal({
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-slate-300 block mb-1">Thư mục phân loại:</label>
+                <label className="text-xs text-slate-300 block mb-1">
+                  Thư mục phân loại:
+                </label>
                 <input
                   type="text"
                   value={uploadFolder}
@@ -537,7 +570,9 @@ export default function MediaPickerModal({
               </div>
 
               <div>
-                <label className="text-xs text-slate-300 block mb-1">Mô tả ảnh (Alt SEO):</label>
+                <label className="text-xs text-slate-300 block mb-1">
+                  Mô tả ảnh (Alt SEO):
+                </label>
                 <input
                   type="text"
                   value={uploadAlt}
@@ -553,7 +588,9 @@ export default function MediaPickerModal({
                 className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 transition-all shadow-glow-cyan"
               >
                 {isUploading && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{isUploading ? "Đang lưu ảnh..." : "Lưu vào Media Library"}</span>
+                <span>
+                  {isUploading ? "Đang lưu ảnh..." : "Lưu vào Media Library"}
+                </span>
               </button>
             </div>
           </form>
@@ -601,8 +638,8 @@ export default function MediaPickerModal({
                   type="text"
                   required
                   placeholder={
-                    MEDIA_SOURCES.find((s) => s.id === externalSource)?.placeholder ||
-                    "https://..."
+                    MEDIA_SOURCES.find((s) => s.id === externalSource)
+                      ?.placeholder || "https://..."
                   }
                   value={externalUrl}
                   onChange={(e) => setExternalUrl(e.target.value)}
@@ -616,7 +653,16 @@ export default function MediaPickerModal({
               {DRIVE_FOLDER_REGEX.test(externalUrl) ? (
                 <div className="w-full h-40 rounded-xl border border-thuy-700 bg-thuy-950 flex flex-col items-center justify-center text-slate-400 gap-2">
                   <Folder className="w-8 h-8 text-thuy-400" />
-                  <span className="text-xs">Liên kết Thư mục Google Drive (Sẵn sàng import hàng loạt)</span>
+                  <span className="text-xs">
+                    Liên kết Thư mục Google Drive (Sẵn sàng import hàng loạt)
+                  </span>
+                </div>
+              ) : externalUrl && DRIVE_FOLDER_REGEX.test(externalUrl) ? (
+                <div className="w-full h-40 rounded-xl border border-thuy-700 bg-thuy-950 flex flex-col items-center justify-center text-slate-400 gap-2">
+                  <Folder className="w-8 h-8 text-thuy-400" />
+                  <span className="text-xs">
+                    Liên kết Thư mục Google Drive (Sẵn sàng import hàng loạt)
+                  </span>
                 </div>
               ) : externalUrl && externalIsVideo ? (
                 <div className="relative w-full h-40 rounded-xl overflow-hidden border border-thuy-700 bg-thuy-950">
@@ -644,7 +690,9 @@ export default function MediaPickerModal({
               )}
 
               <div>
-                <label className="text-xs text-slate-300 block mb-1">Tên file nhận diện:</label>
+                <label className="text-xs text-slate-300 block mb-1">
+                  Tên file nhận diện:
+                </label>
                 <input
                   type="text"
                   value={externalFilename}
@@ -655,7 +703,9 @@ export default function MediaPickerModal({
               </div>
 
               <div>
-                <label className="text-xs text-slate-300 block mb-1">Thư mục:</label>
+                <label className="text-xs text-slate-300 block mb-1">
+                  Thư mục:
+                </label>
                 <input
                   type="text"
                   value={externalFolder}
@@ -666,7 +716,9 @@ export default function MediaPickerModal({
               </div>
 
               <div>
-                <label className="text-xs text-slate-300 block mb-1">Mô tả hình ảnh (Alt):</label>
+                <label className="text-xs text-slate-300 block mb-1">
+                  Mô tả hình ảnh (Alt):
+                </label>
                 <input
                   type="text"
                   value={externalAlt}
@@ -682,7 +734,9 @@ export default function MediaPickerModal({
                 className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 transition-all shadow-glow-cyan"
               >
                 {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{isImporting ? "Đang thêm..." : "Thêm vào Media Library"}</span>
+                <span>
+                  {isImporting ? "Đang thêm..." : "Thêm vào Media Library"}
+                </span>
               </button>
             </div>
           </form>
@@ -692,7 +746,8 @@ export default function MediaPickerModal({
         {multiple && activeTab === "library" && (
           <div className="p-4 border-t border-thuy-700 bg-thuy-850 flex items-center justify-between">
             <span className="text-xs text-slate-300">
-              Đã chọn: <b className="text-thuy-400">{selectedItems.length}</b> hình ảnh
+              Đã chọn: <b className="text-thuy-400">{selectedItems.length}</b>{" "}
+              hình ảnh
             </span>
 
             <div className="flex gap-2">
@@ -718,4 +773,3 @@ export default function MediaPickerModal({
     </div>
   );
 }
-
