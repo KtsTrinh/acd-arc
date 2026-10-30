@@ -774,7 +774,7 @@ export default function AdminCatalogClient({
 
             <form onSubmit={handleSave} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs text-white">Tên sản phẩm *:</label>
+                <label className="text-xs text-white">Tên sản phẩm: (*)</label>
                 <input
                   type="text"
                   required
