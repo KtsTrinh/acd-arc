@@ -767,7 +767,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-2 pt-2">
-                <label className="text-xs text-slate-700 font-medium block">
+                <label className="text-xs text-white font-medium block">
                   Chọn thẻ Tags:
                 </label>
                 <div className="flex flex-wrap gap-2">
