@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
@@ -168,7 +168,9 @@ export default function AdminMediaPage() {
 
   const toggleSelectMedia = (id: string) => {
     setSelectedMediaIds((prev) =>
-      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((itemId) => itemId !== id)
+        : [...prev, id],
     );
   };
 
@@ -182,7 +184,12 @@ export default function AdminMediaPage() {
 
   const handleBulkDelete = async () => {
     if (selectedMediaIds.length === 0) return;
-    if (!confirm(`Bạn có chắc chắn muốn xóa ${selectedMediaIds.length} media đã chọn?`)) return;
+    if (
+      !confirm(
+        `Bạn có chắc chắn muốn xóa ${selectedMediaIds.length} media đã chọn?`,
+      )
+    )
+      return;
 
     setIsBulkDeleting(true);
     try {
@@ -280,9 +287,6 @@ export default function AdminMediaPage() {
         </div>
       </div>
 
-        </div>
-      )}
-
       {/* Bulk Actions */}
       {mediaList.length > 0 && (
         <div className="flex items-center justify-between p-3 rounded-2xl bg-thuy-850 border border-thuy-750">
@@ -293,19 +297,21 @@ export default function AdminMediaPage() {
             >
               <div
                 className={`w-4 h-4 rounded border flex items-center justify-center ${
-                  selectedMediaIds.length === mediaList.length && mediaList.length > 0
+                  selectedMediaIds.length === mediaList.length &&
+                  mediaList.length > 0
                     ? "bg-thuy-400 border-thuy-400 text-thuy-950"
                     : "border-thuy-600"
                 }`}
               >
-                {selectedMediaIds.length === mediaList.length && mediaList.length > 0 && (
-                  <Check className="w-3 h-3" />
-                )}
+                {selectedMediaIds.length === mediaList.length &&
+                  mediaList.length > 0 && <Check className="w-3 h-3" />}
               </div>
               <span>Chọn tất cả</span>
             </button>
             {selectedMediaIds.length > 0 && (
-              <span className="text-xs text-slate-500">Đã chọn {selectedMediaIds.length} mục</span>
+              <span className="text-xs text-slate-500">
+                Đã chọn {selectedMediaIds.length} mục
+              </span>
             )}
           </div>
           {selectedMediaIds.length > 0 && (
@@ -314,7 +320,11 @@ export default function AdminMediaPage() {
               disabled={isBulkDeleting}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 text-xs font-semibold disabled:opacity-50"
             >
-              {isBulkDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+              {isBulkDeleting ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="w-3.5 h-3.5" />
+              )}
               <span>Xóa đã chọn</span>
             </button>
           )}
@@ -356,24 +366,6 @@ export default function AdminMediaPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-thuy-950 via-thuy-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-between">
                   <div className="flex justify-end gap-1.5">
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSelectMedia(item.id);
-                      }}
-                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-200 border border-thuy-700"
-                      title="Chọn/xóa nhiều"
-                    >
-                      <div
-                        className={`w-4 h-4 rounded border flex items-center justify-center ${
-                          selectedMediaIds.includes(item.id)
-                            ? "bg-thuy-400 border-thuy-400 text-thuy-950"
-                            : "border-thuy-500"
-                        }`}
-                      >
-                        {selectedMediaIds.includes(item.id) && <Check className="w-3 h-3" />}
-                      </div>
-                    </button>
-                    <button
                       onClick={() => {
                         setEditingItem(item);
                         setEditFilename(item.filename);
@@ -386,9 +378,15 @@ export default function AdminMediaPage() {
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
-                      onClick={() => handleBulkDelete()}
+                      onClick={() => {
+                        if (selectedMediaIds.length === 0) {
+                          alert("Vui lòng chọn ít nhất một media để xóa.");
+                          return;
+                        }
+                        handleBulkDelete();
+                      }}
                       className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
-                      title="Xóa media"
+                      title="Xóa media đã chọn"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
