@@ -992,7 +992,7 @@ export default function AdminCatalogClient({
                     value={form.price}
                     onChange={(e) => updateForm({ price: e.target.value })}
                     placeholder="850000 (để trống nếu miễn phí)"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
@@ -1004,7 +1004,7 @@ export default function AdminCatalogClient({
                       updateForm({ comparePrice: e.target.value })
                     }
                     placeholder="1200000"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
               </div>
@@ -1059,7 +1059,7 @@ export default function AdminCatalogClient({
                       updateForm({ downloadLinkUrl: e.target.value })
                     }
                     placeholder="https://drive.google.com/... (dán link chia sẻ nội bộ)"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                   <p className="text-[10px] text-slate-500">
                     Link này KHÔNG được hiển thị cho khách. Máy chủ sẽ phát lại
@@ -1079,7 +1079,7 @@ export default function AdminCatalogClient({
                       onChange={(e) =>
                         updateForm({ downloadExpiresMinutes: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                     >
                       {EXPIRY_OPTIONS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
@@ -1097,7 +1097,7 @@ export default function AdminCatalogClient({
                       onChange={(e) =>
                         updateForm({ projectId: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                     >
                       <option value="">— Không liên kết —</option>
                       {projects.map((p) => (
@@ -1380,13 +1380,13 @@ function ManagePanel({
             value={catName}
             onChange={(e) => setCatName(e.target.value)}
             placeholder="Tên danh mục *"
-            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
           />
           <input
             value={catDesc}
             onChange={(e) => setCatDesc(e.target.value)}
             placeholder="Mô tả ngắn"
-            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
           />
           <button
             type="submit"
