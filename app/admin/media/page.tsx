@@ -21,7 +21,8 @@ export default function AdminMediaPage() {
   const [folders, setFolders] = useState<string[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string>("all");
   const [search, setSearch] = useState<string>("");
-  const [loading, setLoading] = useState(false);
+  const [selectedMediaIds, setSelectedMediaIds] = useState<string[]>([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   // Upload state
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
@@ -164,23 +165,43 @@ export default function AdminMediaPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa hình ảnh này khỏi Media Library?"))
-      return;
+  const toggleSelectMedia = (id: string) => {
+    setSelectedMediaIds((prev) =>
+      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+    );
+  };
 
+  const toggleSelectAll = () => {
+    if (selectedMediaIds.length === mediaList.length) {
+      setSelectedMediaIds([]);
+    } else {
+      setSelectedMediaIds(mediaList.map((item) => item.id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedMediaIds.length === 0) return;
+    if (!confirm(`Bạn có chắc chắn muốn xóa ${selectedMediaIds.length} media đã chọn?`)) return;
+
+    setIsBulkDeleting(true);
     try {
-      const res = await fetch(`/api/media/${id}`, { method: "DELETE" });
-      const data = await res.json().catch(() => ({}));
+      const res = await fetch("/api/media/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: selectedMediaIds }),
+      });
+      const data = await res.json();
       if (!res.ok) {
-        alert(data.error || "Không thể xóa media.");
-        window.location.reload();
-        return;
+        alert(data.error || "Không thể xóa nhiều media.");
+      } else {
+        setSelectedMediaIds([]);
+        fetchMedia();
       }
-      window.location.reload();
     } catch (err) {
       console.error(err);
-      alert("Không thể xóa media.");
-      window.location.reload();
+      alert("Không thể xóa nhiều media.");
+    } finally {
+      setIsBulkDeleting(false);
     }
   };
 
@@ -258,7 +279,42 @@ export default function AdminMediaPage() {
         </div>
       </div>
 
-      {/* Media Grid */}
+            {/* Bulk Actions */}
+      {mediaList.length > 0 && (
+        <div className="flex items-center justify-between p-3 rounded-2xl bg-thuy-850 border border-thuy-750">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleSelectAll}
+              className="flex items-center gap-2 text-xs text-slate-700 hover:text-[#142338]"
+            >
+              <div
+                className={`w-4 h-4 rounded border flex items-center justify-center ${
+                  selectedMediaIds.length === mediaList.length && mediaList.length > 0
+                    ? "bg-thuy-400 border-thuy-400 text-thuy-950"
+                    : "border-thuy-600"
+                }`}
+              >
+                {selectedMediaIds.length === mediaList.length && mediaList.length > 0 && (
+                  <Check className="w-3 h-3" />
+                )}
+              </div>
+              <span>Chọn tất cả</span>
+            </button>
+            {selectedMediaIds.length > 0 && (
+              <span className="text-xs text-slate-500">Đã chọn {selectedMediaIds.length} mục</span>
+            )}
+          </div>
+          {selectedMediaIds.length > 0 && (
+            <button
+              onClick={handleBulkDelete}
+              disabled={isBulkDeleting}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 text-xs font-semibold disabled:opacity-50"
+            >
+              {isBulkDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+              <span>Xóa đã chọn</span>
+            </button>
+          )}
+        </div>{/* Media Grid */}
       <div className="space-y-4">
         {loading ? (
           <div className="flex items-center justify-center py-24 text-slate-600 gap-2">
@@ -274,7 +330,7 @@ export default function AdminMediaPage() {
             {mediaList.map((item) => (
               <div
                 key={item.id}
-                className="group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border border-thuy-750 hover:border-thuy-400 transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end"
+                className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end ${selectedMediaIds.includes(item.id) ? "border-thuy-400 ring-2 ring-thuy-400/30" : "border-thuy-750 hover:border-thuy-400"}`}
               >
                 <Image
                   src={item.url}
