@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+﻿import React from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatVND, formatDateTime } from "@/lib/utils";
@@ -8,28 +8,179 @@ import {
   ShoppingBag,
   TrendingUp,
   ArrowRight,
-  Image as ImageIcon,
   CheckCircle2,
   Clock,
   ExternalLink,
   PieChart as PieChartIcon,
   LineChart as LineChartIcon,
-  BarChart as BarChartIcon,
 } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
 
 export const revalidate = 0;
+
+function RevenueLineChart({ data }: { data: { name: string; revenue: number; count: number }[] }) {
+  const maxRevenue = Math.max(...data.map((d) => d.revenue), 1);
+  const width = 360;
+  const height = 200;
+  const padding = { top: 20, right: 20, bottom: 30, left: 40 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+
+  type Point = { x: number; y: number; d: { name: string; revenue: number; count: number } };
+  const points: Point[] = data.map((d, i) => ({
+    x: padding.left + (i / Math.max(data.length - 1, 1)) * chartWidth,
+    y: padding.top + chartHeight - (d.revenue / maxRevenue) * chartHeight,
+    d,
+  }));
+
+  const pathStr = points
+    .map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`))
+    .join(" ");
+
+  const dots = points.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#087EA4" />`).join("");
+
+  const yTicks = [0, maxRevenue / 2, maxRevenue].map((v, i) => {
+    const y = padding.top + chartHeight - (v / maxRevenue) * chartHeight;
+    return (
+      <line
+        key={i}
+        x1={padding.left}
+        y1={y}
+        x2={width - padding.right}
+        y2={y}
+        stroke="#E1EAF2"
+        strokeDasharray="3 3"
+      />
+    );
+  });
+
+  return (
+    <div className="w-full h-full">
+      <svg width={width} height={height} className="w-full h-full">
+        <defs>
+          <linearGradient id="grad-revenue" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#087EA4" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#087EA4" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {yTicks}
+        <path
+          d={`M ${points[0].x} ${points[0].y} L ${points[points.length - 1].x} ${points[points.length - 1].y} L ${points[points.length - 1].x} ${padding.top + chartHeight} L ${points[0].x} ${padding.top + chartHeight} Z`}
+          fill="url(#grad-revenue)"
+        />
+        <path d={pathStr} fill="none" stroke="#087EA4" strokeWidth={2} />
+        {data.map((d, i) => (
+          <text
+            key={i}
+            x={points[i].x}
+            y={padding.top + chartHeight + 20}
+            textAnchor="middle"
+            fontSize="10"
+            fill="#526780"
+          >
+            {d.name}
+          </text>
+        ))}
+        {data.map((d, i) => (
+          <text
+            key={`v${i}`}
+            x={points[i].x}
+            y={points[i].y - 6}
+            textAnchor="middle"
+            fontSize="10"
+            fill="#087EA4"
+            fontWeight="600"
+          >
+            {d.revenue > 0 ? formatVND(d.revenue) : ""}
+          </text>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function StatusDonutChart({ paidCount, pendingCount }: { paidCount: number; pendingCount: number }) {
+  const total = paidCount + pendingCount;
+  const paidAngle = total === 0 ? 0 : (paidCount / total) * 360;
+  const pendingAngle = total === 0 ? 0 : (pendingCount / total) * 360;
+
+  const cx = 100;
+  const cy = 100;
+  const outerR = 70;
+  const innerR = 45;
+
+  const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
+    const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
+    return {
+      x: centerX + radius * Math.cos(angleInRadians),
+      y: centerY + radius * Math.sin(angleInRadians),
+    };
+  };
+
+  const describeArc = (x: number, y: number, radius: number, startAngle: number, endAngle: number) => {
+    const start = polarToCartesian(x, y, radius, endAngle);
+    const end = polarToCartesian(x, y, radius, startAngle);
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    const d = [
+      "M",
+      start.x,
+      start.y,
+      "A",
+      radius,
+      radius,
+      0,
+      largeArcFlag,
+      0,
+      end.x,
+      end.y,
+    ].join(" ");
+    return d;
+  };
+
+  const paidPath = describeArc(cx, cy, outerR, 0, paidAngle);
+  const pendingPath = describeArc(cx, cy, outerR, paidAngle, paidAngle + pendingAngle);
+
+  return (
+    <div className="w-full h-full flex items-center justify-center">
+      <svg width={200} height={200} className="w-48 h-48">
+        {paidAngle > 0 && (
+          <path
+            d={paidPath}
+            fill="none"
+            stroke="#10B981"
+            strokeWidth={14}
+            strokeLinecap="round"
+          />
+        )}
+        {pendingAngle > 0 && (
+          <path
+            d={pendingPath}
+            fill="none"
+            stroke="#F59E0B"
+            strokeWidth={14}
+            strokeLinecap="round"
+          />
+        )}
+        <circle cx={cx} cy={cy} r={innerR} fill="#fff" />
+        <text x={cx} y={cy - 8} textAnchor="middle" fontSize="16" fontWeight="700" fill="#142338">
+          {total}
+        </text>
+        <text x={cx} y={cy + 10} textAnchor="middle" fontSize="11" fill="#526780">
+          đơn hàng
+        </text>
+      </svg>
+      <div className="ml-4 space-y-2">
+        <div className="flex items-center gap-2 text-xs">
+          <span className="w-3 h-3 rounded-full bg-[#10B981]" />
+          <span className="text-[#526780]">Đã thanh toán: {paidCount}</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <span className="w-3 h-3 rounded-full bg-[#F59E0B]" />
+          <span className="text-[#526780]">Chờ xử lý: {pendingCount}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default async function AdminDashboardPage() {
   const now = new Date();
@@ -159,17 +310,8 @@ export default async function AdminDashboardPage() {
             </div>
             <p className="text-xs text-[#526780] mt-1">Tổng đơn đã thanh toán theo ngày</p>
           </div>
-          <div className="p-4 h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={dayData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E1EAF2" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#526780" }} axisLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: "#526780" }} axisLine={false} />
-                <Tooltip formatter={(value) => formatVND(Number(value ?? 0))} />
-                <Legend verticalAlign="top" align="right" height={30} />
-                <Line type="monotone" dataKey="revenue" stroke="#087EA4" strokeWidth={2} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="p-4">
+            <RevenueLineChart data={dayData} />
           </div>
         </div>
 
@@ -182,26 +324,8 @@ export default async function AdminDashboardPage() {
             </div>
             <p className="text-xs text-[#526780] mt-1">7 ngày gần đây</p>
           </div>
-          <div className="p-4 h-64 flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={[
-                    { name: "Đã thanh toán", value: paidCount, fill: "#10B981" },
-                    { name: "Chờ xử lý", value: pendingCount, fill: "#F59E0B" },
-                  ]}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  innerRadius={40}
-                  stroke="#fff"
-                  strokeWidth={2}
-                  label
-                />
-                <Tooltip formatter={(value) => `${Number(value ?? 0)} đơn`} />
-                <Legend verticalAlign="top" align="center" />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="p-4">
+            <StatusDonutChart paidCount={paidCount} pendingCount={pendingCount} />
           </div>
         </div>
       </div>
