@@ -963,7 +963,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <label className="flex items-center gap-2 text-xs text-slate-700">
+                <label className="flex items-center gap-2 text-xs text-white">
                   <input
                     type="checkbox"
                     checked={form.active}
@@ -972,7 +972,7 @@ export default function AdminCatalogClient({
                   />
                   Đang kinh doanh
                 </label>
-                <label className="flex items-center gap-2 text-xs text-slate-700">
+                <label className="flex items-center gap-2 text-xs text-white">
                   <input
                     type="checkbox"
                     checked={form.featured}
