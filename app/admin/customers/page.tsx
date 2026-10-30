@@ -480,44 +480,47 @@ export default function AdminCustomersPage() {
                       Trước
                     </button>
                     <div className="flex items-center gap-1">
-                      {[...Array(totalPages)].map((_, i) => {
-                        const p = i + 1;
-                        const showEllipsis =
-                          totalPages > 7 &&
-                          p !== 1 &&
-                          p !== totalPages &&
-                          (p < page - 1 || p > page + 1);
-                        if (showEllipsis) {
-                          return (
-                            <span key="ellipsis" className="px-2 py-1.5 text-xs text-slate-500">
-                              …
-                            </span>
-                          );
+                      {(() => {
+                        const pages: (number | "...")[] = [];
+                        const showPrevDots = page > 3;
+                        const showNextDots = page < totalPages - 2;
+
+                        pages.push(1);
+                        if (showPrevDots) pages.push("...");
+                        for (let p = Math.max(2, page - 1); p <= Math.min(totalPages - 1, page + 1); p += 1) {
+                          if (!pages.includes(p)) pages.push(p);
                         }
-                        const isVisible =
-                          totalPages <= 7 ||
-                          p === 1 ||
-                          p === totalPages ||
-                          Math.abs(p - page) <= 1;
-                        if (!isVisible) return null;
+                        if (showNextDots) pages.push("...");
+                        if (totalPages > 1 && !pages.includes(totalPages)) pages.push(totalPages);
+
+                        return pages.map((item, idx) => {
+                          if (item === "...") {
+                            return (
+                              <span key={idx} className="px-2 py-1.5 text-xs text-slate-500">
+                                …
+                              </span>
+                            );
+                          }
+                          const isActive = item === page;
                           return (
                             <button
-                              key={p}
+                              key={idx}
                               type="button"
                               onClick={(e) => {
                                 e.preventDefault();
-                                setPage(p);
+                                setPage(item);
                               }}
                               className={`w-7 h-7 rounded-lg text-xs font-medium transition-all ${
-                              p === page
-                                ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                                : "bg-thuy-900 text-slate-600 hover:bg-thuy-800 hover:text-[#142338] border border-thuy-750"
-                            }`}
-                          >
-                            {p}
-                          </button>
-                        );
-                      })}
+                                isActive
+                                  ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
+                                  : "bg-thuy-900 text-slate-600 hover:bg-thuy-800 hover:text-[#142338] border border-thuy-750"
+                              }`}
+                            >
+                              {item}
+                            </button>
+                          );
+                        });
+                      })()}
                     </div>
                     <button
                       type="button"
