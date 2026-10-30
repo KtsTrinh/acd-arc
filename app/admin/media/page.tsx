@@ -128,7 +128,11 @@ export default function AdminMediaPage() {
         setImportUrl("");
         setImportFilename("");
         setImportAlt("");
-        fetchMedia();
+        if (data.external) {
+          alert("Đã sử dụng liên kết bên ngoài trực tiếp. Không lưu vào Media Library.");
+        } else {
+          fetchMedia();
+        }
       }
     } catch (err) {
       console.error(err);
@@ -664,11 +668,10 @@ export default function AdminMediaPage() {
                 {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>
                   {isImporting
-                    ? "Đang lưu dữ liệu vào hệ thống..."
-                    : importUrl.includes("/folders/") ||
-                        importUrl.includes("://google.com")
+                    ? "Đang thêm..."
+                    : importUrl.includes("/folders/")
                       ? `Import Hàng Loạt ${previewImages.length > 0 ? `(${previewImages.length} ảnh)` : ""}`
-                      : "Thêm Vào Thư Viện"}
+                      : "Sử dụng trực tiếp từ link"}
                 </span>
               </button>
             </form>
