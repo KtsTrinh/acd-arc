@@ -950,9 +950,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-white">
-                  Mô tả sản phẩm:
-                </label>
+                <label className="text-xs text-white">Mô tả sản phẩm:</label>
                 <textarea
                   rows={3}
                   value={form.description}
@@ -1048,7 +1046,7 @@ export default function AdminCatalogClient({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-700 flex items-center gap-1.5">
+                  <label className="text-xs text-slate-300 flex items-center gap-1.5">
                     <Link2 className="w-3.5 h-3.5" /> Link tải nội bộ (Google
                     Drive/Dropbox/CDN):
                   </label>
@@ -1061,7 +1059,7 @@ export default function AdminCatalogClient({
                     placeholder="https://drive.google.com/... (dán link chia sẻ nội bộ)"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[10px] text-slate-300">
                     Link này KHÔNG được hiển thị cho khách. Máy chủ sẽ phát lại
                     file qua /api/downloads sau khi kiểm tra đúng tài khoản đã
                     thanh toán.
@@ -1070,7 +1068,7 @@ export default function AdminCatalogClient({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs text-slate-700 flex items-center gap-1.5">
+                    <label className="text-xs text-slate-300 flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" /> Thời hạn link sau khi
                       thanh toán:
                     </label>
@@ -1089,7 +1087,7 @@ export default function AdminCatalogClient({
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs text-slate-700">
+                    <label className="text-xs text-slate-300">
                       Dự án hiển thị liên kết:
                     </label>
                     <select
@@ -1109,7 +1107,7 @@ export default function AdminCatalogClient({
                   </div>
                 </div>
 
-                <label className="flex items-center gap-2 text-xs text-slate-700">
+                <label className="flex items-center gap-2 text-xs text-slate-300">
                   <input
                     type="checkbox"
                     checked={form.requiresPayment}
