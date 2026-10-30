@@ -667,11 +667,11 @@ export default function AdminCatalogClient({
                       </option>
                     ))}
                     {PRODUCT_TYPE_LABELS.CAD && (
-                      <option value="CAD">Bản vẽ CAD (chi tiết)</option>
+                      <option value="CAD">Bản vẽ CAD</option>
                     )}
-                    <option value="MODEL_3D">Model 3D (chi tiết)</option>
-                    <option value="TEMPLATE">Template (chi tiết)</option>
-                    <option value="DOCUMENT">Tài liệu (chi tiết)</option>
+                    <option value="MODEL_3D">Model 3D</option>
+                    <option value="TEMPLATE">Template</option>
+                    <option value="DOCUMENT">Tài liệu</option>
                   </select>
                 </div>
               </div>
@@ -1452,8 +1452,7 @@ function ManagePanel({
       <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
         <div className="px-5 py-4 border-b border-thuy-750 flex items-center justify-between">
           <h2 className="font-bold text-sm text-[#142338] flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-thuy-400" /> Dự Án Kiến Trúc Hiển
-            Thị
+            <Building2 className="w-4 h-4 text-thuy-400" /> Dự Án Kiến Trúc
           </h2>
           <Link
             href="/admin/projects/new"
