@@ -21,6 +21,7 @@ export default function AdminMediaPage() {
   const [folders, setFolders] = useState<string[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string>("all");
   const [search, setSearch] = useState<string>("");
+  const [loading, setLoading] = useState(false);
   const [selectedMediaIds, setSelectedMediaIds] = useState<string[]>([]);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
@@ -279,7 +280,10 @@ export default function AdminMediaPage() {
         </div>
       </div>
 
-            {/* Bulk Actions */}
+        </div>
+      )}
+
+      {/* Bulk Actions */}
       {mediaList.length > 0 && (
         <div className="flex items-center justify-between p-3 rounded-2xl bg-thuy-850 border border-thuy-750">
           <div className="flex items-center gap-3">
@@ -314,7 +318,10 @@ export default function AdminMediaPage() {
               <span>Xóa đã chọn</span>
             </button>
           )}
-        </div>{/* Media Grid */}
+        </div>
+      )}
+
+      {/* Media Grid */}
       <div className="space-y-4">
         {loading ? (
           <div className="flex items-center justify-center py-24 text-slate-600 gap-2">
@@ -349,6 +356,24 @@ export default function AdminMediaPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-thuy-950 via-thuy-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-between">
                   <div className="flex justify-end gap-1.5">
                     <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSelectMedia(item.id);
+                      }}
+                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-200 border border-thuy-700"
+                      title="Chọn/xóa nhiều"
+                    >
+                      <div
+                        className={`w-4 h-4 rounded border flex items-center justify-center ${
+                          selectedMediaIds.includes(item.id)
+                            ? "bg-thuy-400 border-thuy-400 text-thuy-950"
+                            : "border-thuy-500"
+                        }`}
+                      >
+                        {selectedMediaIds.includes(item.id) && <Check className="w-3 h-3" />}
+                      </div>
+                    </button>
+                    <button
                       onClick={() => {
                         setEditingItem(item);
                         setEditFilename(item.filename);
@@ -361,7 +386,7 @@ export default function AdminMediaPage() {
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleBulkDelete()}
                       className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
                       title="Xóa media"
                     >
