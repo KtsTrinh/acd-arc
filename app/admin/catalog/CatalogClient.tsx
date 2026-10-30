@@ -1140,14 +1140,14 @@ export default function AdminCatalogClient({
                   </div>
                 </div>
                   <label className="text-xs text-white">
-                    Ảnh thumbnail (URL):
+                    Ảnh thumbnail:
                   </label>
                   <button
                     type="button"
                     onClick={() => setMediaPickerOpen(true)}
                     className="text-[10px] text-thuy-400 hover:underline"
                   >
-                    Chọn từ Media Library
+                    Thư viện
                   </button>
                 </div>
                 <input
