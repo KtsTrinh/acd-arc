@@ -347,7 +347,11 @@ export default function AdminMediaPage() {
             {mediaList.map((item) => (
               <div
                 key={item.id}
-                className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end ${selectedMediaIds.includes(item.id) ? "border-thuy-400 ring-2 ring-thuy-400/30" : "border-thuy-750 hover:border-thuy-400"}`}
+                onClick={(e) => {
+                  if ((e.target as HTMLElement).closest('button')) return;
+                  toggleSelectMedia(item.id);
+                }}
+                className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer ${selectedMediaIds.includes(item.id) ? "border-thuy-400 ring-2 ring-thuy-400/30" : "border-thuy-750 hover:border-thuy-400"}`}
               >
                 <Image
                   src={item.url}
@@ -397,15 +401,14 @@ export default function AdminMediaPage() {
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
-                      onClick={() => {
-                        if (selectedMediaIds.length === 0) {
-                          alert("Vui lòng chọn ít nhất một media để xóa.");
-                          return;
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm("Bạn có chắc chắn muốn xóa hình ảnh này khỏi Media Library?")) {
+                          fetch(`/api/media/${item.id}`, { method: "DELETE" }).then(() => fetchMedia());
                         }
-                        handleBulkDelete();
                       }}
                       className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
-                      title="Xóa media đã chọn"
+                      title="Xóa media"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
