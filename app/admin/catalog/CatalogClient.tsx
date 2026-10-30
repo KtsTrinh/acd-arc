@@ -1126,22 +1126,9 @@ export default function AdminCatalogClient({
               </div>
 
               {/* Product Gallery */}
-              <div className="p-4 rounded-2xl bg-thuy-850/60 border border-thuy-750 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <h4 className="text-xs font-bold text-thuy-300 flex items-center gap-2">
-                      <ImageIcon className="w-4 h-4" />
-                      Thư viện Hình ảnh/Video
-                    </h4>
-                    <p className="text-[10px] text-slate-500">
-                      Chọn ảnh/video từ Media Library hoặc nhập link bên ngoài.
-                      Hỗ trợ định dạng ảnh và video.
-                    </p>
-                  </div>
-                </div>
-                  <label className="text-xs text-white">
-                    Ảnh thumbnail:
-                  </label>
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs text-white">Ảnh thumbnail:</label>
                   <button
                     type="button"
                     onClick={() => setMediaPickerOpen(true)}
