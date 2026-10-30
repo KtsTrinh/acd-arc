@@ -649,7 +649,7 @@ export default function AdminCatalogClient({
                     })
                   }
                   placeholder="Trọn bộ hồ sơ thiết kế biệt thự hiện đại 3 tầng"
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
 
