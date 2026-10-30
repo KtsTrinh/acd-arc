@@ -468,6 +468,21 @@ export default function AdminCustomersPage() {
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
+                        setPage(1);
+                      }}
+                      disabled={page === 1}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        page === 1
+                          ? "bg-thuy-900 text-slate-600 border border-thuy-750 cursor-not-allowed"
+                          : "bg-thuy-400 text-thuy-950 hover:brightness-110 shadow-glow-cyan"
+                      }`}
+                    >
+                      Đầu tiên
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
                         setPage((p) => Math.max(p - 1, 1));
                       }}
                       disabled={page === 1}
@@ -481,19 +496,46 @@ export default function AdminCustomersPage() {
                     </button>
                     <div className="flex items-center gap-1">
                       {(() => {
-                        const pages: (number | "...")[] = [];
-                        const showPrevDots = page > 3;
-                        const showNextDots = page < totalPages - 2;
+                        const buttons: (number | "...")[] = [];
 
-                        pages.push(1);
-                        if (showPrevDots) pages.push("...");
-                        for (let p = Math.max(2, page - 1); p <= Math.min(totalPages - 1, page + 1); p += 1) {
-                          if (!pages.includes(p)) pages.push(p);
+                        if (totalPages <= 6) {
+                          for (let p = 1; p <= totalPages; p += 1) {
+                            buttons.push(p);
+                          }
+                        } else {
+                          buttons.push(1);
+                          if (page <= 4) {
+                            buttons.push(2, 3, 4, 5);
+                          } else if (page >= totalPages - 3) {
+                            buttons.push(
+                              totalPages - 4,
+                              totalPages - 3,
+                              totalPages - 2,
+                              totalPages - 1
+                            );
+                          } else {
+                            buttons.push(page - 2, page - 1, page, page + 1);
+                          }
+                          buttons.push(totalPages);
                         }
-                        if (showNextDots) pages.push("...");
-                        if (totalPages > 1 && !pages.includes(totalPages)) pages.push(totalPages);
 
-                        return pages.map((item, idx) => {
+                        // Build ellipsis-aware list
+                        const result: (number | "...")[] = [];
+                        for (let i = 0; i < buttons.length; i += 1) {
+                          const b = buttons[i];
+                          const prev = buttons[i - 1];
+                          if (
+                            i > 0 &&
+                            typeof b === "number" &&
+                            typeof prev === "number" &&
+                            b - prev > 1
+                          ) {
+                            result.push("...");
+                          }
+                          result.push(b);
+                        }
+
+                        return result.map((item, idx) => {
                           if (item === "...") {
                             return (
                               <span key={idx} className="px-2 py-1.5 text-xs text-slate-500">
@@ -536,6 +578,21 @@ export default function AdminCustomersPage() {
                       }`}
                     >
                       Tiếp
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(totalPages);
+                      }}
+                      disabled={page === totalPages}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        page === totalPages
+                          ? "bg-thuy-900 text-slate-600 border border-thuy-750 cursor-not-allowed"
+                          : "bg-thuy-400 text-thuy-950 hover:brightness-110 shadow-glow-cyan"
+                      }`}
+                    >
+                      Cuối cùng
                     </button>
                   </div>
                 </div>
