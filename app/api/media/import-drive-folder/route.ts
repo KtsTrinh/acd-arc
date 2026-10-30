@@ -33,48 +33,52 @@ export async function POST(request: Request) {
 
     const folderId = match[1];
 
-    // 1. Dùng Google Drive API trực tiếp (Nếu thư mục public)
-    const apiRes = await fetch(`https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents&fields=files(id,name,mimeType)&key=AIzaSyD-U3w9z5HaV3hK8D6B9AqR4T2W1P0N7Y8`, {
-      headers: { "User-Agent": USER_AGENT },
-      cache: "no-store",
-    }).catch(() => null);
+    // 1. Thử dùng Google Drive API công khai (nếu có API key hợp lệ) - bỏ qua nếu key sai
+    const apiKey = process.env.GOOGLE_DRIVE_API_KEY;
+    if (apiKey) {
+      const apiRes = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents+and+(mimeType+contains+%27image%2F%27+or+mimeType+contains+%27video%2F%27)&fields=files(id,name,mimeType)&pageSize=100&key=${apiKey}`,
+        {
+          headers: { "User-Agent": USER_AGENT },
+          cache: "no-store",
+        }
+      ).catch(() => null);
 
-    if (apiRes && apiRes.ok) {
-      const apiData = await apiRes.json();
-      // CHẤP NHẬN CẢ IMAGE VÀ VIDEO
-      const files = (apiData.files || [])
-        .filter((f: any) => f.mimeType?.startsWith('image/') || f.mimeType?.startsWith('video/'))
-        .slice(0, 100);
-      
-      const results = [];
-      for (const file of files) {
-        try {
-          const isVideo = file.mimeType?.startsWith('video/');
-          // Nếu là video, bọc qua API proxy stream để bypass header download của Drive
-          const fileUrl = isVideo 
-            ? `/api/media/stream?url=${encodeURIComponent(`https://drive.google.com/uc?export=view&id=${file.id}`)}`
-            : `https://drive.google.com/uc?export=view&id=${file.id}`;
+      if (apiRes && apiRes.ok) {
+        const apiData = await apiRes.json();
+        const files = (apiData.files || []).filter(
+          (f: any) => f.mimeType?.startsWith("image/") || f.mimeType?.startsWith("video/")
+        );
 
-          const media = await createMediaItem({
-            filename: file.name || `drive_${file.id}`,
-            originalName: file.name || `Google Drive ${file.id}`,
-            mimeType: file.mimeType || (isVideo ? "video/mp4" : "image/jpeg"),
-            size: 0,
-            url: fileUrl,
-            folder,
-            alt: file.name?.replace(/\.[^/.]+$/, "") || "ACD Media",
-          });
-          results.push(media);
-        } catch (e) {}
+        const results = [];
+        for (const file of files) {
+          try {
+            const isVideo = file.mimeType?.startsWith("video/");
+            const fileUrl = isVideo
+              ? `/api/media/stream?url=${encodeURIComponent(`https://drive.google.com/uc?export=view&id=${file.id}`)}`
+              : `https://drive.google.com/uc?export=view&id=${file.id}`;
+
+            const media = await createMediaItem({
+              filename: file.name || `drive_${file.id}`,
+              originalName: file.name || `Google Drive ${file.id}`,
+              mimeType: file.mimeType || (isVideo ? "video/mp4" : "image/jpeg"),
+              size: 0,
+              url: fileUrl,
+              folder,
+              alt: file.name?.replace(/\.[^/.]+$/, "") || "ACD Media",
+            });
+            results.push(media);
+          } catch (e) {}
+        }
+        return NextResponse.json({ success: true, count: results.length, total: files.length, media: results });
       }
-      return NextResponse.json({ success: true, count: results.length, total: files.length, media: results });
     }
 
-    // 2. Cơ chế Fallback cào HTML (Nếu không gọi được API công khai)
+    // 2. Fallback: cào HTML để lấy danh sách file thực tế
     const res = await fetch(`https://drive.google.com/drive/folders/${folderId}`, {
       headers: {
         "User-Agent": USER_AGENT,
-        "Accept": "text/html,application/xhtml+xml",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       },
       cache: "no-store",
     });
@@ -84,30 +88,86 @@ export async function POST(request: Request) {
     }
 
     const html = await res.text();
-    const ids = new Set<string>();
-    const patterns = [/\/file\/d\/([a-zA-Z0-9_-]{25,})/g, /"([a-zA-Z0-9_-]{28,})"/g];
-    for (const p of patterns) {
-      let m;
-      while ((m = p.exec(html)) !== null) {
-        if (m[1] !== folderId && m[1].length >= 25) ids.add(m[1]);
+    const fileMap = new Map<string, { name?: string }>();
+
+    // Tìm các file/d/ID với tên file gần đó
+    const fileRegex = /\/file\/d\/([a-zA-Z0-9_-]{25,})\/[^"']*?"[^"]*?title":"([^"\\]+)"/g;
+    let matchFile: RegExpExecArray | null;
+    while ((matchFile = fileRegex.exec(html)) !== null) {
+      const id = matchFile[1];
+      if (id === folderId) continue;
+      let name = matchFile[2];
+      try {
+        name = decodeURIComponent(name.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16))));
+      } catch {}
+      fileMap.set(id, { name });
+    }
+
+    // Fallback patterns nếu không tìm thấy tên
+    if (fileMap.size === 0) {
+      const patterns = [/\/file\/d\/([a-zA-Z0-9_-]{25,})/g];
+      for (const p of patterns) {
+        let m: RegExpExecArray | null;
+        while ((m = p.exec(html)) !== null) {
+          const id = m[1];
+          if (id === folderId || id.length < 25) continue;
+          if (!fileMap.has(id)) {
+            fileMap.set(id, {});
+          }
+        }
       }
     }
 
-    // Đối với cơ chế cào HTML thô, ta mặc định xuất dữ liệu ra link Drive trực tiếp để hàm `isVideoUrl` ở UI check theo tên file nếu có
-    const files = Array.from(ids).slice(0, 100).map((id) => ({ id, name: `drive_${id.substring(0,8)}.jpg`, mimeType: "image/jpeg" }));
-    if (files.length === 0) return NextResponse.json({ error: "Không tìm thấy tệp tin phương tiện phù hợp." }, { status: 400 });
+    const ids = Array.from(fileMap.keys()).slice(0, 100);
+    if (ids.length === 0) {
+      return NextResponse.json({ error: "Không tìm thấy tệp tin phương tiện phù hợp." }, { status: 400 });
+    }
 
     const results = [];
-    for (const file of files) {
+    for (const id of ids) {
       try {
-        const fileUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
+        const info = fileMap.get(id) || {};
+        const name = info.name || `drive_${id.substring(0, 8)}`;
+        const lower = name.toLowerCase();
+        const isVideo = lower.endsWith(".mp4") || lower.endsWith(".webm") || lower.endsWith(".mov") || lower.endsWith(".m4v") || lower.endsWith(".ogv");
+        const isImage = lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png") || lower.endsWith(".gif") || lower.endsWith(".webp") || lower.endsWith(".avif") || lower.endsWith(".bmp") || lower.endsWith(".svg");
+
+        if (!isVideo && !isImage) {
+          // Nếu không rõ đuôi, vẫn thử thêm nhưng sẽ để UI xử lý
+        }
+
+        const fileUrl = isVideo
+          ? `/api/media/stream?url=${encodeURIComponent(`https://drive.google.com/uc?export=view&id=${id}`)}`
+          : `https://drive.google.com/uc?export=view&id=${id}`;
+
+        const mimeType = isVideo
+          ? lower.endsWith(".webm")
+            ? "video/webm"
+            : lower.endsWith(".mov")
+              ? "video/quicktime"
+              : "video/mp4"
+          : lower.endsWith(".png")
+            ? "image/png"
+            : lower.endsWith(".webp")
+              ? "image/webp"
+              : lower.endsWith(".gif")
+                ? "image/gif"
+                : "image/jpeg";
+
         const media = await createMediaItem({
-          filename: file.name, originalName: `Google Drive ${file.id}`, mimeType: file.mimeType, size: 0, url: fileUrl, folder, alt: "ACD Media",
+          filename: name,
+          originalName: name,
+          mimeType,
+          size: 0,
+          url: fileUrl,
+          folder,
+          alt: name.replace(/\.[^/.]+$/, "") || "ACD Media",
         });
         results.push(media);
       } catch (e) {}
     }
-    return NextResponse.json({ success: true, count: results.length, total: files.length, media: results });
+
+    return NextResponse.json({ success: true, count: results.length, total: ids.length, media: results });
   } catch (error: any) {
     console.error("Import drive folder error:", error);
     return NextResponse.json({ error: "Lỗi khi import thư mục Google Drive." }, { status: 500 });
