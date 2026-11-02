@@ -44,6 +44,25 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PATCH(request: Request) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || (user.role !== "ADMIN" && (user.role as string) !== "SUPER_ADMIN")) {
+      return NextResponse.json({ error: "Không có quyền." }, { status: 403 });
+    }
+    const { id, name } = await request.json();
+    if (!id || !name) {
+      return NextResponse.json({ error: "Thiếu dữ liệu." }, { status: 400 });
+    }
+    const slug = slugify(name);
+    const tag = await prisma.tag.update({ where: { id }, data: { name, slug } });
+    const sync = await triggerCmsAutoSync(`sửa tag "${tag.name}"`);
+    return NextResponse.json({ success: true, tag, sync });
+  } catch (error) {
+    console.error("Error updating tag:", error);
+    return NextResponse.json({ error: "Không thể sửa thẻ tag." }, { status: 500 });
+  }
+}
 export async function DELETE(request: Request) {
   try {
     const user = await getCurrentUser();

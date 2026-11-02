@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Tags, Loader2, Trash2 } from "lucide-react";
+import { Plus, Tags, Loader2, Trash2, Pencil } from "lucide-react";
 
 export default function AdminTagsPage() {
   const [tags, setTags] = useState<any[]>([]);
@@ -60,6 +60,23 @@ export default function AdminTagsPage() {
     }
   };
 
+  const handleRename = async (t: any) => {
+    const newName = prompt("Ten moi:", t.name);
+    if (!newName || newName === t.name) return;
+    try {
+      const res = await fetch("/api/tags", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: t.id, name: newName }),
+      });
+      const data = await res.json();
+      if (data.success) fetchTags();
+      else if (data.error) alert(data.error);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
@@ -101,6 +118,13 @@ export default function AdminTagsPage() {
               <span className="text-[10px] text-thuy-400 font-bold bg-thuy-800 px-1.5 py-0.5 rounded">
                 {t._count?.projects || 0} du an
               </span>
+              <button
+                onClick={() => handleRename(t)}
+                className="ml-1 text-blue-400 hover:text-blue-300"
+                title="Sua"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
               <button
                 onClick={() => handleDelete(t.id)}
                 className="ml-1 text-red-400 hover:text-red-300"
