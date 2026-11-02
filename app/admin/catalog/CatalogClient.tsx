@@ -384,6 +384,14 @@ export default function AdminCatalogClient({
     }
   };
 
+  const openCreate = () => {
+    setForm({ ...EMPTY_FORM });
+    setGalleryItems([]);
+    setGalleryCoverMediaId(null);
+    setThumbImage("");
+    setThumbVideo("");
+  };
+
   const handleUploadFile = async (file: File) => {
     setUploading(true);
     try {
