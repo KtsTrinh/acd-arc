@@ -1117,9 +1117,7 @@ export default function AdminCatalogClient({
                       value={form.thumbnail && !isVideoUrl(form.thumbnail) ? form.thumbnail : ""}
                       onChange={(e) => {
                         const val = e.target.value;
-                        if (val === "" || !isVideoUrl(val)) {
-                          updateForm({ thumbnail: val });
-                        }
+                        updateForm({ thumbnail: val });
                       }}
                       placeholder="https://... (URL ảnh thumbnail)"
                       className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
@@ -1162,9 +1160,7 @@ export default function AdminCatalogClient({
                       value={isVideoUrl(form.thumbnail) ? form.thumbnail : ""}
                       onChange={(e) => {
                         const val = e.target.value;
-                        if (val === "" || isVideoUrl(val)) {
-                          updateForm({ thumbnail: val });
-                        }
+                        updateForm({ thumbnail: val });
                       }}
                       placeholder="https://... (URL video .mp4/.webm)"
                       className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
