@@ -1382,7 +1382,7 @@ export default function AdminCatalogClient({
           }
         }}
         multiple={false}
-        title="Chọn Ảnh/Video Thumbnail từ Media Library"
+        title="Chọn Ảnh/Video Thumbnail"
       />
 
       {/* Media Picker for Gallery */}
