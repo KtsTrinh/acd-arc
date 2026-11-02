@@ -1084,7 +1084,7 @@ export default function AdminCatalogClient({
                 {form.thumbnail ? (
                   (() => {
                     const src = playableVideoUrl(form.thumbnail) || form.thumbnail;
-                    const isVid = isVideoUrl(form.thumbnail);
+                    const isVid = isVideoUrl(form.thumbnail) || (src && src.includes("/api/media/stream"));
                     if (isVid && src) {
                       return (
                         <video
@@ -1476,7 +1476,7 @@ function CatalogTable({
                 {p.thumbnail ? (
                   (() => {
                     const src = playableVideoUrl(p.thumbnail) || p.thumbnail;
-                    const isVid = isVideoUrl(p.thumbnail);
+                    const isVid = isVideoUrl(p.thumbnail) || (src && src.includes("/api/media/stream"));
                     if (isVid && src) {
                       return (
                         <video
