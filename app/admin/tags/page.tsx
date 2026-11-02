@@ -105,14 +105,8 @@ export default function AdminTagsPage() {
   return (
     <div className="space-y-6 max-w-4xl relative">
       {toast && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-          <div
-            className={`px-6 py-4 rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ease-out ${
-              toast.type === "success" ? "bg-green-600" : "bg-red-600"
-            }`}
-          >
-            {toast.message}
-          </div>
+        <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ease-out ${toast.type === "success" ? "bg-green-600" : "bg-red-600"}`}>
+          {toast.message}
         </div>
       )}
 
@@ -149,9 +143,7 @@ export default function AdminTagsPage() {
               </button>
               <button
                 onClick={modal.type === "delete" ? confirmDelete : confirmRename}
-                className={`px-4 py-2 rounded-xl text-white text-sm font-medium ${
-                  modal.type === "delete" ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"
-                }`}
+                className={`px-4 py-2 rounded-xl text-white text-sm font-medium ${modal.type === "delete" ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"}`}
               >
                 {modal.type === "delete" ? "Xoa" : "Luu"}
               </button>
