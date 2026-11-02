@@ -497,15 +497,29 @@ export default function MediaPickerModal({
     let finalUrl = externalUrl.trim();
     if (driveParsed?.type === "file") {
       if (driveParsed.fileType === "video") {
-        finalUrl = `https://drive.google.com/file/d/${driveParsed.id}/preview`;
+        const direct = `https://drive.google.com/uc?export=download&id=${driveParsed.id}`;
+        finalUrl = `/api/media/stream?url=${encodeURIComponent(direct)}`;
       } else {
         finalUrl = `https://drive.google.com/uc?export=view&id=${driveParsed.id}`;
+      }
+    } else if (/^https?:\/\//i.test(externalUrl) && externalUrl.includes("drive.google.com")) {
+      const idMatch = externalUrl.match(/id=([a-zA-Z0-9_-]+)/);
+      if (idMatch && idMatch[1]) {
+        if (isVideoByFilename(externalFilename) || externalIsVideoUrl) {
+          finalUrl = `/api/media/stream?url=${encodeURIComponent(
+            `https://drive.google.com/uc?export=download&id=${idMatch[1]}`
+          )}`;
+        } else {
+          finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+        }
       }
     }
 
     const filename =
       externalFilename.trim() ||
-      finalUrl.split("/").pop()?.split("?")[0] ||
+      (finalUrl.includes("/api/media/stream")
+        ? "video.mp4"
+        : finalUrl.split("/").pop()?.split("?")[0]) ||
       "external-media";
 
     const item: MediaItem = {
