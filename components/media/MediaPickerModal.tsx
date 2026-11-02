@@ -141,6 +141,9 @@ function getGoogleDriveUrl(
   const isVideoByName =
     /\.(mp4|mov|webm|mkv|avi)(\?.*)?$/i.test(nameToCheck) ||
     /\.(mp4|mov|webm|mkv|avi)(\?.*)?$/i.test(urlLower);
+  const isImageByName =
+    /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)(\?.*)?$/i.test(nameToCheck) ||
+    /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)(\?.*)?$/i.test(urlLower);
 
   if (/\/folders\//i.test(trimmed)) {
     const folderMatch = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/);
@@ -177,29 +180,56 @@ function getGoogleDriveUrl(
       /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/
     );
     if (fileMatch && fileMatch[1]) {
+      let fileType: "image" | "video" = "video";
+      if (isImageByName && !isVideoByName) {
+        fileType = "image";
+      } else if (isVideoByName) {
+        fileType = "video";
+      } else {
+        fileType = "video";
+      }
       return {
         type: "file",
         id: fileMatch[1],
-        fileType: isVideoByName ? "video" : "image",
+        fileType,
       };
     }
     const fileMatch2 = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
     if (fileMatch2 && fileMatch2[1]) {
+      let fileType: "image" | "video" = "video";
+      if (isImageByName && !isVideoByName) {
+        fileType = "image";
+      } else if (isVideoByName) {
+        fileType = "video";
+      } else {
+        fileType = "video";
+      }
       return {
         type: "file",
         id: fileMatch2[1],
-        fileType: isVideoByName ? "video" : "image",
+        fileType,
       };
     }
   }
 
   const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
   if (idParamMatch && idParamMatch[1]) {
+    let fileType: "image" | "video" = "video";
+    if (isImageByName && !isVideoByName) {
+      fileType = "image";
+    } else if (isVideoByName) {
+      fileType = "video";
+    } else if (/(\/file\/|\/uc\?)/i.test(trimmed)) {
+      fileType = "video";
+    } else {
+      fileType = "video";
+    }
+
     if (/\/file\//i.test(trimmed)) {
       return {
         type: "file",
         id: idParamMatch[1],
-        fileType: isVideoByName ? "video" : "image",
+        fileType,
       };
     }
     if (/(\/folders\/|folders)/i.test(trimmed)) {
@@ -209,31 +239,47 @@ function getGoogleDriveUrl(
       return {
         type: "file",
         id: idParamMatch[1],
-        fileType: isVideoByName ? "video" : "image",
+        fileType,
       };
     }
     return {
       type: "file",
       id: idParamMatch[1],
-      fileType: isVideoByName ? "video" : "image",
+      fileType,
     };
   }
 
   const openIdMatch = trimmed.match(/open\?id=([a-zA-Z0-9_-]+)/);
   if (openIdMatch && openIdMatch[1]) {
+    let fileType: "image" | "video" = "video";
+    if (isImageByName && !isVideoByName) {
+      fileType = "image";
+    } else if (isVideoByName) {
+      fileType = "video";
+    } else {
+      fileType = "video";
+    }
     return {
       type: "file",
       id: openIdMatch[1],
-      fileType: isVideoByName ? "video" : "image",
+      fileType,
     };
   }
 
   const ucMatch = trimmed.match(/uc\?export=[^&]*&id=([a-zA-Z0-9_-]+)/);
   if (ucMatch && ucMatch[1]) {
+    let fileType: "image" | "video" = "video";
+    if (isImageByName && !isVideoByName) {
+      fileType = "image";
+    } else if (isVideoByName) {
+      fileType = "video";
+    } else {
+      fileType = "video";
+    }
     return {
       type: "file",
       id: ucMatch[1],
-      fileType: isVideoByName ? "video" : "image",
+      fileType,
     };
   }
 
@@ -495,26 +541,26 @@ export default function MediaPickerModal({
     if (isFolder) return;
 
     let finalUrl = externalUrl.trim();
-    if (driveParsed?.type === "file") {
-      if (driveParsed.fileType === "video") {
-        const direct = `https://drive.google.com/uc?export=download&id=${driveParsed.id}`;
-        finalUrl = `/api/media/stream?url=${encodeURIComponent(direct)}`;
-      } else {
-        finalUrl = `https://drive.google.com/uc?export=view&id=${driveParsed.id}`;
-      }
-    } else if (/^https?:\/\//i.test(externalUrl) && externalUrl.includes("drive.google.com")) {
-      const idMatch = externalUrl.match(/id=([a-zA-Z0-9_-]+)/);
-      if (idMatch && idMatch[1]) {
-        const looksVideo = isVideoByFilename(externalFilename) || externalIsVideoUrl || /\.(mp4|mov|webm|mkv|avi)/i.test(externalUrl);
-        if (looksVideo) {
-          finalUrl = `/api/media/stream?url=${encodeURIComponent(
-            `https://drive.google.com/uc?export=download&id=${idMatch[1]}`
-          )}`;
+      if (driveParsed?.type === "file") {
+        if (driveParsed.fileType === "video") {
+          const direct = `https://drive.google.com/uc?export=download&id=${driveParsed.id}`;
+          finalUrl = `/api/media/stream?url=${encodeURIComponent(direct)}`;
         } else {
-          finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+          finalUrl = `https://drive.google.com/uc?export=view&id=${driveParsed.id}`;
         }
-      }
-    } else if (/^https?:\/\//i.test(externalUrl) && !externalUrl.includes("/api/media/stream")) {
+      } else if (/^https?:\/\//i.test(externalUrl) && externalUrl.includes("drive.google.com")) {
+        const idMatch = externalUrl.match(/id=([a-zA-Z0-9_-]+)/);
+        if (idMatch && idMatch[1]) {
+          const looksVideo = isVideoByFilename(externalFilename) || externalIsVideoUrl || /\.(mp4|mov|webm|mkv|avi)/i.test(externalUrl) || /\/file\/d\//.test(externalUrl);
+          if (looksVideo && !/\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(externalUrl)) {
+            finalUrl = `/api/media/stream?url=${encodeURIComponent(
+              `https://drive.google.com/uc?export=download&id=${idMatch[1]}`
+            )}`;
+          } else {
+            finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+          }
+        }
+      } else if (/^https?:\/\//i.test(externalUrl) && !externalUrl.includes("/api/media/stream")) {
       // YouTube/Vimeo/embed không đổi, link mp4/webm/image trực tiếp giữ nguyên
       const lower = externalUrl.toLowerCase();
       if (lower.includes("youtube") || lower.includes("youtu.be") || lower.includes("vimeo")) {
