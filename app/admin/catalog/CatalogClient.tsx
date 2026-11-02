@@ -240,7 +240,6 @@ export default function AdminCatalogClient({
     return [...defaults, ...customs];
   };
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState<ItemForm | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
@@ -288,8 +287,35 @@ export default function AdminCatalogClient({
   }, []);
 
   useEffect(() => {
+    let mounted = true;
+    const fetchAll = async () => {
+      try {
+        const [itemsRes, projectsRes, categoriesRes, tagsRes] = await Promise.allSettled([
+          fetch("/api/products?includeInactive=1"),
+          fetch("/api/projects"),
+          fetch("/api/categories"),
+          fetch("/api/tags"),
+        ]);
+        if (!mounted) return;
+        const itemsData = itemsRes.status === "fulfilled" ? await itemsRes.value.json().catch(() => ({})) : {};
+        const projectsData = projectsRes.status === "fulfilled" ? await projectsRes.value.json().catch(() => ({})) : {};
+        const categoriesData = categoriesRes.status === "fulfilled" ? await categoriesRes.value.json().catch(() => ({})) : {};
+        const tagsData = tagsRes.status === "fulfilled" ? await tagsRes.value.json().catch(() => ({})) : {};
+        setItems(itemsData.products || []);
+        setProjects(projectsData.projects || []);
+        setCategories(categoriesData.categories || []);
+        setTags(tagsData.tags || []);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
     fetchAll();
-  }, [fetchAll]);
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const groupItems = useMemo(() => {
     return items.filter((i) => i.productGroup === activeTab);
