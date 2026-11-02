@@ -1230,45 +1230,6 @@ export default function MediaPickerModal({
                 )}
               </div>
 
-              <div>
-                <label className="text-xs text-slate-300 block mb-1">
-                  Tên file nhận diện:
-                </label>
-                <input
-                  type="text"
-                  value={externalFilename}
-                  onChange={(e) => setExternalFilename(e.target.value)}
-                  placeholder="villa-modern-hero.mp4"
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-300 block mb-1">
-                  Thư mục phân loại:
-                </label>
-                <input
-                  type="text"
-                  value={externalFolder}
-                  onChange={(e) => setExternalFolder(e.target.value)}
-                  placeholder="pinterest, villa, townhouse, mixkit..."
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-300 block mb-1">
-                  Mô tả hình ảnh (Alt text):
-                </label>
-                <input
-                  type="text"
-                  value={externalAlt}
-                  onChange={(e) => setExternalAlt(e.target.value)}
-                  placeholder="Biệt thự nghỉ dưỡng phong cách mệnh Thủy..."
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                />
-              </div>
-
               {shouldUseDirectUrl() && !multiple && externalUrl && (
                 <button
                   type="button"
@@ -1276,24 +1237,20 @@ export default function MediaPickerModal({
                   className="w-full py-2.5 rounded-xl bg-emerald-400 text-slate-950 font-bold text-xs hover:brightness-110 flex items-center justify-center gap-2 transition-all shadow-glow-cyan"
                 >
                   <LinkIcon className="w-4 h-4" />
-                  <span>Sử dụng link trực tiếp (không lưu vào Media Library)</span>
+                  <span>Chọn link này</span>
                 </button>
               )}
 
-              <button
-                type="submit"
-                disabled={!externalUrl || isImporting}
-                className="w-full py-2.5 rounded-xl bg-cyan-400 text-slate-950 font-bold text-xs hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 transition-all shadow-glow-cyan"
-              >
-                {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>
-                  {isImporting
-                    ? "Đang xử lý..."
-                    : shouldUseDirectUrl() && !multiple
-                    ? "Thêm vào Media Library (hoặc dùng link trực tiếp ở trên)"
-                    : "Thêm vào Media Library"}
-                </span>
-              </button>
+              {!shouldUseDirectUrl() && !multiple && externalUrl && !DRIVE_FOLDER_REGEX.test(externalUrl) && getGoogleDriveUrl(externalUrl, externalFilename)?.type !== "folder" && (
+                <button
+                  type="submit"
+                  disabled={!externalUrl || isImporting}
+                  className="w-full py-2.5 rounded-xl bg-cyan-400 text-slate-950 font-bold text-xs hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 transition-all shadow-glow-cyan"
+                >
+                  {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  <span>{isImporting ? "Đang xử lý..." : "Thêm vào Media Library"}</span>
+                </button>
+              )}
             </div>
           </form>
         )}
