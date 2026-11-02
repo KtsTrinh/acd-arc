@@ -20,6 +20,7 @@ import {
   isVideoUrl,
   DRIVE_FOLDER_REGEX,
   DRIVE_ID_REGEX,
+  normalizeMediaUrl,
 } from "@/lib/media-url";
 
 export interface MediaItem {
@@ -221,6 +222,14 @@ function getDriveFilePreviewUrl(fileId: string): string {
 
 function getDriveImageDirectUrl(fileId: string): string {
   return `https://drive.google.com/uc?export=view&id=${fileId}`;
+}
+
+function imagePreviewSrc(url: string): string {
+  const isDrive =
+    DRIVE_ID_REGEX.test(url) || /drive\.google\.com\/uc\?/i.test(url);
+  return isDrive
+    ? `/api/media/image-proxy?url=${encodeURIComponent(url)}`
+    : normalizeMediaUrl(url);
 }
 
 function getYoutubeEmbedUrl(url: string): string | null {
@@ -736,7 +745,7 @@ export default function MediaPickerModal({
               </div>
             ) : (
               <Image
-                src={getDriveImageDirectUrl(fileId)}
+                src={imagePreviewSrc(externalUrl)}
                 alt="Google Drive Preview"
                 fill
                 className="object-contain"
@@ -932,7 +941,7 @@ export default function MediaPickerModal({
                         />
                       ) : (
                         <Image
-                          src={item.url}
+                          src={imagePreviewSrc(item.url)}
                           alt={item.alt || item.filename}
                           fill
                           className="object-cover"

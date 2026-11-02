@@ -9,13 +9,24 @@ const DRIVE_FILE_ID =
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 
-function toViewUrl(rawUrl: string) {
-  const drive = rawUrl.match(DRIVE_FILE_ID);
-  if (drive) {
-    return `https://drive.google.com/uc?export=view&id=${drive[1]}`;
-  }
-  return rawUrl;
+function extractDriveId(rawUrl: string): string | null {
+  const m = rawUrl.match(DRIVE_FILE_ID);
+  return m ? m[1] : null;
 }
+
+function driveViewUrl(fileId: string) {
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+}
+
+function driveDownloadUrl(fileId: string) {
+  return `https://drive.usercontent.google.com/download?id=${fileId}&export=view&confirm=t`;
+}
+
+const driveHeaders = {
+  "User-Agent": USER_AGENT,
+  Accept: "image/*,*/*",
+  Referer: "https://drive.google.com/",
+};
 
 export async function GET(request: NextRequest) {
   const raw = request.nextUrl.searchParams.get("url");
@@ -34,26 +45,44 @@ export async function GET(request: NextRequest) {
     return new Response("Chỉ hỗ trợ http/https.", { status: 400 });
   }
 
-  const directUrl = toViewUrl(parsed.toString());
+  const fileId = extractDriveId(raw.toString());
+  const directUrl = fileId ? driveViewUrl(fileId) : raw.toString();
+
+  const headers = new Headers();
+  headers.set("Cache-Control", "public, max-age=31536000, s-maxage=31536000, immutable");
+  headers.set("Access-Control-Allow-Origin", "*");
+  headers.set("X-Content-Type-Options", "nosniff");
 
   try {
     const upstream = await fetch(directUrl, {
-      headers: {
-        "User-Agent": USER_AGENT,
-        Accept: "image/*,*/*",
-        Referer: "https://drive.google.com/",
-      },
+      headers: driveHeaders,
       redirect: "follow",
       cache: "no-store",
     });
 
-    const headers = new Headers();
     const contentType = upstream.headers.get("content-type") || "";
-    headers.set("Content-Type", contentType.includes("image/") ? contentType : "image/jpeg");
-    headers.set("Cache-Control", "public, max-age=31536000, s-maxage=31536000, immutable");
-    headers.set("Access-Control-Allow-Origin", "*");
-    headers.set("X-Content-Type-Options", "nosniff");
 
+    // Nếu Google trả trang HTML (chặn hotlink / yêu cầu xác nhận), thử đường link download thay thế
+    if (contentType.includes("text/html") && fileId) {
+      const fallback = await fetch(driveDownloadUrl(fileId), {
+        headers: driveHeaders,
+        redirect: "follow",
+        cache: "no-store",
+      });
+      const fbType = fallback.headers.get("content-type") || "";
+      if (fbType.includes("image/")) {
+        headers.set("Content-Type", fbType);
+        return new Response(fallback.body, {
+          status: fallback.status,
+          headers,
+        });
+      }
+    }
+
+    headers.set(
+      "Content-Type",
+      contentType.includes("image/") ? contentType : "image/jpeg",
+    );
     return new Response(upstream.body, { status: upstream.status, headers });
   } catch {
     return new Response("Không thể tải ảnh.", { status: 502 });
