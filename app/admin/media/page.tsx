@@ -480,7 +480,7 @@ export default function AdminMediaPage() {
                   <p className="text-xs text-[#142338] font-medium">
                     {uploadFile
                       ? uploadFile.name
-                      : "Nhấn để chọn ảnh/video từ máy tính"}
+                      : "Nhấn để chọn ảnh từ máy tính"}
                   </p>
                   <span className="text-[10px] text-slate-600 block">
                     Lưu trữ vào /public/uploads/
