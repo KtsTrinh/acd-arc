@@ -3,9 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { formatVND, slugify } from "@/lib/utils";
-import { isVideoUrl, playableVideoUrl } from "@/lib/media-url";
-import MediaPickerModal, {
+import { resolveHeroVideo, playableVideoUrl, isVideoUrl } from "@/lib/media-url";
   MediaItem,
 } from "@/components/media/MediaPickerModal";
 import {
@@ -1082,24 +1080,31 @@ export default function AdminCatalogClient({
                 </div>
               <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
                 {form.thumbnail ? (
-                  isVideoUrl(form.thumbnail) ? (
-                    <video
-                      src={playableVideoUrl(form.thumbnail) || form.thumbnail}
-                      muted
-                      loop
-                      playsInline
-                      controls
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Image
-                      src={form.thumbnail}
-                      alt="Thumbnail preview"
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
-                  )
+                  (() => {
+                    const src = playableVideoUrl(form.thumbnail) || form.thumbnail;
+                    const isVid = isVideoUrl(form.thumbnail);
+                    if (isVid && src) {
+                      return (
+                        <video
+                          src={src}
+                          muted
+                          loop
+                          playsInline
+                          controls
+                          className="w-full h-full object-cover"
+                        />
+                      );
+                    }
+                    return (
+                      <Image
+                        src={form.thumbnail}
+                        alt="Thumbnail preview"
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    );
+                  })()
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-600">
                     <ImageIcon className="w-6 h-6" />
@@ -1465,26 +1470,33 @@ function CatalogTable({
               <tr key={p.id} className="hover:bg-thuy-800/40">
                 <td className="py-3.5 px-5">
                   <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
-                    {p.thumbnail ? (
-                      isVideoUrl(p.thumbnail) ? (
+                {p.thumbnail ? (
+                  (() => {
+                    const src = playableVideoUrl(p.thumbnail) || p.thumbnail;
+                    const isVid = isVideoUrl(p.thumbnail);
+                    if (isVid && src) {
+                      return (
                         <video
-                          src={playableVideoUrl(p.thumbnail) || p.thumbnail}
+                          src={src}
                           muted
                           loop
                           playsInline
                           preload="metadata"
                           className="w-full h-full object-cover"
                         />
-                      ) : (
-                        <Image
-                          src={p.thumbnail}
-                          alt={p.name}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
-                      )
-                    ) : (
+                      );
+                    }
+                    return (
+                      <Image
+                        src={p.thumbnail}
+                        alt={p.name}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    );
+                  })()
+                ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-600">
                         <FileCode className="w-4 h-4" />
                       </div>
