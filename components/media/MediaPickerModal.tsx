@@ -165,6 +165,10 @@ function getGoogleDriveUrl(url: string): GoogleDriveParseResult {
     if (folderMatch && folderMatch[1]) {
       return { type: "folder", id: folderMatch[1] };
     }
+    const folderMatch3 = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+    if (folderMatch3 && folderMatch3[1]) {
+      return { type: "folder", id: folderMatch3[1] };
+    }
   }
 
   // Tệp đơn lẻ Google Drive: /file/d/ID
@@ -187,8 +191,7 @@ function getGoogleDriveUrl(url: string): GoogleDriveParseResult {
     if (/\/file\//i.test(trimmed)) {
       return { type: "file", id: idParamMatch[1] };
     }
-    // Nếu không rõ ngữ cảnh, kiểm tra thêm
-    if (/folders/i.test(trimmed)) {
+    if (/(\/folders\/|folders)/i.test(trimmed)) {
       return { type: "folder", id: idParamMatch[1] };
     }
     return { type: "file", id: idParamMatch[1] };
@@ -1061,13 +1064,8 @@ export default function MediaPickerModal({
                     setExternalUrl(url);
                     // Tự động xác định nguồn
                     if (url.includes("drive.google.com")) {
-                      if (url.includes("/folders/")) {
-                        setExternalSource("googledrive");
-                        setExternalFolder("drive");
-                      } else {
-                        setExternalSource("googledrive");
-                        setExternalFolder("drive");
-                      }
+                      setExternalSource("googledrive");
+                      setExternalFolder("drive");
                     } else if (url.includes("youtube.com") || url.includes("youtu.be")) {
                       setExternalSource("youtube");
                       setExternalFolder("youtube");
