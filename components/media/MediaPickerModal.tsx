@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import {
   X,
@@ -10,11 +10,16 @@ import {
   Check,
   Folder,
   Loader2,
+  AlertCircle,
+  Film,
+  Image as ImageIcon,
+  Grid3X3,
 } from "lucide-react";
 import {
   playableVideoUrl,
   isVideoUrl,
   DRIVE_FOLDER_REGEX,
+  DRIVE_ID_REGEX,
 } from "@/lib/media-url";
 
 export interface MediaItem {
@@ -120,6 +125,89 @@ const MEDIA_SOURCES = [
   },
 ];
 
+type GoogleDriveParseResult =
+  | { type: "folder"; id: string }
+  | { type: "file"; id: string }
+  | null;
+
+function getGoogleDriveUrl(url: string): GoogleDriveParseResult {
+  const trimmed = (url || "").trim();
+  if (!trimmed) return null;
+
+  // Thư mục Google Drive: /drive/folders/ID
+  const folderMatch = trimmed.match(
+    /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/
+  );
+  if (folderMatch && folderMatch[1]) {
+    return { type: "folder", id: folderMatch[1] };
+  }
+
+  // Tệp đơn lẻ Google Drive: /file/d/ID
+  const fileMatch = trimmed.match(
+    /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/
+  );
+  if (fileMatch && fileMatch[1]) {
+    return { type: "file", id: fileMatch[1] };
+  }
+
+  // Các dạng URL có ?id=
+  const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (idParamMatch && idParamMatch[1]) {
+    if (/\/folders\//i.test(trimmed)) {
+      return { type: "folder", id: idParamMatch[1] };
+    }
+    if (/\/file\//i.test(trimmed)) {
+      return { type: "file", id: idParamMatch[1] };
+    }
+    return { type: "file", id: idParamMatch[1] };
+  }
+
+  // open?id=
+  const openIdMatch = trimmed.match(/open\?id=([a-zA-Z0-9_-]+)/);
+  if (openIdMatch && openIdMatch[1]) {
+    return { type: "file", id: openIdMatch[1] };
+  }
+
+  return null;
+}
+
+const VIDEO_EXT_REGEX = /\.(mp4|mov|avi|webm|m4v|ogv)(\?.*)?$/i;
+const IMAGE_EXT_REGEX = /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)(\?.*)?$/i;
+
+function isVideoByFilename(filename: string): boolean {
+  if (!filename) return false;
+  return VIDEO_EXT_REGEX.test(filename);
+}
+
+function isImageByFilename(filename: string): boolean {
+  if (!filename) return false;
+  return IMAGE_EXT_REGEX.test(filename);
+}
+
+function getDriveFilePreviewUrl(fileId: string): string {
+  return `https://drive.google.com/file/d/${fileId}/preview`;
+}
+
+function getDriveImageDirectUrl(fileId: string): string {
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+}
+
+function getYoutubeEmbedUrl(url: string): string | null {
+  const match = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/
+  );
+  if (!match) return null;
+  const id = match[1];
+  return `https://www.youtube.com/embed/${id}?autoplay=0&controls=1&rel=0&modestbranding=1&playsinline=1`;
+}
+
+function getVimeoEmbedUrl(url: string): string | null {
+  const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (!match) return null;
+  const id = match[1];
+  return `https://player.vimeo.com/video/${id}?controls=1&playsinline=1`;
+}
+
 export default function MediaPickerModal({
   isOpen,
   onClose,
@@ -130,7 +218,7 @@ export default function MediaPickerModal({
   mediaType = "image",
 }: MediaPickerModalProps) {
   const [activeTab, setActiveTab] = useState<"library" | "upload" | "url">(
-    "library",
+    "library"
   );
   const [mediaList, setMediaList] = useState<MediaItem[]>([]);
   const [folders, setFolders] = useState<string[]>([]);
@@ -145,17 +233,25 @@ export default function MediaPickerModal({
   const [uploadAlt, setUploadAlt] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
-  // Form states for External URL (nhiều nguồn)
+  // Form states for External URL
   const [externalUrl, setExternalUrl] = useState("");
   const [externalFilename, setExternalFilename] = useState("");
   const [externalFolder, setExternalFolder] = useState("pinterest");
   const [externalAlt, setExternalAlt] = useState("");
   const [externalSource, setExternalSource] = useState("pinterest");
   const [isImporting, setIsImporting] = useState(false);
-  const [driveFolderUrl, setDriveFolderUrl] = useState("");
-  const [driveImporting, setDriveImporting] = useState(false);
-  const externalIsVideo = (isVideoUrl as any)(externalUrl, externalFilename);
-  const externalPlayable = externalIsVideo
+
+  // Preview states for URL tab
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [isLoadingFolder, setIsLoadingFolder] = useState(false);
+  const [folderError, setFolderError] = useState<string | null>(null);
+  const [selectedPreviewImage, setSelectedPreviewImage] = useState<string | null>(
+    null
+  );
+  const [previewLoading, setPreviewLoading] = useState(false);
+
+  const externalIsVideoUrl = isVideoUrl(externalUrl);
+  const externalPlayable = externalIsVideoUrl
     ? playableVideoUrl(externalUrl)
     : externalUrl;
 
@@ -196,6 +292,100 @@ export default function MediaPickerModal({
     }
   }, [isOpen, selectedFolder, search]);
 
+  useEffect(() => {
+    if (activeTab !== "url") {
+      setPreviewImages([]);
+      setIsLoadingFolder(false);
+      setFolderError(null);
+      setSelectedPreviewImage(null);
+      setPreviewLoading(false);
+      return;
+    }
+
+    setPreviewImages([]);
+    setFolderError(null);
+    setSelectedPreviewImage(null);
+    setPreviewLoading(false);
+  }, [activeTab]);
+
+  const fetchDriveFolderPreview = useCallback(async (folderId: string) => {
+    setIsLoadingFolder(true);
+    setFolderError(null);
+    setPreviewImages([]);
+    setSelectedPreviewImage(null);
+
+    try {
+      const res = await fetch(
+        `/api/media/import-folder?folderId=${encodeURIComponent(folderId)}`
+      );
+      const data = await res.json();
+
+      if (!res.ok) {
+        setFolderError(
+          data?.error ||
+            "Không thể truy cập thư mục. Vui lòng đảm bảo thư mục đã được chia sẻ 'Anyone with the link can view'."
+        );
+        return;
+      }
+
+      if (data?.images && Array.isArray(data.images)) {
+        setPreviewImages(data.images);
+        if (data.images.length > 0) {
+          setSelectedPreviewImage(data.images[0]);
+        }
+      } else if (data?.media && Array.isArray(data.media)) {
+        const imageUrls = data.media
+          .map((item: any) => item.url)
+          .filter((url: string) => url && !isVideoUrl(url));
+        setPreviewImages(imageUrls);
+        if (imageUrls.length > 0) {
+          setSelectedPreviewImage(imageUrls[0]);
+        }
+      } else {
+        setFolderError(
+          "Không tìm thấy hình ảnh nào trong thư mục này hoặc thư mục không có quyền truy cập."
+        );
+      }
+    } catch (err) {
+      console.error("Error fetching drive folder:", err);
+      setFolderError(
+        "Đã xảy ra lỗi khi tải danh sách ảnh từ thư mục Google Drive. Vui lòng kiểm tra quyền chia sẻ."
+      );
+    } finally {
+      setIsLoadingFolder(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab !== "url" || !externalUrl.trim()) {
+      return;
+    }
+
+    const driveParsed = getGoogleDriveUrl(externalUrl);
+
+    if (driveParsed?.type === "folder") {
+      fetchDriveFolderPreview(driveParsed.id);
+      return;
+    }
+
+    if (driveParsed?.type === "file") {
+      setPreviewImages([]);
+      setIsLoadingFolder(false);
+      setFolderError(null);
+      setSelectedPreviewImage(null);
+      setPreviewLoading(true);
+      setTimeout(() => setPreviewLoading(false), 300);
+      return;
+    }
+
+    setPreviewImages([]);
+    setIsLoadingFolder(false);
+    setFolderError(null);
+    setSelectedPreviewImage(null);
+    setPreviewLoading(true);
+    setTimeout(() => setPreviewLoading(false), 200);
+  }, [externalUrl, activeTab, fetchDriveFolderPreview]);
+
   if (!isOpen) return null;
 
   const toggleSelect = (item: MediaItem) => {
@@ -217,7 +407,6 @@ export default function MediaPickerModal({
     onClose();
   };
 
-  // Handle Physical Upload
   const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!uploadFile) return;
@@ -252,52 +441,51 @@ export default function MediaPickerModal({
     }
   };
 
-  // Handle External Pinterest/CDN URL & Google Drive Folder
   const handleUrlSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!externalUrl) return;
 
-    // KIỂM TRA NẾU LÀ IMPORT HÀNG LOẠT TỪ THƯ MỤC DRIVE
     const isFolder = DRIVE_FOLDER_REGEX.test(externalUrl);
-    if (isFolder) {
+    const driveParsed = getGoogleDriveUrl(externalUrl);
+    if (isFolder || driveParsed?.type === "folder") {
       setIsImporting(true);
       try {
+        const folderId =
+          driveParsed?.id ||
+          externalUrl.match(/folders\/([a-zA-Z0-9_-]+)/)?.[1];
         const res = await fetch("/api/media/import-folder", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             url: externalUrl,
+            folderId: folderId,
             folder: externalFolder,
           }),
         });
         const data = await res.json();
 
         if (data.success && data.media) {
-          alert(
-            `Đã import thành công ${data.media.length} tệp tin từ thư mục!`,
-          );
           setExternalUrl("");
           setExternalFilename("");
           setExternalAlt("");
           setActiveTab("library");
           await fetchMedia();
           if (!multiple && data.media.length > 0) {
-            onSelect(data.media[0]); // Chọn file đầu tiên nếu ở chế độ single-select
+            onSelect(data.media[0]);
             onClose();
           }
         } else {
-          alert(data.error || "Có lỗi xảy ra khi import thư mục.");
+          setFolderError(data.error || "Có lỗi xảy ra khi import thư mục.");
         }
       } catch (err) {
         console.error("Import folder error:", err);
-        alert("Không thể kết nối đến máy chủ.");
+        setFolderError("Không thể kết nối đến máy chủ.");
       } finally {
         setIsImporting(false);
       }
-      return; // Dừng hàm tại đây, không chạy tiếp logic file đơn lẻ bên dưới
+      return;
     }
 
-    // LOGIC IMPORT FILE ĐƠN LẺ CŨ CỦA BẠN (GIỮ NGUYÊN)
     setIsImporting(true);
     try {
       const res = await fetch("/api/media", {
@@ -330,32 +518,247 @@ export default function MediaPickerModal({
     }
   };
 
+  const renderUrlPreview = () => {
+    if (!externalUrl.trim()) {
+      return (
+        <div className="w-full h-44 rounded-lg border-2 border-dashed border-slate-700 bg-slate-950/50 flex flex-col items-center justify-center text-slate-500 gap-2 transition-all duration-300">
+          <LinkIcon className="w-8 h-8" />
+          <span className="text-xs text-center px-4">
+            Dán link để xem trước nội dung
+          </span>
+        </div>
+      );
+    }
+
+    const driveParsed = getGoogleDriveUrl(externalUrl);
+    const isFolder =
+      DRIVE_FOLDER_REGEX.test(externalUrl) || driveParsed?.type === "folder";
+    const isDriveFile =
+      driveParsed?.type === "file" || DRIVE_ID_REGEX.test(externalUrl);
+    const isVideoFile = isVideoByFilename(externalFilename) || externalIsVideoUrl;
+    const isImageFile = isImageByFilename(externalFilename) && !isVideoFile;
+    const youtubeEmbed = getYoutubeEmbedUrl(externalUrl);
+    const vimeoEmbed = getVimeoEmbedUrl(externalUrl);
+
+    if (isFolder) {
+      return (
+        <div className="w-full rounded-lg border border-slate-700 bg-slate-950 overflow-hidden shadow-lg shadow-black/30 transition-all duration-300">
+          <div className="px-3 py-2 bg-slate-900/80 border-b border-slate-700 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-slate-300">
+              <Folder className="w-4 h-4 text-cyan-400" />
+              <span className="text-xs font-medium">Thư mục Google Drive</span>
+            </div>
+            {isLoadingFolder && (
+              <div className="flex items-center gap-1.5 text-xs text-cyan-400">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Đang quét...</span>
+              </div>
+            )}
+          </div>
+
+          {isLoadingFolder ? (
+            <div className="h-44 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+            </div>
+          ) : folderError ? (
+            <div className="h-44 flex flex-col items-center justify-center gap-2 px-4 text-center">
+              <AlertCircle className="w-6 h-6 text-red-400" />
+              <span className="text-xs text-red-400">{folderError}</span>
+            </div>
+          ) : previewImages.length > 0 ? (
+            <div className="p-2 space-y-2">
+              <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 max-h-44 overflow-y-auto">
+                {previewImages.map((imgUrl, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setSelectedPreviewImage(imgUrl)}
+                    className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
+                      selectedPreviewImage === imgUrl
+                        ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
+                        : "border-slate-700 hover:border-slate-500"
+                    }`}
+                  >
+                    <Image
+                      src={imgUrl}
+                      alt={`Thumbnail ${idx + 1}`}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </button>
+                ))}
+              </div>
+              <div className="text-[10px] text-slate-500 text-center">
+                Đã tìm thấy {previewImages.length} ảnh. Nhấn vào ảnh để chọn.
+              </div>
+            </div>
+          ) : (
+            <div className="h-44 flex items-center justify-center text-xs text-slate-500">
+              Không có ảnh để hiển thị
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (youtubeEmbed) {
+      return (
+        <div className="w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
+          <iframe
+            src={youtubeEmbed}
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="YouTube Preview"
+          />
+        </div>
+      );
+    }
+
+    if (vimeoEmbed) {
+      return (
+        <div className="w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
+          <iframe
+            src={vimeoEmbed}
+            className="w-full h-full"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+            title="Vimeo Preview"
+          />
+        </div>
+      );
+    }
+
+    if (isDriveFile && isVideoFile) {
+      const driveParsedFile = getGoogleDriveUrl(externalUrl);
+      const fileId =
+        driveParsedFile?.id || externalUrl.match(DRIVE_ID_REGEX)?.[1];
+      if (fileId) {
+        return (
+          <div className="w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
+            <iframe
+              src={getDriveFilePreviewUrl(fileId)}
+              className="w-full h-full"
+              allow="autoplay"
+              allowFullScreen
+              title="Google Drive Video Preview"
+            />
+          </div>
+        );
+      }
+    }
+
+    if (isVideoFile || externalIsVideoUrl) {
+      return (
+        <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
+          {previewLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+            </div>
+          ) : (
+            <video
+              src={externalPlayable}
+              controls
+              playsInline
+              className="w-full h-full object-contain"
+            />
+          )}
+          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-cyan-400 uppercase flex items-center gap-1">
+            <Film className="w-2.5 h-2.5" />
+            Video
+          </div>
+        </div>
+      );
+    }
+
+    if (isDriveFile && (isImageFile || !isVideoFile)) {
+      const driveParsedFile = getGoogleDriveUrl(externalUrl);
+      const fileId =
+        driveParsedFile?.id || externalUrl.match(DRIVE_ID_REGEX)?.[1];
+      if (fileId) {
+        return (
+          <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
+            {previewLoading ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+              </div>
+            ) : (
+              <Image
+                src={getDriveImageDirectUrl(fileId)}
+                alt="Google Drive Preview"
+                fill
+                className="object-contain"
+                unoptimized
+                onError={() =>
+                  setFolderError(
+                    "Không thể tải ảnh. Vui lòng kiểm tra quyền chia sẻ file (Anyone with the link can view)."
+                  )
+                }
+              />
+            )}
+            <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-emerald-400 uppercase flex items-center gap-1">
+              <ImageIcon className="w-2.5 h-2.5" />
+              Image
+            </div>
+          </div>
+        );
+      }
+    }
+
+    if (externalUrl && !isVideoFile) {
+      return (
+        <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
+          {previewLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+            </div>
+          ) : (
+            <Image
+              src={externalUrl}
+              alt="Preview"
+              fill
+              className="object-contain"
+              unoptimized
+            />
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="w-full h-44 rounded-lg border border-slate-700 bg-slate-950 flex flex-col items-center justify-center text-slate-500 gap-2">
+        <Grid3X3 className="w-8 h-8" />
+        <span className="text-xs">Không thể tạo xem trước</span>
+      </div>
+    );
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="fixed inset-0 bg-thuy-950/80 backdrop-blur-md"
+        className="fixed inset-0 bg-slate-950/80 backdrop-blur-md"
         onClick={onClose}
       />
 
-      <div className="relative z-10 w-full max-w-4xl h-[85vh] bg-thuy-900 border border-thuy-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="p-5 border-b border-thuy-700 flex items-center justify-between bg-thuy-850">
+      <div className="relative z-10 w-full max-w-4xl h-[85vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="p-5 border-b border-slate-700 flex items-center justify-between bg-slate-850">
           <div>
             <h3 className="font-semibold text-lg text-white">{title}</h3>
             <p className="text-xs text-slate-400">
               {multiple
                 ? "Chọn một hoặc nhiều ảnh, sau đó nhấn xác nhận"
-                : "Chọn hình ảnh hoặc video để làm hình ảnh đại diện"}
+                : "Nhấn vào ảnh để chọn làm hình ảnh đại diện"}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex bg-thuy-950 p-1 rounded-xl border border-thuy-700">
+            <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-700">
               <button
                 onClick={() => setActiveTab("library")}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   activeTab === "library"
-                    ? "bg-thuy-400 text-thuy-950 font-bold"
+                    ? "bg-cyan-400 text-slate-950 font-bold"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -365,7 +768,7 @@ export default function MediaPickerModal({
                 onClick={() => setActiveTab("upload")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   activeTab === "upload"
-                    ? "bg-thuy-400 text-thuy-950 font-bold"
+                    ? "bg-cyan-400 text-slate-950 font-bold"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -376,7 +779,7 @@ export default function MediaPickerModal({
                 onClick={() => setActiveTab("url")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   activeTab === "url"
-                    ? "bg-thuy-400 text-thuy-950 font-bold"
+                    ? "bg-cyan-400 text-slate-950 font-bold"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -387,25 +790,23 @@ export default function MediaPickerModal({
 
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-thuy-800"
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Tab 1: Media Library Explorer */}
         {activeTab === "library" && (
           <div className="flex-1 flex flex-col overflow-hidden p-5 space-y-4">
-            {/* Filter and Search Bar */}
             <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
               <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
                 <button
                   onClick={() => setSelectedFolder("all")}
                   className={`px-3 py-1 rounded-lg text-xs whitespace-nowrap transition-all ${
                     selectedFolder === "all"
-                      ? "bg-thuy-400 text-thuy-950 font-bold"
-                      : "bg-thuy-800 text-slate-300 hover:bg-thuy-700"
+                      ? "bg-cyan-400 text-slate-950 font-bold"
+                      : "bg-slate-800 text-slate-300 hover:bg-slate-700"
                   }`}
                 >
                   Tất cả thư mục
@@ -416,8 +817,8 @@ export default function MediaPickerModal({
                     onClick={() => setSelectedFolder(f)}
                     className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs whitespace-nowrap transition-all capitalize ${
                       selectedFolder === f
-                        ? "bg-thuy-400 text-thuy-950 font-bold"
-                        : "bg-thuy-800 text-slate-300 hover:bg-thuy-700"
+                        ? "bg-cyan-400 text-slate-950 font-bold"
+                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
                     }`}
                   >
                     <Folder className="w-3 h-3" />
@@ -433,16 +834,15 @@ export default function MediaPickerModal({
                   placeholder="Tìm theo tên ảnh..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-thuy-400"
+                  className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 transition-colors"
                 />
               </div>
             </div>
 
-            {/* Media Grid */}
             <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 p-1">
               {loading ? (
                 <div className="col-span-full flex items-center justify-center py-20 text-slate-400 gap-2">
-                  <Loader2 className="w-5 h-5 animate-spin text-thuy-400" />
+                  <Loader2 className="w-5 h-5 animate-spin text-cyan-400" />
                   <span>Đang tải thư viện...</span>
                 </div>
               ) : filteredMedia.length === 0 ? (
@@ -461,10 +861,10 @@ export default function MediaPickerModal({
                     <div
                       key={item.id}
                       onClick={() => toggleSelect(item)}
-                      className={`group relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${
+                      className={`group relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
                         isSelected
-                          ? "border-thuy-400 ring-2 ring-thuy-400/30 scale-[0.98]"
-                          : "border-thuy-750 hover:border-thuy-500"
+                          ? "border-cyan-400 ring-2 ring-cyan-400/30 scale-[0.98]"
+                          : "border-slate-750 hover:border-slate-500 hover:scale-[1.02]"
                       }`}
                     >
                       {itemIsVideo ? (
@@ -487,20 +887,18 @@ export default function MediaPickerModal({
                       )}
 
                       {itemIsVideo && (
-                        <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-thuy-300 uppercase">
+                        <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-cyan-400 uppercase">
                           Video
                         </div>
                       )}
 
-                      {/* Selected check badge */}
                       {isSelected && (
-                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-thuy-400 text-thuy-950 flex items-center justify-center font-bold shadow-md">
+                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center font-bold shadow-md">
                           <Check className="w-4 h-4" />
                         </div>
                       )}
 
-                      {/* Hover Info */}
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-thuy-950/95 via-thuy-950/60 to-transparent p-2 text-[11px] text-slate-200 truncate opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/95 via-slate-950/60 to-transparent p-2 text-[11px] text-slate-200 truncate opacity-0 group-hover:opacity-100 transition-opacity">
                         {item.filename}
                       </div>
                     </div>
@@ -511,13 +909,12 @@ export default function MediaPickerModal({
           </div>
         )}
 
-        {/* Tab 2: Upload Local Physical File */}
         {activeTab === "upload" && (
           <form
             onSubmit={handleUploadSubmit}
             className="flex-1 p-8 flex flex-col justify-center max-w-lg mx-auto w-full space-y-4"
           >
-            <div className="border-2 border-dashed border-thuy-700 hover:border-thuy-400 rounded-2xl p-8 text-center cursor-pointer bg-thuy-850/50">
+            <div className="border-2 border-dashed border-slate-700 hover:border-cyan-400 rounded-2xl p-8 text-center cursor-pointer bg-slate-850/50 transition-colors duration-300">
               <input
                 type="file"
                 id="file-upload"
@@ -526,16 +923,13 @@ export default function MediaPickerModal({
                   mediaType === "video"
                     ? "video/mp4,video/webm,video/quicktime"
                     : mediaType === "all"
-                      ? "image/*,video/mp4,video/webm"
-                      : "image/*"
+                    ? "image/*,video/mp4,video/webm"
+                    : "image/*"
                 }
                 onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
               />
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer space-y-3 block"
-              >
-                <div className="w-12 h-12 mx-auto rounded-full bg-thuy-800 flex items-center justify-center text-thuy-400">
+              <label htmlFor="file-upload" className="cursor-pointer space-y-3 block">
+                <div className="w-12 h-12 mx-auto rounded-full bg-slate-800 flex items-center justify-center text-cyan-400">
                   <Upload className="w-6 h-6" />
                 </div>
                 <div>
@@ -543,8 +937,8 @@ export default function MediaPickerModal({
                     {uploadFile
                       ? uploadFile.name
                       : mediaType === "video"
-                        ? "Nhấn để chọn file video từ máy tính"
-                        : "Nhấn để chọn file ảnh từ máy tính"}
+                      ? "Nhấn để chọn file video từ máy tính"
+                      : "Nhấn để chọn file ảnh từ máy tính"}
                   </p>
                   <p className="text-xs text-slate-400 mt-1">
                     {mediaType === "video"
@@ -565,7 +959,7 @@ export default function MediaPickerModal({
                   value={uploadFolder}
                   onChange={(e) => setUploadFolder(e.target.value)}
                   placeholder="villa, townhouse, interior..."
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                 />
               </div>
 
@@ -578,14 +972,14 @@ export default function MediaPickerModal({
                   value={uploadAlt}
                   onChange={(e) => setUploadAlt(e.target.value)}
                   placeholder="Ví dụ: Phối cảnh phòng khách biệt thự..."
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={!uploadFile || isUploading}
-                className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 transition-all shadow-glow-cyan"
+                className="w-full py-2.5 rounded-xl bg-cyan-400 text-slate-950 font-bold text-xs hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 transition-all shadow-glow-cyan"
               >
                 {isUploading && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>
@@ -596,7 +990,6 @@ export default function MediaPickerModal({
           </form>
         )}
 
-        {/* Tab 3: Import từ nhiều nguồn (Pinterest, Unsplash, Mixkit, CDN...) */}
         {activeTab === "url" && (
           <form
             onSubmit={handleUrlSubmit}
@@ -616,11 +1009,12 @@ export default function MediaPickerModal({
                         setExternalSource(source.id);
                         setExternalFolder(source.folder);
                         setExternalUrl("");
+                        setExternalFilename("");
                       }}
                       className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold transition-all border ${
                         externalSource === source.id
-                          ? "bg-thuy-400 text-thuy-950 border-thuy-400"
-                          : "bg-thuy-800 text-slate-300 hover:text-white border-thuy-700"
+                          ? "bg-cyan-400 text-slate-950 border-cyan-400"
+                          : "bg-slate-800 text-slate-300 hover:text-white border-slate-700"
                       }`}
                     >
                       {source.label}
@@ -643,51 +1037,25 @@ export default function MediaPickerModal({
                   }
                   value={externalUrl}
                   onChange={(e) => setExternalUrl(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
+                  className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                 />
                 <p className="text-[10px] text-slate-500 mt-1">
                   {MEDIA_SOURCES.find((s) => s.id === externalSource)?.hint}
                 </p>
               </div>
 
-              {DRIVE_FOLDER_REGEX.test(externalUrl) ? (
-                <div className="w-full h-40 rounded-xl border border-thuy-700 bg-thuy-950 flex flex-col items-center justify-center text-slate-400 gap-2">
-                  <Folder className="w-8 h-8 text-thuy-400" />
-                  <span className="text-xs">
-                    Liên kết Thư mục Google Drive (Sẵn sàng import hàng loạt)
-                  </span>
-                </div>
-              ) : externalUrl && DRIVE_FOLDER_REGEX.test(externalUrl) ? (
-                <div className="w-full h-40 rounded-xl border border-thuy-700 bg-thuy-950 flex flex-col items-center justify-center text-slate-400 gap-2">
-                  <Folder className="w-8 h-8 text-thuy-400" />
-                  <span className="text-xs">
-                    Liên kết Thư mục Google Drive (Sẵn sàng import hàng loạt)
-                  </span>
-                </div>
-              ) : externalUrl && externalIsVideo ? (
-                <div className="relative w-full h-40 rounded-xl overflow-hidden border border-thuy-700 bg-thuy-950">
-                  <video
-                    src={externalPlayable}
-                    muted
-                    loop
-                    playsInline
-                    autoPlay
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                externalUrl && (
-                  <div className="relative w-full h-40 rounded-xl overflow-hidden border border-thuy-700 bg-thuy-950">
-                    <Image
-                      src={externalUrl}
-                      alt="Preview"
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
+              <div className="space-y-2">
+                <label className="text-xs text-slate-300 block">
+                  Xem trước:
+                </label>
+                {renderUrlPreview()}
+                {folderError && (
+                  <div className="flex items-start gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/40 text-xs text-red-400">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <span>{folderError}</span>
                   </div>
-                )
-              )}
+                )}
+              </div>
 
               <div>
                 <label className="text-xs text-slate-300 block mb-1">
@@ -698,40 +1066,40 @@ export default function MediaPickerModal({
                   value={externalFilename}
                   onChange={(e) => setExternalFilename(e.target.value)}
                   placeholder="villa-modern-hero.mp4"
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                 />
               </div>
 
               <div>
                 <label className="text-xs text-slate-300 block mb-1">
-                  Thư mục:
+                  Thư mục phân loại:
                 </label>
                 <input
                   type="text"
                   value={externalFolder}
                   onChange={(e) => setExternalFolder(e.target.value)}
                   placeholder="pinterest, villa, townhouse, mixkit..."
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                 />
               </div>
 
               <div>
                 <label className="text-xs text-slate-300 block mb-1">
-                  Mô tả hình ảnh (Alt):
+                  Mô tả hình ảnh (Alt text):
                 </label>
                 <input
                   type="text"
                   value={externalAlt}
                   onChange={(e) => setExternalAlt(e.target.value)}
                   placeholder="Biệt thự nghỉ dưỡng phong cách mệnh Thủy..."
-                  className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={!externalUrl || isImporting}
-                className="w-full py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 transition-all shadow-glow-cyan"
+                className="w-full py-2.5 rounded-xl bg-cyan-400 text-slate-950 font-bold text-xs hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 transition-all shadow-glow-cyan"
               >
                 {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>
@@ -742,11 +1110,10 @@ export default function MediaPickerModal({
           </form>
         )}
 
-        {/* Footer for multiple selection confirmation */}
         {multiple && activeTab === "library" && (
-          <div className="p-4 border-t border-thuy-700 bg-thuy-850 flex items-center justify-between">
+          <div className="p-4 border-t border-slate-700 bg-slate-850 flex items-center justify-between">
             <span className="text-xs text-slate-300">
-              Đã chọn: <b className="text-thuy-400">{selectedItems.length}</b>{" "}
+              Đã chọn: <b className="text-cyan-400">{selectedItems.length}</b>{" "}
               hình ảnh
             </span>
 
@@ -754,7 +1121,7 @@ export default function MediaPickerModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-thuy-800 border border-thuy-700"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-slate-700 transition-colors"
               >
                 Hủy
               </button>
@@ -762,7 +1129,7 @@ export default function MediaPickerModal({
                 type="button"
                 onClick={handleConfirmMultiple}
                 disabled={selectedItems.length === 0}
-                className="px-5 py-2 rounded-xl text-xs font-bold text-thuy-950 bg-thuy-400 hover:brightness-110 disabled:opacity-50 shadow-glow-cyan"
+                className="px-5 py-2 rounded-xl text-xs font-bold text-slate-950 bg-cyan-400 hover:brightness-110 disabled:opacity-50 shadow-glow-cyan transition-all"
               >
                 Xác nhận thêm vào Gallery
               </button>
