@@ -265,10 +265,6 @@ export default function MediaPickerModal({
 
   // Form states for External URL
   const [externalUrl, setExternalUrl] = useState("");
-  const [externalFilename, setExternalFilename] = useState("");
-  const [externalFolder, setExternalFolder] = useState("pinterest");
-  const [externalAlt, setExternalAlt] = useState("");
-  const [externalSource, setExternalSource] = useState("pinterest");
   const [isImporting, setIsImporting] = useState(false);
 
   // Preview states for URL tab
@@ -502,15 +498,13 @@ export default function MediaPickerModal({
           body: JSON.stringify({
             url: externalUrl,
             folderId: folderId,
-            folder: externalFolder,
+            folder: "drive",
           }),
         });
         const data = await res.json();
 
         if (data.success && data.media) {
           setExternalUrl("");
-          setExternalFilename("");
-          setExternalAlt("");
           setActiveTab("library");
           await fetchMedia();
           if (!multiple && data.media.length > 0) {
@@ -529,36 +523,34 @@ export default function MediaPickerModal({
       return;
     }
 
-    setIsImporting(true);
-    try {
-      const res = await fetch("/api/media", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: externalUrl,
-          filename: externalFilename,
-          folder: externalFolder,
-          alt: externalAlt,
-        }),
-      });
-      const data = await res.json();
+    const normalizedUrl = playableVideoUrl(externalUrl) || externalUrl;
+    const detectedMime = isVideoUrl(externalUrl)
+      ? externalUrl.includes(".webm")
+        ? "video/webm"
+        : "video/mp4"
+      : "image/jpeg";
+    const filename =
+      externalUrl.split("/").pop()?.split("?")[0] || "media";
 
-      if (data.media) {
-        setExternalUrl("");
-        setExternalFilename("");
-        setExternalAlt("");
-        setActiveTab("library");
-        await fetchMedia();
-        if (!multiple) {
-          onSelect(data.media);
-          onClose();
-        }
-      }
-    } catch (err) {
-      console.error("Import error:", err);
-    } finally {
-      setIsImporting(false);
+    const media: MediaItem = {
+      id: `ext_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      filename,
+      originalName: filename,
+      url: normalizedUrl,
+      folder: "external",
+      alt: null,
+      mimeType: detectedMime,
+    };
+
+    if (!multiple) {
+      onSelect(media);
+      onClose();
+    } else {
+      setSelectedItems([media]);
+      onSelect([media]);
+      onClose();
     }
+    setExternalUrl("");
   };
 
   const renderUrlPreview = () => {
@@ -578,9 +570,8 @@ export default function MediaPickerModal({
       DRIVE_FOLDER_REGEX.test(externalUrl) || driveParsed?.type === "folder";
     const isDriveFile =
       driveParsed?.type === "file" || DRIVE_ID_REGEX.test(externalUrl);
-    const isVideoFile =
-      isVideoByFilename(externalFilename) || externalIsVideoUrl;
-    const isImageFile = isImageByFilename(externalFilename) && !isVideoFile;
+    const isVideoFile = externalIsVideoUrl;
+    const isImageFile = !isVideoFile;
     const youtubeEmbed = getYoutubeEmbedUrl(externalUrl);
     const vimeoEmbed = getVimeoEmbedUrl(externalUrl);
 
@@ -1045,50 +1036,16 @@ export default function MediaPickerModal({
             <div className="space-y-3">
               <div>
                 <label className="text-xs text-slate-300 block mb-1">
-                  Nguồn lấy link:
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                  {MEDIA_SOURCES.map((source) => (
-                    <button
-                      key={source.id}
-                      type="button"
-                      onClick={() => {
-                        setExternalSource(source.id);
-                        setExternalFolder(source.folder);
-                        setExternalUrl("");
-                        setExternalFilename("");
-                      }}
-                      className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold transition-all border ${
-                        externalSource === source.id
-                          ? "bg-cyan-400 text-slate-950 border-cyan-400"
-                          : "bg-slate-800 text-slate-300 hover:text-white border-slate-700"
-                      }`}
-                    >
-                      {source.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-300 block mb-1">
-                  Link trực tiếp (
-                  {MEDIA_SOURCES.find((s) => s.id === externalSource)?.label}):
+                  Link trực tiếp:
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder={
-                    MEDIA_SOURCES.find((s) => s.id === externalSource)
-                      ?.placeholder || "https://..."
-                  }
+                  placeholder="https://..."
                   value={externalUrl}
                   onChange={(e) => setExternalUrl(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                 />
-                <p className="text-[10px] text-slate-500 mt-1">
-                  {MEDIA_SOURCES.find((s) => s.id === externalSource)?.hint}
-                </p>
               </div>
 
               <div className="space-y-2">
@@ -1104,45 +1061,6 @@ export default function MediaPickerModal({
                 )}
               </div>
 
-              <div>
-                <label className="text-xs text-slate-300 block mb-1">
-                  Tên file nhận diện:
-                </label>
-                <input
-                  type="text"
-                  value={externalFilename}
-                  onChange={(e) => setExternalFilename(e.target.value)}
-                  placeholder="villa-modern-hero.mp4"
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-300 block mb-1">
-                  Thư mục phân loại:
-                </label>
-                <input
-                  type="text"
-                  value={externalFolder}
-                  onChange={(e) => setExternalFolder(e.target.value)}
-                  placeholder="pinterest, villa, townhouse, mixkit..."
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-300 block mb-1">
-                  Mô tả hình ảnh (Alt text):
-                </label>
-                <input
-                  type="text"
-                  value={externalAlt}
-                  onChange={(e) => setExternalAlt(e.target.value)}
-                  placeholder="Biệt thự nghỉ dưỡng phong cách mệnh Thủy..."
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                />
-              </div>
-
               <button
                 type="submit"
                 disabled={!externalUrl || isImporting}
@@ -1150,7 +1068,7 @@ export default function MediaPickerModal({
               >
                 {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>
-                  {isImporting ? "Đang thêm..." : "Thêm vào Media Library"}
+                  {isImporting ? "Đang thêm..." : "Thêm"}
                 </span>
               </button>
             </div>
