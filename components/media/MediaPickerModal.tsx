@@ -578,17 +578,20 @@ export default function MediaPickerModal({
       );
     }
 
-    const driveParsed = getGoogleDriveUrl(externalUrl);
-    const isFolder =
-      previewType === "folder" ||
-      DRIVE_FOLDER_REGEX.test(externalUrl) ||
-      driveParsed?.type === "folder";
-    const isDriveFile =
-      driveParsed?.type === "file" || DRIVE_ID_REGEX.test(externalUrl);
-    const isVideoFile = isVideoByFilename(externalFilename) || externalIsVideoUrl;
-    const isImageFile = isImageByFilename(externalFilename) && !isVideoFile;
-    const youtubeEmbed = getYoutubeEmbedUrl(externalUrl);
-    const vimeoEmbed = getVimeoEmbedUrl(externalUrl);
+  const driveParsed = getGoogleDriveUrl(externalUrl, externalFilename);
+  const isFolder =
+    previewType === "folder" ||
+    DRIVE_FOLDER_REGEX.test(externalUrl) ||
+    driveParsed?.type === "folder";
+  const isDriveFile =
+    driveParsed?.type === "file" || DRIVE_ID_REGEX.test(externalUrl);
+  const isDriveVideo =
+    driveParsed?.type === "file" && driveParsed.fileType === "video";
+  const isVideoFile =
+    isVideoByFilename(externalFilename) || externalIsVideoUrl || isDriveVideo;
+  const isImageFile = isImageByFilename(externalFilename) && !isVideoFile;
+  const youtubeEmbed = getYoutubeEmbedUrl(externalUrl);
+  const vimeoEmbed = getVimeoEmbedUrl(externalUrl);
 
     if (isFolder) {
       return (
@@ -685,16 +688,18 @@ export default function MediaPickerModal({
     }
 
     if (isDriveFile && isVideoFile) {
-      const driveParsedFile = getGoogleDriveUrl(externalUrl);
+      const driveParsedFile = getGoogleDriveUrl(externalUrl, externalFilename);
       const fileId =
-        driveParsedFile?.id || externalUrl.match(DRIVE_ID_REGEX)?.[1];
+        driveParsedFile?.type === "file"
+          ? driveParsedFile.id
+          : externalUrl.match(DRIVE_ID_REGEX)?.[1];
       if (fileId) {
         return (
           <div className="w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
             <iframe
-              src={getDriveFilePreviewUrl(fileId)}
+              src={`https://drive.google.com/file/d/${fileId}/preview`}
               className="w-full h-full"
-              allow="autoplay"
+              allow="autoplay; fullscreen"
               allowFullScreen
               title="Google Drive Video Preview"
             />
@@ -726,10 +731,12 @@ export default function MediaPickerModal({
       );
     }
 
-    if (isDriveFile && (isImageFile || !isVideoFile)) {
-      const driveParsedFile = getGoogleDriveUrl(externalUrl);
+    if (isDriveFile && (isImageFile || (!isVideoFile && driveParsed?.type === "file" && driveParsed.fileType === "image"))) {
+      const driveParsedFile = getGoogleDriveUrl(externalUrl, externalFilename);
       const fileId =
-        driveParsedFile?.id || externalUrl.match(DRIVE_ID_REGEX)?.[1];
+        driveParsedFile?.type === "file"
+          ? driveParsedFile.id
+          : externalUrl.match(DRIVE_ID_REGEX)?.[1];
       if (fileId) {
         return (
           <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
@@ -738,12 +745,10 @@ export default function MediaPickerModal({
                 <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
               </div>
             ) : (
-              <Image
-                src={getDriveImageDirectUrl(fileId)}
+              <img
+                src={`https://drive.google.com/uc?export=view&id=${fileId}`}
                 alt="Google Drive Preview"
-                fill
-                className="object-contain"
-                unoptimized
+                className="w-full h-full object-contain"
                 onError={() =>
                   setFolderError(
                     "Không thể tải ảnh. Vui lòng kiểm tra quyền chia sẻ file (Anyone with the link can view)."
