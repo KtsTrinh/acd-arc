@@ -1097,12 +1097,10 @@ export default function AdminCatalogClient({
                         ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
                         : form.thumbnail;
                       return (
-                        <Image
+                        <img
                           src={imgSrc}
                           alt="Thumbnail preview"
-                          fill
-                          className="object-cover"
-                          unoptimized
+                          className="w-full h-full object-cover"
                         />
                       );
                     }
@@ -1570,12 +1568,11 @@ function CatalogTable({
                         ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
                         : p.thumbnail;
                       return (
-                        <Image
+                        <img
                           src={imgSrc}
                           alt={p.name}
-                          fill
-                          className="object-cover"
-                          unoptimized
+                          className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       );
                     }
