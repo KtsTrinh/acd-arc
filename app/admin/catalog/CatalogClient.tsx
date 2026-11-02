@@ -3,7 +3,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { resolveHeroVideo, playableVideoUrl, isVideoUrl } from "@/lib/media-url";
+import {
+  resolveHeroVideo,
+  playableVideoUrl,
+  isVideoUrl,
+} from "@/lib/media-url";
 import { formatVND, slugify } from "@/lib/utils";
 import MediaPickerModal, {
   MediaItem,
@@ -963,14 +967,16 @@ export default function AdminCatalogClient({
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Chủ đầu tư:</label>
-                <input
-                  type="url"
-                  value={form.thumbnail}
-                  onChange={(e) => updateForm({ thumbnail: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                />
-                <p className="text-[10px] text-slate-500">Hoặc dùng nút "Chọn Ảnh/Video" ở trên để dán link tự động.</p>
+                  <input
+                    type="url"
+                    value={form.thumbnail}
+                    onChange={(e) => updateForm({ thumbnail: e.target.value })}
+                    placeholder="https://..."
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                  <p className="text-[10px] text-slate-500">
+                    Hoặc dùng nút "Chọn Ảnh/Video" ở trên để dán link tự động.
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Năm thiết kế:</label>
@@ -1081,71 +1087,68 @@ export default function AdminCatalogClient({
                     Chọn Ảnh/Video
                   </button>
                 </div>
-              <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
-                {form.thumbnail ? (
-                  (() => {
-                    const src = playableVideoUrl(form.thumbnail) || form.thumbnail;
-                    const lower = (form.thumbnail || "").toLowerCase();
-                    const isImageExt = /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(lower);
-                    const isVideoExt = /\.(mp4|mov|webm|mkv|avi)(\?|$)/i.test(lower);
-                    const isDriveView = /drive\.google\.com\/uc\?export=view/i.test(lower);
-                    const isStream = src?.includes("/api/media/stream");
+                <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
+                  {form.thumbnail ? (
+                    (() => {
+                      const src =
+                        playableVideoUrl(form.thumbnail) || form.thumbnail;
+                      const lower = (form.thumbnail || "").toLowerCase();
 
-                    if (isDriveView && !isVideoExt) {
-                      const idMatch = form.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
-                      const imgSrc = idMatch
-                        ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
-                        : form.thumbnail;
-                      return (
-                        <img
-                          src={imgSrc}
-                          alt="Thumbnail preview"
-                          className="w-full h-full object-cover"
-                        />
+                      const isGoogleDrive =
+                        lower.includes("drive.google.com") ||
+                        lower.includes("docs.google.com");
+                      const isVideoExt = /\.(mp4|mov|webm|mkv|avi)(\?|$)/i.test(
+                        lower,
                       );
-                    }
+                      const isImageExt =
+                        /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(lower);
+                      const isStream = src?.includes("/api/media/stream");
 
-                    if (/drive\.google\.com\/file\/d\//.test(lower) && !isVideoExt) {
-                      const idMatch = form.thumbnail.match(/file\/d\/([a-zA-Z0-9_-]+)/) || form.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
-                      const imgSrc = idMatch
-                        ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
-                        : form.thumbnail;
-                      return (
-                        <img
-                          src={imgSrc}
-                          alt="Thumbnail preview"
-                          className="w-full h-full object-cover"
-                        />
-                      );
-                    }
+                      // Ưu tiên xử lý riêng cho các định dạng link từ Google Drive trước
+                      if (isGoogleDrive) {
+                        const idMatch =
+                          form.thumbnail.match(/file\/d\/([a-zA-Z0-9_-]+)/) ||
+                          form.thumbnail.match(/[?&]id=([a-zA-Z0-9_-]+)/);
 
-                    if (isImageExt && !isVideoExt && !isStream) {
-                      return (
-                        <Image
-                          src={form.thumbnail}
-                          alt="Thumbnail preview"
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
-                      );
-                    }
+                        if (idMatch) {
+                          const fileId = idMatch[1];
 
-                    if (isStream) {
-                      return (
-                        <video
-                          src={src}
-                          muted
-                          loop
-                          playsInline
-                          controls
-                          className="w-full h-full object-cover"
-                        />
-                      );
-                    }
+                          if (isVideoExt || isStream) {
+                            const videoSrc = isStream
+                              ? src
+                              : `/api/media/stream?url=${encodeURIComponent(`https://google.com{fileId}`)}`;
+                            return (
+                              <video
+                                src={videoSrc}
+                                muted
+                                loop
+                                playsInline
+                                controls
+                                className="w-full h-full object-cover"
+                              />
+                            );
+                          }
 
-                    if (isVideoExt || (isVideoUrl(form.thumbnail) && !isImageExt)) {
-                      if (src) {
+                          // Mặc định tất cả các link file Drive thông thường còn lại là hình ảnh tĩnh
+                          return (
+                            <img
+                              src={`https://google.com{fileId}`}
+                              alt="Thumbnail preview"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src =
+                                  form.thumbnail;
+                              }}
+                            />
+                          );
+                        }
+                      }
+
+                      if (
+                        isStream ||
+                        isVideoExt ||
+                        (isVideoUrl(form.thumbnail) && !isImageExt)
+                      ) {
                         return (
                           <video
                             src={src}
@@ -1157,54 +1160,21 @@ export default function AdminCatalogClient({
                           />
                         );
                       }
-                    }
 
-                    if (/drive\.google\.com/.test(lower)) {
-                      const idMatch = form.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
-                      if (isVideoExt) {
-                        if (src) {
-                          return (
-                            <video
-                              src={src}
-                              muted
-                              loop
-                              playsInline
-                              controls
-                              className="w-full h-full object-cover"
-                            />
-                          );
-                        }
-                      }
-                      const imgSrc = idMatch
-                        ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
-                        : form.thumbnail;
                       return (
-                        <Image
-                          src={imgSrc}
+                        <img
+                          src={form.thumbnail}
                           alt="Thumbnail preview"
-                          fill
-                          className="object-cover"
-                          unoptimized
+                          className="w-full h-full object-cover"
                         />
                       );
-                    }
-
-                    return (
-                      <Image
-                        src={form.thumbnail}
-                        alt="Thumbnail preview"
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    );
-                  })()
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-600">
-                    <ImageIcon className="w-6 h-6" />
-                  </div>
-                )}
-              </div>
+                    })()
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-600">
+                      <ImageIcon className="w-6 h-6" />
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Product Gallery */}
@@ -1245,15 +1215,20 @@ export default function AdminCatalogClient({
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     {galleryItems.map((item) => {
-                      const itemIsVideo = isVideoUrl(item.media.url) || /drive\.google\.com\/file\/d\//.test(item.media.url) || /drive\.google\.com\/uc\?/.test(item.media.url) || isVideoItem(item.media);
+                      const itemIsVideo =
+                        isVideoUrl(item.media.url) ||
+                        /drive\.google\.com\/file\/d\//.test(item.media.url) ||
+                        /drive\.google\.com\/uc\?/.test(item.media.url) ||
+                        isVideoItem(item.media);
                       const isCover = galleryCoverMediaId === item.mediaId;
-                      const vidSrc = playableVideoUrl(item.media.url) || item.media.url;
+                      const vidSrc =
+                        playableVideoUrl(item.media.url) || item.media.url;
                       return (
                         <div
                           key={item.mediaId}
                           className={`group relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950 border-2 transition-all shadow-sm ${isCover ? "border-amber-400 ring-2 ring-amber-400/20" : "border-thuy-700 hover:border-thuy-500"}`}
                         >
-                          {(itemIsVideo && vidSrc) ? (
+                          {itemIsVideo && vidSrc ? (
                             <video
                               src={vidSrc}
                               muted
@@ -1566,98 +1541,110 @@ function CatalogTable({
               <tr key={p.id} className="hover:bg-thuy-800/40">
                 <td className="py-3.5 px-5">
                   <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
-                {p.thumbnail ? (
-                  (() => {
-                    const src = playableVideoUrl(p.thumbnail) || p.thumbnail;
-                    const lower = (p.thumbnail || "").toLowerCase();
-                    const isImageExt = /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(lower);
-                    const isVideoExt = /\.(mp4|mov|webm|mkv|avi)(\?|$)/i.test(lower);
-                    const isDriveView = /drive\.google\.com\/uc\?export=view/i.test(lower);
-                    const isStream = src?.includes("/api/media/stream");
-                    const isDriveFile = /drive\.google\.com\/file\/d\//.test(lower);
+                    {p.thumbnail ? (
+                      (() => {
+                        const src =
+                          playableVideoUrl(p.thumbnail) || p.thumbnail;
+                        const lower = (p.thumbnail || "").toLowerCase();
+                        const isImageExt =
+                          /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(
+                            lower,
+                          );
+                        const isVideoExt =
+                          /\.(mp4|mov|webm|mkv|avi)(\?|$)/i.test(lower);
+                        const isDriveView =
+                          /drive\.google\.com\/uc\?export=view/i.test(lower);
+                        const isStream = src?.includes("/api/media/stream");
+                        const isDriveFile =
+                          /drive\.google\.com\/file\/d\//.test(lower);
 
-                    if (isDriveView && !isVideoExt) {
-                      const idMatch = p.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
-                      const imgSrc = idMatch
-                        ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
-                        : p.thumbnail;
-                      return (
-                        <img
-                          src={imgSrc}
-                          alt={p.name}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      );
-                    }
+                        if (isDriveView && !isVideoExt) {
+                          const idMatch =
+                            p.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
+                          const imgSrc = idMatch
+                            ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
+                            : p.thumbnail;
+                          return (
+                            <img
+                              src={imgSrc}
+                              alt={p.name}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          );
+                        }
 
-                    if (isImageExt && !isVideoExt && !isStream) {
-                      return (
-                        <Image
-                          src={p.thumbnail}
-                          alt={p.name}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
-                      );
-                    }
+                        if (isImageExt && !isVideoExt && !isStream) {
+                          return (
+                            <Image
+                              src={p.thumbnail}
+                              alt={p.name}
+                              fill
+                              className="object-cover"
+                              unoptimized
+                            />
+                          );
+                        }
 
-                    if (isStream) {
-                      return (
-                        <video
-                          src={src}
-                          muted
-                          loop
-                          playsInline
-                          preload="metadata"
-                          className="w-full h-full object-cover"
-                        />
-                      );
-                    }
+                        if (isStream) {
+                          return (
+                            <video
+                              src={src}
+                              muted
+                              loop
+                              playsInline
+                              preload="metadata"
+                              className="w-full h-full object-cover"
+                            />
+                          );
+                        }
 
-                    if (isVideoExt || (isVideoUrl(p.thumbnail) && !isImageExt)) {
-                      if (src) {
+                        if (
+                          isVideoExt ||
+                          (isVideoUrl(p.thumbnail) && !isImageExt)
+                        ) {
+                          if (src) {
+                            return (
+                              <video
+                                src={src}
+                                muted
+                                loop
+                                playsInline
+                                preload="metadata"
+                                className="w-full h-full object-cover"
+                              />
+                            );
+                          }
+                        }
+
+                        if (isDriveFile) {
+                          const idMatch =
+                            p.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
+                          const imgSrc = idMatch
+                            ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
+                            : p.thumbnail;
+                          return (
+                            <Image
+                              src={imgSrc}
+                              alt={p.name}
+                              fill
+                              className="object-cover"
+                              unoptimized
+                            />
+                          );
+                        }
+
                         return (
-                          <video
-                            src={src}
-                            muted
-                            loop
-                            playsInline
-                            preload="metadata"
-                            className="w-full h-full object-cover"
+                          <Image
+                            src={p.thumbnail}
+                            alt={p.name}
+                            fill
+                            className="object-cover"
+                            unoptimized
                           />
                         );
-                      }
-                    }
-
-                    if (isDriveFile) {
-                      const idMatch = p.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
-                      const imgSrc = idMatch
-                        ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
-                        : p.thumbnail;
-                      return (
-                        <Image
-                          src={imgSrc}
-                          alt={p.name}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
-                      );
-                    }
-
-                    return (
-                      <Image
-                        src={p.thumbnail}
-                        alt={p.name}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    );
-                  })()
-                ) : (
+                      })()
+                    ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-600">
                         <FileCode className="w-4 h-4" />
                       </div>
