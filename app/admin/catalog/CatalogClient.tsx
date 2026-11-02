@@ -1153,16 +1153,17 @@ export default function AdminCatalogClient({
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     {galleryItems.map((item) => {
-                      const itemIsVideo = isVideoItem(item.media);
+                      const itemIsVideo = isVideoUrl(item.media.url) || isVideoItem(item.media);
                       const isCover = galleryCoverMediaId === item.mediaId;
+                      const vidSrc = playableVideoUrl(item.media.url) || item.media.url;
                       return (
                         <div
                           key={item.mediaId}
                           className={`group relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950 border-2 transition-all shadow-sm ${isCover ? "border-amber-400 ring-2 ring-amber-400/20" : "border-thuy-700 hover:border-thuy-500"}`}
                         >
-                          {itemIsVideo ? (
+                          {(itemIsVideo && vidSrc) ? (
                             <video
-                              src={item.media.url}
+                              src={vidSrc}
                               muted
                               loop
                               playsInline
