@@ -29,6 +29,21 @@ export async function POST(request: Request) {
     const { name } = await request.json();
     if (!name) {
       return NextResponse.json({ error: "Vui lòng nhập tên tag" }, { status: 400 });
+    }
+
+    const slug = slugify(name);
+    const tag = await prisma.tag.create({
+      data: { name, slug },
+    });
+
+    const sync = await triggerCmsAutoSync(`thêm tag "${tag.name}"`);
+    return NextResponse.json({ success: true, tag, sync });
+  } catch (error) {
+    console.error("Error creating tag:", error);
+    return NextResponse.json({ error: "Không thể tạo thẻ tag" }, { status: 500 });
+  }
+}
+
 export async function DELETE(request: Request) {
   try {
     const user = await getCurrentUser();
@@ -54,17 +69,3 @@ export async function DELETE(request: Request) {
     );
   }
 }
-
-    const slug = slugify(name);
-    const tag = await prisma.tag.create({
-      data: { name, slug },
-    });
-
-    const sync = await triggerCmsAutoSync(`thêm tag "${tag.name}"`);
-    return NextResponse.json({ success: true, tag, sync });
-  } catch (error) {
-    console.error("Error creating tag:", error);
-    return NextResponse.json({ error: "Không thể tạo thẻ tag" }, { status: 500 });
-  }
-}
-

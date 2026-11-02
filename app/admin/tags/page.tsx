@@ -48,7 +48,7 @@ export default function AdminTagsPage() {
     }
   };
 
-const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Xóa th? tag này?")) return;
     try {
       const res = await fetch(`/api/tags?id=${id}`, { method: "DELETE" });
@@ -58,6 +58,7 @@ const handleDelete = async (id: string) => {
       console.error(err);
     }
   };
+
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
@@ -65,7 +66,7 @@ const handleDelete = async (id: string) => {
           Qu?n Lý Th? Phân Lo?i (Tags)
         </h1>
         <p className="text-xs text-slate-600">
-          G?n nhãn phong cách và d?c di?m ki?n trúc cho d? án và bài vi?t.
+          G?n nhãn phong cách và ??c ?i?m ki?n trúc cho d? án và bài vi?t.
         </p>
       </div>
 
@@ -74,7 +75,7 @@ const handleDelete = async (id: string) => {
           <input
             type="text"
             required
-            placeholder="Tên th? tag m?i (ví d?: Bi?t Th?, Hi?n Ð?i, Wabi-Sabi, H?u Hi?n Ð?i...)"
+            placeholder="Tên th? tag m?i (ví d?: Bi?t Th?, Hi?n ??i, Wabi-Sabi, H?u Hi?n ??i...)"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="flex-1 px-4 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
@@ -113,4 +114,3 @@ const handleDelete = async (id: string) => {
     </div>
   );
 }
-
