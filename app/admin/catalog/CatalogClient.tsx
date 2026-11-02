@@ -1105,6 +1105,20 @@ export default function AdminCatalogClient({
                       );
                     }
 
+                    if (/drive\.google\.com\/file\/d\//.test(lower) && !isVideoExt) {
+                      const idMatch = form.thumbnail.match(/file\/d\/([a-zA-Z0-9_-]+)/) || form.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
+                      const imgSrc = idMatch
+                        ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
+                        : form.thumbnail;
+                      return (
+                        <img
+                          src={imgSrc}
+                          alt="Thumbnail preview"
+                          className="w-full h-full object-cover"
+                        />
+                      );
+                    }
+
                     if (isImageExt && !isVideoExt && !isStream) {
                       return (
                         <Image
