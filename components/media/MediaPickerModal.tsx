@@ -577,7 +577,9 @@ export default function MediaPickerModal({
 
     const driveParsed = getGoogleDriveUrl(externalUrl);
     const isFolder =
-      DRIVE_FOLDER_REGEX.test(externalUrl) || driveParsed?.type === "folder";
+      previewType === "folder" ||
+      DRIVE_FOLDER_REGEX.test(externalUrl) ||
+      driveParsed?.type === "folder";
     const isDriveFile =
       driveParsed?.type === "file" || DRIVE_ID_REGEX.test(externalUrl);
     const isVideoFile = isVideoByFilename(externalFilename) || externalIsVideoUrl;
@@ -596,7 +598,7 @@ export default function MediaPickerModal({
             {isLoadingFolder && (
               <div className="flex items-center gap-1.5 text-xs text-cyan-400">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Đang quét...</span>
+                <span>Đang tải...</span>
               </div>
             )}
           </div>
@@ -611,22 +613,26 @@ export default function MediaPickerModal({
               <span className="text-xs text-red-400">{folderError}</span>
             </div>
           ) : previewImages.length > 0 ? (
-            <div className="p-2 space-y-2">
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 max-h-44 overflow-y-auto">
+            <div className="p-2">
+              <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
                 {previewImages.map((imgUrl, idx) => (
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => setSelectedPreviewImage(imgUrl)}
+                    onClick={() => {
+                      setSelectedPreviewImage(imgUrl);
+                      setExternalUrl(imgUrl);
+                      setPreviewType("image");
+                    }}
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       selectedPreviewImage === imgUrl
-                        ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
+                        ? "border-cyan-400 ring-1 ring-cyan-400/50"
                         : "border-slate-700 hover:border-slate-500"
                     }`}
                   >
                     <Image
                       src={imgUrl}
-                      alt={`Thumbnail ${idx + 1}`}
+                      alt={`Ảnh ${idx + 1}`}
                       fill
                       className="object-cover"
                       unoptimized
@@ -634,8 +640,8 @@ export default function MediaPickerModal({
                   </button>
                 ))}
               </div>
-              <div className="text-[10px] text-slate-500 text-center">
-                Đã tìm thấy {previewImages.length} ảnh. Nhấn vào ảnh để chọn.
+              <div className="text-[10px] text-slate-500 text-center mt-1.5">
+                {previewImages.length} ảnh • Nhấn vào ảnh để chọn
               </div>
             </div>
           ) : (
