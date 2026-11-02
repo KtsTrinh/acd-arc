@@ -1069,7 +1069,7 @@ export default function MediaPickerModal({
               >
                 {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>
-                  {isImporting ? "Đang thêm..." : "Thêm"}
+                  {isImporting ? "Đang thêm..." : "Chọn"}
                 </span>
               </button>
             </div>
