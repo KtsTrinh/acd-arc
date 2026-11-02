@@ -251,6 +251,8 @@ export default function AdminCatalogClient({
     text: string;
   } | null>(null);
 
+  const [form, setForm] = useState<ItemForm | null>(null);
+
   /* ------------------------------------------------------------------ */
   /* Gallery state                                                      */
   /* ------------------------------------------------------------------ */
@@ -385,12 +387,6 @@ export default function AdminCatalogClient({
       console.error("Failed to load product gallery:", err);
     }
   };
-
-    setForm({ ...EMPTY_FORM });
-    setGalleryItems([]);
-    setGalleryCoverMediaId(null);
-    setThumbImage("");
-    setThumbVideo("");
 
   const updateForm = (patch: Partial<ItemForm>) =>
     setForm((prev) => (prev ? { ...prev, ...patch } : prev));
