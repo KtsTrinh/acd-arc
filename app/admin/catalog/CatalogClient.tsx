@@ -7,6 +7,7 @@ import {
   resolveHeroVideo,
   playableVideoUrl,
   isVideoUrl,
+  normalizeMediaUrl,
 } from "@/lib/media-url";
 import { formatVND, slugify } from "@/lib/utils";
 import MediaPickerModal, {
@@ -1128,16 +1129,7 @@ export default function AdminCatalogClient({
                     <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
                       {thumbImage ? (
                         <img
-                          src={
-                            (() => {
-                              const m = thumbImage.match(
-                                /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
-                              );
-                              return m
-                                ? `https://drive.google.com/uc?export=view&id=${m[1]}`
-                                : thumbImage;
-                            })()
-                          }
+                          src={normalizeMediaUrl(thumbImage)}
                           alt="Image thumbnail preview"
                           className="w-full h-full object-cover"
                         />
