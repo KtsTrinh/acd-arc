@@ -62,13 +62,13 @@ export default function AdminTagsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Xoa the tag nay?")) return;
+    if (!confirm("Xóa thẻ tag này?")) return;
     try {
       const res = await fetch(`/api/tags?id=${id}`, { method: "DELETE" });
       const data = await res.json();
       if (data.success) {
         fetchTags();
-        showToast("Xoa tag thanh cong", "success");
+        showToast("Xóa tag thành công", "success");
       } else if (data.error) {
         showToast(data.error, "error");
       }
@@ -79,7 +79,7 @@ export default function AdminTagsPage() {
   };
 
   const handleRename = async (t: any) => {
-    const newName = prompt("Ten moi:", t.name);
+    const newName = prompt("Tên mới:", t.name);
     if (!newName || newName === t.name) return;
     try {
       const res = await fetch("/api/tags", {
@@ -103,12 +103,14 @@ export default function AdminTagsPage() {
   return (
     <div className="space-y-6 max-w-4xl relative">
       {toast && (
-        <div
-          className={`fixed top-6 right-6 z-50 px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ease-out ${
-            toast.type === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
-        >
-          {toast.message}
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+          <div
+            className={`px-6 py-4 rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ease-out ${
+              toast.type === "success" ? "bg-green-600" : "bg-red-600"
+            }`}
+          >
+            {toast.message}
+          </div>
         </div>
       )}
       <div>
