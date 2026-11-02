@@ -551,11 +551,13 @@ export default function MediaPickerModal({
       } else if (/^https?:\/\//i.test(externalUrl) && externalUrl.includes("drive.google.com")) {
         const idMatch = externalUrl.match(/id=([a-zA-Z0-9_-]+)/);
         if (idMatch && idMatch[1]) {
-          const looksVideo = isVideoByFilename(externalFilename) || externalIsVideoUrl || /\.(mp4|mov|webm|mkv|avi)/i.test(externalUrl) || /\/file\/d\//.test(externalUrl);
+          const looksVideo = isVideoByFilename(externalFilename) || externalIsVideoUrl || /\.(mp4|mov|webm|mkv|avi)/i.test(externalUrl);
           if (looksVideo && !/\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(externalUrl)) {
             finalUrl = `/api/media/stream?url=${encodeURIComponent(
               `https://drive.google.com/uc?export=download&id=${idMatch[1]}`
             )}`;
+          } else if (/\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(externalUrl)) {
+            finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
           } else {
             finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
           }
