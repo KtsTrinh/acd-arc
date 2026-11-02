@@ -162,7 +162,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       </div>
                     )}
                     <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-thuy-950/85 backdrop-blur-sm border border-thuy-700 text-[10px] font-bold text-thuy-300">
-                        {prod.productGroup || prod.productCategory || "Tài nguyên"}
+                        {prod.productCategory || "Tài nguyên"}
                     </span>
                     {prod.fileSize && (
                       <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-thuy-950/85 text-[10px] text-slate-300 border border-thuy-700">
