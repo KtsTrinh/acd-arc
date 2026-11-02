@@ -317,7 +317,7 @@ export default function NewProjectPage() {
                 onClick={() => setIsMediaModalOpen(true)}
                 className="px-3 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700"
               >
-                Chọn từ Media Library
+                Chọn Ảnh/Video
               </button>
             </div>
 

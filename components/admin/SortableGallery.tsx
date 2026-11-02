@@ -281,7 +281,7 @@ export default function SortableGallery({
                 onClick={() => setIsMediaModalOpen(true)}
                 className="px-4 py-2 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700"
               >
-                + Chọn từ Media Library
+                + Chọn Ảnh/Video
               </button>
             </div>
           ) : (

@@ -126,7 +126,7 @@ export default function MediaPickerModal({
   onSelect,
   multiple = false,
   selectedIds = [],
-  title = "Chọn từ Media Library",
+  title = "Chọn Ảnh/Video",
   mediaType = "image",
 }: MediaPickerModalProps) {
   const [activeTab, setActiveTab] = useState<"library" | "upload" | "url">(

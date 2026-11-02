@@ -1076,7 +1076,7 @@ export default function AdminCatalogClient({
                     onClick={() => setMediaPickerOpen(true)}
                     className="text-[10px] text-thuy-400 hover:underline"
                   >
-                    Chọn từ Media Library
+                    Chọn Ảnh/Video
                   </button>
                 </div>
                 <input
@@ -1382,7 +1382,7 @@ export default function AdminCatalogClient({
           }
         }}
         multiple={false}
-        title="Chọn ảnh thumbnail từ Media Library"
+        title="Chọn Ảnh thumbnail từ Media Library"
       />
 
       {/* Media Picker for Gallery */}

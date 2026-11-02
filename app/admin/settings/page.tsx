@@ -609,7 +609,7 @@ export default function AdminSettingsPage() {
                       className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 hover:text-[#142338] border border-thuy-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
                     >
                       <Upload className="w-3.5 h-3.5 text-thuy-400" />
-                      <span>Chọn từ Media Library</span>
+                      <span>Chọn Ảnh/Video</span>
                     </button>
                     {settings.heroBackgroundImage && (
                       <button
