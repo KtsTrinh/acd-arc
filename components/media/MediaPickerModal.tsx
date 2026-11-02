@@ -205,6 +205,13 @@ function getGoogleDriveUrl(
     if (/(\/folders\/|folders)/i.test(trimmed)) {
       return { type: "folder", id: idParamMatch[1] };
     }
+    if (/uc\?export=|googleusercontent|drive\.google\.com\/uc/i.test(trimmed)) {
+      return {
+        type: "file",
+        id: idParamMatch[1],
+        fileType: isVideoByName ? "video" : "image",
+      };
+    }
     return {
       type: "file",
       id: idParamMatch[1],
@@ -217,6 +224,15 @@ function getGoogleDriveUrl(
     return {
       type: "file",
       id: openIdMatch[1],
+      fileType: isVideoByName ? "video" : "image",
+    };
+  }
+
+  const ucMatch = trimmed.match(/uc\?export=[^&]*&id=([a-zA-Z0-9_-]+)/);
+  if (ucMatch && ucMatch[1]) {
+    return {
+      type: "file",
+      id: ucMatch[1],
       fileType: isVideoByName ? "video" : "image",
     };
   }
