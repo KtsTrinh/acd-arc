@@ -132,117 +132,58 @@ type GoogleDriveParseResult =
 
 function getGoogleDriveUrl(
   url: string,
-  fileName?: string,
+  fileName?: string
 ): GoogleDriveParseResult {
   const trimmed = (url || "").trim();
   if (!trimmed) return null;
 
   const nameToCheck = (fileName || "").toLowerCase();
   const urlLower = trimmed.toLowerCase();
+  
+  // Kiểm tra từ khóa định dạng video đặc trưng
   const isVideoByName =
-    /\.(mp4|mov|webm|mkv|avi)(\?.*)?$/i.test(nameToCheck) ||
-    /\.(mp4|mov|webm|mkv|avi)(\?.*)?$/i.test(urlLower);
+    /\.(mp4|mov|webm|mkv|avi|m4v|ogv)(\?.*)?$/i.test(nameToCheck) ||
+    /\.(mp4|mov|webm|mkv|avi|m4v|ogv)(\?.*)?$/i.test(urlLower) ||
+    urlLower.includes("video") || 
+    urlLower.includes("stream");
+
   const isImageByName =
     /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)(\?.*)?$/i.test(nameToCheck) ||
     /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)(\?.*)?$/i.test(urlLower);
 
-  if (/\/folders\//i.test(trimmed)) {
-    const folderMatch = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+  // 1. Kiểm tra Folder
+  if (/\/folders\//i.test(trimmed) || (/folders/i.test(trimmed) && !/\/file\//i.test(trimmed))) {
+    const folderMatch = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/) || 
+                        trimmed.match(/drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/) ||
+                        trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
     if (folderMatch && folderMatch[1]) {
       return { type: "folder", id: folderMatch[1] };
     }
-    const folderMatch2 = trimmed.match(
-      /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/,
-    );
-    if (folderMatch2 && folderMatch2[1]) {
-      return { type: "folder", id: folderMatch2[1] };
-    }
-    const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (idParamMatch && idParamMatch[1]) {
-      return { type: "folder", id: idParamMatch[1] };
-    }
   }
 
-  if (/folders/i.test(trimmed) && !/\/file\//i.test(trimmed)) {
-    const folderMatch = trimmed.match(
-      /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/,
-    );
-    if (folderMatch && folderMatch[1]) {
-      return { type: "folder", id: folderMatch[1] };
-    }
-    const folderMatch3 = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/);
-    if (folderMatch3 && folderMatch3[1]) {
-      return { type: "folder", id: folderMatch3[1] };
-    }
-  }
-
+  // 2. Kiểm tra File ID dạng /file/d/
   if (/\/file\/d\//i.test(trimmed)) {
-    const fileMatch = trimmed.match(
-      /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
-    );
+    const fileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
     if (fileMatch && fileMatch[1]) {
-      let fileType: "image" | "video" = "video";
-      if (isImageByName && !isVideoByName) {
-        fileType = "image";
-      } else if (isVideoByName) {
-        fileType = "video";
-      } else {
-        fileType = "video";
-      }
+      // THAY ĐỔI QUAN TRỌNG: Mặc định là 'image' trừ khi khẳng định được là video bằng tên/link
+      const fileType = isVideoByName ? "video" : "image";
       return {
         type: "file",
         id: fileMatch[1],
         fileType,
       };
     }
-    const fileMatch2 = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (fileMatch2 && fileMatch2[1]) {
-      let fileType: "image" | "video" = "video";
-      if (isImageByName && !isVideoByName) {
-        fileType = "image";
-      } else if (isVideoByName) {
-        fileType = "video";
-      } else {
-        fileType = "video";
-      }
-      return {
-        type: "file",
-        id: fileMatch2[1],
-        fileType,
-      };
-    }
   }
 
+  // 3. Kiểm tra File ID dạng tham số ?id= hoặc &id=
   const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
   if (idParamMatch && idParamMatch[1]) {
-    let fileType: "image" | "video" = "video";
-    if (isImageByName && !isVideoByName) {
-      fileType = "image";
-    } else if (isVideoByName) {
-      fileType = "video";
-    } else if (/(\/file\/|\/uc\?)/i.test(trimmed)) {
-      fileType = "video";
-    } else {
-      fileType = "video";
-    }
-
-    if (/\/file\//i.test(trimmed)) {
-      return {
-        type: "file",
-        id: idParamMatch[1],
-        fileType,
-      };
-    }
-    if (/(\/folders\/|folders)/i.test(trimmed)) {
+    if (/(\/folders\/|folders)/i.test(trimmed) && !/\/file\//i.test(trimmed)) {
       return { type: "folder", id: idParamMatch[1] };
     }
-    if (/uc\?export=|googleusercontent|drive\.google\.com\/uc/i.test(trimmed)) {
-      return {
-        type: "file",
-        id: idParamMatch[1],
-        fileType,
-      };
-    }
+    
+    // THAY ĐỔI QUAN TRỌNG: Mặc định là 'image' cho các tham số id từ uc hoặc open
+    const fileType = isVideoByName ? "video" : "image";
     return {
       type: "file",
       id: idParamMatch[1],
@@ -250,16 +191,10 @@ function getGoogleDriveUrl(
     };
   }
 
+  // 4. Kiểm tra link dạng open?id=
   const openIdMatch = trimmed.match(/open\?id=([a-zA-Z0-9_-]+)/);
   if (openIdMatch && openIdMatch[1]) {
-    let fileType: "image" | "video" = "video";
-    if (isImageByName && !isVideoByName) {
-      fileType = "image";
-    } else if (isVideoByName) {
-      fileType = "video";
-    } else {
-      fileType = "video";
-    }
+    const fileType = isVideoByName ? "video" : "image";
     return {
       type: "file",
       id: openIdMatch[1],
@@ -267,16 +202,10 @@ function getGoogleDriveUrl(
     };
   }
 
-  const ucMatch = trimmed.match(/uc\?export=[^&]*&id=([a-zA-Z0-9_-]+)/);
+  // 5. Kiểm tra link dạng uc?export=
+  const ucMatch = trimmed.match(/uc\?export=[^&]*&id=([a-zA-Z0-9_-]+)/) || trimmed.match(/uc\?id=([a-zA-Z0-9_-]+)/);
   if (ucMatch && ucMatch[1]) {
-    let fileType: "image" | "video" = "video";
-    if (isImageByName && !isVideoByName) {
-      fileType = "image";
-    } else if (isVideoByName) {
-      fileType = "video";
-    } else {
-      fileType = "video";
-    }
+    const fileType = isVideoByName ? "video" : "image";
     return {
       type: "file",
       id: ucMatch[1],
@@ -286,6 +215,7 @@ function getGoogleDriveUrl(
 
   return null;
 }
+
 
 const VIDEO_EXT_REGEX = /\.(mp4|mov|avi|webm|m4v|ogv)(\?.*)?$/i;
 const IMAGE_EXT_REGEX = /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)(\?.*)?$/i;
