@@ -1131,9 +1131,6 @@ export default function AdminCatalogClient({
                           src={thumbImage}
                           alt="Image thumbnail preview"
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-600">
