@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { resolveHeroVideo, playableVideoUrl, isVideoUrl } from "@/lib/media-url";
+import { formatVND, slugify } from "@/lib/utils";
+import MediaPickerModal, {
   MediaItem,
 } from "@/components/media/MediaPickerModal";
 import {
@@ -1401,13 +1403,14 @@ export default function AdminCatalogClient({
       <MediaPickerModal
         isOpen={mediaPickerOpen}
         onClose={() => setMediaPickerOpen(false)}
-        onSelect={(selected) => {
+        onSelect={(selected: MediaItem | MediaItem[]) => {
           if (!Array.isArray(selected)) {
             updateForm({ thumbnail: selected.url });
           }
         }}
         multiple={false}
         title="Chọn Ảnh/Video Thumbnail"
+        mediaType="all"
       />
 
       {/* Media Picker for Gallery */}
