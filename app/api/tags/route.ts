@@ -85,7 +85,7 @@ export async function DELETE(request: Request) {
     }
     if (tag._count.projects || tag._count.posts || tag._count.products) {
       return NextResponse.json(
-        { error: "Thẻ tag đang được sử dụng. Hãy gỡ thẻ tag khỏi tất cả sản phẩm/bài viết/dự án trước khi xóa." },
+        { error: "Thẻ tag đang được sử dụng. Hãy gỡ thẻ tag khỏi tất cả sản phẩm trước khi xóa." },
         { status: 400 }
       );
     }
