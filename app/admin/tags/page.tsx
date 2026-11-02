@@ -8,6 +8,12 @@ export default function AdminTagsPage() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  const showToast = (message: string, type: "success" | "error") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const fetchTags = async () => {
     try {
@@ -40,9 +46,13 @@ export default function AdminTagsPage() {
       if (data.tag) {
         setName("");
         fetchTags();
+        showToast("Them tag thanh cong", "success");
+      } else if (data.error) {
+        showToast(data.error, "error");
       }
     } catch (err) {
       console.error(err);
+      showToast("Loi khi them tag", "error");
     } finally {
       setIsCreating(false);
     }
@@ -53,10 +63,15 @@ export default function AdminTagsPage() {
     try {
       const res = await fetch(`/api/tags?id=${id}`, { method: "DELETE" });
       const data = await res.json();
-      if (data.success) fetchTags();
-      else if (data.error) alert(data.error);
+      if (data.success) {
+        fetchTags();
+        showToast("Xoa tag thanh cong", "success");
+      } else if (data.error) {
+        showToast(data.error, "error");
+      }
     } catch (err) {
       console.error(err);
+      showToast("Loi khi xoa tag", "error");
     }
   };
 
@@ -70,15 +85,29 @@ export default function AdminTagsPage() {
         body: JSON.stringify({ id: t.id, name: newName }),
       });
       const data = await res.json();
-      if (data.success) fetchTags();
-      else if (data.error) alert(data.error);
+      if (data.success) {
+        fetchTags();
+        showToast("Doi ten tag thanh cong", "success");
+      } else if (data.error) {
+        showToast(data.error, "error");
+      }
     } catch (err) {
       console.error(err);
+      showToast("Loi khi doi ten tag", "error");
     }
   };
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl relative">
+      {toast && (
+        <div
+          className={`fixed top-6 right-6 z-50 px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ease-out ${
+            toast.type === "success" ? "bg-green-600" : "bg-red-600"
+          }`}
+        >
+          {toast.message}
+        </div>
+      )}
       <div>
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
           Quan Ly The Phan Loai (Tags)
