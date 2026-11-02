@@ -244,6 +244,7 @@ export default function AdminCatalogClient({
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const [mediaTarget, setMediaTarget] = useState<"thumbnailImage" | "thumbnailVideo" | null>(null);
   const [notice, setNotice] = useState<{
     type: "ok" | "err";
     text: string;
@@ -1074,106 +1075,101 @@ export default function AdminCatalogClient({
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs text-white">
-                    Ảnh/Video Thumbnail:
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setMediaPickerOpen(true)}
-                    className="text-[10px] text-thuy-400 hover:underline"
-                  >
-                    Chọn Ảnh/Video
-                  </button>
-                </div>
-                <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
-                  {form.thumbnail ? (
-                    (() => {
-                      const src =
-                        playableVideoUrl(form.thumbnail) || form.thumbnail;
-                      const lower = (form.thumbnail || "").toLowerCase();
-
-                      const isGoogleDrive =
-                        lower.includes("drive.google.com") ||
-                        lower.includes("docs.google.com");
-                      const isVideoExt = /\.(mp4|mov|webm|mkv|avi)(\?|$)/i.test(
-                        lower,
-                      );
-                      const isImageExt =
-                        /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(lower);
-                      const isStream = src?.includes("/api/media/stream");
-
-                      // Ưu tiên xử lý riêng cho các định dạng link từ Google Drive trước
-                      if (isGoogleDrive) {
-                        const idMatch =
-                          form.thumbnail.match(/file\/d\/([a-zA-Z0-9_-]+)/) ||
-                          form.thumbnail.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-
-                        if (idMatch) {
-                          const fileId = idMatch[1];
-
-                          if (isVideoExt || isStream) {
-                            const videoSrc = isStream
-                              ? src
-                              : `/api/media/stream?url=${encodeURIComponent(`https://google.com{fileId}`)}`;
-                            return (
-                              <video
-                                src={videoSrc}
-                                muted
-                                loop
-                                playsInline
-                                controls
-                                className="w-full h-full object-cover"
-                              />
-                            );
-                          }
-
-                          // Mặc định tất cả các link file Drive thông thường còn lại là hình ảnh tĩnh
-                          return (
-                            <img
-                              src={`https://google.com{fileId}`}
-                              alt="Thumbnail preview"
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src =
-                                  form.thumbnail;
-                              }}
-                            />
-                          );
-                        }
-                      }
-
-                      if (
-                        isStream ||
-                        isVideoExt ||
-                        (isVideoUrl(form.thumbnail) && !isImageExt)
-                      ) {
-                        return (
-                          <video
-                            src={src}
-                            muted
-                            loop
-                            playsInline
-                            controls
-                            className="w-full h-full object-cover"
-                          />
-                        );
-                      }
-
-                      return (
+              <div className="space-y-2">
+                <label className="text-xs text-white font-medium">
+                  Thumbnail
+                </label>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs text-slate-300">Ảnh Thumbnail</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMediaTarget?.("thumbnailImage" as any);
+                          setMediaPickerOpen(true);
+                        }}
+                        className="text-[10px] text-thuy-400 hover:underline"
+                      >
+                        Chọn ảnh
+                      </button>
+                    </div>
+                    <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
+                      {form.thumbnail && /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(form.thumbnail) ? (
+                        <img
+                          src={form.thumbnail}
+                          alt="Image thumbnail preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : form.thumbnail && isVideoUrl(form.thumbnail) ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
+                          <VideoIcon className="w-6 h-6" />
+                          <span className="text-[10px]">Đang dùng làm video thumbnail</span>
+                        </div>
+                      ) : form.thumbnail ? (
                         <img
                           src={form.thumbnail}
                           alt="Thumbnail preview"
                           className="w-full h-full object-cover"
                         />
-                      );
-                    })()
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-600">
-                      <ImageIcon className="w-6 h-6" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-600">
+                          <ImageIcon className="w-6 h-6" />
+                        </div>
+                      )}
                     </div>
-                  )}
+                    <input
+                      type="text"
+                      value={form.thumbnail}
+                      onChange={(e) => updateForm({ thumbnail: e.target.value })}
+                      placeholder="https://... (URL ảnh thumbnail)"
+                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs text-slate-300">Video Thumbnail</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMediaTarget?.("thumbnailVideo" as any);
+                          setMediaPickerOpen(true);
+                        }}
+                        className="text-[10px] text-thuy-400 hover:underline"
+                      >
+                        Chọn video
+                      </button>
+                    </div>
+                    <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
+                      {form.thumbnail && isVideoUrl(form.thumbnail) ? (
+                        <video
+                          src={playableVideoUrl(form.thumbnail) || form.thumbnail}
+                          muted
+                          loop
+                          playsInline
+                          controls
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
+                          <VideoIcon className="w-6 h-6" />
+                          <span className="text-[10px]">Chưa chọn video thumbnail</span>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={isVideoUrl(form.thumbnail) ? form.thumbnail : ""}
+                      onChange={(e) => {
+                        if (isVideoUrl(e.target.value) || e.target.value === "") {
+                          updateForm({ thumbnail: e.target.value });
+                        }
+                      }}
+                      placeholder="https://... (URL video .mp4/.webm)"
+                      className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1470,15 +1466,25 @@ export default function AdminCatalogClient({
       {/* Media Picker for thumbnail */}
       <MediaPickerModal
         isOpen={mediaPickerOpen}
-        onClose={() => setMediaPickerOpen(false)}
+        onClose={() => {
+          setMediaPickerOpen(false);
+          setMediaTarget(null);
+        }}
         onSelect={(selected: MediaItem | MediaItem[]) => {
           if (!Array.isArray(selected)) {
+            if (mediaTarget === "thumbnailVideo" && !isVideoUrl(selected.url)) {
+              setMediaPickerOpen(false);
+              setMediaTarget(null);
+              return;
+            }
             updateForm({ thumbnail: selected.url });
           }
+          setMediaPickerOpen(false);
+          setMediaTarget(null);
         }}
         multiple={false}
-        title="Chọn Ảnh/Video Thumbnail"
-        mediaType="all"
+        title={mediaTarget === "thumbnailVideo" ? "Chọn Video Thumbnail" : mediaTarget === "thumbnailImage" ? "Chọn Ảnh Thumbnail" : "Chọn Thumbnail"}
+        mediaType={mediaTarget === "thumbnailVideo" ? "video" : "all"}
       />
 
       {/* Media Picker for Gallery */}
