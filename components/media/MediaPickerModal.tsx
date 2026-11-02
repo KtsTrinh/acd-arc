@@ -591,100 +591,13 @@ export default function MediaPickerModal({
     }
 
     const driveParsed = getGoogleDriveUrl(externalUrl);
-    const isFolder =
-      DRIVE_FOLDER_REGEX.test(externalUrl) || driveParsed?.type === "folder";
     const isDriveFile =
       driveParsed?.type === "file" || DRIVE_ID_REGEX.test(externalUrl);
+    const isDriveFolder =
+      driveParsed?.type === "folder" || DRIVE_FOLDER_REGEX.test(externalUrl);
     const isVideoFile = externalIsVideoUrl || VIDEO_EXT_REGEX.test(externalUrl);
-    const isImageFile = (IMAGE_EXT_REGEX.test(externalUrl) || isDriveFile) && !isVideoFile;
     const youtubeEmbed = getYoutubeEmbedUrl(externalUrl);
     const vimeoEmbed = getVimeoEmbedUrl(externalUrl);
-
-    if (isFolder) {
-      return (
-        <div className="w-full rounded-lg border border-slate-700 bg-slate-950 overflow-hidden shadow-lg shadow-black/30 transition-all duration-300">
-          <div className="px-3 py-2 bg-slate-900/80 border-b border-slate-700 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-slate-300">
-              <Folder className="w-4 h-4 text-cyan-400" />
-              <span className="text-xs font-medium">Thư mục Google Drive</span>
-            </div>
-            {isLoadingFolder && (
-              <div className="flex items-center gap-1.5 text-xs text-cyan-400">
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Đang quét...</span>
-              </div>
-            )}
-          </div>
-
-          {isLoadingFolder ? (
-            <div className="h-44 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
-            </div>
-          ) : folderError ? (
-            <div className="h-44 flex flex-col items-center justify-center gap-2 px-4 text-center">
-              <AlertCircle className="w-6 h-6 text-red-400" />
-              <span className="text-xs text-red-400">{folderError}</span>
-            </div>
-          ) : previewImages.length > 0 || previewVideos.length > 0 ? (
-            <div className="p-2 space-y-2">
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 max-h-44 overflow-y-auto">
-                {previewImages.map((imgUrl, idx) => (
-                  <button
-                    key={`img-${idx}`}
-                    type="button"
-                    onClick={() => setSelectedPreviewImage(imgUrl)}
-                    className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
-                      selectedPreviewImage === imgUrl
-                        ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
-                        : "border-slate-700 hover:border-slate-500"
-                    }`}
-                  >
-                    <Image
-                      src={imagePreviewSrc(imgUrl)}
-                      alt={`Thumbnail ${idx + 1}`}
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
-                  </button>
-                ))}
-                {previewVideos.map((vidUrl, idx) => (
-                  <button
-                    key={`vid-${idx}`}
-                    type="button"
-                    onClick={() => setSelectedPreviewImage(vidUrl)}
-                    className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
-                      selectedPreviewImage === vidUrl
-                        ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
-                        : "border-slate-700 hover:border-slate-500"
-                    }`}
-                  >
-                    <video
-                      src={playableVideoUrl(vidUrl) || vidUrl}
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-cyan-400 uppercase">
-                      Video
-                    </div>
-                  </button>
-                ))}
-              </div>
-              <div className="text-[10px] text-slate-500 text-center">
-                Đã tìm thấy {previewImages.length} ảnh, {previewVideos.length} video. Nhấn vào để chọn.
-              </div>
-            </div>
-          ) : (
-            <div className="h-44 flex items-center justify-center text-xs text-slate-500">
-              Không có ảnh hoặc video để hiển thị
-            </div>
-          )}
-        </div>
-      );
-    }
 
     if (youtubeEmbed) {
       return (
@@ -692,7 +605,7 @@ export default function MediaPickerModal({
           <iframe
             src={youtubeEmbed}
             className="w-full h-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-time"
             allowFullScreen
             title="YouTube Preview"
           />
@@ -714,99 +627,55 @@ export default function MediaPickerModal({
       );
     }
 
-    if (isDriveFile && isVideoFile) {
-      const driveParsedFile = getGoogleDriveUrl(externalUrl);
-      const fileId =
-        driveParsedFile?.id || externalUrl.match(DRIVE_ID_REGEX)?.[1];
-      if (fileId) {
-        return (
-          <div className="w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
-            <iframe
-              src={getDriveFilePreviewUrl(fileId)}
-              className="w-full h-full"
-              allow="autoplay"
-              allowFullScreen
-              title="Google Drive Video Preview"
-            />
-          </div>
-        );
-      }
-    }
-
-    if (isVideoFile || externalIsVideoUrl) {
+    if (isDriveFolder) {
       return (
-        <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
-          {previewLoading ? (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
-            </div>
-          ) : (
-            <video
-              src={externalPlayable}
-              controls
-              playsInline
-              className="w-full h-full object-contain"
-            />
-          )}
-          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-cyan-400 uppercase flex items-center gap-1">
-            <Film className="w-2.5 h-2.5" />
-            Video
-          </div>
+        <div className="w-full h-44 rounded-lg border border-slate-700 bg-slate-950 flex flex-col items-center justify-center text-slate-500 gap-2">
+          <Folder className="w-8 h-8 text-slate-600" />
+          <span className="text-xs text-center px-4">
+            Vui lòng dán link file ảnh/video cụ thể, không phải link thư mục.
+          </span>
         </div>
       );
     }
 
-    if (isDriveFile && (isImageFile || !isVideoFile)) {
-      const driveParsedFile = getGoogleDriveUrl(externalUrl);
-      const fileId =
-        driveParsedFile?.id || externalUrl.match(DRIVE_ID_REGEX)?.[1];
-      if (fileId) {
+    if (isDriveFile || isVideoFile || externalUrl) {
+      const isVideo = isVideoFile || (isDriveFile && DRIVE_ID_REGEX.test(externalUrl));
+      const videoSrc = playableVideoUrl(externalUrl) || externalUrl;
+      const imageSrc = isDriveFile
+        ? `/api/media/image-proxy?url=${encodeURIComponent(externalUrl)}`
+        : externalUrl;
+
+      if (isVideo) {
         return (
           <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
-            {previewLoading ? (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
-              </div>
-            ) : (
-              <Image
-                src={imagePreviewSrc(externalUrl)}
-                alt="Google Drive Preview"
-                fill
-                className="object-contain"
-                unoptimized
-                onError={() =>
-                  setFolderError(
-                    "Không thể tải ảnh. Vui lòng kiểm tra quyền chia sẻ file (Anyone with the link can view).",
-                  )
-                }
-              />
-            )}
-            <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-emerald-400 uppercase flex items-center gap-1">
-              <ImageIcon className="w-2.5 h-2.5" />
-              Image
+            <video
+              src={videoSrc}
+              controls
+              playsInline
+              className="w-full h-full object-contain"
+            />
+            <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-cyan-400 uppercase flex items-center gap-1">
+              <Film className="w-2.5 h-2.5" />
+              Video
             </div>
           </div>
         );
       }
-    }
 
-    if (externalUrl && !isVideoFile && !isDriveFile && !youtubeEmbed && !vimeoEmbed) {
       return (
         <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
-          {previewLoading ? (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
-            </div>
-          ) : (
-            <Image
-              src={externalUrl}
-              alt="Preview"
-              fill
-              className="object-contain"
-              unoptimized
-              onError={() => {}}
-            />
-          )}
+          <Image
+            src={imageSrc}
+            alt="Preview"
+            fill
+            className="object-contain"
+            unoptimized
+            onError={() => {}}
+          />
+          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-emerald-400 uppercase flex items-center gap-1">
+            <ImageIcon className="w-2.5 h-2.5" />
+            Image
+          </div>
         </div>
       );
     }
