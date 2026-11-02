@@ -140,36 +140,53 @@ function getGoogleDriveUrl(
   const nameToCheck = (fileName || "").toLowerCase();
   const urlLower = trimmed.toLowerCase();
 
+  // Kiểm tra đuôi file video đặc trưng
   const isVideoByName =
     /\.(mp4|mov|webm|mkv|avi|m4v|ogv)(\?.*)?$/i.test(nameToCheck) ||
-    /\.(mp4|mov|webm|mkv|avi|m4v|ogv)(\?.*)?$/i.test(urlLower) ||
-    urlLower.includes("video") ||
-    urlLower.includes("stream");
+    /\.(mp4|mov|webm|mkv|avi|m4v|ogv)(\?.*)?$/i.test(urlLower);
 
   const isImageByName =
     /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)(\?.*)?$/i.test(nameToCheck) ||
     /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)(\?.*)?$/i.test(urlLower);
 
-  if (
-    /\/folders\//i.test(trimmed) ||
-    (/folders/i.test(trimmed) && !/\/file\//i.test(trimmed))
-  ) {
-    const folderMatch =
-      trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/) ||
-      trimmed.match(
-        /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/,
-      ) ||
-      trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  // 1. Nhận diện Thư mục (Folder)
+  if (/\/folders\//i.test(trimmed)) {
+    const folderMatch = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/);
     if (folderMatch && folderMatch[1]) {
       return { type: "folder", id: folderMatch[1] };
     }
+    const folderMatch2 = trimmed.match(
+      /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/,
+    );
+    if (folderMatch2 && folderMatch2[1]) {
+      return { type: "folder", id: folderMatch2[1] };
+    }
+    const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (idParamMatch && idParamMatch[1]) {
+      return { type: "folder", id: idParamMatch[1] };
+    }
   }
 
+  if (/folders/i.test(trimmed) && !/\/file\//i.test(trimmed)) {
+    const folderMatch = trimmed.match(
+      /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/,
+    );
+    if (folderMatch && folderMatch[1]) {
+      return { type: "folder", id: folderMatch[1] };
+    }
+    const folderMatch3 = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+    if (folderMatch3 && folderMatch3[1]) {
+      return { type: "folder", id: folderMatch3[1] };
+    }
+  }
+
+  // 2. Nhận diện File dạng /file/d/
   if (/\/file\/d\//i.test(trimmed)) {
     const fileMatch = trimmed.match(
       /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
     );
     if (fileMatch && fileMatch[1]) {
+      // SỬA LỖI: Mặc định là image nếu không có đuôi video rõ ràng
       const fileType = isVideoByName ? "video" : "image";
       return {
         type: "file",
@@ -179,6 +196,7 @@ function getGoogleDriveUrl(
     }
   }
 
+  // 3. Nhận diện qua tham số id=
   const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
   if (idParamMatch && idParamMatch[1]) {
     if (/(\/folders\/|folders)/i.test(trimmed) && !/\/file\//i.test(trimmed)) {
@@ -193,6 +211,7 @@ function getGoogleDriveUrl(
     };
   }
 
+  // 4. Nhận diện qua open?id=
   const openIdMatch = trimmed.match(/open\?id=([a-zA-Z0-9_-]+)/);
   if (openIdMatch && openIdMatch[1]) {
     const fileType = isVideoByName ? "video" : "image";
@@ -203,6 +222,7 @@ function getGoogleDriveUrl(
     };
   }
 
+  // 5. Nhận diện qua uc?id=
   const ucMatch =
     trimmed.match(/uc\?export=[^&]*&id=([a-zA-Z0-9_-]+)/) ||
     trimmed.match(/uc\?id=([a-zA-Z0-9_-]+)/);
