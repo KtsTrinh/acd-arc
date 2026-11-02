@@ -1484,7 +1484,8 @@ export default function AdminCatalogClient({
         }}
         multiple={false}
         title={mediaTarget === "thumbnailVideo" ? "Chọn Video Thumbnail" : mediaTarget === "thumbnailImage" ? "Chọn Ảnh Thumbnail" : "Chọn Thumbnail"}
-        mediaType={mediaTarget === "thumbnailVideo" ? "video" : "all"}
+        mediaType={mediaTarget === "thumbnailVideo" ? "video" : mediaTarget === "thumbnailImage" ? "image" : "all"}
+        allowExternalUrl={false}
       />
 
       {/* Media Picker for Gallery */}

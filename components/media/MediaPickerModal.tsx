@@ -42,6 +42,7 @@ interface MediaPickerModalProps {
   selectedIds?: string[];
   title?: string;
   mediaType?: "image" | "video" | "all";
+  allowExternalUrl?: boolean;
 }
 
 const MEDIA_SOURCES = [
@@ -246,6 +247,7 @@ export default function MediaPickerModal({
   selectedIds = [],
   title = "Chọn Ảnh/Video",
   mediaType = "image",
+  allowExternalUrl = true,
 }: MediaPickerModalProps) {
   const [activeTab, setActiveTab] = useState<"library" | "upload" | "url">(
     "library",
@@ -811,17 +813,19 @@ export default function MediaPickerModal({
                 <Upload className="w-3.5 h-3.5" />
                 <span>Upload File</span>
               </button>
-              <button
-                onClick={() => setActiveTab("url")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  activeTab === "url"
-                    ? "bg-cyan-400 text-slate-950 font-bold"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                <LinkIcon className="w-3.5 h-3.5" />
-                <span>Link nhiều nguồn</span>
-              </button>
+              {allowExternalUrl && (
+                <button
+                  onClick={() => setActiveTab("url")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    activeTab === "url"
+                      ? "bg-cyan-400 text-slate-950 font-bold"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <LinkIcon className="w-3.5 h-3.5" />
+                  <span>Link nhiều nguồn</span>
+                </button>
+              )}
             </div>
 
             <button
