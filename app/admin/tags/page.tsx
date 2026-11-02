@@ -54,6 +54,7 @@ export default function AdminTagsPage() {
       const res = await fetch(`/api/tags?id=${id}`, { method: "DELETE" });
       const data = await res.json();
       if (data.success) fetchTags();
+      else if (data.error) alert(data.error);
     } catch (err) {
       console.error(err);
     }
