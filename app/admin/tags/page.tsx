@@ -1,17 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Tags, Loader2, Trash2, Pencil } from "lucide-react";
+import { Plus, Tags, Loader2, Trash2, Pencil, X } from "lucide-react";
 
 export default function AdminTagsPage() {
   const [tags, setTags] = useState<any[]>([]);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [modal, setModal] = useState<{ type: "delete" | "rename"; tag: any; value: string } | null>(null);
 
   const showToast = (message: string, type: "success" | "error") => {
     setToast({ message, type });
@@ -49,54 +47,58 @@ export default function AdminTagsPage() {
       if (data.tag) {
         setName("");
         fetchTags();
-        showToast("Thêm tag thành công", "success");
+        showToast("Them tag thanh cong", "success");
       } else if (data.error) {
         showToast(data.error, "error");
       }
     } catch (err) {
       console.error(err);
-      showToast("Lỗi khi thêm tag", "error");
+      showToast("Loi khi them tag", "error");
     } finally {
       setIsCreating(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Xóa thẻ tag này?")) return;
+  const confirmDelete = async () => {
+    if (!modal) return;
+    const id = modal.tag.id;
+    setModal(null);
     try {
       const res = await fetch(`/api/tags?id=${id}`, { method: "DELETE" });
       const data = await res.json();
       if (data.success) {
         fetchTags();
-        showToast("Xóa tag thành công", "success");
+        showToast("Xoa tag thanh cong", "success");
       } else if (data.error) {
         showToast(data.error, "error");
       }
     } catch (err) {
       console.error(err);
-      showToast("Lỗi khi xóa tag", "error");
+      showToast("Loi khi xoa tag", "error");
     }
   };
 
-  const handleRename = async (t: any) => {
-    const newName = prompt("Tên mới:", t.name);
-    if (!newName || newName === t.name) return;
+  const confirmRename = async () => {
+    if (!modal) return;
+    const { tag, value } = modal;
+    setModal(null);
+    if (!value || value === tag.name) return;
     try {
       const res = await fetch("/api/tags", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: t.id, name: newName }),
+        body: JSON.stringify({ id: tag.id, name: value }),
       });
       const data = await res.json();
       if (data.success) {
         fetchTags();
-        showToast("Đổi tên tag thành công", "success");
+        showToast("Doi ten tag thanh cong", "success");
       } else if (data.error) {
         showToast(data.error, "error");
       }
     } catch (err) {
       console.error(err);
-      showToast("ỗi khi đổi tên tag", "error");
+      showToast("Loi khi doi ten tag", "error");
     }
   };
 
@@ -113,12 +115,57 @@ export default function AdminTagsPage() {
           </div>
         </div>
       )}
+
+      {modal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-bold text-lg text-[#142338]">
+                {modal.type === "delete" ? "Xoa the tag" : "Doi ten the tag"}
+              </h2>
+              <button onClick={() => setModal(null)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {modal.type === "rename" && (
+              <input
+                type="text"
+                value={modal.value}
+                onChange={(e) => setModal({ ...modal, value: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-300 text-sm text-[#142338] focus:outline-none focus:border-thuy-400"
+              />
+            )}
+            {modal.type === "delete" && (
+              <p className="text-sm text-slate-600">
+                Ban co chac chan muon xoa the tag #{modal.tag.name}?
+              </p>
+            )}
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setModal(null)}
+                className="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-300"
+              >
+                Huy
+              </button>
+              <button
+                onClick={modal.type === "delete" ? confirmDelete : confirmRename}
+                className={`px-4 py-2 rounded-xl text-white text-sm font-medium ${
+                  modal.type === "delete" ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"
+                }`}
+              >
+                {modal.type === "delete" ? "Xoa" : "Luu"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div>
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
-          Quản lý thẻ phân loại (Tags)
+          Quan Ly The Phan Loai (Tags)
         </h1>
         <p className="text-xs text-slate-600">
-          án nhãn phong cách và đặc điểm kiến trúc cho dự án và bài viết.
+          Gan nhan phong cach va dac diem kien truc cho du an va bai viet.
         </p>
       </div>
 
@@ -138,7 +185,7 @@ export default function AdminTagsPage() {
             className="px-5 py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan flex items-center gap-1.5"
           >
             {isCreating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-            <span>THÊM TAG</span>
+            <span>THEM TAG</span>
           </button>
         </form>
 
@@ -153,14 +200,14 @@ export default function AdminTagsPage() {
                 {t._count?.projects || 0} du an
               </span>
               <button
-                onClick={() => handleRename(t)}
+                onClick={() => setModal({ type: "rename", tag: t, value: t.name })}
                 className="ml-1 text-blue-400 hover:text-blue-300"
                 title="Sua"
               >
                 <Pencil className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={() => handleDelete(t.id)}
+                onClick={() => setModal({ type: "delete", tag: t, value: "" })}
                 className="ml-1 text-red-400 hover:text-red-300"
                 title="Xoa"
               >
