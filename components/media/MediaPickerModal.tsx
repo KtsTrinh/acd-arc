@@ -1049,50 +1049,59 @@ export default function MediaPickerModal({
             <div className="space-y-3">
               <div>
                 <label className="text-xs text-slate-300 block mb-1">
-                  Nguồn lấy link:
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                  {MEDIA_SOURCES.map((source) => (
-                    <button
-                      key={source.id}
-                      type="button"
-                      onClick={() => {
-                        setExternalSource(source.id);
-                        setExternalFolder(source.folder);
-                        setExternalUrl("");
-                        setExternalFilename("");
-                      }}
-                      className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold transition-all border ${
-                        externalSource === source.id
-                          ? "bg-cyan-400 text-slate-950 border-cyan-400"
-                          : "bg-slate-800 text-slate-300 hover:text-white border-slate-700"
-                      }`}
-                    >
-                      {source.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-300 block mb-1">
-                  Link trực tiếp (
-                  {MEDIA_SOURCES.find((s) => s.id === externalSource)?.label}):
+                  Link trực tiếp:
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder={
-                    MEDIA_SOURCES.find((s) => s.id === externalSource)
-                      ?.placeholder || "https://..."
-                  }
+                  placeholder="Dán link Google Drive, YouTube, Vimeo, hoặc link ảnh/video trực tiếp..."
                   value={externalUrl}
-                  onChange={(e) => setExternalUrl(e.target.value)}
+                  onChange={(e) => {
+                    const url = e.target.value;
+                    setExternalUrl(url);
+                    // Tự động xác định nguồn
+                    if (url.includes("drive.google.com")) {
+                      if (url.includes("/folders/")) {
+                        setExternalSource("googledrive");
+                        setExternalFolder("drive");
+                      } else {
+                        setExternalSource("googledrive");
+                        setExternalFolder("drive");
+                      }
+                    } else if (url.includes("youtube.com") || url.includes("youtu.be")) {
+                      setExternalSource("youtube");
+                      setExternalFolder("youtube");
+                    } else if (url.includes("vimeo.com")) {
+                      setExternalSource("vimeo");
+                      setExternalFolder("vimeo");
+                    } else if (url.includes("pinterest")) {
+                      setExternalSource("pinterest");
+                      setExternalFolder("pinterest");
+                    } else if (url.includes("unsplash")) {
+                      setExternalSource("unsplash");
+                      setExternalFolder("unsplash");
+                    } else if (url.includes("pexels")) {
+                      setExternalSource("pexels");
+                      setExternalFolder("pexels");
+                    } else if (url.includes("mixkit")) {
+                      setExternalSource("mixkit");
+                      setExternalFolder("mixkit");
+                    } else if (url.includes("coverr")) {
+                      setExternalSource("coverr");
+                      setExternalFolder("coverr");
+                    } else if (url.includes("cloudinary")) {
+                      setExternalSource("cloudinary");
+                      setExternalFolder("cloudinary");
+                    } else if (url.includes("bunny")) {
+                      setExternalSource("bunny");
+                      setExternalFolder("bunny");
+                    } else if (url) {
+                      setExternalSource("direct");
+                      setExternalFolder("external");
+                    }
+                  }}
                   className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                 />
-                <p className="text-[10px] text-slate-500 mt-1">
-                  {MEDIA_SOURCES.find((s) => s.id === externalSource)?.hint}
-                </p>
               </div>
 
               <div className="space-y-2">
