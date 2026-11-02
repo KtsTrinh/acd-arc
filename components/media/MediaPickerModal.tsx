@@ -134,30 +134,62 @@ function getGoogleDriveUrl(url: string): GoogleDriveParseResult {
   const trimmed = (url || "").trim();
   if (!trimmed) return null;
 
-  // Thư mục Google Drive: /drive/folders/ID
-  const folderMatch = trimmed.match(
-    /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/
-  );
-  if (folderMatch && folderMatch[1]) {
-    return { type: "folder", id: folderMatch[1] };
+  // Ưu tiên phát hiện THƯ MỤC trước - kiểm tra từ khóa /folders/
+  if (/\/folders\//i.test(trimmed)) {
+    // Thư mục Google Drive: /drive/folders/ID hoặc các biến thể
+    const folderMatch = trimmed.match(
+      /\/folders\/([a-zA-Z0-9_-]+)/
+    );
+    if (folderMatch && folderMatch[1]) {
+      return { type: "folder", id: folderMatch[1] };
+    }
+    // Thử dạng khác
+    const folderMatch2 = trimmed.match(
+      /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/
+    );
+    if (folderMatch2 && folderMatch2[1]) {
+      return { type: "folder", id: folderMatch2[1] };
+    }
+    // Thử từ id param nếu có trong ngữ cảnh folder
+    const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (idParamMatch && idParamMatch[1]) {
+      return { type: "folder", id: idParamMatch[1] };
+    }
+  }
+
+  // Thư mục Google Drive dạng khác
+  if (/folders/i.test(trimmed) && !/\/file\//i.test(trimmed)) {
+    const folderMatch = trimmed.match(
+      /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/
+    );
+    if (folderMatch && folderMatch[1]) {
+      return { type: "folder", id: folderMatch[1] };
+    }
   }
 
   // Tệp đơn lẻ Google Drive: /file/d/ID
-  const fileMatch = trimmed.match(
-    /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/
-  );
-  if (fileMatch && fileMatch[1]) {
-    return { type: "file", id: fileMatch[1] };
+  if (/\/file\/d\//i.test(trimmed)) {
+    const fileMatch = trimmed.match(
+      /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/
+    );
+    if (fileMatch && fileMatch[1]) {
+      return { type: "file", id: fileMatch[1] };
+    }
+    const fileMatch2 = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (fileMatch2 && fileMatch2[1]) {
+      return { type: "file", id: fileMatch2[1] };
+    }
   }
 
-  // Các dạng URL có ?id=
+  // Các dạng URL có ?id= (ưu tiên file nếu không phải folder)
   const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
   if (idParamMatch && idParamMatch[1]) {
-    if (/\/folders\//i.test(trimmed)) {
-      return { type: "folder", id: idParamMatch[1] };
-    }
     if (/\/file\//i.test(trimmed)) {
       return { type: "file", id: idParamMatch[1] };
+    }
+    // Nếu không rõ ngữ cảnh, kiểm tra thêm
+    if (/folders/i.test(trimmed)) {
+      return { type: "folder", id: idParamMatch[1] };
     }
     return { type: "file", id: idParamMatch[1] };
   }
@@ -249,6 +281,9 @@ export default function MediaPickerModal({
     null
   );
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewType, setPreviewType] = useState<
+    "none" | "folder" | "image" | "video" | "embed"
+  >("none");
 
   const externalIsVideoUrl = isVideoUrl(externalUrl);
   const externalPlayable = externalIsVideoUrl
@@ -299,6 +334,7 @@ export default function MediaPickerModal({
       setFolderError(null);
       setSelectedPreviewImage(null);
       setPreviewLoading(false);
+      setPreviewType("none");
       return;
     }
 
@@ -306,6 +342,7 @@ export default function MediaPickerModal({
     setFolderError(null);
     setSelectedPreviewImage(null);
     setPreviewLoading(false);
+    setPreviewType("none");
   }, [activeTab]);
 
   const fetchDriveFolderPreview = useCallback(async (folderId: string) => {
@@ -313,6 +350,7 @@ export default function MediaPickerModal({
     setFolderError(null);
     setPreviewImages([]);
     setSelectedPreviewImage(null);
+    setPreviewType("folder");
 
     try {
       const res = await fetch(
@@ -325,6 +363,7 @@ export default function MediaPickerModal({
           data?.error ||
             "Không thể truy cập thư mục. Vui lòng đảm bảo thư mục đã được chia sẻ 'Anyone with the link can view'."
         );
+        setPreviewType("none");
         return;
       }
 
@@ -345,12 +384,14 @@ export default function MediaPickerModal({
         setFolderError(
           "Không tìm thấy hình ảnh nào trong thư mục này hoặc thư mục không có quyền truy cập."
         );
+        setPreviewType("none");
       }
     } catch (err) {
       console.error("Error fetching drive folder:", err);
       setFolderError(
         "Đã xảy ra lỗi khi tải danh sách ảnh từ thư mục Google Drive. Vui lòng kiểm tra quyền chia sẻ."
       );
+      setPreviewType("none");
     } finally {
       setIsLoadingFolder(false);
     }
@@ -358,12 +399,14 @@ export default function MediaPickerModal({
 
   useEffect(() => {
     if (activeTab !== "url" || !externalUrl.trim()) {
+      setPreviewType("none");
       return;
     }
 
     const driveParsed = getGoogleDriveUrl(externalUrl);
 
     if (driveParsed?.type === "folder") {
+      setPreviewType("folder");
       fetchDriveFolderPreview(driveParsed.id);
       return;
     }
@@ -374,6 +417,7 @@ export default function MediaPickerModal({
       setFolderError(null);
       setSelectedPreviewImage(null);
       setPreviewLoading(true);
+      setPreviewType("image");
       setTimeout(() => setPreviewLoading(false), 300);
       return;
     }
@@ -383,6 +427,7 @@ export default function MediaPickerModal({
     setFolderError(null);
     setSelectedPreviewImage(null);
     setPreviewLoading(true);
+    setPreviewType("none");
     setTimeout(() => setPreviewLoading(false), 200);
   }, [externalUrl, activeTab, fetchDriveFolderPreview]);
 
