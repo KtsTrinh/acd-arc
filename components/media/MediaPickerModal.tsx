@@ -570,8 +570,8 @@ export default function MediaPickerModal({
       DRIVE_FOLDER_REGEX.test(externalUrl) || driveParsed?.type === "folder";
     const isDriveFile =
       driveParsed?.type === "file" || DRIVE_ID_REGEX.test(externalUrl);
-    const isVideoFile = externalIsVideoUrl;
-    const isImageFile = !isVideoFile;
+    const isVideoFile = externalIsVideoUrl || VIDEO_EXT_REGEX.test(externalUrl);
+    const isImageFile = (IMAGE_EXT_REGEX.test(externalUrl) || isDriveFile) && !isVideoFile;
     const youtubeEmbed = getYoutubeEmbedUrl(externalUrl);
     const vimeoEmbed = getVimeoEmbedUrl(externalUrl);
 
@@ -741,7 +741,7 @@ export default function MediaPickerModal({
       }
     }
 
-    if (externalUrl && !isVideoFile) {
+    if (externalUrl && !isVideoFile && !isDriveFile && !youtubeEmbed && !vimeoEmbed) {
       return (
         <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
           {previewLoading ? (
@@ -755,6 +755,7 @@ export default function MediaPickerModal({
               fill
               className="object-contain"
               unoptimized
+              onError={() => {}}
             />
           )}
         </div>
