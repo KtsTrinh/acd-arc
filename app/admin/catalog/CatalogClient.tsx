@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatVND, slugify } from "@/lib/utils";
+import { isVideoUrl, playableVideoUrl } from "@/lib/media-url";
 import MediaPickerModal, {
   MediaItem,
 } from "@/components/media/MediaPickerModal";
@@ -1446,13 +1447,24 @@ function CatalogTable({
                 <td className="py-3.5 px-5">
                   <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
                     {p.thumbnail ? (
-                      <Image
-                        src={p.thumbnail}
-                        alt={p.name}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
+                      isVideoUrl(p.thumbnail) ? (
+                        <video
+                          src={playableVideoUrl(p.thumbnail) || p.thumbnail}
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Image
+                          src={p.thumbnail}
+                          alt={p.name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      )
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-600">
                         <FileCode className="w-4 h-4" />
