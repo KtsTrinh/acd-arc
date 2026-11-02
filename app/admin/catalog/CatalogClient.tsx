@@ -963,13 +963,14 @@ export default function AdminCatalogClient({
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Chủ đầu tư:</label>
-                  <input
-                    type="text"
-                    value={form.client}
-                    onChange={(e) => updateForm({ client: e.target.value })}
-                    placeholder="Công ty X..."
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
+                <input
+                  type="url"
+                  value={form.thumbnail}
+                  onChange={(e) => updateForm({ thumbnail: e.target.value })}
+                  placeholder="https://..."
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                />
+                <p className="text-[10px] text-slate-500">Hoặc dùng nút "Chọn Ảnh/Video" ở trên để dán link tự động.</p>
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Năm thiết kế:</label>
