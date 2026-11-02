@@ -304,8 +304,6 @@ model Product {
   description String?
   shortDesc   String?
   price       Float?
-  discount    Float?
-  priceAfterDiscount Float?
   productGroup String?
   productCategory String?
   fileFormat  String?     // e.g. "AutoCAD .DWG / 3ds Max / SketchUp"

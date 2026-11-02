@@ -65,8 +65,6 @@ export async function PATCH(
       description,
       shortDesc,
       price,
-      discount,
-      priceAfterDiscount,
       productGroup,
       productCategory,
       fileFormat,
@@ -94,11 +92,6 @@ export async function PATCH(
     if (description !== undefined) updateData.description = description;
     if (shortDesc !== undefined) updateData.shortDesc = shortDesc || null;
     if (price !== undefined) updateData.price = price ? parseFloat(price) : null;
-    if (discount !== undefined) updateData.discount = discount ? parseFloat(discount) : null;
-    if (priceAfterDiscount !== undefined)
-      updateData.priceAfterDiscount = priceAfterDiscount
-        ? parseFloat(priceAfterDiscount)
-        : null;
     if (productGroup !== undefined) updateData.productGroup = productGroup || null;
     if (productCategory !== undefined)
       updateData.productCategory = productCategory || null;
