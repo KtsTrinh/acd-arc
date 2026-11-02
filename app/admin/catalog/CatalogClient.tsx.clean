@@ -1140,7 +1140,7 @@ export default function AdminCatalogClient({
                   </div>
                 </div>
                   <label className="text-xs text-white">
-                    Ảnh thumbnail (URL):
+                    Ảnh Thumbnail:
                   </label>
                   <button
                     type="button"

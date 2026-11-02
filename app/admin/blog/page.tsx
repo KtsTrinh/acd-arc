@@ -208,7 +208,7 @@ export default function AdminBlogPage() {
                     onClick={() => setMediaPickerOpen(true)}
                     className="text-[10px] text-thuy-400 hover:underline"
                   >
-                    Chọn từ Media Library
+                    Chọn Ảnh/Video
                   </button>
                 </div>
                 <input
