@@ -1080,13 +1080,32 @@ export default function AdminCatalogClient({
                     Chọn Ảnh/Video
                   </button>
                 </div>
-                <input
-                  type="url"
-                  value={form.thumbnail}
-                  onChange={(e) => updateForm({ thumbnail: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                />
+              <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
+                {form.thumbnail ? (
+                  isVideoUrl(form.thumbnail) ? (
+                    <video
+                      src={playableVideoUrl(form.thumbnail) || form.thumbnail}
+                      muted
+                      loop
+                      playsInline
+                      controls
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={form.thumbnail}
+                      alt="Thumbnail preview"
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  )
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-600">
+                    <ImageIcon className="w-6 h-6" />
+                  </div>
+                )}
+              </div>
               </div>
 
               {/* Product Gallery */}
