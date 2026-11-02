@@ -8,8 +8,15 @@ export default function AdminTagsPage() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-  const [modal, setModal] = useState<{ type: "delete" | "rename"; tag: any; value: string } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+  const [modal, setModal] = useState<{
+    type: "delete" | "rename";
+    tag: any;
+    value: string;
+  } | null>(null);
 
   const showToast = (message: string, type: "success" | "error") => {
     setToast({ message, type });
@@ -47,13 +54,13 @@ export default function AdminTagsPage() {
       if (data.tag) {
         setName("");
         fetchTags();
-        showToast("Them tag thanh cong", "success");
+        showToast("Thêm Tag thành công", "success");
       } else if (data.error) {
         showToast(data.error, "error");
       }
     } catch (err) {
       console.error(err);
-      showToast("Loi khi them tag", "error");
+      showToast("Lỗi khi thêm Tag", "error");
     } finally {
       setIsCreating(false);
     }
@@ -68,13 +75,13 @@ export default function AdminTagsPage() {
       const data = await res.json();
       if (data.success) {
         fetchTags();
-        showToast("Xoa tag thanh cong", "success");
+        showToast("Xóa Tag thành công", "success");
       } else if (data.error) {
         showToast(data.error, "error");
       }
     } catch (err) {
       console.error(err);
-      showToast("Loi khi xoa tag", "error");
+      showToast("Lỗi khi xóa Tag", "error");
     }
   };
 
@@ -92,20 +99,22 @@ export default function AdminTagsPage() {
       const data = await res.json();
       if (data.success) {
         fetchTags();
-        showToast("Doi ten tag thanh cong", "success");
+        showToast("Đổi tên Tag thành công", "success");
       } else if (data.error) {
         showToast(data.error, "error");
       }
     } catch (err) {
       console.error(err);
-      showToast("Loi khi doi ten tag", "error");
+      showToast("Lỗi khi đổi tên Tag", "error");
     }
   };
 
   return (
     <div className="space-y-6 max-w-4xl relative">
       {toast && (
-        <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ease-out ${toast.type === "success" ? "bg-green-600" : "bg-red-600"}`}>
+        <div
+          className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ease-out ${toast.type === "success" ? "bg-green-600" : "bg-red-600"}`}
+        >
           {toast.message}
         </div>
       )}
@@ -115,9 +124,12 @@ export default function AdminTagsPage() {
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="font-bold text-lg text-[#142338]">
-                {modal.type === "delete" ? "Xoa the tag" : "Doi ten the tag"}
+                {modal.type === "delete" ? "Xóa Tag" : "Đổi tên Tag"}
               </h2>
-              <button onClick={() => setModal(null)} className="text-slate-400 hover:text-slate-600">
+              <button
+                onClick={() => setModal(null)}
+                className="text-slate-400 hover:text-slate-600"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -131,7 +143,7 @@ export default function AdminTagsPage() {
             )}
             {modal.type === "delete" && (
               <p className="text-sm text-slate-600">
-                Ban co chac chan muon xoa the tag #{modal.tag.name}?
+                Bạn có chắc chắn muốn xóa Tag #{modal.tag.name}?
               </p>
             )}
             <div className="flex gap-3 justify-end">
@@ -139,13 +151,15 @@ export default function AdminTagsPage() {
                 onClick={() => setModal(null)}
                 className="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-300"
               >
-                Huy
+                Hủy
               </button>
               <button
-                onClick={modal.type === "delete" ? confirmDelete : confirmRename}
+                onClick={
+                  modal.type === "delete" ? confirmDelete : confirmRename
+                }
                 className={`px-4 py-2 rounded-xl text-white text-sm font-medium ${modal.type === "delete" ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"}`}
               >
-                {modal.type === "delete" ? "Xoa" : "Luu"}
+                {modal.type === "delete" ? "Xóa" : "Lưu"}
               </button>
             </div>
           </div>
@@ -154,10 +168,10 @@ export default function AdminTagsPage() {
 
       <div>
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
-          Quan Ly The Phan Loai (Tags)
+          Quan lý thẻ phân loại (Tags)
         </h1>
         <p className="text-xs text-slate-600">
-          Gan nhan phong cach va dac diem kien truc cho du an va bai viet.
+          Gán nhãn phong cách và đặc điểm cho sản phẩm.
         </p>
       </div>
 
@@ -166,10 +180,10 @@ export default function AdminTagsPage() {
           <input
             type="text"
             required
-            placeholder="Ten the tag moi"
+            placeholder="Tên thẻ Tag mới"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
+            className="flex-1 px-4 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
           />
           <button
             type="submit"
@@ -177,7 +191,7 @@ export default function AdminTagsPage() {
             className="px-5 py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan flex items-center gap-1.5"
           >
             {isCreating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-            <span>THEM TAG</span>
+            <span>THÊM TAG</span>
           </button>
         </form>
 
@@ -189,19 +203,21 @@ export default function AdminTagsPage() {
             >
               <span>#{t.name}</span>
               <span className="text-[10px] text-thuy-400 font-bold bg-thuy-800 px-1.5 py-0.5 rounded">
-                {t._count?.projects || 0} du an
+                {t._count?.projects || 0} sản phẩm
               </span>
               <button
-                onClick={() => setModal({ type: "rename", tag: t, value: t.name })}
+                onClick={() =>
+                  setModal({ type: "rename", tag: t, value: t.name })
+                }
                 className="ml-1 text-blue-400 hover:text-blue-300"
-                title="Sua"
+                title="Sửa"
               >
                 <Pencil className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => setModal({ type: "delete", tag: t, value: "" })}
                 className="ml-1 text-red-400 hover:text-red-300"
-                title="Xoa"
+                title="Xóa"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
