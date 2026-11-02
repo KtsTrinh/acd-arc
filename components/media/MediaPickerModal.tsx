@@ -789,24 +789,45 @@ export default function MediaPickerModal({
       );
     }
 
-    if (isDriveFile && isVideoFile) {
-      const driveParsedFile = getGoogleDriveUrl(externalUrl, externalFilename);
-      const fileId =
-        driveParsedFile?.type === "file"
-          ? driveParsedFile.id
-          : externalUrl.match(DRIVE_ID_REGEX)?.[1];
-      if (fileId) {
-        return (
-          <div className="w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
-            <iframe
-              src={`https://drive.google.com/file/d/${fileId}/preview`}
-              className="w-full h-full"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              title="Google Drive Video Preview"
-            />
-          </div>
+    if (isDriveFile && (isImageFile || driveParsed?.type === "file")) {
+      if (driveParsed?.type === "file" && driveParsed.fileType === "video") {
+        // Đã được xử lý ở nhánh video phía trên
+      } else {
+        const driveParsedFile = getGoogleDriveUrl(
+          externalUrl,
+          externalFilename,
         );
+        const fileId =
+          driveParsedFile?.type === "file"
+            ? driveParsedFile.id
+            : externalUrl.match(/file\/d\/([a-zA-Z0-9_-]+)/)?.[1] ||
+              externalUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/)?.[1];
+        if (fileId) {
+          return (
+            <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
+              {previewLoading ? (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+                </div>
+              ) : (
+                <img
+                  src={`https://google.com{fileId}`}
+                  alt="Google Drive Preview"
+                  className="w-full h-full object-contain"
+                  onError={() =>
+                    setFolderError(
+                      "Không thể tải ảnh. Vui lòng kiểm tra quyền chia sẻ file (Anyone with the link can view).",
+                    )
+                  }
+                />
+              )}
+              <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-emerald-400 uppercase flex items-center gap-1">
+                <ImageIcon className="w-2.5 h-2.5" />
+                Image
+              </div>
+            </div>
+          );
+        }
       }
     }
 
