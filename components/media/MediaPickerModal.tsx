@@ -280,6 +280,7 @@ export default function MediaPickerModal({
 
   // Preview states for URL tab
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [previewVideos, setPreviewVideos] = useState<string[]>([]);
   const [isLoadingFolder, setIsLoadingFolder] = useState(false);
   const [folderError, setFolderError] = useState<string | null>(null);
   const [selectedPreviewImage, setSelectedPreviewImage] = useState<
@@ -335,6 +336,7 @@ export default function MediaPickerModal({
   useEffect(() => {
     if (activeTab !== "url") {
       setPreviewImages([]);
+      setPreviewVideos([]);
       setIsLoadingFolder(false);
       setFolderError(null);
       setSelectedPreviewImage(null);
@@ -344,6 +346,7 @@ export default function MediaPickerModal({
     }
 
     setPreviewImages([]);
+    setPreviewVideos([]);
     setFolderError(null);
     setSelectedPreviewImage(null);
     setPreviewLoading(false);
@@ -354,6 +357,7 @@ export default function MediaPickerModal({
     setIsLoadingFolder(true);
     setFolderError(null);
     setPreviewImages([]);
+    setPreviewVideos([]);
     setSelectedPreviewImage(null);
     setPreviewType("folder");
 
@@ -374,27 +378,23 @@ export default function MediaPickerModal({
 
       if (data?.images && Array.isArray(data.images)) {
         setPreviewImages(data.images);
-        if (data.images.length > 0) {
-          setSelectedPreviewImage(data.images[0]);
-        }
-      } else if (data?.media && Array.isArray(data.media)) {
-        const imageUrls = data.media
-          .map((item: any) => item.url)
-          .filter((url: string) => url && !isVideoUrl(url));
-        setPreviewImages(imageUrls);
-        if (imageUrls.length > 0) {
-          setSelectedPreviewImage(imageUrls[0]);
-        }
-      } else {
+      }
+      if (data?.videos && Array.isArray(data.videos)) {
+        setPreviewVideos(data.videos);
+      }
+
+      const total = (data.images?.length || 0) + (data.videos?.length || 0);
+      if (total === 0) {
         setFolderError(
-          "Không tìm thấy hình ảnh nào trong thư mục này hoặc thư mục không có quyền truy cập.",
+          "Không tìm thấy hình ảnh hoặc video nào trong thư mục này hoặc thư mục không có quyền truy cập.",
         );
         setPreviewType("none");
+        return;
       }
     } catch (err) {
       console.error("Error fetching drive folder:", err);
       setFolderError(
-        "Đã xảy ra lỗi khi tải danh sách ảnh từ thư mục Google Drive. Vui lòng kiểm tra quyền chia sẻ.",
+        "Đã xảy ra lỗi khi tải danh sách từ thư mục Google Drive. Vui lòng kiểm tra quyền chia sẻ.",
       );
       setPreviewType("none");
     } finally {
@@ -625,12 +625,12 @@ export default function MediaPickerModal({
               <AlertCircle className="w-6 h-6 text-red-400" />
               <span className="text-xs text-red-400">{folderError}</span>
             </div>
-          ) : previewImages.length > 0 ? (
+          ) : previewImages.length > 0 || previewVideos.length > 0 ? (
             <div className="p-2 space-y-2">
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 max-h-44 overflow-y-auto">
                 {previewImages.map((imgUrl, idx) => (
                   <button
-                    key={idx}
+                    key={`img-${idx}`}
                     type="button"
                     onClick={() => setSelectedPreviewImage(imgUrl)}
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
@@ -640,7 +640,7 @@ export default function MediaPickerModal({
                     }`}
                   >
                     <Image
-                      src={imgUrl}
+                      src={imagePreviewSrc(imgUrl)}
                       alt={`Thumbnail ${idx + 1}`}
                       fill
                       className="object-cover"
@@ -648,14 +648,38 @@ export default function MediaPickerModal({
                     />
                   </button>
                 ))}
+                {previewVideos.map((vidUrl, idx) => (
+                  <button
+                    key={`vid-${idx}`}
+                    type="button"
+                    onClick={() => setSelectedPreviewImage(vidUrl)}
+                    className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
+                      selectedPreviewImage === vidUrl
+                        ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
+                        : "border-slate-700 hover:border-slate-500"
+                    }`}
+                  >
+                    <video
+                      src={playableVideoUrl(vidUrl) || vidUrl}
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-cyan-400 uppercase">
+                      Video
+                    </div>
+                  </button>
+                ))}
               </div>
               <div className="text-[10px] text-slate-500 text-center">
-                Đã tìm thấy {previewImages.length} ảnh. Nhấn vào ảnh để chọn.
+                Đã tìm thấy {previewImages.length} ảnh, {previewVideos.length} video. Nhấn vào để chọn.
               </div>
             </div>
           ) : (
             <div className="h-44 flex items-center justify-center text-xs text-slate-500">
-              Không có ảnh để hiển thị
+              Không có ảnh hoặc video để hiển thị
             </div>
           )}
         </div>

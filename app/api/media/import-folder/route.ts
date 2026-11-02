@@ -148,6 +148,7 @@ export async function GET(request: Request) {
       }
 
       const images: string[] = [];
+      const videos: string[] = [];
       const files: Array<{ id: string; name: string; url: string }> = [];
 
       for (const id of ids) {
@@ -163,11 +164,22 @@ export async function GET(request: Request) {
           lower.endsWith(".avif") ||
           lower.endsWith(".bmp") ||
           lower.endsWith(".svg");
+        const isVideo =
+          lower.endsWith(".mp4") ||
+          lower.endsWith(".webm") ||
+          lower.endsWith(".mov") ||
+          lower.endsWith(".avi") ||
+          lower.endsWith(".mkv") ||
+          lower.endsWith(".m4v") ||
+          lower.endsWith(".ogv");
 
         const previewUrl = `https://drive.google.com/uc?export=view&id=${id}`;
 
         if (isImage) {
           images.push(previewUrl);
+        }
+        if (isVideo) {
+          videos.push(previewUrl);
         }
         files.push({
           id,
@@ -179,6 +191,7 @@ export async function GET(request: Request) {
       return NextResponse.json({
         success: true,
         images,
+        videos,
         files,
         count: files.length,
       });
