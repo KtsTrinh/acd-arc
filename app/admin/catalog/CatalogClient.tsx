@@ -1086,7 +1086,35 @@ export default function AdminCatalogClient({
                     const src = playableVideoUrl(form.thumbnail) || form.thumbnail;
                     const isDriveFile = /drive\.google\.com\/file\/d\//.test(form.thumbnail);
                     const isDriveUc = /drive\.google\.com\/uc\?/.test(form.thumbnail);
-                    const isVid = isVideoUrl(form.thumbnail) || isDriveFile || isDriveUc || (src && src.includes("/api/media/stream"));
+                    const isVid = isVideoUrl(form.thumbnail) || isDriveFile || (src && src.includes("/api/media/stream"));
+                    if (isVid && src && src.includes("/api/media/stream")) {
+                      return (
+                        <video
+                          src={src}
+                          muted
+                          loop
+                          playsInline
+                          controls
+                          className="w-full h-full object-cover"
+                        />
+                      );
+                    }
+                    if (isDriveUc || isDriveFile) {
+                      const idMatch = form.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
+                      const imgSrc = idMatch ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}` : form.thumbnail;
+                      if (isVid && !src?.includes("/api/media/stream")) {
+                        // still try to use playable
+                      }
+                      return (
+                        <Image
+                          src={imgSrc}
+                          alt="Thumbnail preview"
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      );
+                    }
                     if (isVid && src) {
                       return (
                         <video
@@ -1482,6 +1510,31 @@ function CatalogTable({
                     const isDriveFile = /drive\.google\.com\/file\/d\//.test(p.thumbnail);
                     const isDriveUc = /drive\.google\.com\/uc\?/.test(p.thumbnail);
                     const isVid = isVideoUrl(p.thumbnail) || isDriveFile || isDriveUc || (src && src.includes("/api/media/stream"));
+                    if (isVid && src && src.includes("/api/media/stream")) {
+                      return (
+                        <video
+                          src={src}
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          className="w-full h-full object-cover"
+                        />
+                      );
+                    }
+                    if (isDriveUc || isDriveFile) {
+                      const idMatch = p.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
+                      const imgSrc = idMatch ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}` : p.thumbnail;
+                      return (
+                        <Image
+                          src={imgSrc}
+                          alt={p.name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      );
+                    }
                     if (isVid && src) {
                       return (
                         <video
