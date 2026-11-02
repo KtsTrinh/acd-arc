@@ -1250,15 +1250,11 @@ export default function AdminCatalogClient({
                     {galleryItems.map((item) => {
                       const isVideoFromMime =
                         item.media.mimeType?.startsWith("video/") === true;
-                      const isVideoFromUrl =
-                        isVideoUrl(item.media.url) ||
+                      const isVideoFromExt =
                         /\.(mp4|webm|mov|avi|mkv)(\?|$)/i.test(
                           item.media.url,
-                        ) ||
-                        /drive\.google\.com\/(?:file\/d\/|uc\?)/.test(
-                          item.media.url,
                         );
-                      const itemIsVideo = isVideoFromMime || isVideoFromUrl;
+                      const itemIsVideo = isVideoFromMime || isVideoFromExt;
                       const isCover = galleryCoverMediaId === item.mediaId;
                       const vidSrc = playableVideoUrl(item.media.url);
                       const imgSrc = (() => {

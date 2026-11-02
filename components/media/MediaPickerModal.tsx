@@ -505,16 +505,30 @@ export default function MediaPickerModal({
         });
         const data = await res.json();
 
-        if (data.success && data.media) {
+        const mediaItems: MediaItem[] = (data.files || []).map((f: any) => ({
+          id: `drive_${f.id}`,
+          filename: f.name || `drive_${f.id}`,
+          originalName: f.name,
+          url: f.url,
+          folder: "drive",
+          alt: null,
+          mimeType: f.mimeType || null,
+        }));
+
+        if (data.success && mediaItems.length > 0) {
           setExternalUrl("");
           setActiveTab("library");
           await fetchMedia();
-          if (!multiple && data.media.length > 0) {
-            onSelect(data.media[0]);
+          if (!multiple) {
+            onSelect(mediaItems[0]);
+            onClose();
+          } else {
+            setSelectedItems(mediaItems);
+            onSelect(mediaItems);
             onClose();
           }
         } else {
-          setFolderError(data.error || "Có lỗi xảy ra khi import thư mục.");
+          setFolderError(data.error || "Không tìm thấy tệp nào trong thư mục.");
         }
       } catch (err) {
         console.error("Import folder error:", err);
