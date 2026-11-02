@@ -70,8 +70,7 @@ const MEDIA_SOURCES = [
     id: "mixkit",
     label: "Mixkit",
     folder: "mixkit",
-    placeholder:
-      "https://assets.mixkit.co/videos/preview/mixkit-xxxx-large.mp4",
+    placeholder: "https://assets.mixkit.co/videos/preview/mixkit-xxxx-large.mp4",
     hint: "Nguồn video miễn phí, link kết thúc bằng .mp4 hoặc .webm.",
   },
   {
@@ -127,37 +126,39 @@ const MEDIA_SOURCES = [
 
 type GoogleDriveParseResult =
   | { type: "folder"; id: string }
-  | { type: "file"; id: string }
+  | { type: "file"; id: string; fileType: "image" | "video" }
   | null;
 
-function getGoogleDriveUrl(url: string): GoogleDriveParseResult {
+function getGoogleDriveUrl(
+  url: string,
+  fileName?: string
+): GoogleDriveParseResult {
   const trimmed = (url || "").trim();
   if (!trimmed) return null;
 
-  // Ưu tiên phát hiện THƯ MỤC trước - kiểm tra từ khóa /folders/
+  const nameToCheck = (fileName || "").toLowerCase();
+  const urlLower = trimmed.toLowerCase();
+  const isVideoByName =
+    /\.(mp4|mov|webm|mkv|avi)(\?.*)?$/i.test(nameToCheck) ||
+    /\.(mp4|mov|webm|mkv|avi)(\?.*)?$/i.test(urlLower);
+
   if (/\/folders\//i.test(trimmed)) {
-    // Thư mục Google Drive: /drive/folders/ID hoặc các biến thể
-    const folderMatch = trimmed.match(
-      /\/folders\/([a-zA-Z0-9_-]+)/
-    );
+    const folderMatch = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/);
     if (folderMatch && folderMatch[1]) {
       return { type: "folder", id: folderMatch[1] };
     }
-    // Thử dạng khác
     const folderMatch2 = trimmed.match(
       /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/
     );
     if (folderMatch2 && folderMatch2[1]) {
       return { type: "folder", id: folderMatch2[1] };
     }
-    // Thử từ id param nếu có trong ngữ cảnh folder
     const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
     if (idParamMatch && idParamMatch[1]) {
       return { type: "folder", id: idParamMatch[1] };
     }
   }
 
-  // Thư mục Google Drive dạng khác
   if (/folders/i.test(trimmed) && !/\/file\//i.test(trimmed)) {
     const folderMatch = trimmed.match(
       /drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/
@@ -171,36 +172,53 @@ function getGoogleDriveUrl(url: string): GoogleDriveParseResult {
     }
   }
 
-  // Tệp đơn lẻ Google Drive: /file/d/ID
   if (/\/file\/d\//i.test(trimmed)) {
     const fileMatch = trimmed.match(
       /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/
     );
     if (fileMatch && fileMatch[1]) {
-      return { type: "file", id: fileMatch[1] };
+      return {
+        type: "file",
+        id: fileMatch[1],
+        fileType: isVideoByName ? "video" : "image",
+      };
     }
     const fileMatch2 = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
     if (fileMatch2 && fileMatch2[1]) {
-      return { type: "file", id: fileMatch2[1] };
+      return {
+        type: "file",
+        id: fileMatch2[1],
+        fileType: isVideoByName ? "video" : "image",
+      };
     }
   }
 
-  // Các dạng URL có ?id= (ưu tiên file nếu không phải folder)
   const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
   if (idParamMatch && idParamMatch[1]) {
     if (/\/file\//i.test(trimmed)) {
-      return { type: "file", id: idParamMatch[1] };
+      return {
+        type: "file",
+        id: idParamMatch[1],
+        fileType: isVideoByName ? "video" : "image",
+      };
     }
     if (/(\/folders\/|folders)/i.test(trimmed)) {
       return { type: "folder", id: idParamMatch[1] };
     }
-    return { type: "file", id: idParamMatch[1] };
+    return {
+      type: "file",
+      id: idParamMatch[1],
+      fileType: isVideoByName ? "video" : "image",
+    };
   }
 
-  // open?id=
   const openIdMatch = trimmed.match(/open\?id=([a-zA-Z0-9_-]+)/);
   if (openIdMatch && openIdMatch[1]) {
-    return { type: "file", id: openIdMatch[1] };
+    return {
+      type: "file",
+      id: openIdMatch[1],
+      fileType: isVideoByName ? "video" : "image",
+    };
   }
 
   return null;
@@ -262,13 +280,11 @@ export default function MediaPickerModal({
   const [loading, setLoading] = useState(false);
   const [selectedItems, setSelectedItems] = useState<MediaItem[]>([]);
 
-  // Form states for Upload
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadFolder, setUploadFolder] = useState("general");
   const [uploadAlt, setUploadAlt] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
-  // Form states for External URL
   const [externalUrl, setExternalUrl] = useState("");
   const [externalFilename, setExternalFilename] = useState("");
   const [externalFolder, setExternalFolder] = useState("pinterest");
@@ -276,7 +292,6 @@ export default function MediaPickerModal({
   const [externalSource, setExternalSource] = useState("pinterest");
   const [isImporting, setIsImporting] = useState(false);
 
-  // Preview states for URL tab
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [isLoadingFolder, setIsLoadingFolder] = useState(false);
   const [folderError, setFolderError] = useState<string | null>(null);
@@ -406,7 +421,7 @@ export default function MediaPickerModal({
       return;
     }
 
-    const driveParsed = getGoogleDriveUrl(externalUrl);
+    const driveParsed = getGoogleDriveUrl(externalUrl, externalFilename);
 
     if (driveParsed?.type === "folder") {
       setPreviewType("folder");
@@ -420,7 +435,7 @@ export default function MediaPickerModal({
       setFolderError(null);
       setSelectedPreviewImage(null);
       setPreviewLoading(true);
-      setPreviewType("image");
+      setPreviewType(driveParsed.fileType === "video" ? "video" : "image");
       setTimeout(() => setPreviewLoading(false), 300);
       return;
     }
@@ -432,7 +447,7 @@ export default function MediaPickerModal({
     setPreviewLoading(true);
     setPreviewType("none");
     setTimeout(() => setPreviewLoading(false), 200);
-  }, [externalUrl, activeTab, fetchDriveFolderPreview]);
+  }, [externalUrl, activeTab, externalFilename, fetchDriveFolderPreview]);
 
   if (!isOpen) return null;
 
@@ -453,6 +468,65 @@ export default function MediaPickerModal({
   const handleConfirmMultiple = () => {
     onSelect(selectedItems);
     onClose();
+  };
+
+  const handleUseDirectUrl = () => {
+    if (!externalUrl.trim()) return;
+
+    const driveParsed = getGoogleDriveUrl(externalUrl, externalFilename);
+    const isFolder =
+      DRIVE_FOLDER_REGEX.test(externalUrl) || driveParsed?.type === "folder";
+    if (isFolder) return;
+
+    let finalUrl = externalUrl.trim();
+    if (driveParsed?.type === "file") {
+      if (driveParsed.fileType === "video") {
+        finalUrl = `https://drive.google.com/file/d/${driveParsed.id}/preview`;
+      } else {
+        finalUrl = `https://drive.google.com/uc?export=view&id=${driveParsed.id}`;
+      }
+    }
+
+    const filename =
+      externalFilename.trim() ||
+      finalUrl.split("/").pop()?.split("?")[0] ||
+      "external-media";
+
+    const item: MediaItem = {
+      id: `ext_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      filename,
+      originalName: externalFilename.trim() || null,
+      url: finalUrl,
+      folder: externalFolder || "external",
+      alt: externalAlt || null,
+    };
+
+    onSelect(item);
+    onClose();
+  };
+
+  const shouldUseDirectUrl = () => {
+    if (!externalUrl.trim()) return false;
+    const driveParsed = getGoogleDriveUrl(externalUrl, externalFilename);
+    const isFolder =
+      DRIVE_FOLDER_REGEX.test(externalUrl) || driveParsed?.type === "folder";
+    if (isFolder) return false;
+
+    if (externalSource === "youtube" || externalSource === "vimeo") return true;
+    if (externalSource === "direct") return true;
+    if (externalSource === "mixkit" || externalSource === "coverr") return true;
+    if (externalSource === "cloudinary" || externalSource === "bunny") return true;
+    if (externalSource === "pinterest" || externalSource === "unsplash" || externalSource === "pexels") return true;
+
+    if (driveParsed?.type === "file") return true;
+    if (externalIsVideoUrl || isVideoByFilename(externalFilename)) return true;
+    if (isImageByFilename(externalFilename)) return true;
+
+    if (/^https?:\/\//i.test(externalUrl) && !externalUrl.includes("drive.google.com")) {
+      return true;
+    }
+
+    return false;
   };
 
   const handleUploadSubmit = async (e: React.FormEvent) => {
@@ -493,8 +567,13 @@ export default function MediaPickerModal({
     e.preventDefault();
     if (!externalUrl) return;
 
+    if (shouldUseDirectUrl() && !multiple) {
+      handleUseDirectUrl();
+      return;
+    }
+
     const isFolder = DRIVE_FOLDER_REGEX.test(externalUrl);
-    const driveParsed = getGoogleDriveUrl(externalUrl);
+    const driveParsed = getGoogleDriveUrl(externalUrl, externalFilename);
     if (isFolder || driveParsed?.type === "folder") {
       setIsImporting(true);
       try {
@@ -578,20 +657,20 @@ export default function MediaPickerModal({
       );
     }
 
-  const driveParsed = getGoogleDriveUrl(externalUrl, externalFilename);
-  const isFolder =
-    previewType === "folder" ||
-    DRIVE_FOLDER_REGEX.test(externalUrl) ||
-    driveParsed?.type === "folder";
-  const isDriveFile =
-    driveParsed?.type === "file" || DRIVE_ID_REGEX.test(externalUrl);
-  const isDriveVideo =
-    driveParsed?.type === "file" && driveParsed.fileType === "video";
-  const isVideoFile =
-    isVideoByFilename(externalFilename) || externalIsVideoUrl || isDriveVideo;
-  const isImageFile = isImageByFilename(externalFilename) && !isVideoFile;
-  const youtubeEmbed = getYoutubeEmbedUrl(externalUrl);
-  const vimeoEmbed = getVimeoEmbedUrl(externalUrl);
+    const driveParsed = getGoogleDriveUrl(externalUrl, externalFilename);
+    const isFolder =
+      previewType === "folder" ||
+      DRIVE_FOLDER_REGEX.test(externalUrl) ||
+      driveParsed?.type === "folder";
+    const isDriveFile =
+      driveParsed?.type === "file" || DRIVE_ID_REGEX.test(externalUrl);
+    const isDriveVideo =
+      driveParsed?.type === "file" && driveParsed.fileType === "video";
+    const isVideoFile =
+      isVideoByFilename(externalFilename) || externalIsVideoUrl || isDriveVideo;
+    const isImageFile = isImageByFilename(externalFilename) && !isVideoFile;
+    const youtubeEmbed = getYoutubeEmbedUrl(externalUrl);
+    const vimeoEmbed = getVimeoEmbedUrl(externalUrl);
 
     if (isFolder) {
       return (
@@ -731,7 +810,7 @@ export default function MediaPickerModal({
       );
     }
 
-    if (isDriveFile && (isImageFile || (!isVideoFile && driveParsed?.type === "file" && driveParsed.fileType === "image"))) {
+    if (isDriveFile && (isImageFile || (!isVideoFile && driveParsed?.type === "file"))) {
       const driveParsedFile = getGoogleDriveUrl(externalUrl, externalFilename);
       const fileId =
         driveParsedFile?.type === "file"
@@ -1067,7 +1146,6 @@ export default function MediaPickerModal({
                   onChange={(e) => {
                     const url = e.target.value;
                     setExternalUrl(url);
-                    // Tự động xác định nguồn
                     if (url.includes("drive.google.com")) {
                       setExternalSource("googledrive");
                       setExternalFolder("drive");
@@ -1108,9 +1186,7 @@ export default function MediaPickerModal({
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs text-slate-300 block">
-                  Xem trước:
-                </label>
+                <label className="text-xs text-slate-300 block">Xem trước:</label>
                 {renderUrlPreview()}
                 {folderError && (
                   <div className="flex items-start gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/40 text-xs text-red-400">
@@ -1159,6 +1235,17 @@ export default function MediaPickerModal({
                 />
               </div>
 
+              {shouldUseDirectUrl() && !multiple && externalUrl && (
+                <button
+                  type="button"
+                  onClick={handleUseDirectUrl}
+                  className="w-full py-2.5 rounded-xl bg-emerald-400 text-slate-950 font-bold text-xs hover:brightness-110 flex items-center justify-center gap-2 transition-all shadow-glow-cyan"
+                >
+                  <LinkIcon className="w-4 h-4" />
+                  <span>Sử dụng link trực tiếp (không lưu vào Media Library)</span>
+                </button>
+              )}
+
               <button
                 type="submit"
                 disabled={!externalUrl || isImporting}
@@ -1166,7 +1253,11 @@ export default function MediaPickerModal({
               >
                 {isImporting && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>
-                  {isImporting ? "Đang thêm..." : "Thêm vào Media Library"}
+                  {isImporting
+                    ? "Đang xử lý..."
+                    : shouldUseDirectUrl() && !multiple
+                    ? "Thêm vào Media Library (hoặc dùng link trực tiếp ở trên)"
+                    : "Thêm vào Media Library"}
                 </span>
               </button>
             </div>
