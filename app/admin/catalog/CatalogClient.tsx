@@ -1129,7 +1129,19 @@ export default function AdminCatalogClient({
                     <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
                       {thumbImage ? (
                         <img
-                          src={normalizeMediaUrl(thumbImage)}
+                          src={
+                            (() => {
+                              const isDrive =
+                                /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)/.test(
+                                  thumbImage,
+                                );
+                              return isDrive
+                                ? `/api/media/image-proxy?url=${encodeURIComponent(
+                                    thumbImage,
+                                  )}`
+                                : normalizeMediaUrl(thumbImage);
+                            })()
+                          }
                           alt="Image thumbnail preview"
                           className="w-full h-full object-cover"
                         />
