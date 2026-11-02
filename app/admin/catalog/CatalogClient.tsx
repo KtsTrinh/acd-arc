@@ -1084,7 +1084,9 @@ export default function AdminCatalogClient({
                 {form.thumbnail ? (
                   (() => {
                     const src = playableVideoUrl(form.thumbnail) || form.thumbnail;
-                    const isVid = isVideoUrl(form.thumbnail) || (src && src.includes("/api/media/stream"));
+                    const isDriveFile = /drive\.google\.com\/file\/d\//.test(form.thumbnail);
+                    const isDriveUc = /drive\.google\.com\/uc\?/.test(form.thumbnail);
+                    const isVid = isVideoUrl(form.thumbnail) || isDriveFile || isDriveUc || (src && src.includes("/api/media/stream"));
                     if (isVid && src) {
                       return (
                         <video
@@ -1153,7 +1155,7 @@ export default function AdminCatalogClient({
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     {galleryItems.map((item) => {
-                      const itemIsVideo = isVideoUrl(item.media.url) || isVideoItem(item.media);
+                      const itemIsVideo = isVideoUrl(item.media.url) || /drive\.google\.com\/file\/d\//.test(item.media.url) || /drive\.google\.com\/uc\?/.test(item.media.url) || isVideoItem(item.media);
                       const isCover = galleryCoverMediaId === item.mediaId;
                       const vidSrc = playableVideoUrl(item.media.url) || item.media.url;
                       return (
@@ -1477,7 +1479,9 @@ function CatalogTable({
                 {p.thumbnail ? (
                   (() => {
                     const src = playableVideoUrl(p.thumbnail) || p.thumbnail;
-                    const isVid = isVideoUrl(p.thumbnail) || (src && src.includes("/api/media/stream"));
+                    const isDriveFile = /drive\.google\.com\/file\/d\//.test(p.thumbnail);
+                    const isDriveUc = /drive\.google\.com\/uc\?/.test(p.thumbnail);
+                    const isVid = isVideoUrl(p.thumbnail) || isDriveFile || isDriveUc || (src && src.includes("/api/media/stream"));
                     if (isVid && src) {
                       return (
                         <video
