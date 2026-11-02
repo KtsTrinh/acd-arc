@@ -770,20 +770,15 @@ export default function AdminCatalogClient({
                 </div>
                 {showNewGroupInput && (
                   <div className="space-y-1 sm:col-span-2">
-                    <label className="text-xs text-white">
-                      Tên nhóm mới:
-                    </label>
+                    <label className="text-xs text-white">Tên nhóm mới:</label>
                     <div className="flex gap-2">
                       <input
                         autoFocus
                         value={newGroupName}
-                        onChange={(e) =>
-                          setNewGroupName(e.target.value.trim())
-                        }
+                        onChange={(e) => setNewGroupName(e.target.value.trim())}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleAddGroup();
-                          if (e.key === "Escape")
-                            setShowNewGroupInput(false);
+                          if (e.key === "Escape") setShowNewGroupInput(false);
                         }}
                         placeholder="Nhập tên nhóm..."
                         className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
@@ -944,8 +939,8 @@ export default function AdminCatalogClient({
                 )}
               </div>
 
-              <div className="grid grid-cols-1 gap-3">
-                <div className="space-y-1">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1 sm:col-span-2">
                   <label className="text-xs text-white">Mô tả tóm tắt:</label>
                   <input
                     type="text"
@@ -955,18 +950,6 @@ export default function AdminCatalogClient({
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs text-white">Mô tả chi tiết:</label>
-                <textarea
-                  rows={3}
-                  value={form.description}
-                  onChange={(e) => updateForm({ description: e.target.value })}
-                  placeholder="Chi tiết các file đính kèm..."
-                  className="w-full p-3 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                />
-              </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Địa điểm:</label>
                   <input
@@ -1219,7 +1202,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-white">Mô tả chi tiết:</label>
+                <label className="text-xs text-white">Mô tả sản phẩm:</label>
                 <textarea
                   rows={3}
                   value={form.description}

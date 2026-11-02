@@ -262,7 +262,7 @@ export default function MediaPickerModal({
     if (isFolder) {
       setIsImporting(true);
       try {
-        const res = await fetch("/api/media/import-drive-folder", {
+        const res = await fetch("/api/media/import-folder", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
