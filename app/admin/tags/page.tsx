@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Tags, Loader2 } from "lucide-react";
+import { Plus, Tags, Loader2, Trash2 } from "lucide-react";
 
 export default function AdminTagsPage() {
   const [tags, setTags] = useState<any[]>([]);
@@ -48,14 +48,24 @@ export default function AdminTagsPage() {
     }
   };
 
+const handleDelete = async (id: string) => {
+    if (!confirm("X�a th? tag n�y?")) return;
+    try {
+      const res = await fetch(`/api/tags?id=${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) fetchTags();
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
-          Quản Lý Thẻ Phân Loại (Tags)
+          Qu?n L� Th? Ph�n Lo?i (Tags)
         </h1>
         <p className="text-xs text-slate-600">
-          Gắn nhãn phong cách và đặc điểm kiến trúc cho dự án và bài viết.
+          G?n nh�n phong c�ch v� d?c di?m ki?n tr�c cho d? �n v� b�i vi?t.
         </p>
       </div>
 
@@ -64,7 +74,7 @@ export default function AdminTagsPage() {
           <input
             type="text"
             required
-            placeholder="Tên thẻ tag mới (ví dụ: Biệt Thự, Hiện Đại, Wabi-Sabi, Hậu Hiện Đại...)"
+            placeholder="T�n th? tag m?i (v� d?: Bi?t Th?, Hi?n �?i, Wabi-Sabi, H?u Hi?n �?i...)"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="flex-1 px-4 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
@@ -75,7 +85,7 @@ export default function AdminTagsPage() {
             className="px-5 py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan flex items-center gap-1.5"
           >
             {isCreating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-            <span>THÊM TAG</span>
+            <span>TH�M TAG</span>
           </button>
         </form>
 
@@ -87,8 +97,15 @@ export default function AdminTagsPage() {
             >
               <span>#{t.name}</span>
               <span className="text-[10px] text-thuy-400 font-bold bg-thuy-800 px-1.5 py-0.5 rounded">
-                {t._count?.projects || 0} dự án
+                {t._count?.projects || 0} d? �n
               </span>
+              <button
+                onClick={() => handleDelete(t.id)}
+                className="ml-1 text-red-400 hover:text-red-300"
+                title="X�a"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
             </div>
           ))}
         </div>
