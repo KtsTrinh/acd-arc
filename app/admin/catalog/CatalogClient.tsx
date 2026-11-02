@@ -245,6 +245,8 @@ export default function AdminCatalogClient({
   const [uploading, setUploading] = useState(false);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [mediaTarget, setMediaTarget] = useState<"thumbnailImage" | "thumbnailVideo" | null>(null);
+  const [thumbImage, setThumbImage] = useState("");
+  const [thumbVideo, setThumbVideo] = useState("");
   const [notice, setNotice] = useState<{
     type: "ok" | "err";
     text: string;
@@ -323,6 +325,8 @@ export default function AdminCatalogClient({
       active: item.active !== false,
       featured: Boolean(item.featured),
     });
+    setThumbImage(isVideoUrl(item.thumbnail || "") ? "" : item.thumbnail || "");
+    setThumbVideo(isVideoUrl(item.thumbnail || "") ? item.thumbnail || "" : "");
 
     // Load gallery items for this product
     try {
@@ -356,11 +360,11 @@ export default function AdminCatalogClient({
     }
   };
 
-  const openCreate = () => {
     setForm({ ...EMPTY_FORM });
     setGalleryItems([]);
     setGalleryCoverMediaId(null);
-  };
+    setThumbImage("");
+    setThumbVideo("");
 
   const updateForm = (patch: Partial<ItemForm>) =>
     setForm((prev) => (prev ? { ...prev, ...patch } : prev));
@@ -1083,7 +1087,7 @@ export default function AdminCatalogClient({
                       <button
                         type="button"
                         onClick={() => {
-                          setMediaTarget?.("thumbnailImage" as any);
+                          setMediaTarget("thumbnailImage");
                           setMediaPickerOpen(true);
                         }}
                         className="text-[10px] text-thuy-400 hover:underline"
@@ -1092,20 +1096,15 @@ export default function AdminCatalogClient({
                       </button>
                     </div>
                     <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
-                      {form.thumbnail && !isVideoUrl(form.thumbnail) ? (
+                      {thumbImage ? (
                         <img
-                          src={form.thumbnail}
+                          src={thumbImage}
                           alt="Image thumbnail preview"
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display = 'none';
                           }}
                         />
-                      ) : form.thumbnail && isVideoUrl(form.thumbnail) ? (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
-                          <VideoIcon className="w-6 h-6" />
-                          <span className="text-[10px]">Đang dùng làm video thumbnail</span>
-                        </div>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-600">
                           <ImageIcon className="w-6 h-6" />
@@ -1114,9 +1113,10 @@ export default function AdminCatalogClient({
                     </div>
                     <input
                       type="text"
-                      value={form.thumbnail && !isVideoUrl(form.thumbnail) ? form.thumbnail : ""}
+                      value={thumbImage}
                       onChange={(e) => {
                         const val = e.target.value;
+                        setThumbImage(val);
                         updateForm({ thumbnail: val });
                       }}
                       placeholder="https://... (URL ảnh thumbnail)"
@@ -1130,7 +1130,7 @@ export default function AdminCatalogClient({
                       <button
                         type="button"
                         onClick={() => {
-                          setMediaTarget?.("thumbnailVideo" as any);
+                          setMediaTarget("thumbnailVideo");
                           setMediaPickerOpen(true);
                         }}
                         className="text-[10px] text-thuy-400 hover:underline"
@@ -1139,9 +1139,9 @@ export default function AdminCatalogClient({
                       </button>
                     </div>
                     <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
-                      {form.thumbnail && isVideoUrl(form.thumbnail) ? (
+                      {thumbVideo ? (
                         <video
-                          src={playableVideoUrl(form.thumbnail) || form.thumbnail}
+                          src={playableVideoUrl(thumbVideo) || thumbVideo}
                           muted
                           loop
                           playsInline
@@ -1157,9 +1157,10 @@ export default function AdminCatalogClient({
                     </div>
                     <input
                       type="text"
-                      value={isVideoUrl(form.thumbnail) ? form.thumbnail : ""}
+                      value={thumbVideo}
                       onChange={(e) => {
                         const val = e.target.value;
+                        setThumbVideo(val);
                         updateForm({ thumbnail: val });
                       }}
                       placeholder="https://... (URL video .mp4/.webm)"
@@ -1468,12 +1469,15 @@ export default function AdminCatalogClient({
         }}
         onSelect={(selected: MediaItem | MediaItem[]) => {
           if (!Array.isArray(selected)) {
-            if (mediaTarget === "thumbnailVideo" && !isVideoUrl(selected.url)) {
-              setMediaPickerOpen(false);
-              setMediaTarget(null);
-              return;
+            if (mediaTarget === "thumbnailVideo") {
+              setThumbVideo(selected.url);
+              updateForm({ thumbnail: selected.url });
+            } else if (mediaTarget === "thumbnailImage") {
+              setThumbImage(selected.url);
+              updateForm({ thumbnail: selected.url });
+            } else {
+              updateForm({ thumbnail: selected.url });
             }
-            updateForm({ thumbnail: selected.url });
           }
           setMediaPickerOpen(false);
           setMediaTarget(null);
