@@ -1095,23 +1095,20 @@ export default function AdminCatalogClient({
                       </button>
                     </div>
                     <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
-                      {form.thumbnail && /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(form.thumbnail) ? (
+                      {form.thumbnail && !isVideoUrl(form.thumbnail) ? (
                         <img
                           src={form.thumbnail}
                           alt="Image thumbnail preview"
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
                         />
                       ) : form.thumbnail && isVideoUrl(form.thumbnail) ? (
                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
                           <VideoIcon className="w-6 h-6" />
                           <span className="text-[10px]">Đang dùng làm video thumbnail</span>
                         </div>
-                      ) : form.thumbnail ? (
-                        <img
-                          src={form.thumbnail}
-                          alt="Thumbnail preview"
-                          className="w-full h-full object-cover"
-                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-600">
                           <ImageIcon className="w-6 h-6" />
@@ -1120,8 +1117,10 @@ export default function AdminCatalogClient({
                     </div>
                     <input
                       type="text"
-                      value={form.thumbnail}
-                      onChange={(e) => updateForm({ thumbnail: e.target.value })}
+                      value={form.thumbnail && !isVideoUrl(form.thumbnail) ? form.thumbnail : ""}
+                      onChange={(e) => {
+                        updateForm({ thumbnail: e.target.value });
+                      }}
                       placeholder="https://... (URL ảnh thumbnail)"
                       className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                     />
@@ -1162,9 +1161,7 @@ export default function AdminCatalogClient({
                       type="text"
                       value={isVideoUrl(form.thumbnail) ? form.thumbnail : ""}
                       onChange={(e) => {
-                        if (isVideoUrl(e.target.value) || e.target.value === "") {
-                          updateForm({ thumbnail: e.target.value });
-                        }
+                        updateForm({ thumbnail: e.target.value });
                       }}
                       placeholder="https://... (URL video .mp4/.webm)"
                       className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
