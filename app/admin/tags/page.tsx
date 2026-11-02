@@ -49,7 +49,7 @@ export default function AdminTagsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Xóa th? tag này?")) return;
+    if (!confirm("Xoa the tag nay?")) return;
     try {
       const res = await fetch(`/api/tags?id=${id}`, { method: "DELETE" });
       const data = await res.json();
@@ -63,10 +63,10 @@ export default function AdminTagsPage() {
     <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
-          Qu?n Lý Th? Phân Lo?i (Tags)
+          Quan Ly The Phan Loai (Tags)
         </h1>
         <p className="text-xs text-slate-600">
-          G?n nhãn phong cách và ??c ?i?m ki?n trúc cho d? án và bài vi?t.
+          Gan nhan phong cach va dac diem kien truc cho du an va bai viet.
         </p>
       </div>
 
@@ -75,7 +75,7 @@ export default function AdminTagsPage() {
           <input
             type="text"
             required
-            placeholder="Tên th? tag m?i (ví d?: Bi?t Th?, Hi?n ??i, Wabi-Sabi, H?u Hi?n ??i...)"
+            placeholder="Ten the tag moi"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="flex-1 px-4 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-[#142338] focus:outline-none focus:border-thuy-400"
@@ -86,7 +86,7 @@ export default function AdminTagsPage() {
             className="px-5 py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan flex items-center gap-1.5"
           >
             {isCreating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-            <span>THÊM TAG</span>
+            <span>THEM TAG</span>
           </button>
         </form>
 
@@ -98,12 +98,12 @@ export default function AdminTagsPage() {
             >
               <span>#{t.name}</span>
               <span className="text-[10px] text-thuy-400 font-bold bg-thuy-800 px-1.5 py-0.5 rounded">
-                {t._count?.projects || 0} d? án
+                {t._count?.projects || 0} du an
               </span>
               <button
                 onClick={() => handleDelete(t.id)}
                 className="ml-1 text-red-400 hover:text-red-300"
-                title="Xóa"
+                title="Xoa"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
