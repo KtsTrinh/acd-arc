@@ -8,7 +8,10 @@ export default function AdminTagsPage() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const showToast = (message: string, type: "success" | "error") => {
     setToast({ message, type });
@@ -46,13 +49,13 @@ export default function AdminTagsPage() {
       if (data.tag) {
         setName("");
         fetchTags();
-        showToast("Them tag thanh cong", "success");
+        showToast("Thêm tag thành công", "success");
       } else if (data.error) {
         showToast(data.error, "error");
       }
     } catch (err) {
       console.error(err);
-      showToast("Loi khi them tag", "error");
+      showToast("Lỗi khi thêm tag", "error");
     } finally {
       setIsCreating(false);
     }
@@ -71,7 +74,7 @@ export default function AdminTagsPage() {
       }
     } catch (err) {
       console.error(err);
-      showToast("Loi khi xoa tag", "error");
+      showToast("Lỗi khi xóa tag", "error");
     }
   };
 
@@ -87,13 +90,13 @@ export default function AdminTagsPage() {
       const data = await res.json();
       if (data.success) {
         fetchTags();
-        showToast("Doi ten tag thanh cong", "success");
+        showToast("Đổi tên tag thành công", "success");
       } else if (data.error) {
         showToast(data.error, "error");
       }
     } catch (err) {
       console.error(err);
-      showToast("Loi khi doi ten tag", "error");
+      showToast("ỗi khi đổi tên tag", "error");
     }
   };
 
@@ -110,10 +113,10 @@ export default function AdminTagsPage() {
       )}
       <div>
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
-          Quan Ly The Phan Loai (Tags)
+          Quản lý thẻ phân loại (Tags)
         </h1>
         <p className="text-xs text-slate-600">
-          Gan nhan phong cach va dac diem kien truc cho du an va bai viet.
+          án nhãn phong cách và đặc điểm kiến trúc cho dự án và bài viết.
         </p>
       </div>
 
@@ -133,7 +136,7 @@ export default function AdminTagsPage() {
             className="px-5 py-2.5 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan flex items-center gap-1.5"
           >
             {isCreating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-            <span>THEM TAG</span>
+            <span>THÊM TAG</span>
           </button>
         </form>
 
