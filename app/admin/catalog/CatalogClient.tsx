@@ -1508,24 +1508,18 @@ function CatalogTable({
                 {p.thumbnail ? (
                   (() => {
                     const src = playableVideoUrl(p.thumbnail) || p.thumbnail;
-                    const isDriveFile = /drive\.google\.com\/file\/d\//.test(p.thumbnail);
-                    const isDriveUc = /drive\.google\.com\/uc\?/.test(p.thumbnail);
-                    const isVid = isVideoUrl(p.thumbnail) || isDriveFile || isDriveUc || (src && src.includes("/api/media/stream"));
-                    if (isVid && src && src.includes("/api/media/stream")) {
-                      return (
-                        <video
-                          src={src}
-                          muted
-                          loop
-                          playsInline
-                          preload="metadata"
-                          className="w-full h-full object-cover"
-                        />
-                      );
-                    }
-                    if (isDriveUc || isDriveFile) {
+                    const lower = (p.thumbnail || "").toLowerCase();
+                    const isImageExt = /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(lower);
+                    const isVideoExt = /\.(mp4|mov|webm|mkv|avi)(\?|$)/i.test(lower);
+                    const isDriveView = /drive\.google\.com\/uc\?export=view/i.test(lower);
+                    const isStream = src?.includes("/api/media/stream");
+                    const isDriveFile = /drive\.google\.com\/file\/d\//.test(lower);
+
+                    if (isDriveView && !isVideoExt) {
                       const idMatch = p.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
-                      const imgSrc = idMatch ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}` : p.thumbnail;
+                      const imgSrc = idMatch
+                        ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
+                        : p.thumbnail;
                       return (
                         <Image
                           src={imgSrc}
@@ -1536,7 +1530,20 @@ function CatalogTable({
                         />
                       );
                     }
-                    if (isVid && src) {
+
+                    if (isImageExt && !isVideoExt && !isStream) {
+                      return (
+                        <Image
+                          src={p.thumbnail}
+                          alt={p.name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      );
+                    }
+
+                    if (isStream) {
                       return (
                         <video
                           src={src}
@@ -1548,6 +1555,38 @@ function CatalogTable({
                         />
                       );
                     }
+
+                    if (isVideoExt || (isVideoUrl(p.thumbnail) && !isImageExt)) {
+                      if (src) {
+                        return (
+                          <video
+                            src={src}
+                            muted
+                            loop
+                            playsInline
+                            preload="metadata"
+                            className="w-full h-full object-cover"
+                          />
+                        );
+                      }
+                    }
+
+                    if (isDriveFile) {
+                      const idMatch = p.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
+                      const imgSrc = idMatch
+                        ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
+                        : p.thumbnail;
+                      return (
+                        <Image
+                          src={imgSrc}
+                          alt={p.name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      );
+                    }
+
                     return (
                       <Image
                         src={p.thumbnail}
