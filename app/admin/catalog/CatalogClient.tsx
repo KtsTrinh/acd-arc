@@ -1248,14 +1248,30 @@ export default function AdminCatalogClient({
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     {galleryItems.map((item) => {
-                      const itemIsVideo =
+                      const isVideoFromMime =
+                        item.media.mimeType?.startsWith("video/") === true;
+                      const isVideoFromUrl =
                         isVideoUrl(item.media.url) ||
-                        /drive\.google\.com\/file\/d\//.test(item.media.url) ||
-                        /drive\.google\.com\/uc\?/.test(item.media.url) ||
-                        isVideoItem(item.media);
+                        /\.(mp4|webm|mov|avi|mkv)(\?|$)/i.test(
+                          item.media.url,
+                        ) ||
+                        /drive\.google\.com\/(?:file\/d\/|uc\?)/.test(
+                          item.media.url,
+                        );
+                      const itemIsVideo = isVideoFromMime || isVideoFromUrl;
                       const isCover = galleryCoverMediaId === item.mediaId;
-                      const vidSrc =
-                        playableVideoUrl(item.media.url) || item.media.url;
+                      const vidSrc = playableVideoUrl(item.media.url);
+                      const imgSrc = (() => {
+                        const isDrive =
+                          /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)/.test(
+                            item.media.url,
+                          );
+                        return isDrive
+                          ? `/api/media/image-proxy?url=${encodeURIComponent(
+                              item.media.url,
+                            )}`
+                          : normalizeMediaUrl(item.media.url);
+                      })();
                       return (
                         <div
                           key={item.mediaId}
@@ -1272,7 +1288,7 @@ export default function AdminCatalogClient({
                             />
                           ) : (
                             <Image
-                              src={item.media.url}
+                              src={imgSrc}
                               alt={item.media.alt || item.media.filename}
                               fill
                               className="object-cover"
