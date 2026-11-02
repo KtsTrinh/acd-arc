@@ -129,7 +129,9 @@ export default function AdminMediaPage() {
         setImportFilename("");
         setImportAlt("");
         if (data.external) {
-          alert("Đã sử dụng liên kết bên ngoài trực tiếp. Không lưu vào Media Library.");
+          alert(
+            "Đã sử dụng liên kết bên ngoài trực tiếp. Không lưu vào Media Library.",
+          );
         } else {
           fetchMedia();
         }
@@ -352,7 +354,7 @@ export default function AdminMediaPage() {
               <div
                 key={item.id}
                 onClick={(e) => {
-                  if ((e.target as HTMLElement).closest('button')) return;
+                  if ((e.target as HTMLElement).closest("button")) return;
                   toggleSelectMedia(item.id);
                 }}
                 className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer ${selectedMediaIds.includes(item.id) ? "border-thuy-400 ring-2 ring-thuy-400/30" : "border-thuy-750 hover:border-thuy-400"}`}
@@ -380,7 +382,9 @@ export default function AdminMediaPage() {
                         : "border-thuy-500"
                     }`}
                   >
-                    {selectedMediaIds.includes(item.id) && <Check className="w-3 h-3" />}
+                    {selectedMediaIds.includes(item.id) && (
+                      <Check className="w-3 h-3" />
+                    )}
                   </div>
                 </button>
 
@@ -407,8 +411,14 @@ export default function AdminMediaPage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm("Bạn có chắc chắn muốn xóa hình ảnh này khỏi Media Library?")) {
-                          fetch(`/api/media/${item.id}`, { method: "DELETE" }).then(() => fetchMedia());
+                        if (
+                          confirm(
+                            "Bạn có chắc chắn muốn xóa hình ảnh này khỏi Media Library?",
+                          )
+                        ) {
+                          fetch(`/api/media/${item.id}`, {
+                            method: "DELETE",
+                          }).then(() => fetchMedia());
                         }
                       }}
                       className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
@@ -470,7 +480,7 @@ export default function AdminMediaPage() {
                   <p className="text-xs text-[#142338] font-medium">
                     {uploadFile
                       ? uploadFile.name
-                      : "Nhấn để chọn ảnh từ máy tính"}
+                      : "Nhấn để chọn ảnh/video từ máy tính"}
                   </p>
                   <span className="text-[10px] text-slate-600 block">
                     Lưu trữ vào /public/uploads/

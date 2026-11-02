@@ -1069,7 +1069,7 @@ export default function AdminCatalogClient({
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
                   <label className="text-xs text-white">
-                    Ảnh Thumbnail:
+                    Ảnh/Video Thumbnail:
                   </label>
                   <button
                     type="button"

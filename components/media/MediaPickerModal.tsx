@@ -345,7 +345,7 @@ export default function MediaPickerModal({
             <p className="text-xs text-slate-400">
               {multiple
                 ? "Chọn một hoặc nhiều ảnh, sau đó nhấn xác nhận"
-                : "Nhấn vào ảnh để chọn làm hình ảnh đại diện"}
+                : "Chọn hình ảnh hoặc video để làm hình ảnh đại diện"}
             </p>
           </div>
 
