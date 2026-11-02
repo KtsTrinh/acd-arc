@@ -856,7 +856,7 @@ export default function MediaPickerModal({
 
     if (isDriveFile && (isImageFile || driveParsed?.type === "file")) {
       if (driveParsed?.type === "file" && driveParsed.fileType === "video") {
-        // đã xử lý ở trên
+        // Đã được xử lý ở nhánh video phía trên
       } else {
         const driveParsedFile = getGoogleDriveUrl(
           externalUrl,
@@ -865,7 +865,8 @@ export default function MediaPickerModal({
         const fileId =
           driveParsedFile?.type === "file"
             ? driveParsedFile.id
-            : externalUrl.match(/id=([a-zA-Z0-9_-]+)/)?.[1];
+            : externalUrl.match(/file\/d\/([a-zA-Z0-9_-]+)/)?.[1] ||
+              externalUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/)?.[1];
         if (fileId) {
           return (
             <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
@@ -893,6 +894,29 @@ export default function MediaPickerModal({
           );
         }
       }
+    }
+
+    if (isVideoFile || externalIsVideoUrl) {
+      return (
+        <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
+          {previewLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+            </div>
+          ) : (
+            <video
+              src={externalPlayable}
+              controls
+              playsInline
+              className="w-full h-full object-contain"
+            />
+          )}
+          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-cyan-400 uppercase flex items-center gap-1">
+            <Film className="w-2.5 h-2.5" />
+            Video
+          </div>
+        </div>
+      );
     }
 
     if (externalUrl && !isVideoFile) {
