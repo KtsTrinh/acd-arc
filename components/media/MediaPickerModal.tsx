@@ -541,29 +541,30 @@ export default function MediaPickerModal({
     if (isFolder) return;
 
     let finalUrl = externalUrl.trim();
-      if (driveParsed?.type === "file") {
-        if (driveParsed.fileType === "video") {
-          const direct = `https://drive.google.com/uc?export=download&id=${driveParsed.id}`;
-          finalUrl = `/api/media/stream?url=${encodeURIComponent(direct)}`;
+    if (driveParsed?.type === "file") {
+      if (driveParsed.fileType === "video") {
+        const direct = `https://drive.google.com/uc?export=download&id=${driveParsed.id}`;
+        finalUrl = `/api/media/stream?url=${encodeURIComponent(direct)}`;
+      } else {
+        finalUrl = `https://drive.google.com/uc?export=view&id=${driveParsed.id}`;
+      }
+    } else if (/^https?:\/\//i.test(externalUrl) && externalUrl.includes("drive.google.com")) {
+      const idMatch = externalUrl.match(/id=([a-zA-Z0-9_-]+)/);
+      if (idMatch && idMatch[1]) {
+        const looksVideo = isVideoByFilename(externalFilename) || externalIsVideoUrl || /\.(mp4|mov|webm|mkv|avi)(\?|$)/i.test(externalUrl);
+        const looksImage = isImageByFilename(externalFilename) || /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(externalUrl);
+        if (looksImage && !looksVideo) {
+          finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+        } else if (looksVideo) {
+          finalUrl = `/api/media/stream?url=${encodeURIComponent(
+            `https://drive.google.com/uc?export=download&id=${idMatch[1]}`
+          )}`;
         } else {
-          finalUrl = `https://drive.google.com/uc?export=view&id=${driveParsed.id}`;
+          // Mặc định ảnh cho link Drive không xác định
+          finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
         }
-      } else if (/^https?:\/\//i.test(externalUrl) && externalUrl.includes("drive.google.com")) {
-        const idMatch = externalUrl.match(/id=([a-zA-Z0-9_-]+)/);
-        if (idMatch && idMatch[1]) {
-          const looksVideo = isVideoByFilename(externalFilename) || externalIsVideoUrl || /\.(mp4|mov|webm|mkv|avi)(\?|$)/i.test(externalUrl);
-          const looksImage = isImageByFilename(externalFilename) || /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(externalUrl);
-          if (looksImage && !looksVideo) {
-            finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
-          } else if (looksVideo) {
-            finalUrl = `/api/media/stream?url=${encodeURIComponent(
-              `https://drive.google.com/uc?export=download&id=${idMatch[1]}`
-            )}`;
-          } else {
-            finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
-          }
-        }
-      } else if (/^https?:\/\//i.test(externalUrl) && !externalUrl.includes("/api/media/stream")) {
+      }
+    } else if (/^https?:\/\//i.test(externalUrl) && !externalUrl.includes("/api/media/stream")) {
       // YouTube/Vimeo/embed không đổi, link mp4/webm/image trực tiếp giữ nguyên
       const lower = externalUrl.toLowerCase();
       if (lower.includes("youtube") || lower.includes("youtu.be") || lower.includes("vimeo")) {
