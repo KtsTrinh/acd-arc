@@ -242,13 +242,7 @@ export default function AdminMediaPage() {
             <span>Upload File Ảnh</span>
           </button>
 
-          <button
-            onClick={() => setUrlModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-thuy-850 text-black hover:text-[#142338] hover:bg-thuy-800 border border-thuy-700 text-xs font-semibold transition-all"
-          >
-            <LinkIcon className="w-3.5 h-3.5 text-black" />
-            <span>Thêm Ảnh/Video</span>
-          </button>
+          
         </div>
       </div>
 
