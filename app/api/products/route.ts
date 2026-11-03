@@ -5,6 +5,8 @@ import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 import { getCurrentUser } from "@/lib/auth";
 import { sanitizeProduct } from "@/lib/catalog";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

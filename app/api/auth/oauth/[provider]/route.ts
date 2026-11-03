@@ -6,6 +6,8 @@ import {
   getSafeRedirectPath,
   isOAuthProvider,
 } from "@/lib/oauth";
+
+export const dynamic = "force-dynamic";
 import { getBaseUrl } from "@/lib/app-url";
 
 export async function GET(

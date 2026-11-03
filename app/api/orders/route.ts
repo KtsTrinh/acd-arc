@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { generateOrderNumber } from "@/lib/utils";
 import { generateOrderDownloadLinks } from "@/lib/downloads";
+
+export const dynamic = "force-dynamic";
 import { sanitizeProduct } from "@/lib/catalog";
 
 export async function GET(request: Request) {

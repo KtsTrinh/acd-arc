@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { createMediaItem } from "@/lib/storage";
 import { isVideoUrl, normalizeMediaUrl } from "@/lib/media-url";
 import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
+
+export const dynamic = "force-dynamic";
 import { getCurrentUser } from "@/lib/auth";
 
 export async function GET(request: Request) {

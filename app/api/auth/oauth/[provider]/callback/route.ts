@@ -7,6 +7,8 @@ import {
   isOAuthProvider,
   verifyOAuthState,
 } from "@/lib/oauth";
+
+export const dynamic = "force-dynamic";
 import {
   AUTH_COOKIE_NAME,
   authCookieOptions,
