@@ -241,6 +241,8 @@ model Product {
   slug                   String         @unique
   description            String?
   price                  Float?
+  discount               Float?
+  priceAfterDiscount     Float?
   fileFormat             String?
   fileSize               String?
   fileKey                String?
