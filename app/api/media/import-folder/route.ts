@@ -50,6 +50,7 @@ export async function GET(request: Request) {
           );
 
           const images: string[] = [];
+          const videos: string[] = [];
           const filesList: Array<{ id: string; name: string; url: string; mimeType?: string }> = [];
 
           for (const file of files) {
@@ -61,6 +62,8 @@ export async function GET(request: Request) {
 
             if (!isVideo) {
               images.push(previewUrl);
+            } else {
+              videos.push(previewUrl);
             }
             filesList.push({
               id: file.id,
@@ -73,6 +76,7 @@ export async function GET(request: Request) {
           return NextResponse.json({
             success: true,
             images,
+            videos,
             files: filesList,
             count: filesList.length,
           });
@@ -149,7 +153,7 @@ export async function GET(request: Request) {
 
       const images: string[] = [];
       const videos: string[] = [];
-      const files: Array<{ id: string; name: string; url: string }> = [];
+      const files: Array<{ id: string; name: string; url: string; mimeType?: string }> = [];
 
       for (const id of ids) {
         const info = fileMap.get(id) || {};
@@ -181,10 +185,26 @@ export async function GET(request: Request) {
         if (isVideo) {
           videos.push(previewUrl);
         }
+
+        const mimeType = isVideo
+          ? lower.endsWith(".webm")
+            ? "video/webm"
+            : lower.endsWith(".mov")
+              ? "video/quicktime"
+              : "video/mp4"
+          : lower.endsWith(".png")
+            ? "image/png"
+            : lower.endsWith(".webp")
+              ? "image/webp"
+              : lower.endsWith(".gif")
+                ? "image/gif"
+                : "image/jpeg";
+
         files.push({
           id,
           name,
           url: previewUrl,
+          mimeType,
         });
       }
 
