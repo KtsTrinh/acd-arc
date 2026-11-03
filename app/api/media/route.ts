@@ -81,9 +81,8 @@ export async function POST(request: Request) {
 
       const normalizedUrl = normalizeMediaUrl(url);
 
-      // KHÔNG lưu vào kho lưu trữ - phát trực tiếp từ nguồn bên ngoài
-      const media = {
-        id: `ext_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      // Lưu vào cơ sở dữ liệu để có mediaId thực, sau đó gắn vào gallery
+      const media = await createMediaItem({
         filename: filename || url.split("/").pop()?.split("?")[0] || "media.jpg",
         originalName: filename || "External Media",
         mimeType: detectedMime,
@@ -91,8 +90,7 @@ export async function POST(request: Request) {
         url: normalizedUrl,
         folder: folder || "external",
         alt: alt || "ACD Media",
-        createdAt: new Date().toISOString(),
-      };
+      });
 
       return NextResponse.json({ success: true, media, external: true });
     }

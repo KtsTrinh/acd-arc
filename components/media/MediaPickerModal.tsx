@@ -528,26 +528,42 @@ export default function MediaPickerModal({
         });
         const data = await res.json();
 
-        const mediaItems: MediaItem[] = (data.files || []).map((f: any) => ({
-          id: `drive_${f.id}`,
-          filename: f.name || `drive_${f.id}`,
-          originalName: f.name,
-          url: f.url,
-          folder: "drive",
-          alt: null,
-          mimeType: f.mimeType || null,
-        }));
+        const fileList: Array<{ id: string; name: string; url: string; mimeType?: string }> = data.files || [];
 
-        if (data.success && mediaItems.length > 0) {
+        if (data.success && fileList.length > 0) {
+          // Lưu từng file vào CSDL để có mediaId thực trước khi gắn vào gallery
+          const savedMedia: MediaItem[] = [];
+          for (const f of fileList) {
+            try {
+              const saveRes = await fetch("/api/media", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  url: f.url,
+                  filename: f.name,
+                  alt: null,
+                  folder: "drive",
+                  mimeType: f.mimeType || null,
+                }),
+              });
+              const saveData = await saveRes.json();
+              if (saveData.media) {
+                savedMedia.push(saveData.media as MediaItem);
+              }
+            } catch (err) {
+              console.error("Failed to save media item:", err);
+            }
+          }
+
           setExternalUrl("");
           setActiveTab("library");
           await fetchMedia();
           if (!multiple) {
-            onSelect(mediaItems[0]);
+            onSelect(savedMedia[0] || fileList[0]);
             onClose();
           } else {
-            setSelectedItems(mediaItems);
-            onSelect(mediaItems);
+            setSelectedItems(savedMedia);
+            onSelect(savedMedia);
             onClose();
           }
         } else {
@@ -571,23 +587,45 @@ export default function MediaPickerModal({
     const filename =
       externalUrl.split("/").pop()?.split("?")[0] || "media";
 
-    const media: MediaItem = {
-      id: `ext_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-      filename,
-      originalName: filename,
-      url: normalizedUrl,
-      folder: "external",
-      alt: null,
-      mimeType: detectedMime,
-    };
+    try {
+      const saveRes = await fetch("/api/media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: normalizedUrl,
+          filename,
+          alt: null,
+          folder: "external",
+          mimeType: detectedMime,
+        }),
+      });
+      const saveData = await saveRes.json();
 
-    if (!multiple) {
-      onSelect(media);
-      onClose();
-    } else {
-      setSelectedItems([media]);
-      onSelect([media]);
-      onClose();
+      if (saveData.media) {
+        const media: MediaItem = {
+          id: saveData.media.id,
+          filename: saveData.media.filename,
+          originalName: saveData.media.originalName,
+          url: saveData.media.url,
+          folder: saveData.media.folder,
+          alt: saveData.media.alt,
+          mimeType: saveData.media.mimeType,
+        };
+
+        if (!multiple) {
+          onSelect(media);
+          onClose();
+        } else {
+          setSelectedItems([media]);
+          onSelect([media]);
+          onClose();
+        }
+      } else {
+        setFolderError(saveData.error || "Không lưu được media từ URL.");
+      }
+    } catch (err) {
+      console.error("Failed to save external media:", err);
+      setFolderError("Không lưu được media từ URL.");
     }
     setExternalUrl("");
   };
