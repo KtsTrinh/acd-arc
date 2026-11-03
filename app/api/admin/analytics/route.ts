@@ -5,8 +5,6 @@ import { LIVE_WINDOW_SECONDS } from "@/lib/tracking";
 
 export const dynamic = "force-dynamic";
 
-export const dynamic = "force-dynamic";
-
 function getRangeStart(range: string | null): Date | null {
   const now = new Date();
 
