@@ -257,6 +257,7 @@ model Product {
   landArea               Float?
   location               String?
   productCategory        String?
+  productGroup           String?
   shortDesc              String?
   style                  String?
   year                   Int?
