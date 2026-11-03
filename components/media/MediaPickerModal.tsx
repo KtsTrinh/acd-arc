@@ -403,6 +403,20 @@ export default function MediaPickerModal({
   }, []);
 
   useEffect(() => {
+    if (activeTab !== "url" || !externalUrl.trim()) return;
+    const driveParsed = getGoogleDriveUrl(externalUrl);
+    const folderId = driveParsed?.id || externalUrl.match(/folders\/([a-zA-Z0-9_-]+)/)?.[1];
+    if ((driveParsed?.type === "folder" || DRIVE_FOLDER_REGEX.test(externalUrl)) && folderId) {
+      setPreviewType("folder");
+      fetchDriveFolderPreview(folderId);
+    } else {
+      setPreviewType("none");
+      setPreviewImages([]);
+      setPreviewVideos([]);
+    }
+  }, [externalUrl, activeTab, fetchDriveFolderPreview]);
+
+  useEffect(() => {
     if (activeTab !== "url" || !externalUrl.trim()) {
       setPreviewType("none");
       return;
@@ -629,11 +643,86 @@ export default function MediaPickerModal({
 
     if (isDriveFolder) {
       return (
-        <div className="w-full h-44 rounded-lg border border-slate-700 bg-slate-950 flex flex-col items-center justify-center text-slate-500 gap-2">
-          <Folder className="w-8 h-8 text-slate-600" />
-          <span className="text-xs text-center px-4">
-            Vui lòng dán link file ảnh/video cụ thể, không phải link thư mục.
-          </span>
+        <div className="w-full rounded-lg border border-slate-700 bg-slate-950 overflow-hidden shadow-lg shadow-black/30 transition-all duration-300">
+          <div className="px-3 py-2 bg-slate-900/80 border-b border-slate-700 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-slate-300">
+              <Folder className="w-4 h-4 text-cyan-400" />
+              <span className="text-xs font-medium">Thư mục Google Drive</span>
+            </div>
+            {isLoadingFolder && (
+              <div className="flex items-center gap-1.5 text-xs text-cyan-400">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Đang quét...</span>
+              </div>
+            )}
+          </div>
+
+          {isLoadingFolder ? (
+            <div className="h-44 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+            </div>
+          ) : folderError ? (
+            <div className="h-44 flex flex-col items-center justify-center gap-2 px-4 text-center">
+              <AlertCircle className="w-6 h-6 text-red-400" />
+              <span className="text-xs text-red-400">{folderError}</span>
+            </div>
+          ) : previewImages.length > 0 || previewVideos.length > 0 ? (
+            <div className="p-2 space-y-2">
+              <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 max-h-44 overflow-y-auto">
+                {previewImages.map((imgUrl, idx) => (
+                  <button
+                    key={`img-${idx}`}
+                    type="button"
+                    onClick={() => setSelectedPreviewImage(imgUrl)}
+                    className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
+                      selectedPreviewImage === imgUrl
+                        ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
+                        : "border-slate-700 hover:border-slate-500"
+                    }`}
+                  >
+                    <Image
+                      src={imagePreviewSrc(imgUrl)}
+                      alt={`Thumbnail ${idx + 1}`}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </button>
+                ))}
+                {previewVideos.map((vidUrl, idx) => (
+                  <button
+                    key={`vid-${idx}`}
+                    type="button"
+                    onClick={() => setSelectedPreviewImage(vidUrl)}
+                    className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
+                      selectedPreviewImage === vidUrl
+                        ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
+                        : "border-slate-700 hover:border-slate-500"
+                    }`}
+                  >
+                    <video
+                      src={playableVideoUrl(vidUrl) || vidUrl}
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-cyan-400 uppercase">
+                      Video
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <div className="text-[10px] text-slate-500 text-center">
+                Đã tìm thấy {previewImages.length} ảnh, {previewVideos.length} video. Nhấn vào để chọn.
+              </div>
+            </div>
+          ) : (
+            <div className="h-44 flex items-center justify-center text-xs text-slate-500">
+              Không có ảnh hoặc video để hiển thị
+            </div>
+          )}
         </div>
       );
     }
