@@ -7,101 +7,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  USER
-  ADMIN
-  SUPER_ADMIN
-}
-
-enum ProductType {
-  // Danh mục sản phẩm mới (đã gộp)
-  ARCHITECTURE   // Dự án kiến trúc (biệt thự, nhà phố, penthouse...)
-  INTERIOR       // Nội thất (phòng khách, phòng ngủ, nhà bếp...)
-  CONSTRUCTION   // Xây dựng (hồ sơ thi công, kết cấu, điện nước...)
-  DIGITAL_FILE   // File kỹ thuật số (CAD, 3D, template, document...)
-  // Legacy types (kept for backward compatibility)
-  CAD
-  MODEL_3D
-  TEMPLATE
-  DOCUMENT
-  OTHER
-}
-
-enum OrderStatus {
-  PENDING
-  PAID
-  FAILED
-  CANCELLED
-  REFUNDED
-}
-
 model User {
-  id           String    @id @default(cuid())
-  name         String?
-  email        String?   @unique
-  phone        String?   @unique
-  passwordHash String?
-  role         UserRole  @default(USER)
-  avatar       String?
-
-  // Thông tin hồ sơ bổ sung (lấy từ OAuth hoặc người dùng tự khai)
-  firstName   String?
-  lastName    String?
-  dateOfBirth DateTime?
-  gender      String?
-  address     String?
-
-  // Nguồn đăng nhập: local | google | facebook
-  provider   String? @default("local")
-  providerId String?
-
-  emailVerified DateTime?
-  phoneVerified DateTime?
-
-  // Bảo mật 2 lớp
-  twoFactorEnabled Boolean @default(false)
+  id               String           @id @default(cuid())
+  name             String?
+  email            String?          @unique
+  passwordHash     String?
+  role             UserRole         @default(USER)
+  avatar           String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  address          String?
+  dateOfBirth      DateTime?
+  emailVerified    DateTime?
+  firstName        String?
+  gender           String?
+  lastName         String?
+  phone            String?          @unique
+  phoneVerified    DateTime?
+  provider         String?          @default("local")
+  providerId       String?
+  twoFactorEnabled Boolean          @default(false)
   twoFactorSecret  String?
-  twoFactorType    String? // totp | email | sms
-
-  accounts      Account[]
-  sessions      Session[]
-  orders        Order[]
-  downloadLinks DownloadLink[]
-  posts         Post[]
-  verifications Verification[]
-  visitSessions VisitorSession[]
-  pageViews     PageView[]
-  cartEvents    CartEvent[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  twoFactorType    String?
+  accounts         Account[]
+  cartEvents       CartEvent[]
+  downloadLinks    DownloadLink[]
+  orders           Order[]
+  pageViews        PageView[]
+  posts            Post[]
+  sessions         Session[]
+  verifications    Verification[]
+  visitSessions    VisitorSession[]
 }
 
 /// Phiên truy cập của khách (kể cả khách ẩn danh). Dùng cho thống kê CMS.
 model VisitorSession {
-  id        String  @id @default(cuid())
-  visitorId String  @unique
-  userId    String?
-  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  ip        String?
-  userAgent String?
-  device    String? // mobile | tablet | desktop
-  browser   String?
-  os        String?
-  referrer  String?
-
+  id          String      @id @default(cuid())
+  visitorId   String      @unique
+  userId      String?
+  ip          String?
+  userAgent   String?
+  device      String?
+  browser     String?
+  os          String?
+  referrer    String?
   landingPath String?
   lastPath    String?
-
-  pageViews   Int @default(0)
-  durationSec Int @default(0)
-
-  firstSeenAt DateTime @default(now())
-  lastSeenAt  DateTime @default(now())
-
-  visits     PageView[]
-  cartEvents CartEvent[]
+  pageViews   Int         @default(0)
+  durationSec Int         @default(0)
+  firstSeenAt DateTime    @default(now())
+  lastSeenAt  DateTime    @default(now())
+  cartEvents  CartEvent[]
+  visits      PageView[]
+  user        User?       @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([lastSeenAt])
@@ -110,17 +68,15 @@ model VisitorSession {
 
 /// Một lần xem trang, kèm thời gian khách ở lại trang
 model PageView {
-  id        String  @id @default(cuid())
-  sessionId String
-  userId    String?
-  path      String
-  referrer  String?
-  durationSec Int    @default(0)
-
-  createdAt DateTime @default(now())
-
-  session VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  user    User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id          String         @id @default(cuid())
+  sessionId   String
+  userId      String?
+  path        String
+  referrer    String?
+  durationSec Int            @default(0)
+  createdAt   DateTime       @default(now())
+  session     VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user        User?          @relation(fields: [userId], references: [id])
 
   @@index([sessionId])
   @@index([userId])
@@ -129,19 +85,17 @@ model PageView {
 
 /// Khách hàng đã cho sản phẩm vào giỏ / bỏ khỏi giỏ
 model CartEvent {
-  id        String  @id @default(cuid())
-  sessionId String?
-  userId    String?
-  productId String?
+  id          String          @id @default(cuid())
+  sessionId   String?
+  userId      String?
+  productId   String?
   productName String
   productSlug String?
-  price     Float   @default(0)
-  action    String  @default("add") // add | remove | clear | checkout
-
-  createdAt DateTime @default(now())
-
-  session VisitorSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
-  user    User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  price       Float           @default(0)
+  action      String          @default("add")
+  createdAt   DateTime        @default(now())
+  session     VisitorSession? @relation(fields: [sessionId], references: [id])
+  user        User?           @relation(fields: [userId], references: [id])
 
   @@index([createdAt])
   @@index([productId])
@@ -154,15 +108,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -173,48 +126,44 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
 /// Mã xác minh dùng một lần: đăng ký qua SĐT, quên mật khẩu, 2FA
 model Verification {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   identifier String
   code       String
-  purpose    String // register | reset_password | two_factor
-  channel    String // email | sms
-  attempts   Int      @default(0)
+  purpose    String
+  channel    String
+  attempts   Int       @default(0)
   expiresAt  DateTime
   consumedAt DateTime?
-  createdAt  DateTime @default(now())
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([identifier, purpose])
   @@index([expiresAt])
 }
 
 model ProjectCategory {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
-  slug        String   @unique
+  slug        String    @unique
   description String?
   image       String?
-
-  projects Project[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  projects    Project[]
 }
 
 model Project {
-  id           String   @id @default(cuid())
+  id           String           @id @default(cuid())
   title        String
-  slug         String   @unique
+  slug         String           @unique
   shortDesc    String?
   description  String?
   location     String?
@@ -223,52 +172,44 @@ model Project {
   area         Float?
   style        String?
   buildingType String?
-  isFeatured   Boolean  @default(false)
-
-  categoryId String?
-  category   ProjectCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-
-  coverId String?
-  cover   Media? @relation("ProjectCover", fields: [coverId], references: [id], onDelete: SetNull)
-
-  gallery ProjectMedia[] @relation("ProjectGallery")
-  tags    ProjectTag[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isFeatured   Boolean          @default(false)
+  categoryId   String?
+  coverId      String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  category     ProjectCategory? @relation(fields: [categoryId], references: [id])
+  cover        Media?           @relation("ProjectCover", fields: [coverId], references: [id])
+  gallery      ProjectMedia[]   @relation("ProjectGallery")
+  tags         ProjectTag[]
 }
 
 model Media {
-  id           String   @id @default(cuid())
-  filename     String
-  originalName String?
-  mimeType     String   @default("image/jpeg")
-  size         Int      @default(0) // size in bytes
-  url          String
-  storageKey   String
-  folder       String   @default("general")
-
-  width  Int?
-  height Int?
-  alt    String?
-
+  id            String         @id @default(cuid())
+  filename      String
+  originalName  String?
+  mimeType      String         @default("image/jpeg")
+  size          Int            @default(0)
+  url           String
+  storageKey    String
+  folder        String         @default("general")
+  width         Int?
+  height        Int?
+  alt           String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   projectCovers Project[]      @relation("ProjectCover")
   projectMedia  ProjectMedia[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model ProjectMedia {
   id        String   @id @default(cuid())
   projectId String?
-  productId String?
   mediaId   String
   sortOrder Int      @default(0)
-
-  project   Project?   @relation("ProjectGallery", fields: [projectId], references: [id], onDelete: Cascade)
-  product   Product?   @relation("ProductGallery", fields: [productId], references: [id], onDelete: Cascade)
-  media     Media      @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  productId String?
+  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  product   Product? @relation("ProductGallery", fields: [productId], references: [id], onDelete: Cascade)
+  project   Project? @relation("ProjectGallery", fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, productId, mediaId])
   @@index([projectId, sortOrder])
@@ -276,94 +217,80 @@ model ProjectMedia {
 }
 
 model Tag {
-  id   String @id @default(cuid())
-  name String
-  slug String @unique
-
-  projects ProjectTag[]
-  posts    PostTag[]
-  products ProductTag[]
-
-  createdAt DateTime @default(now())
+  id        String       @id @default(cuid())
+  name      String
+  slug      String       @unique
+  createdAt DateTime     @default(now())
+  posts     PostTag[]
+  products  ProductTag[]
+  projects  ProjectTag[]
 }
 
 model ProjectTag {
   projectId String
   tagId     String
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([projectId, tagId])
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  name        String
-  slug        String      @unique
-  description String?
-  shortDesc   String?
-  price       Float?
-  productCategory String?
-  fileFormat  String?     // e.g. "AutoCAD .DWG / 3ds Max / SketchUp"
-  fileSize    String?     // e.g. "128 MB"
-  fileKey     String?     // Secure key in storage/private for download
-  fileName    String?     // Tên file hiển thị khi khách tải về
-  thumbnail   String?
-  active      Boolean     @default(true)
-  featured    Boolean     @default(false)
-   
-  // Link tải trực tiếp (dành cho dự án kiến trúc/nội thất: admin up link)
-  // Link này KHÔNG bao giờ được trả về cho khách chưa thanh toán,
-  // mọi lượt tải đều đi qua /api/downloads/[token] để kiểm tra chủ mua.
-  downloadLinkUrl String?
-  // Thời gian hiệu lực link tải sau khi thanh toán (phút), mặc định 5
-  downloadExpiresMinutes Int @default(5)
-
-  location    String?
-  client      String?
-  year        Int?
-  landArea    Float?
-  buildingArea Float?
-  style       String?
-
-  orderItems    OrderItem[]
-  downloadLinks DownloadLink[]
-  gallery       ProjectMedia[] @relation("ProductGallery")
-  tags          ProductTag[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                     String         @id @default(cuid())
+  name                   String
+  slug                   String         @unique
+  description            String?
+  price                  Float?
+  fileFormat             String?
+  fileSize               String?
+  fileKey                String?
+  thumbnail              String?
+  active                 Boolean        @default(true)
+  featured               Boolean        @default(false)
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  downloadExpiresMinutes Int            @default(5)
+  downloadLinkUrl        String?
+  fileName               String?
+  buildingArea           Float?
+  client                 String?
+  landArea               Float?
+  location               String?
+  productCategory        String?
+  shortDesc              String?
+  style                  String?
+  year                   Int?
+  downloadLinks          DownloadLink[]
+  orderItems             OrderItem[]
+  tags                   ProductTag[]
+  gallery                ProjectMedia[] @relation("ProductGallery")
 }
 
 model ProductTag {
   productId String
   tagId     String
-
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([productId, tagId])
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  orderNumber   String      @unique
+  id            String         @id @default(cuid())
+  orderNumber   String         @unique
   userId        String?
   customerName  String
   customerEmail String
   customerPhone String?
-  status        OrderStatus @default(PENDING)
+  status        OrderStatus    @default(PENDING)
   total         Float
-  paymentMethod String      @default("BANK_TRANSFER")
+  paymentMethod String         @default("BANK_TRANSFER")
   paymentNote   String?
-
-  user      User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
-  items     OrderItem[]
-  downloads DownloadLink[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  downloads     DownloadLink[]
+  user          User?          @relation(fields: [userId], references: [id])
+  items         OrderItem[]
 }
 
 model OrderItem {
@@ -373,9 +300,8 @@ model OrderItem {
   productName String
   price       Float
   quantity    Int     @default(1)
-
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product @relation(fields: [productId], references: [id])
 
   @@index([orderId])
 }
@@ -389,39 +315,33 @@ model DownloadLink {
   expiresAt     DateTime
   maxDownloads  Int      @default(5)
   downloadCount Int      @default(0)
-
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user          User?    @relation(fields: [userId], references: [id])
 }
 
 model Post {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   title     String
-  slug      String   @unique
+  slug      String    @unique
   excerpt   String?
   content   String
   coverUrl  String?
-  published Boolean  @default(true)
-  views     Int      @default(0)
-
-  authorId String?
-  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
-
-  tags PostTag[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  published Boolean   @default(true)
+  views     Int       @default(0)
+  authorId  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  author    User?     @relation(fields: [authorId], references: [id])
+  tags      PostTag[]
 }
 
 model PostTag {
   postId String
   tagId  String
-
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  tag  Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([postId, tagId])
 }
@@ -433,4 +353,28 @@ model SystemSetting {
   updatedAt DateTime @updatedAt
 }
 
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
 
+enum ProductType {
+  CAD
+  MODEL_3D
+  INTERIOR
+  TEMPLATE
+  DOCUMENT
+  OTHER
+  ARCHITECTURE
+  CONSTRUCTION
+  DIGITAL_FILE
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
+}
