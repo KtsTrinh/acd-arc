@@ -286,6 +286,7 @@ export default function MediaPickerModal({
   const [selectedPreviewImage, setSelectedPreviewImage] = useState<
     string | null
   >(null);
+  const [selectedPreviewUrls, setSelectedPreviewUrls] = useState<string[]>([]);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewType, setPreviewType] = useState<
     "none" | "folder" | "image" | "video" | "embed"
@@ -342,6 +343,7 @@ export default function MediaPickerModal({
       setSelectedPreviewImage(null);
       setPreviewLoading(false);
       setPreviewType("none");
+      setSelectedPreviewUrls([]);
       return;
     }
 
@@ -360,6 +362,7 @@ export default function MediaPickerModal({
     setPreviewVideos([]);
     setSelectedPreviewImage(null);
     setPreviewType("folder");
+    setSelectedPreviewUrls([]);
 
     try {
       const res = await fetch(
@@ -500,20 +503,21 @@ export default function MediaPickerModal({
         const folderId =
           driveParsed?.id ||
           externalUrl.match(/folders\/([a-zA-Z0-9_-]+)/)?.[1];
-        const res = await fetch("/api/media/import-folder", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            url: externalUrl,
-            folderId: folderId,
-            folder: "drive",
-          }),
-        });
-        const data = await res.json();
+        const selectedUrls =
+          selectedPreviewUrls.length > 0
+            ? selectedPreviewUrls
+            : [...previewImages, ...previewVideos];
+        const fileList: Array<{ id: string; name: string; url: string; mimeType?: string }> =
+          selectedUrls.map((u, i) => ({
+            id: `preview-${i}`,
+            name: u.split("/").pop()?.split("?")[0] || `file-${i}`,
+            url: u,
+            mimeType: /\.(mp4|webm|mov|avi|m4v|ogv)(\?|$)/i.test(u)
+              ? "video/mp4"
+              : "image/jpeg",
+          }));
 
-        const fileList: Array<{ id: string; name: string; url: string; mimeType?: string }> = data.files || [];
-
-        if (data.success && fileList.length > 0) {
+        if (fileList.length > 0) {
           // Lưu từng file vào CSDL để có mediaId thực trước khi gắn vào gallery
           const savedMedia: MediaItem[] = [];
           for (const f of fileList) {
@@ -550,7 +554,7 @@ export default function MediaPickerModal({
             onClose();
           }
         } else {
-          setFolderError(data.error || "Không tìm thấy tệp nào trong thư mục.");
+          setFolderError("Không tìm thấy tệp nào trong thư mục.");
         }
       } catch (err) {
         console.error("Import folder error:", err);
@@ -694,9 +698,15 @@ export default function MediaPickerModal({
                   <button
                     key={`img-${idx}`}
                     type="button"
-                    onClick={() => { setSelectedPreviewImage(imgUrl); setExternalUrl(imgUrl); }}
+                    onClick={() =>
+                      setSelectedPreviewUrls((prev) =>
+                        prev.includes(imgUrl)
+                          ? prev.filter((u) => u !== imgUrl)
+                          : [...prev, imgUrl],
+                      )
+                    }
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
-                      selectedPreviewImage === imgUrl
+                      selectedPreviewUrls.includes(imgUrl)
                         ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
                         : "border-slate-700 hover:border-slate-500"
                     }`}
@@ -708,15 +718,41 @@ export default function MediaPickerModal({
                       className="object-cover"
                       unoptimized
                     />
+                    {selectedPreviewUrls.includes(imgUrl) && (
+                      <>
+                        <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center font-bold shadow-md">
+                          <Check className="w-3 h-3" />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPreviewUrls((prev) =>
+                              prev.filter((u) => u !== imgUrl),
+                            );
+                          }}
+                          className="absolute top-1 left-1 w-5 h-5 rounded-full bg-red-500/90 text-white flex items-center justify-center shadow-md hover:bg-red-600"
+                          title="Bỏ chọn"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </>
+                    )}
                   </button>
                 ))}
                 {previewVideos.map((vidUrl, idx) => (
                   <button
                     key={`vid-${idx}`}
                     type="button"
-                    onClick={() => { setSelectedPreviewImage(vidUrl); setExternalUrl(vidUrl); }}
+                    onClick={() =>
+                      setSelectedPreviewUrls((prev) =>
+                        prev.includes(vidUrl)
+                          ? prev.filter((u) => u !== vidUrl)
+                          : [...prev, vidUrl],
+                      )
+                    }
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
-                      selectedPreviewImage === vidUrl
+                      selectedPreviewUrls.includes(vidUrl)
                         ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
                         : "border-slate-700 hover:border-slate-500"
                     }`}
@@ -732,6 +768,26 @@ export default function MediaPickerModal({
                     <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-cyan-400 uppercase">
                       Video
                     </div>
+                    {selectedPreviewUrls.includes(vidUrl) && (
+                      <>
+                        <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center font-bold shadow-md">
+                          <Check className="w-3 h-3" />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPreviewUrls((prev) =>
+                              prev.filter((u) => u !== vidUrl),
+                            );
+                          }}
+                          className="absolute top-1 left-1 w-5 h-5 rounded-full bg-red-500/90 text-white flex items-center justify-center shadow-md hover:bg-red-600"
+                          title="Bỏ chọn"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </>
+                    )}
                   </button>
                 ))}
               </div>
