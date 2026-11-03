@@ -535,7 +535,19 @@ export default function AdminCatalogClient({
   const handleGalleryAdd = async (selected: MediaItem | MediaItem[]) => {
     const mediaArray = Array.isArray(selected) ? selected : [selected];
     if (mediaArray.length === 0) return;
-    if (!form?.id) return;
+
+    if (!form?.id) {
+      // Chưa lưu sản phẩm: thêm vào state galleryItems để lưu cùng form
+      const newItems: GalleryItem[] = mediaArray.map((m, idx) => ({
+        id: `temp-${m.id}`,
+        mediaId: m.id,
+        sortOrder: galleryItems.length + idx,
+        media: m,
+      }));
+      setGalleryItems((prev) => [...prev, ...newItems]);
+      setNotice({ type: "ok", text: `Đã thêm ${mediaArray.length} mục vào Gallery.` });
+      return;
+    }
 
     setGallerySaving(true);
     try {
