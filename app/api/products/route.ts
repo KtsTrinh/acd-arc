@@ -61,10 +61,10 @@ export async function GET(request: Request) {
     const payload = isAdmin ? products : products.map(sanitizeProduct);
 
     return NextResponse.json({ products: payload });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching products:", error);
     return NextResponse.json(
-      { error: "Không thể lấy danh sách sản phẩm." },
+      { error: "Không thể lấy danh sách sản phẩm.", detail: error?.message, code: error?.code, meta: error?.meta },
       { status: 500 }
     );
   }
@@ -85,9 +85,11 @@ export async function POST(request: Request) {
       name,
       slug,
       description,
-        shortDesc,
-        price,
-        productGroup,
+      shortDesc,
+      price,
+      discount,
+      priceAfterDiscount,
+      productGroup,
       productCategory,
       fileFormat,
       fileSize,
@@ -130,14 +132,17 @@ export async function POST(request: Request) {
         name,
         slug: uniqueSlug,
         description,
-          shortDesc: shortDesc || null,
-          price: price ? parseFloat(price) : null,
-          productCategory: productCategory || null,
-        fileFormat,
-        fileSize,
-        fileKey,
+        shortDesc: shortDesc || null,
+        price: price ? parseFloat(price) : null,
+        discount: discount ? parseFloat(discount) : null,
+        priceAfterDiscount: priceAfterDiscount ? parseFloat(priceAfterDiscount) : null,
+        productGroup: productGroup || null,
+        productCategory: productCategory || null,
+        fileFormat: fileFormat || null,
+        fileSize: fileSize || null,
+        fileKey: fileKey || null,
         fileName: fileName || (fileKey ? fileKey.split("/").pop() : null),
-        thumbnail,
+        thumbnail: thumbnail || null,
         active: active !== undefined ? Boolean(active) : true,
         featured: Boolean(featured),
         downloadLinkUrl: downloadLinkUrl || null,
