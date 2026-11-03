@@ -365,7 +365,16 @@ export default function MediaPickerModal({
       const res = await fetch(
         `/api/media/import-folder?folderId=${encodeURIComponent(folderId)}`,
       );
-      const data = await res.json();
+
+      let data: any = null;
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        console.error("Import folder non-JSON response:", text);
+        throw new Error("Server trả về phản hồi không hợp lệ.");
+      }
 
       if (!res.ok) {
         setFolderError(
@@ -391,10 +400,11 @@ export default function MediaPickerModal({
         setPreviewType("none");
         return;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error fetching drive folder:", err);
       setFolderError(
-        "Đã xảy ra lỗi khi tải danh sách từ thư mục Google Drive. Vui lòng kiểm tra quyền chia sẻ.",
+        err?.message ||
+          "Đã xảy ra lỗi khi tải danh sách từ thư mục Google Drive. Vui lòng kiểm tra quyền chia sẻ.",
       );
       setPreviewType("none");
     } finally {
@@ -403,51 +413,24 @@ export default function MediaPickerModal({
   }, []);
 
   useEffect(() => {
-    if (activeTab !== "url" || !externalUrl.trim()) return;
-    const driveParsed = getGoogleDriveUrl(externalUrl);
-    const folderId = driveParsed?.id || externalUrl.match(/folders\/([a-zA-Z0-9_-]+)/)?.[1];
-    if ((driveParsed?.type === "folder" || DRIVE_FOLDER_REGEX.test(externalUrl)) && folderId) {
-      setPreviewType("folder");
-      fetchDriveFolderPreview(folderId);
-    } else {
+    if (activeTab !== "url" || !externalUrl.trim()) {
       setPreviewType("none");
       setPreviewImages([]);
       setPreviewVideos([]);
-    }
-  }, [externalUrl, activeTab, fetchDriveFolderPreview]);
-
-  useEffect(() => {
-    if (activeTab !== "url" || !externalUrl.trim()) {
-      setPreviewType("none");
       return;
     }
 
     const driveParsed = getGoogleDriveUrl(externalUrl);
+    const folderId = driveParsed?.id || externalUrl.match(/folders\/([a-zA-Z0-9_-]+)/)?.[1];
 
-    if (driveParsed?.type === "folder") {
+    if ((driveParsed?.type === "folder" || DRIVE_FOLDER_REGEX.test(externalUrl)) && folderId) {
       setPreviewType("folder");
-      fetchDriveFolderPreview(driveParsed.id);
-      return;
-    }
-
-    if (driveParsed?.type === "file") {
-      setPreviewImages([]);
-      setIsLoadingFolder(false);
-      setFolderError(null);
-      setSelectedPreviewImage(null);
-      setPreviewLoading(true);
+      fetchDriveFolderPreview(folderId);
+    } else if (driveParsed?.type === "file") {
       setPreviewType("image");
-      setTimeout(() => setPreviewLoading(false), 300);
-      return;
+    } else {
+      setPreviewType("none");
     }
-
-    setPreviewImages([]);
-    setIsLoadingFolder(false);
-    setFolderError(null);
-    setSelectedPreviewImage(null);
-    setPreviewLoading(true);
-    setPreviewType("none");
-    setTimeout(() => setPreviewLoading(false), 200);
   }, [externalUrl, activeTab, fetchDriveFolderPreview]);
 
   if (!isOpen) return null;
