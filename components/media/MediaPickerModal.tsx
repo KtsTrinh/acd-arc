@@ -694,7 +694,7 @@ export default function MediaPickerModal({
                   <button
                     key={`img-${idx}`}
                     type="button"
-                    onClick={() => setSelectedPreviewImage(imgUrl)}
+                    onClick={() => { setSelectedPreviewImage(imgUrl); setExternalUrl(imgUrl); }}
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       selectedPreviewImage === imgUrl
                         ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
@@ -714,7 +714,7 @@ export default function MediaPickerModal({
                   <button
                     key={`vid-${idx}`}
                     type="button"
-                    onClick={() => setSelectedPreviewImage(vidUrl)}
+                    onClick={() => { setSelectedPreviewImage(vidUrl); setExternalUrl(vidUrl); }}
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       selectedPreviewImage === vidUrl
                         ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
