@@ -112,26 +112,49 @@ export async function GET(request: Request) {
       const html = await res.text();
       const fileMap = new Map<string, { name?: string }>();
 
-      const fileRegex =
-        /\/file\/d\/([a-zA-Z0-9_-]{25,})\/[^"']*?"[^"]*?title":"([^"\\]+)"/g;
-      let matchFile: RegExpExecArray | null;
-      while ((matchFile = fileRegex.exec(html)) !== null) {
-        const id = matchFile[1];
-        if (id === folderId) continue;
-        let name = matchFile[2];
-        try {
-          name = decodeURIComponent(
-            name.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
-              String.fromCharCode(parseInt(hex, 16))
-            )
-          );
-        } catch {}
-        fileMap.set(id, { name });
+      // Try multiple patterns for Google Drive HTML structure
+      const patterns = [
+        // Pattern with title in JSON
+        /\/file\/d\/([a-zA-Z0-9_-]{25,})[^"']*?["']([^"']+\.(?:jpg|jpeg|png|gif|webp|avif|bmp|svg|mp4|webm|mov|avi|mkv|m4v|ogv))["']/gi,
+        /["']title["']\s*:\s*["']([^"']+\.(?:jpg|jpeg|png|gif|webp|avif|bmp|svg|mp4|webm|mov|avi|mkv|m4v|ogv))["'][^"']*?\/file\/d\/([a-zA-Z0-9_-]{25,})/gi,
+        /\/file\/d\/([a-zA-Z0-9_-]{25,})\/view[^"]*?alt="([^"]+)"/gi,
+        /data-id="([a-zA-Z0-9_-]{25,})"[^>]+title="([^"]+)"/gi,
+        /\/file\/d\/([a-zA-Z0-9_-]{25,})[^"']*?"[^"]*?title":"([^"\\]+)"/g,
+      ];
+
+      for (const pattern of patterns) {
+        pattern.lastIndex = 0;
+        let matchFile: RegExpExecArray | null;
+        while ((matchFile = pattern.exec(html)) !== null) {
+          let id = matchFile[1];
+          let name = matchFile[2];
+          // Some patterns have id and name in different order
+          if (!name || name.match(/^[a-zA-Z0-9_-]{25,}$/)) {
+            id = matchFile[2] || id;
+            name = matchFile[1];
+            if (name && name.match(/^[a-zA-Z0-9_-]{25,}$/)) continue;
+          }
+          if (!id || id === folderId || id.length < 25) continue;
+          if (name) {
+            try {
+              name = decodeURIComponent(
+                name.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
+                  String.fromCharCode(parseInt(hex, 16))
+                )
+              );
+            } catch {}
+          }
+          if (!fileMap.has(id)) {
+            fileMap.set(id, { name });
+          }
+        }
+        if (fileMap.size > 0) break;
       }
 
       if (fileMap.size === 0) {
-        const patterns = [/\/file\/d\/([a-zA-Z0-9_-]{25,})/g];
-        for (const p of patterns) {
+        const simplePatterns = [/\/file\/d\/([a-zA-Z0-9_-]{25,})/g];
+        for (const p of simplePatterns) {
+          p.lastIndex = 0;
           let m: RegExpExecArray | null;
           while ((m = p.exec(html)) !== null) {
             const id = m[1];
