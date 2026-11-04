@@ -154,3 +154,13 @@ h4 {
   border: 0;
   pointer-events: none;
 }
+/* Hide Netlify badge */
+[id*="netlify"],
+div[class*="netlify"],
+a[href*="netlify.com"],
+#netlify-badge {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
