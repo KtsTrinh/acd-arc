@@ -241,8 +241,6 @@ model Product {
   slug                   String         @unique
   description            String?
   price                  Float?
-  discount               Float?
-  priceAfterDiscount     Float?
   fileFormat             String?
   fileSize               String?
   fileKey                String?
@@ -259,10 +257,12 @@ model Product {
   landArea               Float?
   location               String?
   productCategory        String?
-  productGroup           String?
   shortDesc              String?
   style                  String?
   year                   Int?
+  productGroup           String?
+  discount               Float?
+  priceAfterDiscount     Float?
   downloadLinks          DownloadLink[]
   orderItems             OrderItem[]
   tags                   ProductTag[]

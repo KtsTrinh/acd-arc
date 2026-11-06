@@ -38,3 +38,5 @@ next-env.d.ts
 # SQLite if used locally
 *.db
 *.db-journal
+
+.env*
