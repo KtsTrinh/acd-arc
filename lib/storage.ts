@@ -2,6 +2,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { prisma } from "./prisma";
+import { isVideoUrl } from "./media-url";
 
 const PUBLIC_UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 const PRIVATE_STORAGE_DIR = path.join(process.cwd(), "storage", "private");
@@ -85,6 +86,30 @@ export async function createMediaItem(input: SaveMediaInput) {
   });
 
   return media;
+}
+
+export async function registerExternalMedia(url: string) {
+  try {
+    const existing = await prisma.media.findFirst({ where: { url } });
+    if (existing) return existing;
+
+    return createMediaItem({
+      filename: url.split("/").pop()?.split("?")[0] || "media",
+      originalName: "External Media",
+      mimeType: isVideoUrl(url)
+        ? url.includes(".webm")
+          ? "video/webm"
+          : "video/mp4"
+        : "image/jpeg",
+      size: 0,
+      url,
+      folder: "external",
+      alt: "ACD Media",
+    });
+  } catch (err) {
+    console.error("registerExternalMedia error:", err);
+    return null;
+  }
 }
 
 /**

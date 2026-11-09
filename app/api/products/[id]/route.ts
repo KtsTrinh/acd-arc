@@ -4,6 +4,7 @@ import { slugify } from "@/lib/utils";
 import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 import { getCurrentUser } from "@/lib/auth";
 import { sanitizeProduct } from "@/lib/catalog";
+import { registerExternalMedia } from "@/lib/storage";
 
 export async function GET(
   request: Request,
@@ -117,6 +118,10 @@ export async function PATCH(
       where: { id },
       data: updateData,
     });
+
+    if (thumbnail && /^https?:\/\//i.test(thumbnail)) {
+      await registerExternalMedia(thumbnail);
+    }
 
     // Replace tags if provided
     if (tagIds && Array.isArray(tagIds)) {

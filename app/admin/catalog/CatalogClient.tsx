@@ -595,7 +595,16 @@ export default function AdminCatalogClient({
 
   const handleGalleryDelete = async (mediaId: string) => {
     if (!confirm("Bạn có chắc muốn gỡ mục này khỏi Gallery?")) return;
-    if (!form?.id) return;
+
+    if (!form?.id) {
+      const remaining = galleryItems.filter((i) => i.mediaId !== mediaId);
+      setGalleryItems(remaining);
+      if (galleryCoverMediaId === mediaId) {
+        setGalleryCoverMediaId(remaining.length > 0 ? remaining[0].mediaId : null);
+      }
+      setNotice({ type: "ok", text: "Đã gỡ mục khỏi Gallery." });
+      return;
+    }
 
     setGallerySaving(true);
     try {

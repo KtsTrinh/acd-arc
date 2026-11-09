@@ -4,6 +4,7 @@ import { slugify } from "@/lib/utils";
 import { triggerCmsAutoSync } from "@/lib/cms-auto-sync";
 import { getCurrentUser } from "@/lib/auth";
 import { sanitizeProduct } from "@/lib/catalog";
+import { registerExternalMedia } from "@/lib/storage";
 
 
 export const dynamic = "force-dynamic";
@@ -157,6 +158,10 @@ export async function POST(request: Request) {
         style: style || null,
       },
     });
+
+    if (thumbnail && /^https?:\/\//i.test(thumbnail)) {
+      await registerExternalMedia(thumbnail);
+    }
 
     // Attach tags if provided
     if (tagIds && Array.isArray(tagIds) && tagIds.length > 0) {
