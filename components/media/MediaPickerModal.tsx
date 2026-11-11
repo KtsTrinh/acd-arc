@@ -693,6 +693,40 @@ export default function MediaPickerModal({
             </div>
           ) : previewImages.length > 0 || previewVideos.length > 0 ? (
             <div className="p-2 space-y-2">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <span className="text-[10px] text-slate-500">
+                  Đã chọn:{<b className="text-cyan-400 font-bold">{selectedPreviewUrls.length}</b>}/{previewImages.length + previewVideos.length}
+                </span>
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const all = [
+                        ...previewImages,
+                        ...previewVideos,
+                      ];
+                      setSelectedPreviewUrls(all);
+                    }}
+                    disabled={
+                      selectedPreviewUrls.length >=
+                      previewImages.length + previewVideos.length
+                    }
+                    className="px-2 py-1 rounded bg-slate-800 text-[9px] text-cyan-400 border border-slate-600 hover:bg-slate-700 disabled:opacity-50"
+                    title="Chọn tất cả"
+                  >
+                    Chọn tất cả
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPreviewUrls([])}
+                    disabled={selectedPreviewUrls.length === 0}
+                    className="px-2 py-1 rounded bg-red-950/60 text-[9px] text-red-400 border border-red-800 hover:bg-red-900 disabled:opacity-50"
+                    title="Bỏ chọn tất cả"
+                  >
+                    Bỏ chọn tất cả
+                  </button>
+                </div>
+              </div>
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 max-h-44 overflow-y-auto">
                 {previewImages.map((imgUrl, idx) => (
                   <button
@@ -792,7 +826,13 @@ export default function MediaPickerModal({
                 ))}
               </div>
               <div className="text-[10px] text-slate-500 text-center">
-                Đã tìm thấy {previewImages.length} ảnh, {previewVideos.length} video. Nhấn vào để chọn.
+                Đã tìm thấy {previewImages.length} ảnh, {previewVideos.length} video.{" "}
+                {selectedPreviewUrls.length > 0 ? (
+                  <>
+                    Đã chọn <b className="text-cyan-400">{selectedPreviewUrls.length}</b> mục.{" "}
+                  </>
+                ) : null}
+                Nhấn vào từng mục để chọn/bỏ chọn, hoặc dùng nút Chọn tất cả/Bỏ chọn tất cả.
               </div>
             </div>
           ) : (
