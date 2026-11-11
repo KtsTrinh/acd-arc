@@ -840,14 +840,19 @@ export default function MediaPickerModal({
                   </button>
                 </div>
               </div>
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 max-h-44 overflow-y-auto">
+              <div
+                ref={gridContainerRef}
+                onMouseDown={handleGridMouseDown}
+                onMouseMove={handleGridMouseMove}
+                onMouseUp={handleGridMouseUp}
+                className="relative grid grid-cols-4 sm:grid-cols-5 gap-1.5 max-h-44 overflow-y-auto"
+              >
                 {previewImages.map((imgUrl, idx) => (
                   <button
                     key={`img-${idx}`}
                     type="button"
-                    onClick={(e) =>
-                      handlePreviewToggle(imgUrl, idx, e.shiftKey)
-                    }
+                    data-preview-url={imgUrl}
+                    onClick={(e) => handlePreviewToggle(imgUrl)}
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       selectedPreviewUrls.includes(imgUrl)
                         ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
@@ -887,13 +892,8 @@ export default function MediaPickerModal({
                   <button
                     key={`vid-${idx}`}
                     type="button"
-                    onClick={(e) =>
-                      handlePreviewToggle(
-                        vidUrl,
-                        previewImages.length + idx,
-                        e.shiftKey,
-                      )
-                    }
+                    data-preview-url={vidUrl}
+                    onClick={(e) => handlePreviewToggle(vidUrl)}
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       selectedPreviewUrls.includes(vidUrl)
                         ? "border-cyan-400 ring-1 ring-cyan-400/50 scale-[0.98]"
