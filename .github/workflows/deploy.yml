@@ -1,4 +1,4 @@
-name: Auto Deploy Next.js to AWS EC2
+name: Build on GitHub and Deploy to EC2
 
 on:
   push:
@@ -10,36 +10,64 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: SSH into EC2 and Deploy
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install and Build on GitHub
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          # Chuỗi kết nối giả lập giúp Prisma generate và Next.js build trơn tru mà không cần lộ mật khẩu thật
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+        run: |
+          npm ci --prefer-offline --no-audit
+          npx prisma generate
+          npm run build
+
+      - name: Compress .next build folder
+        run: tar -czf next-build.tar.gz .next
+
+      - name: Upload and Restart on EC2
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > private_key.pem
           chmod 600 private_key.pem
+          
+          # Gửi gói build đã nén sang thư mục dự án trên EC2
+          scp -o StrictHostKeyChecking=no -i private_key.pem next-build.tar.gz ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/acd-arc/
+          
+          # Giải nén trên EC2 và khởi động lại ứng dụng
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd ~/acd-arc
             
-            # Lưu lại mã commit trước khi pull để so sánh thay đổi
             OLD_COMMIT=$(git rev-parse HEAD)
             git pull origin main
             NEW_COMMIT=$(git rev-parse HEAD)
             
-            # Chỉ chạy npm ci khi file package-lock.json có thay đổi
+            # Chỉ cài thư viện sản phẩm khi package-lock.json có thay đổi
             if git diff --name-only $OLD_COMMIT $NEW_COMMIT | grep -q "package-lock.json"; then
-              echo "Phat hien thay doi thu vien, dang chay npm ci..."
-              npm ci --prefer-offline --no-audit
+              npm ci --omit=dev --prefer-offline --no-audit
             fi
             
-            # Chỉ chạy prisma generate khi file schema.prisma có thay đổi
+            # Chỉ cập nhật Prisma Client khi schema.prisma có thay đổi
             if git diff --name-only $OLD_COMMIT $NEW_COMMIT | grep -q "prisma/schema.prisma"; then
-              echo "Phat hien thay doi Prisma schema, dang chay prisma generate..."
               npx prisma generate
             fi
             
-            npm run build
+            # Thay thế thư mục .next cũ bằng bản build mới từ GitHub
+            rm -rf .next
+            tar -xzf next-build.tar.gz
+            rm -f next-build.tar.gz
+            
             pm2 reload acd-web
           EOF
-          rm -f private_key.pem
+          rm -f private_key.pem next-build.tar.gz
