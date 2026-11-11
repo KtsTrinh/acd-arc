@@ -287,6 +287,7 @@ export default function MediaPickerModal({
     string | null
   >(null);
   const [selectedPreviewUrls, setSelectedPreviewUrls] = useState<string[]>([]);
+  const [lastPreviewIndex, setLastPreviewIndex] = useState<number | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewType, setPreviewType] = useState<
     "none" | "folder" | "image" | "video" | "embed"
@@ -300,6 +301,38 @@ export default function MediaPickerModal({
   const isVideoItem = (item: MediaItem) => {
     if (item.mimeType && item.mimeType.startsWith("video/")) return true;
     return isVideoUrl(item.url || "");
+  };
+
+  const handlePreviewToggle = (
+    url: string,
+    index: number,
+    shiftKey: boolean,
+  ) => {
+    const allUrls = [...previewImages, ...previewVideos];
+    setSelectedPreviewUrls((prev) => {
+      let next: string[];
+      if (shiftKey && lastPreviewIndex !== null) {
+        const start = Math.min(lastPreviewIndex, index);
+        const end = Math.max(lastPreviewIndex, index);
+        const range = allUrls.slice(start, end + 1);
+        const rangeSet = new Set(range);
+        // Add any newly selected items in range, keep existing selections outside range
+        next = [
+          ...prev.filter((u) => !rangeSet.has(u)),
+          ...range,
+        ];
+        // Deduplicate while preserving order
+        next = Array.from(new Set(next));
+      } else {
+        if (prev.includes(url)) {
+          next = prev.filter((u) => u !== url);
+        } else {
+          next = [...prev, url];
+        }
+      }
+      return next;
+    });
+    setLastPreviewIndex(index);
   };
 
   const filteredMedia = mediaList.filter((item) => {
@@ -344,6 +377,7 @@ export default function MediaPickerModal({
       setPreviewLoading(false);
       setPreviewType("none");
       setSelectedPreviewUrls([]);
+      setLastPreviewIndex(null);
       return;
     }
 
@@ -353,6 +387,7 @@ export default function MediaPickerModal({
     setSelectedPreviewImage(null);
     setPreviewLoading(false);
     setPreviewType("none");
+    setLastPreviewIndex(null);
   }, [activeTab]);
 
   const fetchDriveFolderPreview = useCallback(async (folderId: string) => {
@@ -363,6 +398,7 @@ export default function MediaPickerModal({
     setSelectedPreviewImage(null);
     setPreviewType("folder");
     setSelectedPreviewUrls([]);
+    setLastPreviewIndex(null);
 
     try {
       const res = await fetch(
@@ -732,12 +768,8 @@ export default function MediaPickerModal({
                   <button
                     key={`img-${idx}`}
                     type="button"
-                    onClick={() =>
-                      setSelectedPreviewUrls((prev) =>
-                        prev.includes(imgUrl)
-                          ? prev.filter((u) => u !== imgUrl)
-                          : [...prev, imgUrl],
-                      )
+                    onClick={(e) =>
+                      handlePreviewToggle(imgUrl, idx, e.shiftKey)
                     }
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       selectedPreviewUrls.includes(imgUrl)
@@ -778,11 +810,11 @@ export default function MediaPickerModal({
                   <button
                     key={`vid-${idx}`}
                     type="button"
-                    onClick={() =>
-                      setSelectedPreviewUrls((prev) =>
-                        prev.includes(vidUrl)
-                          ? prev.filter((u) => u !== vidUrl)
-                          : [...prev, vidUrl],
+                    onClick={(e) =>
+                      handlePreviewToggle(
+                        vidUrl,
+                        previewImages.length + idx,
+                        e.shiftKey,
                       )
                     }
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
