@@ -1461,12 +1461,23 @@ export default function AdminCatalogClient({
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <Image
+                              <img
                                 src={imgSrc}
                                 alt={item.media.alt || item.media.filename}
-                                fill
-                                className="object-cover"
-                                unoptimized
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                  objectPosition: "center",
+                                }}
+                                loading="lazy"
+                                decoding="async"
+                                onError={(e) => {
+                                  console.error(
+                                    "Gallery image load error:",
+                                    (e.target as HTMLImageElement)?.src,
+                                  );
+                                }}
                               />
                             )}
 
