@@ -675,7 +675,7 @@ export default function MediaPickerModal({
       return;
     }
 
-    const normalizedUrl = playableVideoUrl(externalUrl) || externalUrl;
+    const normalizedUrl = normalizeMediaUrl(externalUrl);
     const detectedMime = isVideoUrl(externalUrl)
       ? externalUrl.includes(".webm")
         ? "video/webm"
