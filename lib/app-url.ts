@@ -1,12 +1,5 @@
 /**
- * Xác định gốc (origin) của ứng dụng để tạo link OAuth, link đặt lại mật khẩu...
- *
- * Thứ tự ưu tiên:
- * 1. Biến môi trường (bỏ qua giá trị localhost vì production không được dùng nó)
- * 2. Domain production của project Vercel
- * 3. Origin của request hiện tại
- * 4. Domain của deployment hiện tại
- * 5. localhost (phát triển)
+ * Xác định gốc (origin) của ứng dụng cho hạ tầng VPS
  */
 export function getBaseUrl(request?: Request): string {
   const configured =
@@ -18,10 +11,6 @@ export function getBaseUrl(request?: Request): string {
     return configured.replace(/\/+$/, "");
   }
 
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  }
-
   if (request) {
     try {
       const origin = new URL(request.url).origin;
@@ -31,15 +20,7 @@ export function getBaseUrl(request?: Request): string {
     }
   }
 
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  return "http://localhost:3000";
+  return "https://acd-arc.com";
 }
 
 function isLocalHostname(url: string): boolean {
