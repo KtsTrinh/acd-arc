@@ -301,6 +301,7 @@ export default function MediaPickerModal({
   } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const gridContainerRef = useRef<HTMLDivElement>(null);
+  const libraryGridRef = useRef<HTMLDivElement>(null);
   const justDraggedRef = useRef(false);
 
   const externalIsVideoUrl = isVideoUrl(externalUrl);
@@ -314,8 +315,16 @@ export default function MediaPickerModal({
   };
 
   const handleGridMouseDown = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('[data-preview-url]')) return;
-    const rect = gridContainerRef.current?.getBoundingClientRect();
+    const isLibrary = activeTab === "library";
+    const target = isLibrary ? libraryGridRef.current : gridContainerRef.current;
+    if (!target) return;
+    if (
+      (e.target as HTMLElement).closest(
+        isLibrary ? '[data-library-item]' : '[data-preview-url]',
+      )
+    )
+      return;
+    const rect = target.getBoundingClientRect();
     if (!rect) return;
     setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });
     setDragCurrent({ x: e.clientX - rect.left, y: e.clientY - rect.top });
@@ -324,7 +333,10 @@ export default function MediaPickerModal({
 
   const handleGridMouseMove = (e: React.MouseEvent) => {
     if (!dragStart || !isDragging) return;
-    const rect = gridContainerRef.current?.getBoundingClientRect();
+    const isLibrary = activeTab === "library";
+    const target = isLibrary ? libraryGridRef.current : gridContainerRef.current;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
     if (!rect) return;
     setDragCurrent({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
@@ -337,7 +349,16 @@ export default function MediaPickerModal({
       return;
     }
 
-    const rect = gridContainerRef.current?.getBoundingClientRect();
+    const isLibrary = activeTab === "library";
+    const target = isLibrary ? libraryGridRef.current : gridContainerRef.current;
+    if (!target) {
+      setDragStart(null);
+      setDragCurrent(null);
+      setIsDragging(false);
+      return;
+    }
+
+    const rect = target.getBoundingClientRect();
     if (!rect) {
       setDragStart(null);
       setDragCurrent(null);
@@ -355,9 +376,8 @@ export default function MediaPickerModal({
       bottom: Math.max(dragStart.y, endY),
     };
 
-    const items =
-      gridContainerRef.current?.querySelectorAll('[data-preview-url]') ||
-      [];
+    const itemSelector = isLibrary ? '[data-library-item]' : '[data-preview-url]';
+    const items = target.querySelectorAll(itemSelector) || [];
     const newlySelected: string[] = [];
 
     items.forEach((item) => {
@@ -376,15 +396,32 @@ export default function MediaPickerModal({
         itemRelativeRect.top < selectRect.bottom;
 
       if (intersects) {
-        const url = item.getAttribute('data-preview-url');
-        if (url && !selectedPreviewUrls.includes(url)) {
-          newlySelected.push(url);
+        if (isLibrary) {
+          const mediaId = item.getAttribute('data-library-item');
+          if (mediaId) {
+            const itemObj = filteredMedia.find((m) => m.id === mediaId);
+            if (itemObj && !selectedItems.some((i) => i.id === itemObj.id)) {
+              newlySelected.push(mediaId);
+            }
+          }
+        } else {
+          const url = item.getAttribute('data-preview-url');
+          if (url && !selectedPreviewUrls.includes(url)) {
+            newlySelected.push(url);
+          }
         }
       }
     });
 
     if (newlySelected.length > 0) {
-      setSelectedPreviewUrls((prev) => [...prev, ...newlySelected]);
+      if (isLibrary) {
+        const newItems = newlySelected
+          .map((id) => filteredMedia.find((m) => m.id === id))
+          .filter(Boolean) as MediaItem[];
+        setSelectedItems((prev) => [...prev, ...newItems]);
+      } else {
+        setSelectedPreviewUrls((prev) => [...prev, ...newlySelected]);
+      }
     }
 
     justDraggedRef.current = true;
@@ -401,6 +438,14 @@ export default function MediaPickerModal({
     setSelectedPreviewUrls((prev) =>
       prev.includes(url) ? prev.filter((u) => u !== url) : [...prev, url],
     );
+  };
+
+  const handleLibraryToggle = (item: MediaItem) => {
+    if (justDraggedRef.current) {
+      justDraggedRef.current = false;
+      return;
+    }
+    toggleSelect(item);
   };
 
   const filteredMedia = mediaList.filter((item) => {
@@ -1121,7 +1166,13 @@ export default function MediaPickerModal({
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 p-1">
+            <div
+              ref={libraryGridRef}
+              onMouseDown={handleGridMouseDown}
+              onMouseMove={handleGridMouseMove}
+              onMouseUp={handleGridMouseUp}
+              className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 p-1"
+            >
               {loading ? (
                 <div className="col-span-full flex items-center justify-center py-20 text-slate-400 gap-2">
                   <Loader2 className="w-5 h-5 animate-spin text-cyan-400" />
@@ -1142,8 +1193,9 @@ export default function MediaPickerModal({
                   return (
                     <div
                       key={item.id}
-                      onClick={() => toggleSelect(item)}
-                      className={`group relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
+                      data-library-item={item.id}
+                      onClick={() => handleLibraryToggle(item)}
+                      className={`group relative aspect-[1/1] min-h-[96px] rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
                         isSelected
                           ? "border-cyan-400 ring-2 ring-cyan-400/30 scale-[0.98]"
                           : "border-slate-750 hover:border-slate-500 hover:scale-[1.02]"
@@ -1186,6 +1238,17 @@ export default function MediaPickerModal({
                     </div>
                   );
                 })
+              )}
+              {dragStart && dragCurrent && activeTab === "library" && (
+                <div
+                  className="absolute pointer-events-none bg-cyan-400/20 border border-cyan-400 rounded-sm z-10"
+                  style={{
+                    left: Math.min(dragStart.x, dragCurrent.x),
+                    top: Math.min(dragStart.y, dragCurrent.y),
+                    width: Math.abs(dragCurrent.x - dragStart.x),
+                    height: Math.abs(dragCurrent.y - dragStart.y),
+                  }}
+                />
               )}
             </div>
           </div>
