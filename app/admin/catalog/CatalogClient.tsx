@@ -263,6 +263,9 @@ export default function AdminCatalogClient({
     null,
   );
   const [gallerySaving, setGallerySaving] = useState(false);
+  const [gallerySelectedForDelete, setGallerySelectedForDelete] = useState<
+    Set<string>
+  >(new Set());
 
   const fetchAll = useCallback(async () => {
     try {
@@ -637,6 +640,90 @@ export default function AdminCatalogClient({
       }
     } catch (err) {
       console.error("Failed to delete gallery item:", err);
+    } finally {
+      setGallerySaving(false);
+    }
+  };
+
+  const toggleGalleryDeleteSelection = (mediaId: string) => {
+    setGallerySelectedForDelete((prev) => {
+      const next = new Set(prev);
+      if (next.has(mediaId)) next.delete(mediaId);
+      else next.add(mediaId);
+      return next;
+    });
+  };
+
+  const handleGalleryDeleteSelected = async () => {
+    if (gallerySelectedForDelete.size === 0) return;
+    if (
+      !confirm(
+        `Bạn có chắc muốn xoá ${gallerySelectedForDelete.size} mục đã chọn khỏi Gallery?`,
+      )
+    )
+      return;
+
+    if (!form?.id) {
+      setGalleryItems((prev) =>
+        prev.filter((i) => !gallerySelectedForDelete.has(i.mediaId)),
+      );
+      const remaining = galleryItems.filter(
+        (i) => !gallerySelectedForDelete.has(i.mediaId),
+      );
+      if (galleryCoverMediaId && gallerySelectedForDelete.has(galleryCoverMediaId)) {
+        setGalleryCoverMediaId(
+          remaining.length > 0 ? remaining[0].mediaId : null,
+        );
+      }
+      setGallerySelectedForDelete(new Set());
+      setNotice({
+        type: "ok",
+        text: `Đã gỡ ${gallerySelectedForDelete.size} mục khỏi Gallery.`,
+      });
+      return;
+    }
+
+    setGallerySaving(true);
+    try {
+      await Promise.all(
+        Array.from(gallerySelectedForDelete).map((mediaId) =>
+          fetch(`/api/products/${form.id}/gallery?mediaId=${mediaId}`, {
+            method: "DELETE",
+          }),
+        ),
+      );
+      const res = await fetch(`/api/products/${form.id}/gallery`);
+      const data = await res.json();
+      if (data.gallery) {
+        const mapped: GalleryItem[] = data.gallery.map(
+          (g: any, idx: number) => ({
+            id: g.id,
+            mediaId: g.mediaId,
+            sortOrder: g.sortOrder ?? idx,
+            media: {
+              id: g.media.id,
+              filename: g.media.filename,
+              originalName: g.media.originalName,
+              url: g.media.url,
+              folder: g.media.folder,
+              alt: g.media.alt,
+              mimeType: g.media.mimeType,
+            },
+          }),
+        );
+        setGalleryItems(mapped);
+        setGallerySelectedForDelete(new Set());
+        if (
+          galleryCoverMediaId &&
+          gallerySelectedForDelete.has(galleryCoverMediaId)
+        ) {
+          setGalleryCoverMediaId(
+            mapped.length > 0 ? mapped[0].mediaId : null,
+          );
+        }
+      }
+    } catch (err) {
+      console.error("Failed to delete selected gallery items:", err);
     } finally {
       setGallerySaving(false);
     }
@@ -1267,98 +1354,174 @@ export default function AdminCatalogClient({
                     </button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                    {galleryItems.map((item) => {
-                      const isVideoFromMime =
-                        item.media.mimeType?.startsWith("video/") === true;
-                      const isVideoFromExt =
-                        /\.(mp4|webm|mov|avi|mkv)(\?|$)/i.test(
-                          item.media.url,
-                        );
-                      const itemIsVideo = isVideoFromMime || isVideoFromExt;
-                      const isCover = galleryCoverMediaId === item.mediaId;
-                      const vidSrc = playableVideoUrl(item.media.url);
-                      const imgSrc = (() => {
-                        const isDrive =
-                          /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)/.test(
+                  <>
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-thuy-850 border border-thuy-700/80">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-semibold text-slate-800">
+                          Tổng cộng:{" "}
+                          <b className="text-thuy-400">{galleryItems.length}</b>{" "}
+                          mục gallery
+                        </span>
+                        {gallerySelectedForDelete.size > 0 && (
+                          <span className="flex items-center gap-1.5 text-xs text-red-400">
+                            Đã chọn:{<b className="font-bold">{gallerySelectedForDelete.size}</b>} mục
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setGalleryMediaPickerOpen(true)}
+                          className="px-3 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700 transition-colors"
+                        >
+                          <Plus className="w-3 h-3" /> Thêm
+                        </button>
+                        {gallerySelectedForDelete.size > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleGalleryDeleteSelected}
+                            disabled={gallerySaving}
+                            className="px-3 py-1.5 rounded-lg bg-red-900 hover:bg-red-800 text-red-400 text-xs font-semibold border border-red-700 transition-colors disabled:opacity-50"
+                          >
+                            <Trash2 className="w-3 h-3" /> Xóa đã chọn
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (
+                              !confirm(
+                                "Bạn có chắc muốn xoá tất cả ảnh trong Gallery?",
+                              )
+                            )
+                              return;
+                            setGalleryItems([]);
+                            setGallerySelectedForDelete(new Set());
+                            setGalleryCoverMediaId(null);
+                            setNotice({
+                              type: "ok",
+                              text: "Đã xoá tất cả ảnh trong Gallery.",
+                            });
+                          }}
+                          disabled={gallerySaving}
+                          className="px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900 text-red-400 text-xs font-semibold border border-red-800 transition-colors disabled:opacity-50"
+                        >
+                          Xóa tất cả
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                      {galleryItems.map((item) => {
+                        const isVideoFromMime =
+                          item.media.mimeType?.startsWith("video/") === true;
+                        const isVideoFromExt =
+                          /\.(mp4|webm|mov|avi|mkv)(\?|$)/i.test(
                             item.media.url,
                           );
-                        return isDrive
-                          ? `/api/media/image-proxy?url=${encodeURIComponent(
+                        const itemIsVideo =
+                          isVideoFromMime || isVideoFromExt;
+                        const isCover = galleryCoverMediaId === item.mediaId;
+                        const isSelectedForDelete =
+                          gallerySelectedForDelete.has(item.mediaId);
+                        const vidSrc = playableVideoUrl(item.media.url);
+                        const imgSrc = (() => {
+                          const isDrive =
+                            /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)/.test(
                               item.media.url,
-                            )}`
-                          : normalizeMediaUrl(item.media.url);
-                      })();
-                      return (
-                        <div
-                          key={item.mediaId}
-                          className={`group relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950 border-2 transition-all shadow-sm ${isCover ? "border-amber-400 ring-2 ring-amber-400/20" : "border-thuy-700 hover:border-thuy-500"}`}
-                        >
-                          {itemIsVideo && vidSrc ? (
-                            <video
-                              src={vidSrc}
-                              muted
-                              loop
-                              playsInline
-                              preload="metadata"
-                              className="w-full h-full object-cover"
+                            );
+                          return isDrive
+                            ? `/api/media/image-proxy?url=${encodeURIComponent(
+                                item.media.url,
+                              )}`
+                            : normalizeMediaUrl(item.media.url);
+                        })();
+                        return (
+                          <div
+                            key={item.mediaId}
+                            className={`group relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all shadow-sm ${isCover ? "border-amber-400 ring-2 ring-amber-400/20" : isSelectedForDelete ? "border-red-500 ring-2 ring-red-500/20" : "border-thuy-700 hover:border-thuy-500"}`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelectedForDelete}
+                              onChange={() =>
+                                toggleGalleryDeleteSelection(item.mediaId)
+                              }
+                              className="absolute top-2 left-2 z-20 w-4 h-4 rounded bg-thuy-900 border border-thuy-500 text-thuy-400 focus:ring-2 focus:ring-thuy-400 accent-thuy-400"
+                              readOnly
                             />
-                          ) : (
-                            <Image
-                              src={imgSrc}
-                              alt={item.media.alt || item.media.filename}
-                              fill
-                              className="object-cover"
-                              unoptimized
-                            />
-                          )}
 
-                          {itemIsVideo && (
-                            <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-thuy-300 uppercase">
-                              Video
+                            {itemIsVideo && vidSrc ? (
+                              <video
+                                src={vidSrc}
+                                muted
+                                loop
+                                playsInline
+                                preload="metadata"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Image
+                                src={imgSrc}
+                                alt={item.media.alt || item.media.filename}
+                                fill
+                                className="object-cover"
+                                unoptimized
+                              />
+                            )}
+
+                            {itemIsVideo && (
+                              <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-thuy-300 uppercase">
+                                Video
+                              </div>
+                            )}
+
+                            {/* Cover star */}
+                            <button
+                              type="button"
+                              onClick={() => handleGalleryCover(item.mediaId)}
+                              className={`absolute top-2 right-2 p-1.5 rounded-lg backdrop-blur-sm transition-all border ${
+                                isCover
+                                  ? "bg-amber-400 text-thuy-950 border-amber-300 font-bold"
+                                  : "bg-thuy-950/80 text-slate-400 hover:text-amber-300 border-thuy-700"
+                              }`}
+                              title={
+                                isCover
+                                  ? "Đang là ảnh đại diện"
+                                  : "Đặt làm ảnh đại diện"
+                              }
+                            >
+                              <Star
+                                className={`w-4 h-4 ${isCover ? "fill-thuy-950" : ""}`}
+                              />
+                            </button>
+
+                            {/* Delete */}
+                            <button
+                              type="button"
+                              onClick={() => handleGalleryDelete(item.mediaId)}
+                              className="absolute top-2 left-10 p-1.5 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-900 border border-red-800 text-xs transition-colors opacity-0 group-hover:opacity-100"
+                              title="Xóa khỏi gallery"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Filename + sort order */}
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-thuy-950 via-thuy-950/70 to-transparent p-2.5 flex items-center justify-between opacity-90 group-hover:opacity-100 transition-opacity">
+                              <span className="text-[11px] text-slate-200 truncate max-w-[120px]">
+                                #{item.sortOrder + 1} {item.media.filename}
+                              </span>
+                              {isSelectedForDelete && (
+                                <span className="text-[10px] text-red-400 font-bold">
+                                  Đã chọn
+                                </span>
+                              )}
                             </div>
-                          )}
-
-                          {/* Cover star */}
-                          <button
-                            type="button"
-                            onClick={() => handleGalleryCover(item.mediaId)}
-                            className={`absolute top-2 right-2 p-1.5 rounded-lg backdrop-blur-sm transition-all border ${
-                              isCover
-                                ? "bg-amber-400 text-thuy-950 border-amber-300 font-bold"
-                                : "bg-thuy-950/80 text-slate-400 hover:text-amber-300 border-thuy-700"
-                            }`}
-                            title={
-                              isCover
-                                ? "Đang là ảnh đại diện"
-                                : "Đặt làm ảnh đại diện"
-                            }
-                          >
-                            <Star
-                              className={`w-4 h-4 ${isCover ? "fill-thuy-950" : ""}`}
-                            />
-                          </button>
-
-                          {/* Delete */}
-                          <button
-                            type="button"
-                            onClick={() => handleGalleryDelete(item.mediaId)}
-                            className="absolute top-2 left-2 p-1.5 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-900 border border-red-800 text-xs transition-colors"
-                            title="Xóa khỏi gallery"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-
-                          {/* Filename + sort order */}
-                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-thuy-950 via-thuy-950/70 to-transparent p-2.5 flex items-center justify-between opacity-90 group-hover:opacity-100 transition-opacity">
-                            <span className="text-[11px] text-slate-200 truncate max-w-[120px]">
-                              #{item.sortOrder + 1} {item.media.filename}
-                            </span>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  </>
                 )}
               </div>
 
