@@ -445,7 +445,9 @@ export default function MediaPickerModal({
       setPreviewLoading(false);
       setPreviewType("none");
       setSelectedPreviewUrls([]);
-      setLastPreviewIndex(null);
+      setDragStart(null);
+      setDragCurrent(null);
+      setIsDragging(false);
       return;
     }
 
@@ -455,7 +457,9 @@ export default function MediaPickerModal({
     setSelectedPreviewImage(null);
     setPreviewLoading(false);
     setPreviewType("none");
-    setLastPreviewIndex(null);
+    setDragStart(null);
+    setDragCurrent(null);
+    setIsDragging(false);
   }, [activeTab]);
 
   const fetchDriveFolderPreview = useCallback(async (folderId: string) => {
@@ -466,7 +470,9 @@ export default function MediaPickerModal({
     setSelectedPreviewImage(null);
     setPreviewType("folder");
     setSelectedPreviewUrls([]);
-    setLastPreviewIndex(null);
+    setDragStart(null);
+    setDragCurrent(null);
+    setIsDragging(false);
 
     try {
       const res = await fetch(
@@ -801,7 +807,7 @@ export default function MediaPickerModal({
                 <span className="text-[10px] text-slate-500">
                   Đã chọn:{<b className="text-cyan-400 font-bold">{selectedPreviewUrls.length}</b>}/{previewImages.length + previewVideos.length}{" "}
                   <span className="text-slate-400">
-                    (⇧ + click để quét chọn đoạn)
+                    (kéo chuột để chọn nhiều)
                   </span>
                 </span>
                 <div className="flex gap-1">
