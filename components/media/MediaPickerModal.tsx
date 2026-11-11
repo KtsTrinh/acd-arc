@@ -933,6 +933,17 @@ export default function MediaPickerModal({
                     )}
                   </button>
                 ))}
+                {dragStart && dragCurrent && (
+                  <div
+                    className="absolute pointer-events-none bg-cyan-400/20 border border-cyan-400 rounded-sm z-10"
+                    style={{
+                      left: Math.min(dragStart.x, dragCurrent.x),
+                      top: Math.min(dragStart.y, dragCurrent.y),
+                      width: Math.abs(dragCurrent.x - dragStart.x),
+                      height: Math.abs(dragCurrent.y - dragStart.y),
+                    }}
+                  />
+                )}
               </div>
               <div className="text-[10px] text-slate-500 text-center">
                 Đã tìm thấy {previewImages.length} ảnh, {previewVideos.length} video.{" "}
@@ -941,7 +952,7 @@ export default function MediaPickerModal({
                     Đã chọn <b className="text-cyan-400">{selectedPreviewUrls.length}</b> mục.{" "}
                   </>
                 ) : null}
-                Nhấn vào từng mục để chọn/bỏ chọn, hoặc dùng nút Chọn tất cả/Bỏ chọn tất cả.
+                Kéo chuột qua các mục để chọn nhiều, hoặc nhấn từng mục để chọn/bỏ chọn.
               </div>
             </div>
           ) : (
