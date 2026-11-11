@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: deploy-to-ec2
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,10 +21,25 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd ~/acd-arc
+            
+            # Lưu lại mã commit trước khi pull để so sánh thay đổi
+            OLD_COMMIT=$(git rev-parse HEAD)
             git pull origin main
-            npm install
-            npx prisma generate
+            NEW_COMMIT=$(git rev-parse HEAD)
+            
+            # Chỉ chạy npm ci khi file package-lock.json có thay đổi
+            if git diff --name-only $OLD_COMMIT $NEW_COMMIT | grep -q "package-lock.json"; then
+              echo "Phat hien thay doi thu vien, dang chay npm ci..."
+              npm ci --prefer-offline --no-audit
+            fi
+            
+            # Chỉ chạy prisma generate khi file schema.prisma có thay đổi
+            if git diff --name-only $OLD_COMMIT $NEW_COMMIT | grep -q "prisma/schema.prisma"; then
+              echo "Phat hien thay doi Prisma schema, dang chay prisma generate..."
+              npx prisma generate
+            fi
+            
             npm run build
-            pm2 restart all
+            pm2 reload acd-web
           EOF
           rm -f private_key.pem
