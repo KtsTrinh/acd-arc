@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import {
   X,
@@ -287,11 +287,21 @@ export default function MediaPickerModal({
     string | null
   >(null);
   const [selectedPreviewUrls, setSelectedPreviewUrls] = useState<string[]>([]);
-  const [lastPreviewIndex, setLastPreviewIndex] = useState<number | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewType, setPreviewType] = useState<
     "none" | "folder" | "image" | "video" | "embed"
   >("none");
+
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [dragCurrent, setDragCurrent] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const gridContainerRef = useRef<HTMLDivElement>(null);
+  const justDraggedRef = useRef(false);
 
   const externalIsVideoUrl = isVideoUrl(externalUrl);
   const externalPlayable = externalIsVideoUrl
@@ -303,36 +313,94 @@ export default function MediaPickerModal({
     return isVideoUrl(item.url || "");
   };
 
-  const handlePreviewToggle = (
-    url: string,
-    index: number,
-    shiftKey: boolean,
-  ) => {
-    const allUrls = [...previewImages, ...previewVideos];
-    setSelectedPreviewUrls((prev) => {
-      let next: string[];
-      if (shiftKey && lastPreviewIndex !== null) {
-        const start = Math.min(lastPreviewIndex, index);
-        const end = Math.max(lastPreviewIndex, index);
-        const range = allUrls.slice(start, end + 1);
-        const rangeSet = new Set(range);
-        // Add any newly selected items in range, keep existing selections outside range
-        next = [
-          ...prev.filter((u) => !rangeSet.has(u)),
-          ...range,
-        ];
-        // Deduplicate while preserving order
-        next = Array.from(new Set(next));
-      } else {
-        if (prev.includes(url)) {
-          next = prev.filter((u) => u !== url);
-        } else {
-          next = [...prev, url];
+  const handleGridMouseDown = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('[data-preview-url]')) return;
+    const rect = gridContainerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    setDragCurrent({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    setIsDragging(true);
+  };
+
+  const handleGridMouseMove = (e: React.MouseEvent) => {
+    if (!dragStart || !isDragging) return;
+    const rect = gridContainerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setDragCurrent({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  const handleGridMouseUp = (_e: React.MouseEvent) => {
+    if (!dragStart || !isDragging) {
+      setDragStart(null);
+      setDragCurrent(null);
+      setIsDragging(false);
+      return;
+    }
+
+    const rect = gridContainerRef.current?.getBoundingClientRect();
+    if (!rect) {
+      setDragStart(null);
+      setDragCurrent(null);
+      setIsDragging(false);
+      return;
+    }
+
+    const endX = _e.clientX - rect.left;
+    const endY = _e.clientY - rect.top;
+
+    const selectRect = {
+      left: Math.min(dragStart.x, endX),
+      top: Math.min(dragStart.y, endY),
+      right: Math.max(dragStart.x, endX),
+      bottom: Math.max(dragStart.y, endY),
+    };
+
+    const items =
+      gridContainerRef.current?.querySelectorAll('[data-preview-url]') ||
+      [];
+    const newlySelected: string[] = [];
+
+    items.forEach((item) => {
+      const itemRect = item.getBoundingClientRect();
+      const itemRelativeRect = {
+        left: itemRect.left - rect.left,
+        top: itemRect.top - rect.top,
+        right: itemRect.right - rect.left,
+        bottom: itemRect.bottom - rect.top,
+      };
+
+      const intersects =
+        itemRelativeRect.right > selectRect.left &&
+        itemRelativeRect.left < selectRect.right &&
+        itemRelativeRect.bottom > selectRect.top &&
+        itemRelativeRect.top < selectRect.bottom;
+
+      if (intersects) {
+        const url = item.getAttribute('data-preview-url');
+        if (url && !selectedPreviewUrls.includes(url)) {
+          newlySelected.push(url);
         }
       }
-      return next;
     });
-    setLastPreviewIndex(index);
+
+    if (newlySelected.length > 0) {
+      setSelectedPreviewUrls((prev) => [...prev, ...newlySelected]);
+    }
+
+    justDraggedRef.current = true;
+    setDragStart(null);
+    setDragCurrent(null);
+    setIsDragging(false);
+  };
+
+  const handlePreviewToggle = (url: string) => {
+    if (justDraggedRef.current) {
+      justDraggedRef.current = false;
+      return;
+    }
+    setSelectedPreviewUrls((prev) =>
+      prev.includes(url) ? prev.filter((u) => u !== url) : [...prev, url],
+    );
   };
 
   const filteredMedia = mediaList.filter((item) => {
