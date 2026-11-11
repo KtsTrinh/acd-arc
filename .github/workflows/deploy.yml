@@ -3,25 +3,24 @@ name: Auto Deploy Next.js to AWS EC2
 on:
   push:
     branches:
-      - main # Tự động chạy mỗi khi push code lên nhánh main
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: SSH into EC2 and Deploy
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > private_key.pem
+          chmod 600 private_key.pem
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
             cd ~/acd-arc
             git pull origin main
             npm install
             npx prisma generate
             npm run build
             pm2 restart all
+          EOF
+          rm -f private_key.pem
