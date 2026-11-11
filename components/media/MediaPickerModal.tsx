@@ -731,7 +731,10 @@ export default function MediaPickerModal({
             <div className="p-2 space-y-2">
               <div className="flex items-center justify-between gap-2 mb-1">
                 <span className="text-[10px] text-slate-500">
-                  Đã chọn:{<b className="text-cyan-400 font-bold">{selectedPreviewUrls.length}</b>}/{previewImages.length + previewVideos.length}
+                  Đã chọn:{<b className="text-cyan-400 font-bold">{selectedPreviewUrls.length}</b>}/{previewImages.length + previewVideos.length}{" "}
+                  <span className="text-slate-400">
+                    (⇧ + click để quét chọn đoạn)
+                  </span>
                 </span>
                 <div className="flex gap-1">
                   <button
