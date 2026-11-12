@@ -576,7 +576,7 @@ export default function AdminMediaPage() {
                   data-media-item={item.id}
                   onMouseDown={(e) => e.stopPropagation()}
                   onClick={() => toggleSelectMedia(item.id)}
-                  className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer ${dragHoveredIds.has(item.id) ? "border-cyan-400 bg-cyan-400/10" : isSelected ? "border-thuy-400 ring-2 ring-thuy-400/30" : "border-thuy-750 hover:border-thuy-400"}`}
+                  className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer ${dragHoveredIds.has(item.id) ? "border-cyan-400 bg-cyan-400/15" : isSelected ? "border-cyan-400 ring-2 ring-cyan-400/20 bg-cyan-400/10" : "border-thuy-750 hover:border-thuy-400"}`}
                 >
                   {itemIsVideo && vidSrc ? (
                     <video
