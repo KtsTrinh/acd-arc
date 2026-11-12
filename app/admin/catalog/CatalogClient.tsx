@@ -1262,7 +1262,7 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-white">Mô tả tóm tắt:</label>
+                <label className="text-xs text-white">Mô tả chi tiết sản phẩm:</label>
                 <input
                   type="text"
                   value={form.shortDesc}
@@ -1270,6 +1270,93 @@ export default function AdminCatalogClient({
                   placeholder="Mô tả ngắn gọn về sản phẩm..."
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
+              </div>
+              <div className="space-y-2 pt-2">
+                <label className="text-xs text-white font-medium block">
+                  Thẻ Tags:
+                </label>
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={newTagName}
+                    onChange={(e) => setNewTagName(e.target.value.trim())}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") createTag();
+                    }}
+                    placeholder="Nhập tên thẻ mới và nhấn Enter..."
+                    className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                  <button
+                    onClick={createTag}
+                    className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
+                  >
+                    Thêm
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((t) => {
+                    const isSelected = form.tagIds.includes(t.id);
+                    return (
+                      <div
+                        key={t.id}
+                        className="flex items-center gap-1"
+                      >
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isSelected) {
+                              setForm((prev: ItemForm | null) => {
+                                if (!prev) return prev;
+                                return {
+                                  ...prev,
+                                  tagIds: prev.tagIds.filter(
+                                    (x) => x !== t.id,
+                                  ),
+                                };
+                              });
+                            } else {
+                              setForm((prev: ItemForm | null) => {
+                                if (!prev) return prev;
+                                return {
+                                  ...prev,
+                                  tagIds: [...prev.tagIds, t.id],
+                                };
+                              });
+                            }
+                          }}
+                          className={`px-3 py-1.5 rounded-l-lg text-xs font-medium transition-all ${
+                            isSelected
+                              ? "bg-thuy-400 text-thuy-950 font-bold"
+                              : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
+                          }`}
+                        >
+                          #{t.name}
+                        </button>
+                        {isSelected && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setForm((prev: ItemForm | null) => {
+                                if (!prev) return prev;
+                                return {
+                                  ...prev,
+                                  tagIds: prev.tagIds.filter(
+                                    (x) => x !== t.id,
+                                  ),
+                                };
+                              });
+                            }}
+                            className="rounded-r-lg bg-red-600 text-white text-xs px-2 py-1.5 hover:bg-red-500 transition-colors"
+                            title="Bỏ chọn thẻ"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
@@ -1377,96 +1464,6 @@ export default function AdminCatalogClient({
                     placeholder="Hiện đại, cổ điển..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
-                </div>
-              </div>
-
-              <div className="space-y-2 pt-2">
-                <label className="text-xs text-white font-medium block">
-                  Thẻ Tags:
-                </label>
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={newTagName}
-                    onChange={(e) => setNewTagName(e.target.value.trim())}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") createTag();
-                    }}
-                    placeholder="Nhập tên thẻ mới và nhấn Enter..."
-                    className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
-                  <button
-                    onClick={createTag}
-                    className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
-                  >
-                    Thêm
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((t) => {
-                    const isSelected = form.tagIds.includes(t.id);
-                    return (
-                      <div
-                        key={t.id}
-                        className="flex items-center gap-1"
-                      >
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (isSelected) {
-                              // Clicking name on selected tag: remove it
-                              setForm((prev: ItemForm | null) => {
-                                if (!prev) return prev;
-                                return {
-                                  ...prev,
-                                  tagIds: prev.tagIds.filter(
-                                    (x) => x !== t.id,
-                                  ),
-                                };
-                              });
-                            } else {
-                              // Clicking name on unselected tag: add it
-                              setForm((prev: ItemForm | null) => {
-                                if (!prev) return prev;
-                                return {
-                                  ...prev,
-                                  tagIds: [...prev.tagIds, t.id],
-                                };
-                              });
-                            }
-                          }}
-                          className={`px-3 py-1.5 rounded-l-lg text-xs font-medium transition-all ${
-                            isSelected
-                              ? "bg-thuy-400 text-thuy-950 font-bold"
-                              : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
-                          }`}
-                        >
-                          #{t.name}
-                        </button>
-                        {isSelected && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setForm((prev: ItemForm | null) => {
-                                if (!prev) return prev;
-                                return {
-                                  ...prev,
-                                  tagIds: prev.tagIds.filter(
-                                    (x) => x !== t.id,
-                                  ),
-                                };
-                              });
-                            }}
-                            className="rounded-r-lg bg-red-600 text-white text-xs px-2 py-1.5 hover:bg-red-500 transition-colors"
-                            title="Bỏ chọn thẻ"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
                 </div>
               </div>
 
