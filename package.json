@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "prisma": {
-    "seed": "node prisma/seed.js"
   },
   "scripts": {
     "dev": "next dev",
@@ -11,7 +10,6 @@
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
-    "db:seed": "node prisma/seed.js",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "cms:sync": "node scripts/cms-sync.mjs",
