@@ -1833,7 +1833,7 @@ export default function AdminCatalogClient({
                   <input
                     type="text"
                     value={newTagName}
-                    onChange={(e) => setNewTagName(e.target.value.trim())}
+                    onChange={(e) => setNewTagName(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
