@@ -1222,17 +1222,17 @@ export default function AdminCatalogClient({
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="space-y-1 sm:col-span-2">
-                  <label className="text-xs text-white">Mô tả tóm tắt:</label>
-                  <input
-                    type="text"
-                    value={form.shortDesc}
-                    onChange={(e) => updateForm({ shortDesc: e.target.value })}
-                    placeholder="Mô tả ngắn gọn về sản phẩm..."
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
-                </div>
+              <div className="space-y-1">
+                <label className="text-xs text-white">Mô tả tóm tắt:</label>
+                <input
+                  type="text"
+                  value={form.shortDesc}
+                  onChange={(e) => updateForm({ shortDesc: e.target.value })}
+                  placeholder="Mô tả ngắn gọn về sản phẩm..."
+                  className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs text-white">Địa điểm:</label>
                   <input
@@ -1253,6 +1253,8 @@ export default function AdminCatalogClient({
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs text-white">Năm thiết kế:</label>
                   <input
