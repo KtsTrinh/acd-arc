@@ -190,16 +190,8 @@ export default function Navbar() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setOpenDesktopSub((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(group)) {
-                            next.delete(group);
-                          } else {
-                            next.clear();
-                            next.add(group);
-                          }
-                          return next;
-                        });
+                        setOpenDesktopSub(new Set());
+                        router.push(`/products?productGroup=${encodeURIComponent(group)}`);
                       }}
                       className={
                         isActiveGroup(group)

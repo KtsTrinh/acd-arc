@@ -9,7 +9,7 @@ import {
   isVideoUrl,
   normalizeMediaUrl,
 } from "@/lib/media-url";
-import { formatVND, slugify } from "@/lib/utils";
+import { formatVND, formatPriceDot, parsePriceDot, numberToWordsVN, slugify } from "@/lib/utils";
 import MediaPickerModal, {
   MediaItem,
 } from "@/components/media/MediaPickerModal";
@@ -615,11 +615,9 @@ export default function AdminCatalogClient({
         slug: form.slug,
         shortDesc: form.shortDesc,
         description: form.description,
-        price: form.price ? parseFloat(form.price) : null,
-        discount: form.discount ? parseFloat(form.discount) : null,
-        priceAfterDiscount: form.priceAfterDiscount
-          ? parseFloat(form.priceAfterDiscount)
-          : null,
+        price: parsePriceDot(form.price),
+        discount: parsePriceDot(form.discount),
+        priceAfterDiscount: parsePriceDot(form.priceAfterDiscount),
         productGroup: form.productGroup || null,
         productCategory: form.productCategory || null,
         fileFormat: form.fileFormat,
@@ -1775,12 +1773,22 @@ export default function AdminCatalogClient({
                 <div className="space-y-1">
                   <label className="text-xs text-white">Giá bán (VNĐ):</label>
                   <input
-                    type="number"
-                    value={form.price}
-                    onChange={(e) => updateForm({ price: e.target.value })}
-                    placeholder="850000 (để trống nếu miễn phí)"
+                    type="text"
+                    value={formatPriceDot(form.price)}
+                    onChange={(e) => {
+                      updateForm({ price: formatPriceDot(e.target.value) });
+                    }}
+                    placeholder="850.000 (để trống nếu miễn phí)"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
+                  {form.price && (
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Số chữ:{" "}
+                      <span className="text-thuy-300 font-medium">
+                        {numberToWordsVN(parsePriceDot(form.price) || 0)} đ
+                      </span>
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Giảm giá (VNĐ):</label>
