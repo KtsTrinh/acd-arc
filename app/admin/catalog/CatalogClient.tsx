@@ -1842,6 +1842,33 @@ export default function AdminCatalogClient({
                   >
                     Thêm
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForm((prev: ItemForm | null) => {
+                        if (!prev) return prev;
+                        return {
+                          ...prev,
+                          tagIds: tags.map((t) => t.id),
+                        };
+                      });
+                    }}
+                    className="px-3 py-2 rounded-xl bg-thuy-500 text-white font-bold text-xs hover:bg-thuy-400"
+                  >
+                    Chọn tất cả
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForm((prev: ItemForm | null) => {
+                        if (!prev) return prev;
+                        return { ...prev, tagIds: [] };
+                      });
+                    }}
+                    className="px-3 py-2 rounded-xl bg-red-500 text-white font-bold text-xs hover:bg-red-400"
+                  >
+                    Bỏ chọn tất cả
+                  </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {tags.map((t) => {
