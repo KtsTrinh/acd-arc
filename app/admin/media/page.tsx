@@ -530,6 +530,17 @@ export default function AdminMediaPage() {
             }}
             className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
           >
+            {isDragging && dragStart && dragCurrent && (
+              <div
+                className="absolute bg-thuy-400/25 pointer-events-none z-20"
+                style={{
+                  left: Math.min(dragStart.x, dragCurrent.x),
+                  top: Math.min(dragStart.y, dragCurrent.y),
+                  width: Math.abs(dragCurrent.x - dragStart.x),
+                  height: Math.abs(dragCurrent.y - dragStart.y),
+                }}
+              />
+            )}
             {mediaList.map((item) => {
               const itemIsVideo = isVideoUrl(item.url || "");
               const isSelected = selectedMediaIds.includes(item.id);
