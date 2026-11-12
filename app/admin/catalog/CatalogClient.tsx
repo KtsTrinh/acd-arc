@@ -1139,9 +1139,9 @@ export default function AdminCatalogClient({
                       </div>
                     )}
                   </div>
-                  <div className="mt-2 space-y-1">
+                    <div className="mt-2 space-y-1">
                     <label className="text-xs text-white">Quản lý nhóm:</label>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap justify-evenly gap-2">
                       {allGroups.map((g) => {
                         const used = items.filter(
                           (i) => i.productGroup === g,
@@ -1239,7 +1239,7 @@ export default function AdminCatalogClient({
                       <label className="text-xs text-white">
                         Quản lý hạng mục:
                       </label>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap justify-evenly gap-2">
                         {groupCategories(form.productGroup).map((c) => {
                           const used = items.filter(
                             (i) =>
