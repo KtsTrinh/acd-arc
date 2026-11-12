@@ -126,12 +126,14 @@ export default function AdminCatalogClient({
     id: string | null;
     name: string | null;
     open: boolean;
-  }>({ id: null, name: null, open: false });
+    type: "product" | "group" | "category";
+    group?: string;
+  }>({ id: null, name: null, open: false, type: "product" });
 
   /* ------------------------------------------------------------------ */
   /* Nhóm sản phẩm & Hạng mục (tự thêm mới)                             */
   /* ------------------------------------------------------------------ */
-  const [groups, setGroups] = useState<string[]>([]);
+  const [customGroups, setCustomGroups] = useState<string[]>([]);
   const [customCategories, setCustomCategories] = useState<
     {
       name: string;
@@ -142,7 +144,20 @@ export default function AdminCatalogClient({
   const [customCategoryInput, setCustomCategoryInput] = useState("");
   const [showCustomGroupInput, setShowCustomGroupInput] = useState(false);
   const [showCustomCategoryInput, setShowCustomCategoryInput] = useState(false);
-  const allGroups = groups;
+
+  const dbGroups = useMemo(() => {
+    return Array.from(
+      new Set(
+        items
+          .map((i) => i.productGroup)
+          .filter((g): g is string => g !== null && g !== undefined),
+      ),
+    ).sort();
+  }, [items]);
+
+  const allGroups = useMemo(() => {
+    return Array.from(new Set(dbGroups.concat(customGroups))).sort();
+  }, [dbGroups, customGroups]);
 
   const handleDeleteGroup = (group: string) => {
     const usedBy = items.filter((i) => i.productGroup === group);
@@ -153,21 +168,31 @@ export default function AdminCatalogClient({
       });
       return;
     }
-    if (!confirm(`Xoá nhóm "${group}"?`)) return;
-    setGroups((prev) => {
-      const next = prev.filter((g) => g !== group);
-      return next;
-    });
-    setCustomCategories((prev) => prev.filter((c) => c.group !== group));
+    setConfirmDelete({ id: group, name: group, open: true, type: "group" });
+  };
+
+  const handleConfirmDeleteGroup = () => {
+    if (!confirmDelete.id) return;
+    setCustomGroups((prev) => prev.filter((g) => g !== confirmDelete.id!));
+    setCustomCategories((prev) =>
+      prev.filter((c) => c.group !== confirmDelete.id!),
+    );
     setItems((prev) =>
       prev.map((i) =>
-        i.productGroup === group ? { ...i, productGroup: "" } : i,
+        i.productGroup === confirmDelete.id
+          ? { ...i, productGroup: "" }
+          : i,
       ),
     );
-    if (activeTab === group) {
-      const next = allGroups.filter((g) => g !== group);
+    if (activeTab === confirmDelete.id) {
+      const next = allGroups.filter((g) => g !== confirmDelete.id);
       setActiveTab(next.length ? next[0] : "ALL");
     }
+    setConfirmDelete({ id: null, name: null, open: false, type: "product" });
+    setNotice({
+      type: "ok",
+      text: `Đã xoá nhóm "${confirmDelete.name}".`,
+    });
   };
 
   const handleAddCustomGroup = () => {
@@ -178,7 +203,7 @@ export default function AdminCatalogClient({
       updateForm({ productGroup: val || "" });
       return;
     }
-    setGroups((prev) => {
+    setCustomGroups((prev) => {
       const next = [...prev, val];
       return next;
     });
@@ -220,25 +245,47 @@ export default function AdminCatalogClient({
   };
 
   const handleDeleteCategory = (name: string, group: string) => {
-    if (!confirm(`Xoá hạng mục "${name}"?`)) return;
+    setConfirmDelete({
+      id: name,
+      name,
+      open: true,
+      type: "category",
+      group,
+    });
+  };
+
+  const handleConfirmDeleteCategory = () => {
+    if (!confirmDelete.id || !confirmDelete.group) return;
     setCustomCategories((prev) =>
-      prev.filter((c) => !(c.name === name && c.group === group)),
+      prev.filter(
+        (c) => !(c.name === confirmDelete.id && c.group === confirmDelete.group),
+      ),
     );
     setItems((prev) =>
       prev.map((i) =>
-        i.productCategory === name && i.productGroup === group
+        i.productCategory === confirmDelete.id &&
+        i.productGroup === confirmDelete.group
           ? { ...i, productCategory: "" }
           : i,
       ),
     );
+    setConfirmDelete({ id: null, name: null, open: false, type: "product" });
     setNotice({ type: "ok", text: "Đã xoá hạng mục." });
   };
 
   const groupCategories = (group: string): string[] => {
+    const dbCats = Array.from(
+      new Set(
+        items
+          .filter((i) => i.productGroup === group)
+          .map((i) => i.productCategory)
+          .filter((c): c is string => c !== null && c !== undefined),
+      ),
+    ).sort();
     const customs = customCategories
       .filter((c) => c.group === group)
       .map((c) => c.name);
-    return customs;
+    return [...dbCats, ...customs];
   };
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -353,33 +400,6 @@ export default function AdminCatalogClient({
     }
     return result;
   }, [items, activeTab, searchQuery]);
-
-  useEffect(() => {
-    const derivedGroups = Array.from(
-      new Set(
-        items
-          .map((i) => i.productGroup)
-          .filter((g): g is string => g !== null && g !== undefined),
-      ),
-    ).sort();
-    setGroups((prev) => {
-      const merged = Array.from(new Set(prev.concat(derivedGroups)));
-      return merged;
-    });
-
-    const derivedCats = Array.from(
-      new Set(
-        items
-          .map((i) => i.productCategory)
-          .filter((c): c is string => c !== null && c !== undefined),
-      ),
-    ).sort();
-    setCustomCategories((prev) => {
-      const existingNames = new Set(prev.map((c) => c.name));
-      const newCats = derivedCats.filter((c) => !existingNames.has(c));
-      return prev.concat(newCats.map((c) => ({ name: c, group: "" })));
-    });
-  }, [items]);
 
   const openEdit = async (item: any) => {
     setForm({
@@ -569,7 +589,7 @@ export default function AdminCatalogClient({
   };
 
   const handleDelete = async (id: string, name: string) => {
-    setConfirmDelete({ id, name, open: true });
+    setConfirmDelete({ id, name, open: true, type: "product" });
   };
 
   const handleConfirmDelete = async () => {
@@ -580,7 +600,7 @@ export default function AdminCatalogClient({
       });
       const data = await res.json();
       if (data.success) {
-        setConfirmDelete({ id: null, name: null, open: false });
+        setConfirmDelete({ id: null, name: null, open: false, type: "product" });
         setNotice({ type: "ok", text: "Đã xoá mục danh mục." });
         fetchAll();
       } else {
@@ -1856,12 +1876,21 @@ export default function AdminCatalogClient({
                   <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                   <div>
                     <h3 className="text-white font-bold text-sm">
-                      Xác nhận xoá sản phẩm
+                      {confirmDelete.type === "group"
+                        ? "Xác nhận xoá nhóm sản phẩm"
+                        : confirmDelete.type === "category"
+                          ? "Xác nhận xoá hạng mục"
+                          : "Xác nhận xoá sản phẩm"}
                     </h3>
                     <p className="text-slate-400 text-xs mt-1">
                       Bạn có chắc muốn xoá{" "}
-                      <b className="text-white">{confirmDelete.name}</b>? Hành
-                      động này không thể hoàn tác.
+                      <b className="text-white">{confirmDelete.name}</b>{" "}
+                      {confirmDelete.type === "group"
+                        ? "và tất cả hạng mục thuộc nhóm này?"
+                        : confirmDelete.type === "category"
+                          ? "?"
+                                                        : "?"} Hành động
+                      này không thể hoàn tác.
                     </p>
                   </div>
                 </div>
@@ -1875,7 +1904,13 @@ export default function AdminCatalogClient({
                     Hủy
                   </button>
                   <button
-                    onClick={handleConfirmDelete}
+                    onClick={
+                      confirmDelete.type === "group"
+                        ? handleConfirmDeleteGroup
+                        : confirmDelete.type === "category"
+                          ? handleConfirmDeleteCategory
+                          : handleConfirmDelete
+                    }
                     className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-500 text-xs font-semibold shadow-lg shadow-red-500/20 transition-all"
                   >
                     Xoá
