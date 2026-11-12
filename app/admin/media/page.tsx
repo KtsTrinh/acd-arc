@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Upload,
-  Link as LinkIcon,
   Search,
   Folder,
   Trash2,
@@ -427,14 +426,6 @@ export default function AdminMediaPage() {
             <span>Upload File Ảnh</span>
           </button>
 
-          <button
-            onClick={() => setUrlModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs hover:brightness-110 shadow-glow-cyan transition-all"
-          >
-            <LinkIcon className="w-3.5 h-3.5" />
-            <span>Thêm từ URL</span>
-          </button>
-
           {selectedMediaIds.length > 0 && (
             <button
               onClick={() => setSelectedMediaIds([])}
@@ -576,7 +567,7 @@ export default function AdminMediaPage() {
                   data-media-item={item.id}
                   onMouseDown={(e) => e.stopPropagation()}
                   onClick={() => toggleSelectMedia(item.id)}
-                  className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer ${dragHoveredIds.has(item.id) ? "border-cyan-400 bg-cyan-400/15" : isSelected ? "border-cyan-400 ring-2 ring-cyan-400/20 bg-cyan-400/10" : "border-thuy-750 hover:border-thuy-400"}`}
+                  className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer ${dragHoveredIds.has(item.id) ? "border-cyan-400 bg-cyan-400/20" : isSelected ? "border-cyan-500 ring-2 ring-cyan-500/40 bg-cyan-500/25 shadow-[0_0_0_1px_rgba(6,182,212,0.5)]" : "border-thuy-750 hover:border-thuy-400"}`}
                 >
                   {itemIsVideo && vidSrc ? (
                     <video
