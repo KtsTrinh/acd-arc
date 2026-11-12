@@ -539,13 +539,13 @@ export default function AdminCatalogClient({
 
   const handleConfirmDelete = async () => {
     if (!confirmDelete.id) return;
-    setConfirmDelete((prev) => ({ ...prev, open: false }));
     try {
       const res = await fetch(`/api/products/${confirmDelete.id}`, {
         method: "DELETE",
       });
       const data = await res.json();
       if (data.success) {
+        setConfirmDelete({ id: null, name: null, open: false });
         setNotice({ type: "ok", text: "Đã xoá mục danh mục." });
         fetchAll();
       } else {

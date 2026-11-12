@@ -180,6 +180,13 @@ export async function DELETE(
     }
 
     const { id } = params;
+
+    // Xóa các bản ghi liên quan trước khi xoá sản phẩm (tránh ràng buộc khóa ngoại)
+    await prisma.orderItem.deleteMany({ where: { productId: id } });
+    await prisma.downloadLink.deleteMany({ where: { productId: id } });
+    await prisma.productTag.deleteMany({ where: { productId: id } });
+    await prisma.projectMedia.deleteMany({ where: { productId: id } });
+
     await prisma.product.delete({ where: { id } });
     const sync = await triggerCmsAutoSync("xóa sản phẩm");
     return NextResponse.json({
