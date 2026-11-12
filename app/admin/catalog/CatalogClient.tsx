@@ -138,27 +138,7 @@ export default function AdminCatalogClient({
       group: string;
     }[]
   >([]);
-  const [newGroupName, setNewGroupName] = useState("");
-  const [showNewGroupInput, setShowNewGroupInput] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
-
   const allGroups = groups;
-
-  const handleAddGroup = () => {
-    const val = newGroupName.trim();
-    if (!val || allGroups.includes(val)) {
-      setShowNewGroupInput(false);
-      setNewGroupName("");
-      return;
-    }
-    setGroups((prev) => {
-      const next = [...prev, val];
-      return next;
-    });
-    setNewGroupName("");
-    setShowNewGroupInput(false);
-  };
 
   const handleDeleteGroup = (group: string) => {
     const usedBy = items.filter((i) => i.productGroup === group);
@@ -184,36 +164,6 @@ export default function AdminCatalogClient({
       const next = allGroups.filter((g) => g !== group);
       setActiveTab(next.length ? next[0] : "ALL");
     }
-  };
-
-  const handleAddCategory = () => {
-    const val = newCategoryName.trim();
-    if (!val) {
-      setShowNewCategoryInput(false);
-      setNewCategoryName("");
-      return;
-    }
-    const group = form?.productGroup || "";
-    if (!group) {
-      setNotice({
-        type: "err",
-        text: "Vui lòng chọn nhóm trước khi thêm hạng mục.",
-      });
-      return;
-    }
-    const exists = customCategories.some(
-      (c) => c.group === group && c.name === val,
-    );
-    if (exists) {
-      setShowNewCategoryInput(false);
-      setNewCategoryName("");
-      return;
-    }
-    setCustomCategories((prev) => [...prev, { name: val, group }]);
-    setNewCategoryName("");
-    setShowNewCategoryInput(false);
-    updateForm({ productCategory: val });
-    setNotice({ type: "ok", text: `Đã thêm hạng mục "${val}".` });
   };
 
   const handleDeleteCategory = (name: string, group: string) => {
@@ -849,7 +799,7 @@ export default function AdminCatalogClient({
             onChange={(e) => setActiveTab(e.target.value)}
             className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
           >
-            <option value="ALL">Tất cả sản phẩm</option>
+            <option value="ALL">Nhóm sản phẩm</option>
             {allGroups.map((g) => (
               <option key={g} value={g}>
                 {g}
@@ -965,136 +915,39 @@ export default function AdminCatalogClient({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1 sm:col-span-1">
                   <label className="text-xs text-white">Nhóm sản phẩm:</label>
-                  <select
+                  <input
                     value={form.productGroup}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (val === "+new") {
-                        setShowNewGroupInput(true);
-                        updateForm({ productGroup: "" });
-                        return;
-                      }
-                      updateForm({ productGroup: val });
-                    }}
+                    onChange={(e) =>
+                      updateForm({ productGroup: e.target.value.trim() })
+                    }
+                    placeholder="Nhập hoặc chọn nhóm sản phẩm..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  >
-                    <option value="">— Chọn nhóm —</option>
+                    list="productGroupList"
+                  />
+                  <datalist id="productGroupList">
                     {allGroups.map((g) => (
-                      <option key={g} value={g}>
-                        {g}
-                      </option>
+                      <option key={g} value={g} />
                     ))}
-                    {showNewGroupInput ? (
-                      <>
-                        <option value="" disabled hidden>
-                          —
-                        </option>
-                        <option value="+new">+ Thêm nhóm mới</option>
-                      </>
-                    ) : (
-                      <option value="+new">+ Thêm nhóm mới</option>
-                    )}
-                  </select>
+                  </datalist>
                 </div>
-                {showNewGroupInput && (
-                  <div className="space-y-1 sm:col-span-2">
-                    <label className="text-xs text-white">Tên nhóm mới:</label>
-                    <div className="flex gap-2">
-                      <input
-                        autoFocus
-                        value={newGroupName}
-                        onChange={(e) => setNewGroupName(e.target.value.trim())}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") handleAddGroup();
-                          if (e.key === "Escape") setShowNewGroupInput(false);
-                        }}
-                        placeholder="Nhập tên nhóm..."
-                        className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                      />
-                      <button
-                        onClick={handleAddGroup}
-                        className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
-                      <button
-                        onClick={() => setShowNewGroupInput(false)}
-                        className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-700 text-slate-400"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                )}
 
                 <div className="space-y-1 sm:col-span-1">
                   <label className="text-xs text-white">Hạng mục:</label>
-                  <select
+                  <input
                     value={form.productCategory}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (val === "+new") {
-                        setShowNewCategoryInput(true);
-                        updateForm({ productCategory: "" });
-                        return;
-                      }
-                      updateForm({ productCategory: val });
-                    }}
+                    onChange={(e) =>
+                      updateForm({ productCategory: e.target.value.trim() })
+                    }
+                    placeholder="Nhập hoặc chọn hạng mục..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  >
-                    <option value="">— Chọn hạng mục —</option>
+                    list="productCategoryList"
+                  />
+                  <datalist id="productCategoryList">
                     {groupCategories(form.productGroup).map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
+                      <option key={c} value={c} />
                     ))}
-                    {showNewCategoryInput ? (
-                      <>
-                        <option value="" disabled hidden>
-                          —
-                        </option>
-                        <option value="+new">+ Thêm hạng mục mới</option>
-                      </>
-                    ) : (
-                      <option value="+new">+ Thêm hạng mục mới</option>
-                    )}
-                  </select>
+                  </datalist>
                 </div>
-                {showNewCategoryInput && (
-                  <div className="space-y-1 sm:col-span-2">
-                    <label className="text-xs text-white">
-                      Tên hạng mục mới:
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        autoFocus
-                        value={newCategoryName}
-                        onChange={(e) =>
-                          setNewCategoryName(e.target.value.trim())
-                        }
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") handleAddCategory();
-                          if (e.key === "Escape")
-                            setShowNewCategoryInput(false);
-                        }}
-                        placeholder="Nhập tên hạng mục..."
-                        className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                      />
-                      <button
-                        onClick={handleAddCategory}
-                        className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
-                      <button
-                        onClick={() => setShowNewCategoryInput(false)}
-                        className="px-3 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-700 text-slate-400"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                )}
                 {form.productGroup && (
                   <div className="space-y-1 sm:col-span-1">
                     <label className="text-xs text-white">Quản lý nhóm:</label>
