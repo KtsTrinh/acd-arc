@@ -1116,29 +1116,67 @@ export default function AdminCatalogClient({
                     )}
                   </div>
                 </div>
+                <div className="space-y-1 sm:col-span-1">
+                  <label className="text-xs text-white">Quản lý nhóm:</label>
+                  <div className="flex flex-wrap gap-2">
+                    {allGroups.map((g) => {
+                      const used = items.filter(
+                        (i) => i.productGroup === g,
+                      ).length;
+                      const canDelete = used === 0;
+                      return (
+                        <span
+                          key={g}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
+                        >
+                          {g}
+                          {canDelete && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteGroup(g);
+                              }}
+                              className="p-0.5 hover:text-red-400"
+                              title="Xoá nhóm"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          )}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
                 {form.productGroup && (
                   <div className="space-y-1 sm:col-span-1">
-                    <label className="text-xs text-white">Quản lý nhóm:</label>
+                    <label className="text-xs text-white">
+                      Quản lý hạng mục:
+                    </label>
                     <div className="flex flex-wrap gap-2">
-                      {allGroups.map((g) => {
+                      {groupCategories(form.productGroup).map((c) => {
+                        const isCustom = customCategories.some(
+                          (cc) => cc.name === c && cc.group === form.productGroup,
+                        );
                         const used = items.filter(
-                          (i) => i.productGroup === g,
+                          (i) =>
+                            i.productCategory === c &&
+                            i.productGroup === form.productGroup,
                         ).length;
-                        const canDelete = used === 0;
+                        const canDelete = isCustom && used === 0;
                         return (
                           <span
-                            key={g}
+                            key={c}
                             className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
                           >
-                            {g}
+                            {c}
                             {canDelete && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteGroup(g);
+                                  handleDeleteCategory(c, form.productGroup);
                                 }}
                                 className="p-0.5 hover:text-red-400"
-                                title="Xoá nhóm"
+                                title="Xoá"
                               >
                                 <Trash2 className="w-3 h-3" />
                               </button>
@@ -1146,35 +1184,6 @@ export default function AdminCatalogClient({
                           </span>
                         );
                       })}
-                    </div>
-                  </div>
-                )}
-                {form.productGroup && (
-                  <div className="space-y-1 sm:col-span-1">
-                    <label className="text-xs text-white">
-                      Quản lý hạng mục:
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {customCategories
-                        .filter((c) => c.group === form.productGroup)
-                        .map((c) => (
-                          <span
-                            key={c.name}
-                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
-                          >
-                            {c.name}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteCategory(c.name, c.group);
-                              }}
-                              className="p-0.5 hover:text-red-400"
-                              title="Xoá"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </span>
-                        ))}
                     </div>
                   </div>
                 )}
