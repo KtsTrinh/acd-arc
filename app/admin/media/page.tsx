@@ -36,6 +36,13 @@ export default function AdminMediaPage() {
     open: boolean;
   }>({ id: null, name: null, open: false });
 
+  // Upload state
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadFolder, setUploadFolder] = useState("general");
+  const [uploadAlt, setUploadAlt] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+
   // Drag/marquee selection
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
     null,
@@ -45,16 +52,8 @@ export default function AdminMediaPage() {
     y: number;
   } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragHoveredIds, setDragHoveredIds] = useState<Set<string>>(new Set());
   const gridRef = useRef<HTMLDivElement>(null);
   const justDraggedRef = useRef(false);
-
-  // Upload state
-  const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [uploadFolder, setUploadFolder] = useState("general");
-  const [uploadAlt, setUploadAlt] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
 
   // Pinterest URL import state
   const [urlModalOpen, setUrlModalOpen] = useState(false);
@@ -114,42 +113,6 @@ export default function AdminMediaPage() {
     const rect = target.getBoundingClientRect();
     if (!rect) return;
     setDragCurrent({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-
-    const endX = e.clientX - rect.left;
-    const endY = e.clientY - rect.top;
-
-    const selectRect = {
-      left: Math.min(dragStart.x, endX),
-      top: Math.min(dragStart.y, endY),
-      right: Math.max(dragStart.x, endX),
-      bottom: Math.max(dragStart.y, endY),
-    };
-
-    const items = target.querySelectorAll('[data-media-item]') || [];
-    const hovered: Set<string> = new Set();
-
-    items.forEach((item) => {
-      const itemRect = item.getBoundingClientRect();
-      const itemRelativeRect = {
-        left: itemRect.left - rect.left,
-        top: itemRect.top - rect.top,
-        right: itemRect.right - rect.left,
-        bottom: itemRect.bottom - rect.top,
-      };
-
-      const intersects =
-        itemRelativeRect.right > selectRect.left &&
-        itemRelativeRect.left < selectRect.right &&
-        itemRelativeRect.bottom > selectRect.top &&
-        itemRelativeRect.top < selectRect.bottom;
-
-      if (intersects) {
-        const mediaId = item.getAttribute('data-media-item');
-        if (mediaId) hovered.add(mediaId);
-      }
-    });
-
-    setDragHoveredIds(hovered);
   };
 
   const handleGridMouseUp = (_e: React.MouseEvent) => {
@@ -197,40 +160,39 @@ export default function AdminMediaPage() {
       const items = target.querySelectorAll('[data-media-item]') || [];
       const newlySelected: string[] = [];
 
-      items.forEach((item) => {
-        const itemRect = item.getBoundingClientRect();
-        const itemRelativeRect = {
-          left: itemRect.left - rect.left,
-          top: itemRect.top - rect.top,
-          right: itemRect.right - rect.left,
-          bottom: itemRect.bottom - rect.top,
-        };
+    items.forEach((item) => {
+      const itemRect = item.getBoundingClientRect();
+      const itemRelativeRect = {
+        left: itemRect.left - rect.left,
+        top: itemRect.top - rect.top,
+        right: itemRect.right - rect.left,
+        bottom: itemRect.bottom - rect.top,
+      };
 
-        const intersects =
-          itemRelativeRect.right > selectRect.left &&
-          itemRelativeRect.left < selectRect.right &&
-          itemRelativeRect.bottom > selectRect.top &&
-          itemRelativeRect.top < selectRect.bottom;
+      const intersects =
+        itemRelativeRect.right > selectRect.left &&
+        itemRelativeRect.left < selectRect.right &&
+        itemRelativeRect.bottom > selectRect.top &&
+        itemRelativeRect.top < selectRect.bottom;
 
-        if (intersects) {
-          const mediaId = item.getAttribute('data-media-item');
-          if (mediaId && !selectedMediaIds.includes(mediaId)) {
-            newlySelected.push(mediaId);
-          }
+      if (intersects) {
+        const mediaId = item.getAttribute('data-media-item');
+        if (mediaId && !selectedMediaIds.includes(mediaId)) {
+          newlySelected.push(mediaId);
         }
-      });
-
-      if (newlySelected.length > 0) {
-        setSelectedMediaIds((prev) => [...prev, ...newlySelected]);
       }
+    });
 
-      justDraggedRef.current = true;
+    if (newlySelected.length > 0) {
+      setSelectedMediaIds((prev) => [...prev, ...newlySelected]);
+    }
+
+    justDraggedRef.current = true;
     }
 
     setDragStart(null);
     setDragCurrent(null);
     setIsDragging(false);
-    setDragHoveredIds(new Set());
   };
 
   const toggleSelectMedia = (id: string) => {
@@ -567,7 +529,7 @@ export default function AdminMediaPage() {
                   data-media-item={item.id}
                   onMouseDown={(e) => e.stopPropagation()}
                   onClick={() => toggleSelectMedia(item.id)}
-                  className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer ${dragHoveredIds.has(item.id) ? "border-cyan-400 bg-cyan-400/20" : isSelected ? "border-cyan-500 ring-2 ring-cyan-500/40 bg-cyan-500/25 shadow-[0_0_0_1px_rgba(6,182,212,0.5)]" : "border-thuy-750 hover:border-thuy-400"}`}
+                  className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer border-thuy-750 hover:border-thuy-400`}
                 >
                   {itemIsVideo && vidSrc ? (
                     <video
