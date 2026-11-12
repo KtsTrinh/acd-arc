@@ -202,9 +202,7 @@ export default function AdminCatalogClient({
     );
     setItems((prev) =>
       prev.map((i) =>
-        i.productGroup === confirmDelete.id
-          ? { ...i, productGroup: "" }
-          : i,
+        i.productGroup === confirmDelete.id ? { ...i, productGroup: "" } : i,
       ),
     );
     if (activeTab === confirmDelete.id) {
@@ -269,8 +267,7 @@ export default function AdminCatalogClient({
 
   const handleDeleteCategory = (name: string, group: string) => {
     const usedBy = items.filter(
-      (i) =>
-        i.productCategory === name && i.productGroup === group,
+      (i) => i.productCategory === name && i.productGroup === group,
     );
     if (usedBy.length > 0) {
       setAlertDialog({
@@ -307,7 +304,8 @@ export default function AdminCatalogClient({
     }
     setCustomCategories((prev) =>
       prev.filter(
-        (c) => !(c.name === confirmDelete.id && c.group === confirmDelete.group),
+        (c) =>
+          !(c.name === confirmDelete.id && c.group === confirmDelete.group),
       ),
     );
     setItems((prev) =>
@@ -557,7 +555,10 @@ export default function AdminCatalogClient({
         }
         setNotice({ type: "ok", text: `Đã tạo thẻ "${name}".` });
       } else {
-        setNotice({ type: "err", text: data.error || "Không thể tạo thẻ tag." });
+        setNotice({
+          type: "err",
+          text: data.error || "Không thể tạo thẻ tag.",
+        });
       }
     } catch (err) {
       console.error(err);
@@ -681,7 +682,12 @@ export default function AdminCatalogClient({
       });
       const data = await res.json();
       if (data.success) {
-        setConfirmDelete({ id: null, name: null, open: false, type: "product" });
+        setConfirmDelete({
+          id: null,
+          name: null,
+          open: false,
+          type: "product",
+        });
         setNotice({ type: "ok", text: "Đã xoá mục danh mục." });
         fetchAll();
       } else {
@@ -1216,7 +1222,9 @@ export default function AdminCatalogClient({
                               handleDeleteGroup(g);
                             }}
                             className="p-0.5 hover:text-red-400"
-                            title={used > 0 ? "Nhóm đang được sử dụng" : "Xoá nhóm"}
+                            title={
+                              used > 0 ? "Nhóm đang được sử dụng" : "Xoá nhóm"
+                            }
                           >
                             <Trash2 className="w-3 h-3" />
                           </button>
@@ -1249,7 +1257,9 @@ export default function AdminCatalogClient({
                                 handleDeleteCategory(c, form.productGroup);
                               }}
                               className="p-0.5 hover:text-red-400"
-                              title={used > 0 ? "Hạng mục đang được sử dụng" : "Xoá"}
+                              title={
+                                used > 0 ? "Hạng mục đang được sử dụng" : "Xoá"
+                              }
                             >
                               <Trash2 className="w-3 h-3" />
                             </button>
@@ -1262,7 +1272,9 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-white">Mô tả chi tiết sản phẩm:</label>
+                <label className="text-xs text-white">
+                  Mô tả tóm tắt sản phẩm:
+                </label>
                 <input
                   type="text"
                   value={form.shortDesc}
@@ -1270,6 +1282,86 @@ export default function AdminCatalogClient({
                   placeholder="Mô tả ngắn gọn về sản phẩm..."
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
+              </div>
+              <div className="space-y-2 pt-2">
+                <label className="text-xs text-white font-medium block">
+                  Thẻ Tags:
+                </label>
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={newTagName}
+                    onChange={(e) => setNewTagName(e.target.value.trim())}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") createTag();
+                    }}
+                    placeholder="Nhập tên thẻ mới và nhấn Enter..."
+                    className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                  <button
+                    onClick={createTag}
+                    className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
+                  >
+                    Thêm
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((t) => {
+                    const isSelected = form.tagIds.includes(t.id);
+                    return (
+                      <div key={t.id} className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isSelected) {
+                              setForm((prev: ItemForm | null) => {
+                                if (!prev) return prev;
+                                return {
+                                  ...prev,
+                                  tagIds: prev.tagIds.filter((x) => x !== t.id),
+                                };
+                              });
+                            } else {
+                              setForm((prev: ItemForm | null) => {
+                                if (!prev) return prev;
+                                return {
+                                  ...prev,
+                                  tagIds: [...prev.tagIds, t.id],
+                                };
+                              });
+                            }
+                          }}
+                          className={`px-3 py-1.5 rounded-l-lg text-xs font-medium transition-all ${
+                            isSelected
+                              ? "bg-thuy-400 text-thuy-950 font-bold"
+                              : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
+                          }`}
+                        >
+                          #{t.name}
+                        </button>
+                        {isSelected && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setForm((prev: ItemForm | null) => {
+                                if (!prev) return prev;
+                                return {
+                                  ...prev,
+                                  tagIds: prev.tagIds.filter((x) => x !== t.id),
+                                };
+                              });
+                            }}
+                            className="rounded-r-lg bg-red-600 text-white text-xs px-2 py-1.5 hover:bg-red-500 transition-colors"
+                            title="Bỏ chọn thẻ"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
@@ -1375,6 +1467,29 @@ export default function AdminCatalogClient({
                     value={form.style}
                     onChange={(e) => updateForm({ style: e.target.value })}
                     placeholder="Hiện đại, cổ điển..."
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Định dạng file:</label>
+                  <input
+                    type="text"
+                    value={form.fileFormat}
+                    onChange={(e) => updateForm({ fileFormat: e.target.value })}
+                    placeholder="AutoCAD .DWG / 3ds Max 2024"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Dung lượng:</label>
+                  <input
+                    type="text"
+                    value={form.fileSize}
+                    onChange={(e) => updateForm({ fileSize: e.target.value })}
+                    placeholder="185 MB / 1.2 GB"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
@@ -1711,7 +1826,9 @@ export default function AdminCatalogClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-white">Mô tả sản phẩm:</label>
+                <label className="text-xs text-white">
+                  Mô tả chỉ tiết sản phẩm:
+                </label>
                 <textarea
                   rows={3}
                   value={form.description}
@@ -1719,99 +1836,6 @@ export default function AdminCatalogClient({
                   placeholder="Chi tiết các file đính kèm..."
                   className="w-full p-3 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
-              </div>
-
-              <div className="space-y-2 pt-2">
-                <label className="text-xs text-white font-medium block">
-                  Thẻ Tags:
-                </label>
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={newTagName}
-                    onChange={(e) => setNewTagName(e.target.value.trim())}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        createTag();
-                      }
-                    }}
-                    placeholder="Nhập tên thẻ mới và nhấn Enter..."
-                    className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
-                  <button
-                    type="button"
-                    onClick={createTag}
-                    className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
-                  >
-                    Thêm
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((t) => {
-                    const isSelected = form.tagIds.includes(t.id);
-                    return (
-                      <div
-                        key={t.id}
-                        className="flex items-center gap-1"
-                      >
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (isSelected) {
-                              setForm((prev: ItemForm | null) => {
-                                if (!prev) return prev;
-                                return {
-                                  ...prev,
-                                  tagIds: prev.tagIds.filter(
-                                    (x) => x !== t.id,
-                                  ),
-                                };
-                              });
-                            } else {
-                              setForm((prev: ItemForm | null) => {
-                                if (!prev) return prev;
-                                return {
-                                  ...prev,
-                                  tagIds: [...prev.tagIds, t.id],
-                                };
-                              });
-                            }
-                          }}
-                          className={`px-3 py-1.5 rounded-l-lg text-xs font-medium transition-all ${
-                            isSelected
-                              ? "bg-thuy-400 text-thuy-950 font-bold"
-                              : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
-                          }`}
-                        >
-                          #{t.name}
-                        </button>
-                        {isSelected && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setForm((prev: ItemForm | null) => {
-                                if (!prev) return prev;
-                                return {
-                                  ...prev,
-                                  tagIds: prev.tagIds.filter(
-                                    (x) => x !== t.id,
-                                  ),
-                                };
-                              });
-                            }}
-                            className="rounded-r-lg bg-red-600 text-white text-xs px-2 py-1.5 hover:bg-red-500 transition-colors"
-                            title="Bỏ chọn thẻ"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
 
               <div className="flex flex-wrap gap-4">
@@ -1868,29 +1892,6 @@ export default function AdminCatalogClient({
                       updateForm({ priceAfterDiscount: e.target.value })
                     }
                     placeholder="Tự động tính nếu để trống"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs text-white">Định dạng file:</label>
-                  <input
-                    type="text"
-                    value={form.fileFormat}
-                    onChange={(e) => updateForm({ fileFormat: e.target.value })}
-                    placeholder="AutoCAD .DWG / 3ds Max 2024"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs text-white">Dung lượng:</label>
-                  <input
-                    type="text"
-                    value={form.fileSize}
-                    onChange={(e) => updateForm({ fileSize: e.target.value })}
-                    placeholder="185 MB / 1.2 GB"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
@@ -2078,8 +2079,8 @@ export default function AdminCatalogClient({
                         ? "và tất cả hạng mục thuộc nhóm này?"
                         : confirmDelete.type === "category"
                           ? "?"
-                                                        : "?"} Hành động
-                      này không thể hoàn tác.
+                          : "?"}{" "}
+                      Hành động này không thể hoàn tác.
                     </p>
                   </div>
                 </div>
