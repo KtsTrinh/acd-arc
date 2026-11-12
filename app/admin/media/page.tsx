@@ -160,34 +160,34 @@ export default function AdminMediaPage() {
       const items = target.querySelectorAll('[data-media-item]') || [];
       const newlySelected: string[] = [];
 
-    items.forEach((item) => {
-      const itemRect = item.getBoundingClientRect();
-      const itemRelativeRect = {
-        left: itemRect.left - rect.left,
-        top: itemRect.top - rect.top,
-        right: itemRect.right - rect.left,
-        bottom: itemRect.bottom - rect.top,
-      };
+      items.forEach((item) => {
+        const itemRect = item.getBoundingClientRect();
+        const itemRelativeRect = {
+          left: itemRect.left - rect.left,
+          top: itemRect.top - rect.top,
+          right: itemRect.right - rect.left,
+          bottom: itemRect.bottom - rect.top,
+        };
 
-      const intersects =
-        itemRelativeRect.right > selectRect.left &&
-        itemRelativeRect.left < selectRect.right &&
-        itemRelativeRect.bottom > selectRect.top &&
-        itemRelativeRect.top < selectRect.bottom;
+        const intersects =
+          itemRelativeRect.right > selectRect.left &&
+          itemRelativeRect.left < selectRect.right &&
+          itemRelativeRect.bottom > selectRect.top &&
+          itemRelativeRect.top < selectRect.bottom;
 
-      if (intersects) {
-        const mediaId = item.getAttribute('data-media-item');
-        if (mediaId && !selectedMediaIds.includes(mediaId)) {
-          newlySelected.push(mediaId);
+        if (intersects) {
+          const mediaId = item.getAttribute('data-media-item');
+          if (mediaId && !selectedMediaIds.includes(mediaId)) {
+            newlySelected.push(mediaId);
+          }
         }
+      });
+
+      if (newlySelected.length > 0) {
+        setSelectedMediaIds((prev) => [...prev, ...newlySelected]);
       }
-    });
 
-    if (newlySelected.length > 0) {
-      setSelectedMediaIds((prev) => [...prev, ...newlySelected]);
-    }
-
-    justDraggedRef.current = true;
+      justDraggedRef.current = true;
     }
 
     setDragStart(null);
@@ -513,6 +513,17 @@ export default function AdminMediaPage() {
             onMouseUp={handleGridMouseUp}
             className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
           >
+            {isDragging && dragStart && dragCurrent && (
+              <div
+                className="absolute border-2 border-thuy-400 bg-thuy-400/20 pointer-events-none z-20"
+                style={{
+                  left: Math.min(dragStart.x, dragCurrent.x),
+                  top: Math.min(dragStart.y, dragCurrent.y),
+                  width: Math.abs(dragCurrent.x - dragStart.x),
+                  height: Math.abs(dragCurrent.y - dragStart.y),
+                }}
+              />
+            )}
             {mediaList.map((item) => {
               const itemIsVideo = isVideoUrl(item.url || "");
               const isSelected = selectedMediaIds.includes(item.id);
