@@ -273,7 +273,9 @@ export default function AdminCatalogClient({
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
-  const [mediaTarget, setMediaTarget] = useState<"thumbnailImage" | "thumbnailVideo" | null>(null);
+  const [mediaTarget, setMediaTarget] = useState<
+    "thumbnailImage" | "thumbnailVideo" | null
+  >(null);
   const [thumbImage, setThumbImage] = useState("");
   const [thumbVideo, setThumbVideo] = useState("");
   const [notice, setNotice] = useState<{
@@ -325,17 +327,30 @@ export default function AdminCatalogClient({
     let mounted = true;
     const fetchAll = async () => {
       try {
-        const [itemsRes, projectsRes, categoriesRes, tagsRes] = await Promise.allSettled([
-          fetch("/api/products?includeInactive=1"),
-          fetch("/api/projects"),
-          fetch("/api/categories"),
-          fetch("/api/tags"),
-        ]);
+        const [itemsRes, projectsRes, categoriesRes, tagsRes] =
+          await Promise.allSettled([
+            fetch("/api/products?includeInactive=1"),
+            fetch("/api/projects"),
+            fetch("/api/categories"),
+            fetch("/api/tags"),
+          ]);
         if (!mounted) return;
-        const itemsData = itemsRes.status === "fulfilled" ? await itemsRes.value.json().catch(() => ({})) : {};
-        const projectsData = projectsRes.status === "fulfilled" ? await projectsRes.value.json().catch(() => ({})) : {};
-        const categoriesData = categoriesRes.status === "fulfilled" ? await categoriesRes.value.json().catch(() => ({})) : {};
-        const tagsData = tagsRes.status === "fulfilled" ? await tagsRes.value.json().catch(() => ({})) : {};
+        const itemsData =
+          itemsRes.status === "fulfilled"
+            ? await itemsRes.value.json().catch(() => ({}))
+            : {};
+        const projectsData =
+          projectsRes.status === "fulfilled"
+            ? await projectsRes.value.json().catch(() => ({}))
+            : {};
+        const categoriesData =
+          categoriesRes.status === "fulfilled"
+            ? await categoriesRes.value.json().catch(() => ({}))
+            : {};
+        const tagsData =
+          tagsRes.status === "fulfilled"
+            ? await tagsRes.value.json().catch(() => ({}))
+            : {};
         setItems(itemsData.products || []);
         setProjects(projectsData.projects || []);
         setCategories(categoriesData.categories || []);
@@ -600,7 +615,10 @@ export default function AdminCatalogClient({
         media: m,
       }));
       setGalleryItems((prev) => [...prev, ...newItems]);
-      setNotice({ type: "ok", text: `Đã thêm ${mediaArray.length} mục vào Gallery.` });
+      setNotice({
+        type: "ok",
+        text: `Đã thêm ${mediaArray.length} mục vào Gallery.`,
+      });
       return;
     }
 
@@ -655,7 +673,9 @@ export default function AdminCatalogClient({
       const remaining = galleryItems.filter((i) => i.mediaId !== mediaId);
       setGalleryItems(remaining);
       if (galleryCoverMediaId === mediaId) {
-        setGalleryCoverMediaId(remaining.length > 0 ? remaining[0].mediaId : null);
+        setGalleryCoverMediaId(
+          remaining.length > 0 ? remaining[0].mediaId : null,
+        );
       }
       setNotice({ type: "ok", text: "Đã gỡ mục khỏi Gallery." });
       return;
@@ -722,7 +742,10 @@ export default function AdminCatalogClient({
       const remaining = galleryItems.filter(
         (i) => !gallerySelectedForDelete.has(i.mediaId),
       );
-      if (galleryCoverMediaId && gallerySelectedForDelete.has(galleryCoverMediaId)) {
+      if (
+        galleryCoverMediaId &&
+        gallerySelectedForDelete.has(galleryCoverMediaId)
+      ) {
         setGalleryCoverMediaId(
           remaining.length > 0 ? remaining[0].mediaId : null,
         );
@@ -769,9 +792,7 @@ export default function AdminCatalogClient({
           galleryCoverMediaId &&
           gallerySelectedForDelete.has(galleryCoverMediaId)
         ) {
-          setGalleryCoverMediaId(
-            mapped.length > 0 ? mapped[0].mediaId : null,
-          );
+          setGalleryCoverMediaId(mapped.length > 0 ? mapped[0].mediaId : null);
         }
       }
     } catch (err) {
@@ -822,10 +843,7 @@ export default function AdminCatalogClient({
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
             Danh Mục Sản Phẩm
           </h1>
-          <p className="text-xs text-slate-600">
-            Gộp Dự Án Kiến Trúc · Danh Mục Dự Án · Sản Phẩm &amp; File 3D/CAD —
-            gồm 4 nhóm: Dự án kiến trúc, Nội thất, Xây dựng và File kỹ thuật số.
-          </p>
+          <p className="text-xs text-slate-600">Các sản phẩm của ACD.</p>
         </div>
 
         <div className="flex items-center gap-3 sm:gap-4">
@@ -1096,27 +1114,27 @@ export default function AdminCatalogClient({
                           (i) => i.productGroup === g,
                         ).length;
                         const canDelete = used === 0;
-                          return (
-                            <span
-                              key={g}
-                              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
-                            >
-                              {g}
-                              {canDelete && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteGroup(g);
-                                  }}
-                                  className="p-0.5 hover:text-red-400"
-                                  title="Xoá nhóm"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              )}
-                            </span>
-                          );
-                        })}
+                        return (
+                          <span
+                            key={g}
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
+                          >
+                            {g}
+                            {canDelete && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteGroup(g);
+                                }}
+                                className="p-0.5 hover:text-red-400"
+                                title="Xoá nhóm"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            )}
+                          </span>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -1291,7 +1309,9 @@ export default function AdminCatalogClient({
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <label className="text-xs text-slate-300">Ảnh Thumbnail</label>
+                      <label className="text-xs text-slate-300">
+                        Ảnh Thumbnail
+                      </label>
                       <button
                         type="button"
                         onClick={() => {
@@ -1306,19 +1326,17 @@ export default function AdminCatalogClient({
                     <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
                       {thumbImage ? (
                         <img
-                          src={
-                            (() => {
-                              const isDrive =
-                                /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)/.test(
+                          src={(() => {
+                            const isDrive =
+                              /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)/.test(
+                                thumbImage,
+                              );
+                            return isDrive
+                              ? `/api/media/image-proxy?url=${encodeURIComponent(
                                   thumbImage,
-                                );
-                              return isDrive
-                                ? `/api/media/image-proxy?url=${encodeURIComponent(
-                                    thumbImage,
-                                  )}`
-                                : normalizeMediaUrl(thumbImage);
-                            })()
-                          }
+                                )}`
+                              : normalizeMediaUrl(thumbImage);
+                          })()}
                           alt="Image thumbnail preview"
                           className="w-full h-full object-cover"
                         />
@@ -1343,7 +1361,9 @@ export default function AdminCatalogClient({
 
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <label className="text-xs text-slate-300">Video Thumbnail</label>
+                      <label className="text-xs text-slate-300">
+                        Video Thumbnail
+                      </label>
                       <button
                         type="button"
                         onClick={() => {
@@ -1368,7 +1388,9 @@ export default function AdminCatalogClient({
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
                           <VideoIcon className="w-6 h-6" />
-                          <span className="text-[10px]">Chưa chọn video thumbnail</span>
+                          <span className="text-[10px]">
+                            Chưa chọn video thumbnail
+                          </span>
                         </div>
                       )}
                     </div>
@@ -1433,7 +1455,13 @@ export default function AdminCatalogClient({
                         </span>
                         {gallerySelectedForDelete.size > 0 && (
                           <span className="flex items-center gap-1.5 text-xs text-red-400">
-                            Đã chọn:{<b className="font-bold">{gallerySelectedForDelete.size}</b>} mục
+                            Đã chọn:
+                            {
+                              <b className="font-bold">
+                                {gallerySelectedForDelete.size}
+                              </b>
+                            }{" "}
+                            mục
                           </span>
                         )}
                       </div>
@@ -1488,8 +1516,7 @@ export default function AdminCatalogClient({
                           /\.(mp4|webm|mov|avi|mkv)(\?|$)/i.test(
                             item.media.url,
                           );
-                        const itemIsVideo =
-                          isVideoFromMime || isVideoFromExt;
+                        const itemIsVideo = isVideoFromMime || isVideoFromExt;
                         const isCover = galleryCoverMediaId === item.mediaId;
                         const isSelectedForDelete =
                           gallerySelectedForDelete.has(item.mediaId);
@@ -1799,8 +1826,20 @@ export default function AdminCatalogClient({
           setMediaTarget(null);
         }}
         multiple={false}
-        title={mediaTarget === "thumbnailVideo" ? "Chọn Video Thumbnail" : mediaTarget === "thumbnailImage" ? "Chọn Ảnh Thumbnail" : "Chọn Thumbnail"}
-        mediaType={mediaTarget === "thumbnailVideo" ? "video" : mediaTarget === "thumbnailImage" ? "image" : "all"}
+        title={
+          mediaTarget === "thumbnailVideo"
+            ? "Chọn Video Thumbnail"
+            : mediaTarget === "thumbnailImage"
+              ? "Chọn Ảnh Thumbnail"
+              : "Chọn Thumbnail"
+        }
+        mediaType={
+          mediaTarget === "thumbnailVideo"
+            ? "video"
+            : mediaTarget === "thumbnailImage"
+              ? "image"
+              : "all"
+        }
         allowExternalUrl={false}
       />
 
@@ -1824,12 +1863,8 @@ export default function AdminCatalogClient({
               setConfirmDelete((prev) => ({ ...prev, open: false }));
           }}
         >
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-          />
-          <div
-            className="relative w-full max-w-md mx-4 transition-all duration-200 opacity-100 scale-100"
-          >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" />
+          <div className="relative w-full max-w-md mx-4 transition-all duration-200 opacity-100 scale-100">
             <div className="bg-thuy-900 border border-thuy-700 rounded-2xl shadow-2xl overflow-hidden">
               <div className="p-6">
                 <div className="flex items-start gap-3 mb-4">
@@ -1839,7 +1874,9 @@ export default function AdminCatalogClient({
                       Xác nhận xoá sản phẩm
                     </h3>
                     <p className="text-slate-400 text-xs mt-1">
-                      Bạn có chắc muốn xoá <b className="text-white">{confirmDelete.name}</b>? Hành động này không thể hoàn tác.
+                      Bạn có chắc muốn xoá{" "}
+                      <b className="text-white">{confirmDelete.name}</b>? Hành
+                      động này không thể hoàn tác.
                     </p>
                   </div>
                 </div>
