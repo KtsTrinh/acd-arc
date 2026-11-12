@@ -1870,7 +1870,7 @@ export default function AdminCatalogClient({
                     Bỏ chọn tất cả
                   </button>
                 </div>
-                <div className="flex flex-wrap justify-between gap-2">
+                <div className="flex flex-wrap justify-evenly gap-2">
                   {tags.map((t) => {
                     const isSelected = form.tagIds.includes(t.id);
                     return (
@@ -1942,7 +1942,7 @@ export default function AdminCatalogClient({
                     Tải file trực tiếp lên kho private (tối đa 4MB):
                   </label>
                   <div className="flex items-center gap-2">
-                    <label className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-slate-700 cursor-pointer hover:border-thuy-500">
+                    <label className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-thuy-200 border border-thuy-300 text-xs text-slate-700 cursor-pointer hover:border-thuy-500">
                       <Upload className="w-3.5 h-3.5" />
                       <span className="truncate">
                         {form.fileName || "Chọn file (zip, dwg, skp, rar...)"}
