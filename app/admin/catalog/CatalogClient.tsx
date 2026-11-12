@@ -1082,6 +1082,7 @@ export default function AdminCatalogClient({
                   <div className="relative">
                     <select
                       value={form.productGroup || ""}
+                      required
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val === "+new") {
@@ -1177,6 +1178,7 @@ export default function AdminCatalogClient({
                   <div className="relative">
                     <select
                       value={form.productCategory || ""}
+                      required
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val === "+new") {
@@ -1283,42 +1285,46 @@ export default function AdminCatalogClient({
                 <label className="text-xs text-white">
                   Mô tả tóm tắt sản phẩm:
                 </label>
-                <input
-                  type="text"
-                  value={form.shortDesc}
-                  onChange={(e) => updateForm({ shortDesc: e.target.value })}
-                  placeholder="Mô tả ngắn gọn về sản phẩm..."
+                  <input
+                    type="text"
+                    value={form.shortDesc}
+                    required
+                    onChange={(e) => updateForm({ shortDesc: e.target.value })}
+                    placeholder="Mô tả ngắn gọn về sản phẩm..."
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs text-white">Chủ đầu tư:</label>
-                  <input
-                    type="text"
-                    value={form.client || ""}
-                    onChange={(e) => updateForm({ client: e.target.value })}
-                    placeholder="Tên chủ đầu tư..."
+                    <input
+                      type="text"
+                      value={form.client || ""}
+                      required
+                      onChange={(e) => updateForm({ client: e.target.value })}
+                      placeholder="Tên chủ đầu tư..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Địa điểm:</label>
-                  <input
-                    type="text"
-                    value={form.location}
-                    onChange={(e) => updateForm({ location: e.target.value })}
-                    placeholder="Quận 1, TP.HCM..."
+                    <input
+                      type="text"
+                      value={form.location}
+                      required
+                      onChange={(e) => updateForm({ location: e.target.value })}
+                      placeholder="Quận 1, TP.HCM..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Năm thiết kế:</label>
-                  <input
-                    type="number"
-                    value={form.year}
-                    onChange={(e) => updateForm({ year: e.target.value })}
-                    placeholder="2024"
+                    <input
+                      type="number"
+                      value={form.year}
+                      required
+                      onChange={(e) => updateForm({ year: e.target.value })}
+                      placeholder="2024"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>

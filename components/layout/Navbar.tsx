@@ -30,6 +30,9 @@ export default function Navbar() {
     {},
   );
   const [groupsLoaded, setGroupsLoaded] = useState(false);
+  const [openDesktopSub, setOpenDesktopSub] = useState<Set<string>>(
+    new Set(),
+  );
   const [openMobileSub, setOpenMobileSub] = useState<Set<string>>(
     new Set(),
   );
@@ -42,7 +45,18 @@ export default function Navbar() {
       setIsScrolled(window.scrollY > 30);
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("nav")) {
+        setOpenDesktopSub(new Set());
+      }
+    };
+    window.addEventListener("click", handleClickOutside);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("click", handleClickOutside);
+    };
   }, []);
 
   useEffect(() => {
@@ -169,47 +183,76 @@ export default function Navbar() {
               Trang Chủ
             </Link>
             {groupsLoaded &&
-              groups.map((group) => (
-                <div
-                  key={group}
-                  className="relative group"
-                >
-                  <button
-                    onClick={(e) => {
-                      if (pathname.includes("/products")) {
-                        router.push(`/products?productGroup=${encodeURIComponent(group)}`);
-                      } else {
-                        router.push(`/products?productGroup=${encodeURIComponent(group)}`);
+              groups.map((group) => {
+                const isOpen = openDesktopSub.has(group);
+                return (
+                  <div key={group} className="relative group">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenDesktopSub((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(group)) {
+                            next.delete(group);
+                          } else {
+                            next.clear();
+                            next.add(group);
+                          }
+                          return next;
+                        });
+                      }}
+                      className={
+                        isActiveGroup(group)
+                          ? "flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all"
+                          : "flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all"
                       }
-                    }}
-                    className={
-                      isActiveGroup(group)
-                        ? "flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all"
-                        : "flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all"
-                    }
-                  >
-                    {group}
+                    >
+                      {group}
+                    </button>
                     {groupCategories[group] && groupCategories[group].length > 0 && (
-                      <ChevronDown className="w-3 h-3 ml-1 text-slate-400 group-hover:text-thuy-300 transition-colors" />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenDesktopSub((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(group)) {
+                              next.delete(group);
+                            } else {
+                              next.clear();
+                              next.add(group);
+                            }
+                            return next;
+                          });
+                        }}
+                        className="px-2 py-2 rounded-full text-slate-400 hover:text-thuy-400 transition-colors"
+                        title="Xem hạng mục"
+                      >
+                        <ChevronDown
+                          className={`w-3 h-3 ${isOpen ? "rotate-180" : ""}`}
+                        />
+                      </button>
                     )}
-                  </button>
 
-                  {groupCategories[group] && groupCategories[group].length > 0 && (
-                    <div className="absolute left-0 top-full mt-1 w-56 rounded-xl bg-thuy-900 border border-thuy-700 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                      {groupCategories[group].map((cat) => (
-                        <Link
-                          key={cat}
-                          href={`/products?productGroup=${encodeURIComponent(group)}&productCategory=${encodeURIComponent(cat)}`}
-                          onClick={() => setSearchOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-thuy-800 hover:text-white transition-colors border-l-2 border-transparent hover:border-thuy-400"
-                        >
-                          {cat}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+                    {isOpen && groupCategories[group] && groupCategories[group].length > 0 && (
+                      <div className="absolute left-0 top-full mt-1 w-56 rounded-xl bg-thuy-900 border border-thuy-700 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                        {groupCategories[group].map((cat) => (
+                          <Link
+                            key={cat}
+                            href={`/products?productGroup=${encodeURIComponent(group)}&productCategory=${encodeURIComponent(cat)}`}
+                            onClick={() => {
+                              setOpenDesktopSub(new Set());
+                              setSearchOpen(false);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-thuy-800 hover:text-white transition-colors border-l-2 border-transparent hover:border-thuy-400"
+                          >
+                            {cat}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
           </nav>
 
           <div className="flex items-center gap-3">
