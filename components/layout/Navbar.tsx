@@ -94,8 +94,13 @@ export default function Navbar() {
   }, []);
 
   const searchTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isInitialSearch = React.useRef(true);
 
   useEffect(() => {
+    if (isInitialSearch.current) {
+      isInitialSearch.current = false;
+      return;
+    }
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     if (!searchQuery.trim()) {
       router.push(`/products`);
