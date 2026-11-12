@@ -59,6 +59,7 @@ interface ItemForm {
   year: string;
   landArea: string;
   buildingArea: string;
+  floors: string;
   style: string;
   tagIds: string[];
   active: boolean;
@@ -88,6 +89,7 @@ const EMPTY_FORM: ItemForm = {
   year: "",
   landArea: "",
   buildingArea: "",
+  floors: "",
   style: "",
   tagIds: [],
   active: true,
@@ -121,6 +123,7 @@ export default function AdminCatalogClient({
   const [projects, setProjects] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
+  const [newTagName, setNewTagName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{
     id: string | null;
@@ -468,6 +471,7 @@ export default function AdminCatalogClient({
       year: item.year ? item.year.toString() : "",
       landArea: item.landArea ? item.landArea.toString() : "",
       buildingArea: item.buildingArea ? item.buildingArea.toString() : "",
+      floors: item.floors?.toString() || "",
       style: item.style || "",
       tagIds: item.tags?.map((t: any) => t.tagId) || [],
       active: item.active !== false,
@@ -523,6 +527,35 @@ export default function AdminCatalogClient({
         if (!prev) return prev;
         return { ...prev, tagIds: [...prev.tagIds, id] };
       });
+    }
+  };
+
+  const createTag = async () => {
+    const name = newTagName.trim();
+    if (!name) return;
+    try {
+      const res = await fetch("/api/tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      if (data.success && data.tag) {
+        setTags((prev) => [...prev, data.tag]);
+        setNewTagName("");
+        if (form && !form.tagIds.includes(data.tag.id)) {
+          setForm((prev: ItemForm | null) => {
+            if (!prev) return prev;
+            return { ...prev, tagIds: [...prev.tagIds, data.tag.id] };
+          });
+        }
+        setNotice({ type: "ok", text: `Đã tạo thẻ "${name}".` });
+      } else {
+        setNotice({ type: "err", text: data.error || "Không thể tạo thẻ tag." });
+      }
+    } catch (err) {
+      console.error(err);
+      setNotice({ type: "err", text: "Lỗi khi tạo thẻ tag." });
     }
   };
 
@@ -1232,7 +1265,7 @@ export default function AdminCatalogClient({
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs text-white">Địa điểm:</label>
                   <input
@@ -1240,6 +1273,16 @@ export default function AdminCatalogClient({
                     value={form.location}
                     onChange={(e) => updateForm({ location: e.target.value })}
                     placeholder="Quận 1, TP.HCM..."
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Năm thiết kế:</label>
+                  <input
+                    type="number"
+                    value={form.year}
+                    onChange={(e) => updateForm({ year: e.target.value })}
+                    placeholder="2024"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
@@ -1255,16 +1298,6 @@ export default function AdminCatalogClient({
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs text-white">Năm thiết kế:</label>
-                  <input
-                    type="number"
-                    value={form.year}
-                    onChange={(e) => updateForm({ year: e.target.value })}
-                    placeholder="2024"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
-                </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">
                     Diện tích đất (m²):
@@ -1292,6 +1325,16 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
+                  <label className="text-xs text-white">Tầng cao:</label>
+                  <input
+                    type="number"
+                    value={form.floors}
+                    onChange={(e) => updateForm({ floors: e.target.value })}
+                    placeholder="5"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
+                <div className="space-y-1">
                   <label className="text-xs text-white">Phong cách:</label>
                   <input
                     type="text"
@@ -1305,24 +1348,58 @@ export default function AdminCatalogClient({
 
               <div className="space-y-2 pt-2">
                 <label className="text-xs text-white font-medium block">
-                  Chọn thẻ Tags:
+                  Thẻ Tags:
                 </label>
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={newTagName}
+                    onChange={(e) => setNewTagName(e.target.value.trim())}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") createTag();
+                    }}
+                    placeholder="Nhập tên thẻ mới và nhấn Enter..."
+                    className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                  <button
+                    onClick={createTag}
+                    className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
+                  >
+                    Thêm
+                  </button>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {tags.map((t) => {
                     const isSelected = form.tagIds.includes(t.id);
                     return (
-                      <button
+                      <div
                         key={t.id}
-                        type="button"
-                        onClick={() => toggleTag(t.id)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                          isSelected
-                            ? "bg-thuy-400 text-thuy-950 font-bold"
-                            : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
-                        }`}
+                        className="flex items-center gap-1"
                       >
-                        #{t.name}
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => toggleTag(t.id)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                            isSelected
+                              ? "bg-thuy-400 text-thuy-950 font-bold"
+                              : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
+                          }`}
+                        >
+                          #{t.name}
+                        </button>
+                        {isSelected && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleTag(t.id);
+                            }}
+                            className="p-1 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white transition-colors"
+                            title="Bỏ chọn thẻ"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
                     );
                   })}
                 </div>

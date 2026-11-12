@@ -253,6 +253,7 @@ model Product {
   downloadLinkUrl        String?
   fileName               String?
   buildingArea           Float?
+  floors                 Int?
   client                 String?
   landArea               Float?
   location               String?
