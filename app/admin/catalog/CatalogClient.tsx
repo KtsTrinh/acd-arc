@@ -1109,7 +1109,7 @@ export default function AdminCatalogClient({
                           autoFocus
                           value={customGroupInput}
                           onChange={(e) =>
-                            setCustomGroupInput(e.target.value.trim())
+                            setCustomGroupInput(e.target.value)
                           }
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleAddCustomGroup();
@@ -1122,6 +1122,7 @@ export default function AdminCatalogClient({
                           className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                         />
                         <button
+                          type="button"
                           onClick={handleAddCustomGroup}
                           className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
                         >
@@ -1172,7 +1173,7 @@ export default function AdminCatalogClient({
                           autoFocus
                           value={customCategoryInput}
                           onChange={(e) =>
-                            setCustomCategoryInput(e.target.value.trim())
+                            setCustomCategoryInput(e.target.value)
                           }
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleAddCustomCategory();
@@ -1185,6 +1186,7 @@ export default function AdminCatalogClient({
                           className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                         />
                         <button
+                          type="button"
                           onClick={handleAddCustomCategory}
                           className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
                         >
