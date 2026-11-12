@@ -630,17 +630,6 @@ export default function AdminMediaPage() {
                 </div>
               );
             })}
-            {dragStart && dragCurrent && (
-              <div
-                className="absolute pointer-events-none bg-cyan-400/20 border border-cyan-400 rounded-sm z-10"
-                style={{
-                  left: Math.min(dragStart.x, dragCurrent.x),
-                  top: Math.min(dragStart.y, dragCurrent.y),
-                  width: Math.abs(dragCurrent.x - dragStart.x),
-                  height: Math.abs(dragCurrent.y - dragStart.y),
-                }}
-              />
-            )}
           </div>
         )}
       </div>
