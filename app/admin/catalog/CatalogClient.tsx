@@ -129,12 +129,13 @@ export default function AdminCatalogClient({
   initialTab?: string;
 }) {
   const [activeTab, setActiveTab] = useState(
-    initialTab && initialTab !== "ALL" ? initialTab : "ARCHITECTURE",
+    initialTab && initialTab !== "ALL" ? initialTab : "ALL",
   );
   const [items, setItems] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   /* ------------------------------------------------------------------ */
   /* Nhóm sản phẩm & Hạng mục (tự thêm mới)                             */
@@ -324,9 +325,20 @@ export default function AdminCatalogClient({
   }, []);
 
   const groupItems = useMemo(() => {
-    if (activeTab === "ALL") return items;
-    return items.filter((i) => i.productGroup === activeTab);
-  }, [items, activeTab]);
+    let result = items;
+    if (activeTab !== "ALL") {
+      result = result.filter((i) => i.productGroup === activeTab);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(
+        (i) =>
+          (i.name || "").toLowerCase().includes(q) ||
+          (i.slug || "").toLowerCase().includes(q),
+      );
+    }
+    return result;
+  }, [items, activeTab, searchQuery]);
 
   const openEdit = async (item: any) => {
     setForm({
@@ -798,6 +810,13 @@ export default function AdminCatalogClient({
             </option>
           ))}
         </select>
+        <input
+          type="text"
+          placeholder="Tìm sản phẩm theo tên..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="ml-3 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors sm:w-64"
+        />
       </div>
 
       {/* Policy banner */}
