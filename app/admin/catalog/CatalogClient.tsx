@@ -1731,12 +1731,16 @@ export default function AdminCatalogClient({
                     value={newTagName}
                     onChange={(e) => setNewTagName(e.target.value.trim())}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") createTag();
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        createTag();
+                      }
                     }}
                     placeholder="Nhập tên thẻ mới và nhấn Enter..."
                     className="flex-1 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                   <button
+                    type="button"
                     onClick={createTag}
                     className="px-3 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs hover:brightness-110"
                   >
@@ -1785,6 +1789,7 @@ export default function AdminCatalogClient({
                         </button>
                         {isSelected && (
                           <button
+                            type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               setForm((prev: ItemForm | null) => {
