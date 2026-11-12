@@ -33,6 +33,7 @@ import {
   Image as ImageIcon,
   Video as VideoIcon,
   GripVertical,
+  AlertCircle,
 } from "lucide-react";
 
 interface ItemForm {
@@ -136,6 +137,11 @@ export default function AdminCatalogClient({
   const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState<{
+    id: string | null;
+    name: string | null;
+    open: boolean;
+  }>({ id: null, name: null, open: false });
 
   /* ------------------------------------------------------------------ */
   /* Nhóm sản phẩm & Hạng mục (tự thêm mới)                             */
@@ -528,14 +534,25 @@ export default function AdminCatalogClient({
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Bạn có chắc muốn xoá "${name}"?`)) return;
-    const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
-    const data = await res.json();
-    if (data.success) {
-      setNotice({ type: "ok", text: "Đã xoá mục danh mục." });
-      fetchAll();
-    } else {
-      setNotice({ type: "err", text: data.error || "Không xoá được." });
+    setConfirmDelete({ id, name, open: true });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!confirmDelete.id) return;
+    setConfirmDelete((prev) => ({ ...prev, open: false }));
+    try {
+      const res = await fetch(`/api/products/${confirmDelete.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setNotice({ type: "ok", text: "Đã xoá mục danh mục." });
+        fetchAll();
+      } else {
+        setNotice({ type: "err", text: data.error || "Không xoá được." });
+      }
+    } catch (err) {
+      setNotice({ type: "err", text: "Lỗi khi xoá mục danh mục." });
     }
   };
 
@@ -789,7 +806,7 @@ export default function AdminCatalogClient({
           </p>
         </div>
 
-        {(
+        <div className="flex items-center gap-3 sm:gap-4">
           <button
             onClick={() => openCreate()}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan transition-all self-start sm:self-auto"
@@ -797,26 +814,26 @@ export default function AdminCatalogClient({
             <Plus className="w-4 h-4" />
             <span>Thêm Sản Phẩm Mới</span>
           </button>
-        )}
-        <select
-          value={activeTab}
-          onChange={(e) => setActiveTab(e.target.value)}
-          className="ml-3 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
-        >
-          <option value="ALL">Tất cả sản phẩm</option>
-          {allGroups.map((g) => (
-            <option key={g} value={g}>
-              {g}
-            </option>
-          ))}
-        </select>
-        <input
-          type="text"
-          placeholder="Tìm sản phẩm theo tên..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="ml-3 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors sm:w-64"
-        />
+          <select
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
+          >
+            <option value="ALL">Tất cả sản phẩm</option>
+            {allGroups.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            placeholder="Tìm sản phẩm theo tên..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors sm:w-64"
+          />
+        </div>
       </div>
 
       {/* Policy banner */}
@@ -1777,6 +1794,56 @@ export default function AdminCatalogClient({
         title="Chọn ảnh/video vào Gallery sản phẩm"
         mediaType="all"
       />
+
+      {/* Xoá xác nhận dialog */}
+      {confirmDelete.open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget)
+              setConfirmDelete((prev) => ({ ...prev, open: false }));
+          }}
+        >
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+          />
+          <div
+            className="relative w-full max-w-md mx-4 transition-all duration-200 opacity-100 scale-100"
+          >
+            <div className="bg-thuy-900 border border-thuy-700 rounded-2xl shadow-2xl overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="text-white font-bold text-sm">
+                      Xác nhận xoá sản phẩm
+                    </h3>
+                    <p className="text-slate-400 text-xs mt-1">
+                      Bạn có chắc muốn xoá <b className="text-white">{confirmDelete.name}</b>? Hành động này không thể hoàn tác.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-3 pt-4">
+                  <button
+                    onClick={() =>
+                      setConfirmDelete((prev) => ({ ...prev, open: false }))
+                    }
+                    className="px-4 py-2 rounded-xl bg-thuy-800 text-slate-400 hover:bg-thuy-700 hover:text-white text-xs font-semibold border border-thuy-700 transition-all"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={handleConfirmDelete}
+                    className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-500 text-xs font-semibold shadow-lg shadow-red-500/20 transition-all"
+                  >
+                    Xoá
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1988,17 +2055,17 @@ function CatalogTable({
                   <div className="inline-flex gap-1.5">
                     <button
                       onClick={() => onEdit(p)}
-                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-700 border border-thuy-700"
+                      className="p-2 rounded-lg bg-cyan-900/50 hover:bg-cyan-800 text-cyan-400 border border-cyan-700/50 hover:border-cyan-500 transition-all"
                       title="Sửa"
                     >
-                      <Pencil className="w-3.5 h-3.5" />
+                      <Pencil className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => onDelete(p.id, p.name)}
-                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
+                      className="p-2 rounded-lg bg-red-900/50 hover:bg-red-800 text-red-400 border border-red-700/50 hover:border-red-500 transition-all"
                       title="Xoá"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </td>
