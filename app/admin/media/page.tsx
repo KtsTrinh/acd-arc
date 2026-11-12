@@ -46,6 +46,7 @@ export default function AdminMediaPage() {
     y: number;
   } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [dragHoveredIds, setDragHoveredIds] = useState<Set<string>>(new Set());
   const gridRef = useRef<HTMLDivElement>(null);
   const justDraggedRef = useRef(false);
 
@@ -114,6 +115,42 @@ export default function AdminMediaPage() {
     const rect = target.getBoundingClientRect();
     if (!rect) return;
     setDragCurrent({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+
+    const endX = e.clientX - rect.left;
+    const endY = e.clientY - rect.top;
+
+    const selectRect = {
+      left: Math.min(dragStart.x, endX),
+      top: Math.min(dragStart.y, endY),
+      right: Math.max(dragStart.x, endX),
+      bottom: Math.max(dragStart.y, endY),
+    };
+
+    const items = target.querySelectorAll('[data-media-item]') || [];
+    const hovered: Set<string> = new Set();
+
+    items.forEach((item) => {
+      const itemRect = item.getBoundingClientRect();
+      const itemRelativeRect = {
+        left: itemRect.left - rect.left,
+        top: itemRect.top - rect.top,
+        right: itemRect.right - rect.left,
+        bottom: itemRect.bottom - rect.top,
+      };
+
+      const intersects =
+        itemRelativeRect.right > selectRect.left &&
+        itemRelativeRect.left < selectRect.right &&
+        itemRelativeRect.bottom > selectRect.top &&
+        itemRelativeRect.top < selectRect.bottom;
+
+      if (intersects) {
+        const mediaId = item.getAttribute('data-media-item');
+        if (mediaId) hovered.add(mediaId);
+      }
+    });
+
+    setDragHoveredIds(hovered);
   };
 
   const handleGridMouseUp = (_e: React.MouseEvent) => {
@@ -194,6 +231,7 @@ export default function AdminMediaPage() {
     setDragStart(null);
     setDragCurrent(null);
     setIsDragging(false);
+    setDragHoveredIds(new Set());
   };
 
   const toggleSelectMedia = (id: string) => {
@@ -389,7 +427,23 @@ export default function AdminMediaPage() {
             <span>Upload File Ảnh</span>
           </button>
 
-          
+          <button
+            onClick={() => setUrlModalOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs hover:brightness-110 shadow-glow-cyan transition-all"
+          >
+            <LinkIcon className="w-3.5 h-3.5" />
+            <span>Thêm từ URL</span>
+          </button>
+
+          {selectedMediaIds.length > 0 && (
+            <button
+              onClick={() => setSelectedMediaIds([])}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-thuy-800 text-slate-400 hover:bg-thuy-700 hover:text-white text-xs font-semibold border border-thuy-700 transition-all"
+            >
+              <X className="w-3 h-3" />
+              <span>Bỏ chọn hết</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -462,18 +516,27 @@ export default function AdminMediaPage() {
             )}
           </div>
           {selectedMediaIds.length > 0 && (
-            <button
-              onClick={handleBulkDelete}
-              disabled={isBulkDeleting}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 text-xs font-semibold disabled:opacity-50"
-            >
-              {isBulkDeleting ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Trash2 className="w-3.5 h-3.5" />
-              )}
-              <span>Xóa đã chọn</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedMediaIds([])}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-thuy-800 text-slate-400 hover:bg-thuy-700 hover:text-white text-xs font-semibold border border-thuy-700 transition-all"
+              >
+                <X className="w-3 h-3" />
+                <span>Bỏ chọn hết</span>
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                disabled={isBulkDeleting}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 text-xs font-semibold disabled:opacity-50"
+              >
+                {isBulkDeleting ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Trash2 className="w-3.5 h-3.5" />
+                )}
+                <span>Xóa đã chọn</span>
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -500,8 +563,12 @@ export default function AdminMediaPage() {
             {mediaList.map((item) => {
               const itemIsVideo = isVideoUrl(item.url || "");
               const isSelected = selectedMediaIds.includes(item.id);
-              const imgSrc = normalizeMediaUrl(item.url || "");
-              const vidSrc = itemIsVideo ? playableVideoUrl(item.url || "") : "";
+              const rawUrl = item.url || "";
+              const isDriveUrl = /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)/i.test(rawUrl);
+              const imgSrc = isDriveUrl
+                ? `/api/media/image-proxy?url=${encodeURIComponent(rawUrl)}`
+                : normalizeMediaUrl(rawUrl);
+              const vidSrc = itemIsVideo ? playableVideoUrl(rawUrl) : "";
 
               return (
                 <div
@@ -509,7 +576,7 @@ export default function AdminMediaPage() {
                   data-media-item={item.id}
                   onMouseDown={(e) => e.stopPropagation()}
                   onClick={() => toggleSelectMedia(item.id)}
-                  className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer ${isSelected ? "border-thuy-400 ring-2 ring-thuy-400/30" : "border-thuy-750 hover:border-thuy-400"}`}
+                  className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer ${dragHoveredIds.has(item.id) ? "border-cyan-400 bg-cyan-400/10" : isSelected ? "border-thuy-400 ring-2 ring-thuy-400/30" : "border-thuy-750 hover:border-thuy-400"}`}
                 >
                   {itemIsVideo && vidSrc ? (
                     <video

@@ -83,6 +83,14 @@ export async function POST(request: Request) {
 
       const normalizedUrl = normalizeMediaUrl(url);
 
+      // Idempotent: nếu URL đã tồn tại trong Media Library, trả về record cũ
+      const existing = await prisma.media.findFirst({
+        where: { url: normalizedUrl },
+      });
+      if (existing) {
+        return NextResponse.json({ success: true, media: existing, external: true, fromCache: true });
+      }
+
       // Lưu vào cơ sở dữ liệu để có mediaId thực, sau đó gắn vào gallery
       const media = await createMediaItem({
         filename: filename || url.split("/").pop()?.split("?")[0] || "media.jpg",
