@@ -195,7 +195,7 @@ export default function AdminTagsPage() {
           </button>
         </form>
 
-        <div className="pt-4 border-t border-thuy-750 flex flex-wrap gap-2.5">
+        <div className="pt-4 border-t border-thuy-750 flex flex-wrap justify-evenly gap-2.5">
           {tags.map((t) => (
             <div
               key={t.id}
