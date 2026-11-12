@@ -256,6 +256,19 @@ export default function AdminCatalogClient({
 
   const handleConfirmDeleteCategory = () => {
     if (!confirmDelete.id || !confirmDelete.group) return;
+    const usedBy = items.filter(
+      (i) =>
+        i.productCategory === confirmDelete.id &&
+        i.productGroup === confirmDelete.group,
+    );
+    if (usedBy.length > 0) {
+      setConfirmDelete({ id: null, name: null, open: false, type: "product" });
+      setNotice({
+        type: "err",
+        text: `Không xoá được hạng mục "${confirmDelete.name}". Có ${usedBy.length} sản phẩm đang thuộc hạng mục này.`,
+      });
+      return;
+    }
     setCustomCategories((prev) =>
       prev.filter(
         (c) => !(c.name === confirmDelete.id && c.group === confirmDelete.group),
@@ -1123,25 +1136,22 @@ export default function AdminCatalogClient({
                       const used = items.filter(
                         (i) => i.productGroup === g,
                       ).length;
-                      const canDelete = used === 0;
                       return (
                         <span
                           key={g}
                           className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
                         >
                           {g}
-                          {canDelete && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteGroup(g);
-                              }}
-                              className="p-0.5 hover:text-red-400"
-                              title="Xoá nhóm"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteGroup(g);
+                            }}
+                            className="p-0.5 hover:text-red-400"
+                            title={used > 0 ? "Nhóm đang được sử dụng" : "Xoá nhóm"}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
                         </span>
                       );
                     })}
@@ -1162,21 +1172,20 @@ export default function AdminCatalogClient({
                             i.productCategory === c &&
                             i.productGroup === form.productGroup,
                         ).length;
-                        const canDelete = isCustom && used === 0;
                         return (
                           <span
                             key={c}
                             className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
                           >
                             {c}
-                            {canDelete && (
+                            {isCustom && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleDeleteCategory(c, form.productGroup);
                                 }}
                                 className="p-0.5 hover:text-red-400"
-                                title="Xoá"
+                                title={used > 0 ? "Hạng mục đang được sử dụng" : "Xoá"}
                               >
                                 <Trash2 className="w-3 h-3" />
                               </button>
