@@ -146,7 +146,11 @@ export default function AdminCatalogClient({
   /* ------------------------------------------------------------------ */
   /* Nhóm sản phẩm & Hạng mục (tự thêm mới)                             */
   /* ------------------------------------------------------------------ */
-  const [groups, setGroups] = useState<string[]>([...DEFAULT_GROUPS]);
+  const [groups, setGroups] = useState<string[]>(() => {
+    const stored = localStorage.getItem("acd_product_groups");
+    const custom = stored ? JSON.parse(stored) : [];
+    return [...DEFAULT_GROUPS, ...custom];
+  });
   const [customCategories, setCustomCategories] = useState<
     {
       name: string;
@@ -167,7 +171,16 @@ export default function AdminCatalogClient({
       setNewGroupName("");
       return;
     }
-    setGroups((prev) => [...prev, val]);
+    setGroups((prev) => {
+      const next = [...prev, val];
+      try {
+        localStorage.setItem(
+          "acd_product_groups",
+          JSON.stringify(next.filter((g) => !DEFAULT_GROUPS.includes(g))),
+        );
+      } catch {}
+      return next;
+    });
     setNewGroupName("");
     setShowNewGroupInput(false);
   };
@@ -182,7 +195,16 @@ export default function AdminCatalogClient({
       return;
     }
     if (!confirm(`Xoá nhóm "${group}"?`)) return;
-    setGroups((prev) => prev.filter((g) => g !== group));
+    setGroups((prev) => {
+      const next = prev.filter((g) => g !== group);
+      try {
+        localStorage.setItem(
+          "acd_product_groups",
+          JSON.stringify(next.filter((g) => !DEFAULT_GROUPS.includes(g))),
+        );
+      } catch {}
+      return next;
+    });
     setCustomCategories((prev) => prev.filter((c) => c.group !== group));
     setItems((prev) =>
       prev.map((i) =>
@@ -191,7 +213,7 @@ export default function AdminCatalogClient({
     );
     if (activeTab === group) {
       const next = allGroups.filter((g) => g !== group);
-      setActiveTab(next.length ? next[0] : "MANAGE");
+      setActiveTab(next.length ? next[0] : "ALL");
     }
   };
 
@@ -1069,13 +1091,11 @@ export default function AdminCatalogClient({
                   <div className="space-y-1 sm:col-span-1">
                     <label className="text-xs text-white">Quản lý nhóm:</label>
                     <div className="flex flex-wrap gap-2">
-                      {allGroups
-                        .filter((g) => !DEFAULT_GROUPS.includes(g))
-                        .map((g) => {
-                          const used = items.filter(
-                            (i) => i.productGroup === g,
-                          ).length;
-                          const canDelete = used === 0;
+                      {allGroups.map((g) => {
+                        const used = items.filter(
+                          (i) => i.productGroup === g,
+                        ).length;
+                        const canDelete = used === 0;
                           return (
                             <span
                               key={g}
