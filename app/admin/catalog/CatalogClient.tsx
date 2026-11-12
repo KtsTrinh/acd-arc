@@ -1076,7 +1076,6 @@ export default function AdminCatalogClient({
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1 sm:col-span-1">
                   <label className="text-xs text-white">Nhóm sản phẩm:</label>
@@ -1140,8 +1139,39 @@ export default function AdminCatalogClient({
                       </div>
                     )}
                   </div>
+                  <div className="mt-2 space-y-1">
+                    <label className="text-xs text-white">Quản lý nhóm:</label>
+                    <div className="flex flex-wrap gap-2">
+                      {allGroups.map((g) => {
+                        const used = items.filter(
+                          (i) => i.productGroup === g,
+                        ).length;
+                        return (
+                          <span
+                            key={g}
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
+                          >
+                            {g}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteGroup(g);
+                              }}
+                              className="p-0.5 hover:text-red-400"
+                              title={
+                                used > 0
+                                  ? "Nhóm đang được sử dụng"
+                                  : "Xoá nhóm"
+                              }
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-
                 <div className="space-y-1 sm:col-span-1">
                   <label className="text-xs text-white">Hạng mục:</label>
                   <div className="relative">
@@ -1204,73 +1234,49 @@ export default function AdminCatalogClient({
                       </div>
                     )}
                   </div>
-                </div>
-                <div className="space-y-1 sm:col-span-1">
-                  <label className="text-xs text-white">Quản lý nhóm:</label>
-                  <div className="flex flex-wrap gap-2">
-                    {allGroups.map((g) => {
-                      const used = items.filter(
-                        (i) => i.productGroup === g,
-                      ).length;
-                      return (
-                        <span
-                          key={g}
-                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
-                        >
-                          {g}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteGroup(g);
-                            }}
-                            className="p-0.5 hover:text-red-400"
-                            title={
-                              used > 0 ? "Nhóm đang được sử dụng" : "Xoá nhóm"
-                            }
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-                {form.productGroup && (
-                  <div className="space-y-1 sm:col-span-1">
-                    <label className="text-xs text-white">
-                      Quản lý hạng mục:
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {groupCategories(form.productGroup).map((c) => {
-                        const used = items.filter(
-                          (i) =>
-                            i.productCategory === c &&
-                            i.productGroup === form.productGroup,
-                        ).length;
-                        return (
-                          <span
-                            key={c}
-                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
-                          >
-                            {c}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteCategory(c, form.productGroup);
-                              }}
-                              className="p-0.5 hover:text-red-400"
-                              title={
-                                used > 0 ? "Hạng mục đang được sử dụng" : "Xoá"
-                              }
+                  {form.productGroup && (
+                    <div className="mt-2 space-y-1">
+                      <label className="text-xs text-white">
+                        Quản lý hạng mục:
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {groupCategories(form.productGroup).map((c) => {
+                          const used = items.filter(
+                            (i) =>
+                              i.productCategory === c &&
+                              i.productGroup === form.productGroup,
+                          ).length;
+                          return (
+                            <span
+                              key={c}
+                              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
                             >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </span>
-                        );
-                      })}
+                              {c}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteCategory(
+                                    c,
+                                    form.productGroup,
+                                  );
+                                }}
+                                className="p-0.5 hover:text-red-400"
+                                title={
+                                  used > 0
+                                    ? "Hạng mục đang được sử dụng"
+                                    : "Xoá"
+                                }
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </span>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+                <div className="sm:col-span-1" />
               </div>
 
               <div className="space-y-1">
