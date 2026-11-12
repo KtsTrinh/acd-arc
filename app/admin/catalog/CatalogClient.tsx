@@ -362,7 +362,10 @@ export default function AdminCatalogClient({
           .filter((g): g is string => g !== null && g !== undefined),
       ),
     ).sort();
-    setGroups(derivedGroups);
+    setGroups((prev) => {
+      const merged = Array.from(new Set(prev.concat(derivedGroups)));
+      return merged;
+    });
 
     const derivedCats = Array.from(
       new Set(
@@ -371,9 +374,11 @@ export default function AdminCatalogClient({
           .filter((c): c is string => c !== null && c !== undefined),
       ),
     ).sort();
-    setCustomCategories(
-      derivedCats.map((c) => ({ name: c, group: "" })),
-    );
+    setCustomCategories((prev) => {
+      const existingNames = new Set(prev.map((c) => c.name));
+      const newCats = derivedCats.filter((c) => !existingNames.has(c));
+      return prev.concat(newCats.map((c) => ({ name: c, group: "" })));
+    });
   }, [items]);
 
   const openEdit = async (item: any) => {
