@@ -1164,9 +1164,6 @@ export default function AdminCatalogClient({
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {groupCategories(form.productGroup).map((c) => {
-                        const isCustom = customCategories.some(
-                          (cc) => cc.name === c && cc.group === form.productGroup,
-                        );
                         const used = items.filter(
                           (i) =>
                             i.productCategory === c &&
@@ -1178,18 +1175,16 @@ export default function AdminCatalogClient({
                             className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-thuy-800 border border-thuy-700 text-[10px] text-slate-300"
                           >
                             {c}
-                            {isCustom && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteCategory(c, form.productGroup);
-                                }}
-                                className="p-0.5 hover:text-red-400"
-                                title={used > 0 ? "Hạng mục đang được sử dụng" : "Xoá"}
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </button>
-                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteCategory(c, form.productGroup);
+                              }}
+                              className="p-0.5 hover:text-red-400"
+                              title={used > 0 ? "Hạng mục đang được sử dụng" : "Xoá"}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
                           </span>
                         );
                       })}
