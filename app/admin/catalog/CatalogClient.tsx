@@ -129,6 +129,11 @@ export default function AdminCatalogClient({
     type: "product" | "group" | "category";
     group?: string;
   }>({ id: null, name: null, open: false, type: "product" });
+  const [alertDialog, setAlertDialog] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+  }>({ open: false, title: "", message: "" });
 
   /* ------------------------------------------------------------------ */
   /* Nhóm sản phẩm & Hạng mục (tự thêm mới)                             */
@@ -162,9 +167,10 @@ export default function AdminCatalogClient({
   const handleDeleteGroup = (group: string) => {
     const usedBy = items.filter((i) => i.productGroup === group);
     if (usedBy.length > 0) {
-      setNotice({
-        type: "err",
-        text: `Không xoá được nhóm "${group}". Có ${usedBy.length} sản phẩm đang thuộc nhóm này.`,
+      setAlertDialog({
+        open: true,
+        title: "Không thể xoá nhóm",
+        message: `Không xoá được nhóm "${group}". Có ${usedBy.length} sản phẩm đang thuộc nhóm này.`,
       });
       return;
     }
@@ -176,9 +182,10 @@ export default function AdminCatalogClient({
     const usedBy = items.filter((i) => i.productGroup === confirmDelete.id);
     if (usedBy.length > 0) {
       setConfirmDelete({ id: null, name: null, open: false, type: "product" });
-      setNotice({
-        type: "err",
-        text: `Không xoá được nhóm "${confirmDelete.name}". Có ${usedBy.length} sản phẩm đang thuộc nhóm này.`,
+      setAlertDialog({
+        open: true,
+        title: "Không thể xoá nhóm",
+        message: `Không xoá được nhóm "${confirmDelete.name}". Có ${usedBy.length} sản phẩm đang thuộc nhóm này.`,
       });
       return;
     }
@@ -272,9 +279,10 @@ export default function AdminCatalogClient({
     );
     if (usedBy.length > 0) {
       setConfirmDelete({ id: null, name: null, open: false, type: "product" });
-      setNotice({
-        type: "err",
-        text: `Không xoá được hạng mục "${confirmDelete.name}". Có ${usedBy.length} sản phẩm đang thuộc hạng mục này.`,
+      setAlertDialog({
+        open: true,
+        title: "Không thể xoá hạng mục",
+        message: `Không xoá được hạng mục "${confirmDelete.name}". Có ${usedBy.length} sản phẩm đang thuộc hạng mục này.`,
       });
       return;
     }
@@ -1936,6 +1944,46 @@ export default function AdminCatalogClient({
                     className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-500 text-xs font-semibold shadow-lg shadow-red-500/20 transition-all"
                   >
                     Xoá
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Thông báo lỗi khi không thể xoá */}
+      {alertDialog.open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget)
+              setAlertDialog((prev) => ({ ...prev, open: false }));
+          }}
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" />
+          <div className="relative w-full max-w-md mx-4 transition-all duration-200 opacity-100 scale-100">
+            <div className="bg-thuy-900 border border-red-500/30 rounded-2xl shadow-2xl overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="text-white font-bold text-sm">
+                      {alertDialog.title}
+                    </h3>
+                    <p className="text-slate-400 text-xs mt-1 leading-snug">
+                      {alertDialog.message}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex justify-end pt-4">
+                  <button
+                    onClick={() =>
+                      setAlertDialog((prev) => ({ ...prev, open: false }))
+                    }
+                    className="px-6 py-2 rounded-xl bg-red-600 text-white hover:bg-red-500 text-xs font-semibold shadow-lg shadow-red-500/20 transition-all"
+                  >
+                    Đã hiểu
                   </button>
                 </div>
               </div>
