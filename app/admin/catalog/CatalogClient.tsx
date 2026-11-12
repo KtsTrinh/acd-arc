@@ -776,7 +776,7 @@ export default function AdminCatalogClient({
           </p>
         </div>
 
-        {activeTab !== "MANAGE" && (
+        {(
           <button
             onClick={() => openCreate()}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 shadow-glow-cyan transition-all self-start sm:self-auto"

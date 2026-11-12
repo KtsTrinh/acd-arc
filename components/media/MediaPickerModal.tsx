@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import Image from "next/image";
 import {
   X,
   Upload,
@@ -901,6 +900,7 @@ export default function MediaPickerModal({
                     key={`img-${idx}`}
                     type="button"
                     data-preview-url={imgUrl}
+                    onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => handlePreviewToggle(imgUrl)}
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       selectedPreviewUrls.includes(imgUrl)
@@ -908,12 +908,23 @@ export default function MediaPickerModal({
                         : "border-slate-700 hover:border-slate-500"
                     }`}
                   >
-                    <Image
+                    <img
                       src={imagePreviewSrc(imgUrl)}
                       alt={`Thumbnail ${idx + 1}`}
-                      fill
-                      className="object-cover"
-                      unoptimized
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        objectPosition: "center",
+                      }}
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        console.error(
+                          "Preview image load error:",
+                          (e.target as HTMLImageElement)?.src,
+                        );
+                      }}
                     />
                     {selectedPreviewUrls.includes(imgUrl) && (
                       <>
@@ -942,6 +953,7 @@ export default function MediaPickerModal({
                     key={`vid-${idx}`}
                     type="button"
                     data-preview-url={vidUrl}
+                    onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => handlePreviewToggle(vidUrl)}
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       selectedPreviewUrls.includes(vidUrl)
@@ -1039,13 +1051,18 @@ export default function MediaPickerModal({
 
       return (
         <div className="relative w-full h-44 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shadow-lg shadow-black/30">
-          <Image
+          <img
             src={imageSrc}
             alt="Preview"
-            fill
-            className="object-contain"
-            unoptimized
-            onError={() => {}}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              objectPosition: "center",
+            }}
+            onError={(e) => {
+              console.error("External image load error:", imageSrc);
+            }}
           />
           <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-emerald-400 uppercase flex items-center gap-1">
             <ImageIcon className="w-2.5 h-2.5" />
@@ -1198,6 +1215,7 @@ export default function MediaPickerModal({
                     <div
                       key={item.id}
                       data-library-item={item.id}
+                      onMouseDown={(e) => e.stopPropagation()}
                       onClick={() => handleLibraryToggle(item)}
                       className={`group relative aspect-[1/1] min-h-[96px] rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
                         isSelected
@@ -1215,12 +1233,23 @@ export default function MediaPickerModal({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Image
+                        <img
                           src={imagePreviewSrc(item.url)}
                           alt={item.alt || item.filename}
-                          fill
-                          className="object-cover"
-                          unoptimized
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            objectPosition: "center",
+                          }}
+                          loading="lazy"
+                          decoding="async"
+                          onError={(e) => {
+                            console.error(
+                              "Library image load error:",
+                              (e.target as HTMLImageElement)?.src,
+                            );
+                          }}
                         />
                       )}
 
