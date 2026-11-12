@@ -318,12 +318,6 @@ export default function MediaPickerModal({
     const isLibrary = activeTab === "library";
     const target = isLibrary ? libraryGridRef.current : gridContainerRef.current;
     if (!target) return;
-    if (
-      (e.target as HTMLElement).closest(
-        isLibrary ? '[data-library-item]' : '[data-preview-url]',
-      )
-    )
-      return;
     const rect = target.getBoundingClientRect();
     if (!rect) return;
     setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });
@@ -342,7 +336,7 @@ export default function MediaPickerModal({
   };
 
   const handleGridMouseUp = (_e: React.MouseEvent) => {
-    if (!dragStart || !isDragging) {
+    if (!dragStart || !dragCurrent || !isDragging) {
       setDragStart(null);
       setDragCurrent(null);
       setIsDragging(false);
@@ -369,62 +363,72 @@ export default function MediaPickerModal({
     const endX = _e.clientX - rect.left;
     const endY = _e.clientY - rect.top;
 
-    const selectRect = {
-      left: Math.min(dragStart.x, endX),
-      top: Math.min(dragStart.y, endY),
-      right: Math.max(dragStart.x, endX),
-      bottom: Math.max(dragStart.y, endY),
-    };
+    const dragDistance = Math.sqrt(
+      Math.pow(dragCurrent.x - dragStart.x, 2) +
+        Math.pow(dragCurrent.y - dragStart.y, 2),
+    );
 
-    const itemSelector = isLibrary ? '[data-library-item]' : '[data-preview-url]';
-    const items = target.querySelectorAll(itemSelector) || [];
-    const newlySelected: string[] = [];
+    const isClick = dragDistance < 5;
 
-    items.forEach((item) => {
-      const itemRect = item.getBoundingClientRect();
-      const itemRelativeRect = {
-        left: itemRect.left - rect.left,
-        top: itemRect.top - rect.top,
-        right: itemRect.right - rect.left,
-        bottom: itemRect.bottom - rect.top,
+    if (!isClick) {
+      const selectRect = {
+        left: Math.min(dragStart.x, endX),
+        top: Math.min(dragStart.y, endY),
+        right: Math.max(dragStart.x, endX),
+        bottom: Math.max(dragStart.y, endY),
       };
 
-      const intersects =
-        itemRelativeRect.right > selectRect.left &&
-        itemRelativeRect.left < selectRect.right &&
-        itemRelativeRect.bottom > selectRect.top &&
-        itemRelativeRect.top < selectRect.bottom;
+      const itemSelector = isLibrary ? '[data-library-item]' : '[data-preview-url]';
+      const items = target.querySelectorAll(itemSelector) || [];
+      const newlySelected: string[] = [];
 
-      if (intersects) {
-        if (isLibrary) {
-          const mediaId = item.getAttribute('data-library-item');
-          if (mediaId) {
-            const itemObj = filteredMedia.find((m) => m.id === mediaId);
-            if (itemObj && !selectedItems.some((i) => i.id === itemObj.id)) {
-              newlySelected.push(mediaId);
+      items.forEach((item) => {
+        const itemRect = item.getBoundingClientRect();
+        const itemRelativeRect = {
+          left: itemRect.left - rect.left,
+          top: itemRect.top - rect.top,
+          right: itemRect.right - rect.left,
+          bottom: itemRect.bottom - rect.top,
+        };
+
+        const intersects =
+          itemRelativeRect.right > selectRect.left &&
+          itemRelativeRect.left < selectRect.right &&
+          itemRelativeRect.bottom > selectRect.top &&
+          itemRelativeRect.top < selectRect.bottom;
+
+        if (intersects) {
+          if (isLibrary) {
+            const mediaId = item.getAttribute('data-library-item');
+            if (mediaId) {
+              const itemObj = filteredMedia.find((m) => m.id === mediaId);
+              if (itemObj && !selectedItems.some((i) => i.id === itemObj.id)) {
+                newlySelected.push(mediaId);
+              }
+            }
+          } else {
+            const url = item.getAttribute('data-preview-url');
+            if (url && !selectedPreviewUrls.includes(url)) {
+              newlySelected.push(url);
             }
           }
+        }
+      });
+
+      if (newlySelected.length > 0) {
+        if (isLibrary) {
+          const newItems = newlySelected
+            .map((id) => filteredMedia.find((m) => m.id === id))
+            .filter(Boolean) as MediaItem[];
+          setSelectedItems((prev) => [...prev, ...newItems]);
         } else {
-          const url = item.getAttribute('data-preview-url');
-          if (url && !selectedPreviewUrls.includes(url)) {
-            newlySelected.push(url);
-          }
+          setSelectedPreviewUrls((prev) => [...prev, ...newlySelected]);
         }
       }
-    });
 
-    if (newlySelected.length > 0) {
-      if (isLibrary) {
-        const newItems = newlySelected
-          .map((id) => filteredMedia.find((m) => m.id === id))
-          .filter(Boolean) as MediaItem[];
-        setSelectedItems((prev) => [...prev, ...newItems]);
-      } else {
-        setSelectedPreviewUrls((prev) => [...prev, ...newlySelected]);
-      }
+      justDraggedRef.current = true;
     }
 
-    justDraggedRef.current = true;
     setDragStart(null);
     setDragCurrent(null);
     setIsDragging(false);
