@@ -1267,6 +1267,16 @@ export default function AdminCatalogClient({
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
+                  <label className="text-xs text-white">Chủ đầu tư:</label>
+                  <input
+                    type="text"
+                    value={form.client || ""}
+                    onChange={(e) => updateForm({ client: e.target.value })}
+                    placeholder="Tên chủ đầu tư..."
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
+                <div className="space-y-1">
                   <label className="text-xs text-white">Địa điểm:</label>
                   <input
                     type="text"
@@ -1283,16 +1293,6 @@ export default function AdminCatalogClient({
                     value={form.year}
                     onChange={(e) => updateForm({ year: e.target.value })}
                     placeholder="2024"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs text-white">Chủ đầu tư:</label>
-                  <input
-                    type="text"
-                    value={form.client || ""}
-                    onChange={(e) => updateForm({ client: e.target.value })}
-                    placeholder="Tên chủ đầu tư..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
@@ -1378,8 +1378,31 @@ export default function AdminCatalogClient({
                       >
                         <button
                           type="button"
-                          onClick={() => toggleTag(t.id)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isSelected) {
+                              // Clicking name on selected tag: remove it
+                              setForm((prev: ItemForm | null) => {
+                                if (!prev) return prev;
+                                return {
+                                  ...prev,
+                                  tagIds: prev.tagIds.filter(
+                                    (x) => x !== t.id,
+                                  ),
+                                };
+                              });
+                            } else {
+                              // Clicking name on unselected tag: add it
+                              setForm((prev: ItemForm | null) => {
+                                if (!prev) return prev;
+                                return {
+                                  ...prev,
+                                  tagIds: [...prev.tagIds, t.id],
+                                };
+                              });
+                            }
+                          }}
+                          className={`px-3 py-1.5 rounded-l-lg text-xs font-medium transition-all ${
                             isSelected
                               ? "bg-thuy-400 text-thuy-950 font-bold"
                               : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
@@ -1391,9 +1414,17 @@ export default function AdminCatalogClient({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              toggleTag(t.id);
+                              setForm((prev: ItemForm | null) => {
+                                if (!prev) return prev;
+                                return {
+                                  ...prev,
+                                  tagIds: prev.tagIds.filter(
+                                    (x) => x !== t.id,
+                                  ),
+                                };
+                              });
                             }}
-                            className="p-1 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white transition-colors"
+                            className="rounded-r-lg bg-red-600 text-white text-xs px-2 py-1.5 hover:bg-red-500 transition-colors"
                             title="Bỏ chọn thẻ"
                           >
                             <X className="w-3 h-3" />
