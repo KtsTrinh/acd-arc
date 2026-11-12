@@ -21,15 +21,22 @@ export const revalidate = 0;
 interface ProductsPageProps {
   searchParams: {
     type?: string;
+    productGroup?: string;
+    productCategory?: string;
     search?: string;
   };
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const { type, search } = searchParams;
+  const { type, productGroup, productCategory, search } = searchParams;
 
   const where: any = { active: true };
-  if (type && type !== "ALL") {
+  if (productGroup) {
+    where.productGroup = productGroup;
+    if (productCategory) {
+      where.productCategory = productCategory;
+    }
+  } else if (type && type !== "ALL") {
     const group = CATALOG_GROUPS.find((g) => g.key === type);
     if (group) {
       where.type = { in: [...group.types] };
@@ -45,10 +52,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     ];
   }
 
-  const products = await prisma.product.findMany({
+  const products = (await prisma.product.findMany({
     where,
     orderBy: { createdAt: "desc" },
-  });
+  })) as any[];
 
   const productTypes = [
     { label: "Tất Cả", value: "ALL", icon: Layers },
