@@ -261,6 +261,18 @@ export default function AdminCatalogClient({
   };
 
   const handleDeleteCategory = (name: string, group: string) => {
+    const usedBy = items.filter(
+      (i) =>
+        i.productCategory === name && i.productGroup === group,
+    );
+    if (usedBy.length > 0) {
+      setAlertDialog({
+        open: true,
+        title: "Không thể xoá hạng mục",
+        message: `Không xoá được hạng mục "${name}". Có ${usedBy.length} sản phẩm đang thuộc hạng mục này.`,
+      });
+      return;
+    }
     setConfirmDelete({
       id: name,
       name,
