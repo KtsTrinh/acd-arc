@@ -1870,11 +1870,11 @@ export default function AdminCatalogClient({
                     Bỏ chọn tất cả
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap justify-center gap-2">
                   {tags.map((t) => {
                     const isSelected = form.tagIds.includes(t.id);
                     return (
-                      <div key={t.id} className="flex items-center gap-1">
+                      <div key={t.id} className="relative inline-flex items-center gap-1.5">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -1897,7 +1897,7 @@ export default function AdminCatalogClient({
                               });
                             }
                           }}
-                          className={`px-3 py-1.5 rounded-l-lg text-xs font-medium transition-all ${
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                             isSelected
                               ? "bg-thuy-400 text-thuy-950 font-bold"
                               : "bg-thuy-900 text-slate-600 border border-thuy-700 hover:text-[#142338]"
@@ -1918,10 +1918,10 @@ export default function AdminCatalogClient({
                                 };
                               });
                             }}
-                            className="rounded-r-lg bg-red-600 text-white text-xs px-2 py-1.5 hover:bg-red-500 transition-colors"
+                            className="absolute top-1 right-1 -mt-1 -mr-1 rounded-full bg-red-600 text-white text-[10px] px-1.5 py-0.5 hover:bg-red-500 transition-colors shadow-sm"
                             title="Bỏ chọn thẻ"
                           >
-                            <X className="w-3 h-3" />
+                            <X className="w-2.5 h-2.5" />
                           </button>
                         )}
                       </div>
