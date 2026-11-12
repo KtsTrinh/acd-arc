@@ -60,6 +60,8 @@ interface ItemForm {
   landArea: string;
   buildingArea: string;
   floors: string;
+  basementFloors: string;
+  totalFloorArea: string;
   style: string;
   tagIds: string[];
   active: boolean;
@@ -90,6 +92,8 @@ const EMPTY_FORM: ItemForm = {
   landArea: "",
   buildingArea: "",
   floors: "",
+  basementFloors: "",
+  totalFloorArea: "",
   style: "",
   tagIds: [],
   active: true,
@@ -472,6 +476,8 @@ export default function AdminCatalogClient({
       landArea: item.landArea ? item.landArea.toString() : "",
       buildingArea: item.buildingArea ? item.buildingArea.toString() : "",
       floors: item.floors?.toString() || "",
+      basementFloors: item.basementFloors?.toString() || "",
+      totalFloorArea: item.totalFloorArea ? item.totalFloorArea.toString() : "",
       style: item.style || "",
       tagIds: item.tags?.map((t: any) => t.tagId) || [],
       active: item.active !== false,
@@ -1331,6 +1337,34 @@ export default function AdminCatalogClient({
                     value={form.floors}
                     onChange={(e) => updateForm({ floors: e.target.value })}
                     placeholder="5"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Tầng hầm:</label>
+                  <input
+                    type="number"
+                    value={form.basementFloors}
+                    onChange={(e) =>
+                      updateForm({ basementFloors: e.target.value })
+                    }
+                    placeholder="0"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">
+                    Tổng diện tích sàn (m²):
+                  </label>
+                  <input
+                    type="number"
+                    value={form.totalFloorArea}
+                    onChange={(e) =>
+                      updateForm({ totalFloorArea: e.target.value })
+                    }
+                    placeholder="1000"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>

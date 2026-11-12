@@ -254,6 +254,8 @@ model Product {
   fileName               String?
   buildingArea           Float?
   floors                 Int?
+  basementFloors         Int?
+  totalFloorArea         Float?
   client                 String?
   landArea               Float?
   location               String?
