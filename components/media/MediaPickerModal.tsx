@@ -757,6 +757,9 @@ export default function MediaPickerModal({
           mimeType: saveData.media.mimeType,
         };
 
+        setActiveTab("library");
+        await fetchMedia();
+
         if (!multiple) {
           onSelect(media);
           onClose();
@@ -900,7 +903,6 @@ export default function MediaPickerModal({
                     key={`img-${idx}`}
                     type="button"
                     data-preview-url={imgUrl}
-                    onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => handlePreviewToggle(imgUrl)}
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       selectedPreviewUrls.includes(imgUrl)
@@ -953,7 +955,6 @@ export default function MediaPickerModal({
                     key={`vid-${idx}`}
                     type="button"
                     data-preview-url={vidUrl}
-                    onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => handlePreviewToggle(vidUrl)}
                     className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       selectedPreviewUrls.includes(vidUrl)
@@ -1211,11 +1212,10 @@ export default function MediaPickerModal({
                     : selectedIds.includes(item.id);
                   const itemIsVideo = isVideoItem(item);
 
-                  return (
+                      return (
                     <div
                       key={item.id}
                       data-library-item={item.id}
-                      onMouseDown={(e) => e.stopPropagation()}
                       onClick={() => handleLibraryToggle(item)}
                       className={`group relative aspect-[1/1] min-h-[96px] rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
                         isSelected
