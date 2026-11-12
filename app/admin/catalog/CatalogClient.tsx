@@ -1472,29 +1472,6 @@ export default function AdminCatalogClient({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs text-white">Định dạng file:</label>
-                  <input
-                    type="text"
-                    value={form.fileFormat}
-                    onChange={(e) => updateForm({ fileFormat: e.target.value })}
-                    placeholder="AutoCAD .DWG / 3ds Max 2024"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs text-white">Dung lượng:</label>
-                  <input
-                    type="text"
-                    value={form.fileSize}
-                    onChange={(e) => updateForm({ fileSize: e.target.value })}
-                    placeholder="185 MB / 1.2 GB"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-                  />
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <label className="text-xs text-white font-medium">
                   Thumbnail
@@ -1892,6 +1869,29 @@ export default function AdminCatalogClient({
                       updateForm({ priceAfterDiscount: e.target.value })
                     }
                     placeholder="Tự động tính nếu để trống"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Định dạng file:</label>
+                  <input
+                    type="text"
+                    value={form.fileFormat}
+                    onChange={(e) => updateForm({ fileFormat: e.target.value })}
+                    placeholder="AutoCAD .DWG / 3ds Max 2024"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white">Dung lượng:</label>
+                  <input
+                    type="text"
+                    value={form.fileSize}
+                    onChange={(e) => updateForm({ fileSize: e.target.value })}
+                    placeholder="185 MB / 1.2 GB"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
