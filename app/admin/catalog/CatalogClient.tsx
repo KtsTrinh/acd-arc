@@ -1870,7 +1870,7 @@ export default function AdminCatalogClient({
                     Bỏ chọn tất cả
                   </button>
                 </div>
-                <div className="flex flex-wrap justify-center gap-2">
+                <div className="flex flex-wrap justify-between gap-2">
                   {tags.map((t) => {
                     const isSelected = form.tagIds.includes(t.id);
                     return (
