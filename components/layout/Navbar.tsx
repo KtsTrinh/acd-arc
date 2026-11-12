@@ -93,6 +93,22 @@ export default function Navbar() {
     loadData();
   }, []);
 
+  const searchTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    if (!searchQuery.trim()) {
+      router.push(`/products`);
+      return;
+    }
+    searchTimeout.current = setTimeout(() => {
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }, 400);
+    return () => {
+      if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    };
+  }, [searchQuery]);
+
   const groups = Object.keys(groupCategories);
 
   const handleLogout = async () => {
@@ -187,43 +203,45 @@ export default function Navbar() {
                 const isOpen = openDesktopSub.has(group);
                 return (
                   <div key={group} className="relative group">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenDesktopSub(new Set());
-                        router.push(`/products?productGroup=${encodeURIComponent(group)}`);
-                      }}
-                      className={
-                        isActiveGroup(group)
-                          ? "flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all"
-                          : "flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all"
-                      }
-                    >
-                      {group}
-                    </button>
-                    {groupCategories[group] && groupCategories[group].length > 0 && (
+                    <div className="flex items-center gap-1">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setOpenDesktopSub((prev) => {
-                            const next = new Set(prev);
-                            if (next.has(group)) {
-                              next.delete(group);
-                            } else {
-                              next.clear();
-                              next.add(group);
-                            }
-                            return next;
-                          });
+                          setOpenDesktopSub(new Set());
+                          router.push(`/products?productGroup=${encodeURIComponent(group)}`);
                         }}
-                        className="px-2 py-2 rounded-full text-slate-400 hover:text-thuy-400 transition-colors"
-                        title="Xem hạng mục"
+                        className={
+                          isActiveGroup(group)
+                            ? "flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all"
+                            : "flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all"
+                        }
                       >
-                        <ChevronDown
-                          className={`w-3 h-3 ${isOpen ? "rotate-180" : ""}`}
-                        />
+                        {group}
                       </button>
-                    )}
+                      {groupCategories[group] && groupCategories[group].length > 0 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenDesktopSub((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(group)) {
+                                next.delete(group);
+                              } else {
+                                next.clear();
+                                next.add(group);
+                              }
+                              return next;
+                            });
+                          }}
+                          className="px-2 py-2 rounded-full text-slate-400 hover:text-thuy-400 transition-colors"
+                          title="Xem hạng mục"
+                        >
+                          <ChevronDown
+                            className={`w-3 h-3 ${isOpen ? "rotate-180" : ""}`}
+                          />
+                        </button>
+                      )}
+                    </div>
 
                     {isOpen && groupCategories[group] && groupCategories[group].length > 0 && (
                       <div className="absolute left-0 top-full mt-1 w-56 rounded-xl bg-thuy-900 border border-thuy-700 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
@@ -281,14 +299,6 @@ export default function Navbar() {
                 </button>
               </form>
             )}
-
-            <Link
-              href="/projects"
-              className="p-2.5 rounded-full bg-thuy-850/80 hover:bg-thuy-700/80 text-slate-300 hover:text-thuy-300 border border-thuy-700/60 transition-colors"
-              title="Tìm kiếm dự án"
-            >
-              <Search className="w-4 h-4" />
-            </Link>
 
             <button
               onClick={handleCartOpen}
