@@ -65,21 +65,6 @@ interface ItemForm {
   featured: boolean;
 }
 
-const DEFAULT_GROUPS = ["Thiết kế", "Thi công", "File kỹ thuật số", "Tài liệu"];
-const DEFAULT_CATEGORIES: Record<string, string[]> = {
-  "Thiết kế": ["Kiến trúc", "Nội thất", "Quy hoạch", "Cảnh quan"],
-  "Thi công": ["Kiến trúc", "Nội thất"],
-  "File kỹ thuật số": [
-    "Autocad",
-    "PDF",
-    "Photoshop",
-    "Revit",
-    "3dsmax",
-    "Sketchup",
-  ],
-  "Tài liệu": [],
-};
-
 const EMPTY_FORM: ItemForm = {
   id: undefined,
   name: "",
@@ -146,11 +131,7 @@ export default function AdminCatalogClient({
   /* ------------------------------------------------------------------ */
   /* Nhóm sản phẩm & Hạng mục (tự thêm mới)                             */
   /* ------------------------------------------------------------------ */
-  const [groups, setGroups] = useState<string[]>(() => {
-    const stored = localStorage.getItem("acd_product_groups");
-    const custom = stored ? JSON.parse(stored) : [];
-    return [...DEFAULT_GROUPS, ...custom];
-  });
+  const [groups, setGroups] = useState<string[]>([]);
   const [customCategories, setCustomCategories] = useState<
     {
       name: string;
@@ -173,12 +154,6 @@ export default function AdminCatalogClient({
     }
     setGroups((prev) => {
       const next = [...prev, val];
-      try {
-        localStorage.setItem(
-          "acd_product_groups",
-          JSON.stringify(next.filter((g) => !DEFAULT_GROUPS.includes(g))),
-        );
-      } catch {}
       return next;
     });
     setNewGroupName("");
@@ -197,12 +172,6 @@ export default function AdminCatalogClient({
     if (!confirm(`Xoá nhóm "${group}"?`)) return;
     setGroups((prev) => {
       const next = prev.filter((g) => g !== group);
-      try {
-        localStorage.setItem(
-          "acd_product_groups",
-          JSON.stringify(next.filter((g) => !DEFAULT_GROUPS.includes(g))),
-        );
-      } catch {}
       return next;
     });
     setCustomCategories((prev) => prev.filter((c) => c.group !== group));
@@ -263,11 +232,10 @@ export default function AdminCatalogClient({
   };
 
   const groupCategories = (group: string): string[] => {
-    const defaults = DEFAULT_CATEGORIES[group] || [];
     const customs = customCategories
       .filter((c) => c.group === group)
       .map((c) => c.name);
-    return [...defaults, ...customs];
+    return customs;
   };
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -382,6 +350,28 @@ export default function AdminCatalogClient({
     }
     return result;
   }, [items, activeTab, searchQuery]);
+
+  useEffect(() => {
+    const derivedGroups = Array.from(
+      new Set(
+        items
+          .map((i) => i.productGroup)
+          .filter((g): g is string => g !== null && g !== undefined),
+      ),
+    ).sort();
+    setGroups(derivedGroups);
+
+    const derivedCats = Array.from(
+      new Set(
+        items
+          .map((i) => i.productCategory)
+          .filter((c): c is string => c !== null && c !== undefined),
+      ),
+    ).sort();
+    setCustomCategories(
+      derivedCats.map((c) => ({ name: c, group: "" })),
+    );
+  }, [items]);
 
   const openEdit = async (item: any) => {
     setForm({
@@ -1146,12 +1136,6 @@ export default function AdminCatalogClient({
                     <div className="flex flex-wrap gap-2">
                       {customCategories
                         .filter((c) => c.group === form.productGroup)
-                        .filter(
-                          (c) =>
-                            !DEFAULT_CATEGORIES[form.productGroup]?.includes(
-                              c.name,
-                            ),
-                        )
                         .map((c) => (
                           <span
                             key={c.name}

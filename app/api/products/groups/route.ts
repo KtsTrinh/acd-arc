@@ -10,14 +10,13 @@ export async function GET(request: Request) {
 
     try {
       const products = await prisma.product.findMany({
-        where: { active: true },
-        select: { productCategory: true },
+        select: { productGroup: true },
       });
 
       const groups = Array.from(
         new Set(
           products
-            .map((p) => p.productCategory)
+            .map((p) => p.productGroup)
             .filter((g): g is string => g !== null && g !== undefined),
         ),
       ).sort();
