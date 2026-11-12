@@ -96,6 +96,18 @@ export default function AdminMediaPage() {
     fetchMedia();
   }, [selectedFolder, search]);
 
+  useEffect(() => {
+    const handleWindowMouseUp = () => {
+      if (isDragging) {
+        setDragStart(null);
+        setDragCurrent(null);
+        setIsDragging(false);
+      }
+    };
+    window.addEventListener("mouseup", handleWindowMouseUp);
+    return () => window.removeEventListener("mouseup", handleWindowMouseUp);
+  }, [isDragging]);
+
   const handleGridMouseDown = (e: React.MouseEvent) => {
     const target = gridRef.current;
     if (!target) return;
@@ -511,6 +523,11 @@ export default function AdminMediaPage() {
             onMouseDown={handleGridMouseDown}
             onMouseMove={handleGridMouseMove}
             onMouseUp={handleGridMouseUp}
+            onMouseLeave={() => {
+              setDragStart(null);
+              setDragCurrent(null);
+              setIsDragging(false);
+            }}
             className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
           >
             {isDragging && dragStart && dragCurrent && (
