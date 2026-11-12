@@ -173,6 +173,15 @@ export default function AdminCatalogClient({
 
   const handleConfirmDeleteGroup = () => {
     if (!confirmDelete.id) return;
+    const usedBy = items.filter((i) => i.productGroup === confirmDelete.id);
+    if (usedBy.length > 0) {
+      setConfirmDelete({ id: null, name: null, open: false, type: "product" });
+      setNotice({
+        type: "err",
+        text: `Không xoá được nhóm "${confirmDelete.name}". Có ${usedBy.length} sản phẩm đang thuộc nhóm này.`,
+      });
+      return;
+    }
     setCustomGroups((prev) => prev.filter((g) => g !== confirmDelete.id!));
     setCustomCategories((prev) =>
       prev.filter((c) => c.group !== confirmDelete.id!),
