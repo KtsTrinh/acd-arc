@@ -44,6 +44,7 @@ interface ItemForm {
   description: string;
   price: string;
   discount: string;
+  discountPercent: string;
   priceAfterDiscount: string;
   productGroup: string;
   productCategory: string;
@@ -76,6 +77,7 @@ const EMPTY_FORM: ItemForm = {
   description: "",
   price: "",
   discount: "",
+  discountPercent: "",
   priceAfterDiscount: "",
   productGroup: "",
   productCategory: "",
@@ -350,6 +352,10 @@ export default function AdminCatalogClient({
 
   const [form, setForm] = useState<ItemForm | null>(null);
 
+  const priceLastEdited = React.useRef<'price' | 'discount' | 'discountPercent' | null>(
+    null,
+  );
+
   /* ------------------------------------------------------------------ */
   /* Gallery state                                                      */
   /* ------------------------------------------------------------------ */
@@ -457,6 +463,10 @@ export default function AdminCatalogClient({
       description: item.description || "",
       price: String(item.price ?? ""),
       discount: item.discount != null ? String(item.discount) : "",
+      discountPercent:
+        item.discount != null && item.price
+          ? String(Math.round((item.discount / item.price) * 100))
+          : "",
       priceAfterDiscount:
         item.priceAfterDiscount != null ? String(item.priceAfterDiscount) : "",
       productGroup: item.productGroup || "",
@@ -518,6 +528,54 @@ export default function AdminCatalogClient({
 
   const updateForm = (patch: Partial<ItemForm>) =>
     setForm((prev) => (prev ? { ...prev, ...patch } : prev));
+
+  useEffect(() => {
+    if (!form) return;
+    const priceNum = parsePriceDot(form.price) || 0;
+    const discountNum = parsePriceDot(form.discount) || 0;
+    const percentNum = parseFloat(form.discountPercent) || 0;
+    const patch: Partial<ItemForm> = {};
+
+    if (
+      priceLastEdited.current === 'discountPercent' &&
+      percentNum > 0 &&
+      priceNum > 0
+    ) {
+      const calcDiscount = Math.round((priceNum * percentNum) / 100);
+      const discountStr = formatPriceDot(String(calcDiscount));
+      if (form.discount !== discountStr) patch.discount = discountStr;
+      const finalStr = formatPriceDot(String(priceNum - calcDiscount));
+      if (form.priceAfterDiscount !== finalStr)
+        patch.priceAfterDiscount = finalStr;
+    } else if (
+      priceLastEdited.current === 'discount' &&
+      discountNum > 0 &&
+      priceNum > 0
+    ) {
+      const calcPercent = Math.round((discountNum / priceNum) * 100);
+      const percentStr = String(calcPercent);
+      if (form.discountPercent !== percentStr)
+        patch.discountPercent = percentStr;
+      const finalStr = formatPriceDot(String(priceNum - discountNum));
+      if (form.priceAfterDiscount !== finalStr)
+        patch.priceAfterDiscount = finalStr;
+    } else if (priceLastEdited.current === 'price' && priceNum > 0) {
+      if (percentNum > 0) {
+        const calcDiscount = Math.round((priceNum * percentNum) / 100);
+        const discountStr = formatPriceDot(String(calcDiscount));
+        if (form.discount !== discountStr) patch.discount = discountStr;
+        const finalStr = formatPriceDot(String(priceNum - calcDiscount));
+        if (form.priceAfterDiscount !== finalStr)
+          patch.priceAfterDiscount = finalStr;
+      } else if (discountNum > 0) {
+        const finalStr = formatPriceDot(String(priceNum - discountNum));
+        if (form.priceAfterDiscount !== finalStr)
+          patch.priceAfterDiscount = finalStr;
+      }
+    }
+
+    if (Object.keys(patch).length > 0) updateForm(patch);
+  }, [form, updateForm]);
 
   const toggleTag = (id: string) => {
     if (!form) return;
@@ -1769,13 +1827,14 @@ export default function AdminCatalogClient({
               </div>
 
               {/* Price section */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs text-white">Giá bán (VNĐ):</label>
                   <input
                     type="text"
                     value={formatPriceDot(form.price)}
                     onChange={(e) => {
+                      priceLastEdited.current = 'price';
                       updateForm({ price: formatPriceDot(e.target.value) });
                     }}
                     placeholder="850.000 (để trống nếu miễn phí)"
@@ -1791,28 +1850,55 @@ export default function AdminCatalogClient({
                   )}
                 </div>
                 <div className="space-y-1">
+                  <label className="flex items-center gap-1 text-xs text-white">
+                    Giảm giá (%)<span className="text-slate-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={form.discountPercent}
+                    onChange={(e) => {
+                      priceLastEdited.current = 'discountPercent';
+                      updateForm({
+                        discountPercent: e.target.value.replace(/[^0-9]/g, ''),
+                      });
+                    }}
+                    placeholder="0-100"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                  />
+                </div>
+                <div className="space-y-1">
                   <label className="text-xs text-white">Giảm giá (VNĐ):</label>
                   <input
-                    type="number"
-                    value={form.discount}
-                    onChange={(e) => updateForm({ discount: e.target.value })}
-                    placeholder="100000"
+                    type="text"
+                    value={formatPriceDot(form.discount)}
+                    onChange={(e) => {
+                      priceLastEdited.current = 'discount';
+                      updateForm({ discount: formatPriceDot(e.target.value) });
+                    }}
+                    placeholder="100.000"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">
-                    Giá sau khi giảm (VNĐ):
+                    Giá sau giảm (VNĐ):
                   </label>
                   <input
-                    type="number"
-                    value={form.priceAfterDiscount}
-                    onChange={(e) =>
-                      updateForm({ priceAfterDiscount: e.target.value })
-                    }
-                    placeholder="Tự động tính nếu để trống"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    type="text"
+                    value={formatPriceDot(form.priceAfterDiscount)}
+                    readOnly
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-700 border border-thuy-600 text-xs text-white"
                   />
+                  {form.priceAfterDiscount && (
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Số chữ:{" "}
+                      <span className="text-thuy-400 font-medium">
+                        {numberToWordsVN(
+                          parsePriceDot(form.priceAfterDiscount) || 0,
+                        )} đ
+                      </span>
+                    </p>
+                  )}
                 </div>
               </div>
 
