@@ -324,6 +324,7 @@ export default function AdminCatalogClient({
   }, []);
 
   const groupItems = useMemo(() => {
+    if (activeTab === "ALL") return items;
     return items.filter((i) => i.productGroup === activeTab);
   }, [items, activeTab]);
 
@@ -785,6 +786,18 @@ export default function AdminCatalogClient({
             <span>Thêm Sản Phẩm Mới</span>
           </button>
         )}
+        <select
+          value={activeTab}
+          onChange={(e) => setActiveTab(e.target.value)}
+          className="ml-3 px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
+        >
+          <option value="ALL">Tất cả sản phẩm</option>
+          {allGroups.map((g) => (
+            <option key={g} value={g}>
+              {g}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Policy banner */}
