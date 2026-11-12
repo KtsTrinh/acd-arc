@@ -2,7 +2,11 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
-import { getSettings, normalizeMediaUrl, resolveHeroVideo } from "@/lib/settings";
+import {
+  getSettings,
+  normalizeMediaUrl,
+  resolveHeroVideo,
+} from "@/lib/settings";
 import { resolveVideoFit } from "@/lib/media-url";
 import { ArrowRight } from "lucide-react";
 
@@ -25,16 +29,21 @@ export default async function HomePage() {
     getSettings(),
   ]);
 
-  const heroDesktop = normalizeMediaUrl(settings.heroBackgroundImage) || FALLBACK_HERO;
-  const heroMobile = normalizeMediaUrl(settings.heroBackgroundImageMobile) || heroDesktop;
-  const overlay = Math.min(100, Math.max(0, Number(settings.heroOverlayOpacity ?? 60)));
+  const heroDesktop =
+    normalizeMediaUrl(settings.heroBackgroundImage) || FALLBACK_HERO;
+  const heroMobile =
+    normalizeMediaUrl(settings.heroBackgroundImageMobile) || heroDesktop;
+  const overlay = Math.min(
+    100,
+    Math.max(0, Number(settings.heroOverlayOpacity ?? 60)),
+  );
   const overlayPct = Math.round(overlay * 0.9);
   const isVideo = settings.heroBackgroundType === "video";
   const embedCode = (settings.heroVideoEmbedCode || "").trim();
 
   const desktopSource = resolveHeroVideo(settings.heroBackgroundVideo || "");
   const mobileSource = resolveHeroVideo(
-    settings.heroBackgroundVideoMobile || settings.heroBackgroundVideo || ""
+    settings.heroBackgroundVideoMobile || settings.heroBackgroundVideo || "",
   );
 
   const rawPoster = (settings.heroVideoPoster || "").trim();
@@ -48,7 +57,7 @@ export default async function HomePage() {
 
   const videoFit = resolveVideoFit(
     settings.heroVideoFit || "auto",
-    settings.heroVideoAspect || ""
+    settings.heroVideoAspect || "",
   );
 
   return (
@@ -76,57 +85,78 @@ export default async function HomePage() {
             ) : (
               /* Video file (mp4/webm) - autoplay, muted, loop, full nền */
               <>
-                {desktopSource?.kind === "file" && mobileSource?.src === desktopSource.src && (
-                  <video
-                    className={`absolute inset-0 h-full w-full object-center ${
-                      videoFit === "contain" ? "object-contain" : "object-cover"
-                    }`}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                  >
-                    <source
-                      src={desktopSource.src}
-                      type={desktopSource.src.endsWith(".webm") ? "video/webm" : "video/mp4"}
-                    />
-                  </video>
-                )}
-                {desktopSource?.kind === "file" && mobileSource?.src !== desktopSource.src && (
-                  <video
-                    className={`absolute inset-0 h-full w-full object-center hidden sm:block ${
-                      videoFit === "contain" ? "object-contain" : "object-cover"
-                    }`}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                  >
-                    <source
-                      src={desktopSource.src}
-                      type={desktopSource.src.endsWith(".webm") ? "video/webm" : "video/mp4"}
-                    />
-                  </video>
-                )}
-                {mobileSource?.kind === "file" && mobileSource?.src !== desktopSource?.src && (
-                  <video
-                    className={`absolute inset-0 h-full w-full object-center sm:hidden ${
-                      videoFit === "contain" ? "object-contain" : "object-cover"
-                    }`}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                  >
-                    <source
-                      src={mobileSource.src}
-                      type={mobileSource.src.endsWith(".webm") ? "video/webm" : "video/mp4"}
-                    />
-                  </video>
-                )}
+                {desktopSource?.kind === "file" &&
+                  mobileSource?.src === desktopSource.src && (
+                    <video
+                      className={`absolute inset-0 h-full w-full object-center ${
+                        videoFit === "contain"
+                          ? "object-contain"
+                          : "object-cover"
+                      }`}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                    >
+                      <source
+                        src={desktopSource.src}
+                        type={
+                          desktopSource.src.endsWith(".webm")
+                            ? "video/webm"
+                            : "video/mp4"
+                        }
+                      />
+                    </video>
+                  )}
+                {desktopSource?.kind === "file" &&
+                  mobileSource?.src !== desktopSource.src && (
+                    <video
+                      className={`absolute inset-0 h-full w-full object-center hidden sm:block ${
+                        videoFit === "contain"
+                          ? "object-contain"
+                          : "object-cover"
+                      }`}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                    >
+                      <source
+                        src={desktopSource.src}
+                        type={
+                          desktopSource.src.endsWith(".webm")
+                            ? "video/webm"
+                            : "video/mp4"
+                        }
+                      />
+                    </video>
+                  )}
+                {mobileSource?.kind === "file" &&
+                  mobileSource?.src !== desktopSource?.src && (
+                    <video
+                      className={`absolute inset-0 h-full w-full object-center sm:hidden ${
+                        videoFit === "contain"
+                          ? "object-contain"
+                          : "object-cover"
+                      }`}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                    >
+                      <source
+                        src={mobileSource.src}
+                        type={
+                          mobileSource.src.endsWith(".webm")
+                            ? "video/webm"
+                            : "video/mp4"
+                        }
+                      />
+                    </video>
+                  )}
               </>
             )}
           </>
@@ -174,11 +204,14 @@ export default async function HomePage() {
             <h1 className="font-display font-extrabold text-5xl sm:text-7xl lg:text-8xl tracking-tight text-white leading-[1.05]">
               ACD
               <br />
-              <span className="text-slate-200 font-light">Architecture Studio</span>
+              <span className="text-slate-200 font-light">
+                Architecture Studio
+              </span>
             </h1>
             <div className="overflow-hidden whitespace-nowrap max-w-3xl mx-auto">
               <p className="text-slate-200 text-base sm:text-lg inline-block animate-marquee">
-                Kiến tạo công trình biệt thự, nhà phố và penthouse độc bản theo phong thủy hợp mệnh
+                Kiến tạo công trình biệt thự, nhà phố và penthouse độc bản theo
+                phong thủy hợp mệnh
               </p>
             </div>
           </div>
@@ -209,14 +242,15 @@ export default async function HomePage() {
             href="/projects"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white text-xs uppercase tracking-widest font-semibold hover:bg-white/15 hover:border-white/40 transition-all duration-300"
           >
-            <span>Xem tất cả dự án</span>
+            <span>Xem tất cả sản phẩm</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
         {/* Footer minimal */}
         <footer className="px-6 sm:px-12 py-6 text-center text-xs text-slate-400">
-          © {new Date().getFullYear()} ACD Architecture &amp; Interior Design Studio
+          © {new Date().getFullYear()} ACD Architecture &amp; Interior Design
+          Studio
         </footer>
       </div>
     </div>
