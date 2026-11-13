@@ -14,6 +14,8 @@ import {
   Search,
   Filter,
   Trash2,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 
 export default function AdminOrdersPage() {
@@ -22,6 +24,10 @@ export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{
+    id: string;
+    orderNumber: string;
+  } | null>(null);
 
   const fetchOrders = async () => {
     try {
@@ -81,13 +87,13 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const handleDeleteOrder = async (orderId: string, orderNumber: string) => {
-    if (
-      !confirm(
-        `Xoá đơn hàng #${orderNumber}? Toàn bộ link tải của đơn này cũng sẽ bị xoá.`,
-      )
-    )
-      return;
+  const requestDeleteOrder = (orderId: string, orderNumber: string) => {
+    setConfirmDelete({ id: orderId, orderNumber });
+  };
+
+  const handleConfirmDeleteOrder = async () => {
+    if (!confirmDelete) return;
+    const { id: orderId } = confirmDelete;
     setUpdatingId(orderId);
     try {
       const res = await fetch(`/api/orders/${orderId}/status`, {
@@ -95,6 +101,7 @@ export default function AdminOrdersPage() {
       });
       const data = await res.json();
       if (data.success) {
+        setConfirmDelete(null);
         fetchOrders();
       } else {
         alert(data.error || "Không xoá được đơn hàng.");
@@ -276,7 +283,7 @@ export default function AdminOrdersPage() {
                         <span>Xem</span>
                       </Link>
                       <button
-                        onClick={() => handleDeleteOrder(o.id, o.orderNumber)}
+                        onClick={() => requestDeleteOrder(o.id, o.orderNumber)}
                         disabled={updatingId === o.id}
                         className="p-2 rounded-lg bg-white800 hover:bg-red-950 hover:text-red-400 text-slate-600 inline-flex items-center gap-1 text-xs disabled:opacity-50"
                         title="Xoá đơn hàng"
@@ -291,6 +298,68 @@ export default function AdminOrdersPage() {
           </table>
         </div>
       </div>
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => {
+              if (!updatingId) setConfirmDelete(null);
+            }}
+          />
+          <div className="relative w-full max-w-md rounded-2xl border border-red-500/30 bg-gradient-to-b from-thuy-900 to-thuy-950 p-6 shadow-2xl shadow-red-950/30 animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200">
+            <button
+              type="button"
+              onClick={() => !updatingId && setConfirmDelete(null)}
+              className="absolute right-3 top-3 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+              aria-label="Đóng"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-red-500/15 ring-1 ring-red-500/30">
+                <AlertTriangle className="h-6 w-6 text-red-400" />
+              </div>
+              <div className="space-y-1.5 pr-6">
+                <h3 className="font-display text-lg font-bold text-white">
+                  Xác nhận xoá đơn hàng
+                </h3>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  Bạn có chắc muốn xoá đơn hàng{" "}
+                  <span className="font-semibold text-white">
+                    #{confirmDelete.orderNumber}
+                  </span>
+                  ? Toàn bộ link tải của đơn này cũng sẽ bị xoá và không thể khôi phục.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(null)}
+                disabled={Boolean(updatingId)}
+                className="px-4 py-2.5 rounded-xl border border-thuy-700 bg-thuy-800/60 text-sm font-medium text-slate-200 hover:bg-thuy-800 hover:text-white transition-colors disabled:opacity-50"
+              >
+                Huỷ
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDeleteOrder}
+                disabled={Boolean(updatingId)}
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 text-sm font-semibold text-white shadow-lg shadow-red-900/30 hover:brightness-110 transition-all disabled:opacity-60 inline-flex items-center gap-2"
+              >
+                {updatingId ? (
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                <span>{updatingId ? "Đang xoá..." : "Xoá đơn hàng"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
