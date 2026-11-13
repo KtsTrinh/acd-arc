@@ -18,7 +18,7 @@ import {
 import { getBaseUrl } from "@/lib/app-url";
 
 function fail(request: Request, reason: string) {
-  const url = new URL("/login", request.url);
+  const url = new URL("/login", getBaseUrl(request));
   url.searchParams.set("error", reason);
   return NextResponse.redirect(url);
 }
@@ -78,7 +78,7 @@ export async function GET(
     const target = new URL(
       redirectAfterLogin ||
         (user.role === "ADMIN" || user.role === "SUPER_ADMIN" ? "/admin" : "/account"),
-      request.url
+      getBaseUrl(request)
     );
 
     const response = NextResponse.redirect(target);

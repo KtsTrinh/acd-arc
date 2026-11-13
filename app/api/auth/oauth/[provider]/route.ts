@@ -18,14 +18,14 @@ export async function GET(
 
   if (!isOAuthProvider(provider)) {
     return NextResponse.redirect(
-      new URL("/login?error=oauth_provider", request.url)
+      new URL("/login?error=oauth_provider", getBaseUrl(request))
     );
   }
 
   const config = await getOAuthProviderConfig(provider);
   if (!config) {
     return NextResponse.redirect(
-      new URL("/login?error=oauth_not_configured", request.url)
+      new URL("/login?error=oauth_not_configured", getBaseUrl(request))
     );
   }
 

@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getBaseUrl } from "@/lib/app-url";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("acd_session_token")?.value;
+  const base = getBaseUrl(request);
 
   // Protect /admin routes
   if (pathname.startsWith("/admin")) {
     if (!token) {
-      const loginUrl = new URL("/login", request.url);
+      const loginUrl = new URL("/login", base);
       loginUrl.searchParams.set("error", "admin_required");
       loginUrl.searchParams.set("from", pathname);
       return NextResponse.redirect(loginUrl);
@@ -25,24 +27,24 @@ export function middleware(request: NextRequest) {
 
       // Check expiration
       if (payload.exp && Date.now() >= payload.exp * 1000) {
-        const loginUrl = new URL("/login", request.url);
+        const loginUrl = new URL("/login", base);
         loginUrl.searchParams.set("error", "session_expired");
         return NextResponse.redirect(loginUrl);
       }
 
       // Check ADMIN role
       if (payload.role !== "ADMIN" && payload.role !== "SUPER_ADMIN") {
-        return NextResponse.redirect(new URL("/account?error=forbidden", request.url));
+        return NextResponse.redirect(new URL("/account?error=forbidden", base));
       }
     } catch {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL("/login", base));
     }
   }
 
   // Protect /account routes
   if (pathname.startsWith("/account")) {
     if (!token) {
-      const loginUrl = new URL("/login", request.url);
+      const loginUrl = new URL("/login", base);
       loginUrl.searchParams.set("from", pathname);
       return NextResponse.redirect(loginUrl);
     }
