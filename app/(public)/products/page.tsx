@@ -244,34 +244,24 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   </div>
 
                   <div className="pt-4 mt-4 border-t border-thuy-800 space-y-1.5">
-                    <div className="flex items-end justify-between gap-3">
-                      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs min-w-0">
-                        {prod.discount && prod.price ? (
-                          <>
-                            <span className="text-slate-400 line-through decoration-slate-400/70 whitespace-nowrap">
-                              Giá bán: {formatVND(prod.price)}
-                            </span>
-                            <span className="text-red-300 whitespace-nowrap">
-                              Giảm: -{formatVND(prod.discount)} ({Math.round((prod.discount / prod.price) * 100)}%)
-                            </span>
-                            <span className="font-bold text-base text-thuy-400 whitespace-nowrap">
-                              Sau giảm: {formatVND(finalPrice)}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="font-bold text-base text-thuy-400 whitespace-nowrap">
-                            Giá bán: {formatVND(finalPrice)}
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs min-w-0">
+                      {prod.discount && prod.price ? (
+                        <>
+                          <span className="text-slate-400 line-through decoration-slate-400/70 whitespace-nowrap">
+                            Giá bán: {formatVND(prod.price)}
                           </span>
-                        )}
-                      </div>
-
-                      <Link
-                        href={`/products/${prod.slug}`}
-                        className="px-3.5 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-400 hover:text-thuy-950 text-slate-200 text-xs font-semibold transition-all flex items-center gap-1 shrink-0"
-                      >
-                        <span>Xem file</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                          <span className="text-red-300 whitespace-nowrap">
+                            Giảm: -{formatVND(prod.discount)} ({Math.round((prod.discount / prod.price) * 100)}%)
+                          </span>
+                          <span className="font-bold text-base text-thuy-400 whitespace-nowrap">
+                            Sau giảm: {formatVND(finalPrice)}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="font-bold text-base text-thuy-400 whitespace-nowrap">
+                          Giá bán: {formatVND(finalPrice)}
+                        </span>
+                      )}
                     </div>
                     <p className="text-[10px] text-slate-400 leading-relaxed break-words">
                       Số tiền bằng chữ:{" "}
@@ -283,6 +273,15 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                         đồng
                       </span>
                     </p>
+                    <div className="pt-1">
+                      <Link
+                        href={`/products/${prod.slug}`}
+                        className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-400 hover:text-thuy-950 text-slate-200 text-xs font-semibold transition-all"
+                      >
+                        <span>Xem file</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );
