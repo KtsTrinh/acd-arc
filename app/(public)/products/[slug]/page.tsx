@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart";
 import { useCurrentUser } from "@/components/auth/useCurrentUser";
-import { formatVND } from "@/lib/utils";
+import { formatVND, numberToWordsVN } from "@/lib/utils";
 import {
   Download,
   ShoppingBag,
@@ -231,24 +231,39 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               </p>
             )}
 
-            <div className="flex flex-wrap items-baseline gap-3 pt-1">
+            <div className="space-y-2 pt-1">
               {hasDiscount ? (
                 <>
-                  <span className="font-display font-bold text-3xl sm:text-4xl text-thuy-400 text-glow">
-                    {formatVND(finalPrice || 0)}
-                  </span>
-                  <span className="text-base text-slate-400 line-through decoration-slate-400/80">
-                    {formatVND(product.price)}
-                  </span>
-                  <span className="px-2 py-0.5 rounded bg-red-500/15 text-red-300 text-xs font-semibold border border-red-500/30">
-                    -{formatVND(product.discount)}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-300">
+                    <span>
+                      Giá bán:{" "}
+                      <span className="line-through decoration-slate-400/80 text-slate-400">
+                        {formatVND(product.price)}
+                      </span>
+                    </span>
+                    <span className="text-red-300 font-medium">
+                      Giảm giá: -{formatVND(product.discount)}
+                    </span>
+                  </div>
+                  <div className="font-display font-bold text-3xl sm:text-4xl text-thuy-400 text-glow">
+                    Giá sau giảm: {formatVND(finalPrice || 0)}
+                  </div>
                 </>
               ) : (
-                <span className="font-display font-bold text-3xl sm:text-4xl text-thuy-400 text-glow">
-                  {formatVND(finalPrice || 0)}
-                </span>
+                <div className="font-display font-bold text-3xl sm:text-4xl text-thuy-400 text-glow">
+                  Giá bán: {formatVND(finalPrice || 0)}
+                </div>
               )}
+              <p className="text-xs text-slate-300 leading-relaxed break-words">
+                Số tiền bằng chữ:{" "}
+                <span className="text-thuy-400 font-medium">
+                  {(() => {
+                    const words = numberToWordsVN(finalPrice || 0);
+                    return words.charAt(0).toUpperCase() + words.slice(1);
+                  })()}{" "}
+                  đồng
+                </span>
+              </p>
             </div>
           </div>
 
