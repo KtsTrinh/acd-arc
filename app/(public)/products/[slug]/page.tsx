@@ -24,13 +24,7 @@ import {
   Tag,
   Images,
 } from "lucide-react";
-import {
-  isLikelyVideoUrl,
-  normalizeMediaUrl,
-  proxiedMediaUrl,
-  playableVideoUrl,
-  resolveHeroVideo,
-} from "@/lib/media-url";
+import { isLikelyVideoUrl, proxiedMediaUrl } from "@/lib/media-url";
 
 function InfoRow({
   label,
