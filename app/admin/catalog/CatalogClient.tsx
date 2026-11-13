@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  isLikelyVideoUrl,
+  proxiedMediaUrl,
   resolveHeroVideo,
   playableVideoUrl,
   isVideoUrl,
@@ -1534,17 +1536,7 @@ export default function AdminCatalogClient({
                     <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
                       {thumbImage ? (
                         <img
-                          src={(() => {
-                            const isDrive =
-                              /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)/.test(
-                                thumbImage,
-                              );
-                            return isDrive
-                              ? `/api/media/image-proxy?url=${encodeURIComponent(
-                                  thumbImage,
-                                )}`
-                              : normalizeMediaUrl(thumbImage);
-                          })()}
+                          src={proxiedMediaUrl(thumbImage)}
                           alt="Image thumbnail preview"
                           className="w-full h-full object-cover"
                         />
@@ -1558,9 +1550,14 @@ export default function AdminCatalogClient({
                       type="text"
                       value={thumbImage}
                       onChange={(e) => {
-                        const val = e.target.value;
+                        const val = e.target.value.trim();
                         setThumbImage(val);
-                        updateForm({ thumbnail: val });
+                        if (val) {
+                          setThumbVideo("");
+                          updateForm({ thumbnail: val });
+                        } else if (!thumbVideo) {
+                          updateForm({ thumbnail: "" });
+                        }
                       }}
                       placeholder="https://... (URL ảnh thumbnail)"
                       className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
@@ -1586,7 +1583,7 @@ export default function AdminCatalogClient({
                     <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
                       {thumbVideo ? (
                         <video
-                          src={playableVideoUrl(thumbVideo) || thumbVideo}
+                          src={proxiedMediaUrl(thumbVideo)}
                           muted
                           loop
                           playsInline
@@ -1606,9 +1603,14 @@ export default function AdminCatalogClient({
                       type="text"
                       value={thumbVideo}
                       onChange={(e) => {
-                        const val = e.target.value;
+                        const val = e.target.value.trim();
                         setThumbVideo(val);
-                        updateForm({ thumbnail: val });
+                        if (val) {
+                          setThumbImage("");
+                          updateForm({ thumbnail: val });
+                        } else if (!thumbImage) {
+                          updateForm({ thumbnail: "" });
+                        }
                       }}
                       placeholder="https://... (URL video .mp4/.webm)"
                       className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
@@ -1718,28 +1720,17 @@ export default function AdminCatalogClient({
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                       {galleryItems.map((item) => {
-                        const isVideoFromMime =
-                          item.media.mimeType?.startsWith("video/") === true;
-                        const isVideoFromExt =
-                          /\.(mp4|webm|mov|avi|mkv)(\?|$)/i.test(
-                            item.media.url,
-                          );
-                        const itemIsVideo = isVideoFromMime || isVideoFromExt;
+                        const itemIsVideo = isLikelyVideoUrl(
+                          item.media.url,
+                          item.media.mimeType,
+                        );
                         const isCover = galleryCoverMediaId === item.mediaId;
                         const isSelectedForDelete =
                           gallerySelectedForDelete.has(item.mediaId);
-                        const vidSrc = playableVideoUrl(item.media.url);
-                        const imgSrc = (() => {
-                          const isDrive =
-                            /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)/.test(
-                              item.media.url,
-                            );
-                          return isDrive
-                            ? `/api/media/image-proxy?url=${encodeURIComponent(
-                                item.media.url,
-                              )}`
-                            : normalizeMediaUrl(item.media.url);
-                        })();
+                        const mediaSrc = proxiedMediaUrl(
+                          item.media.url,
+                          item.media.mimeType,
+                        );
                         return (
                           <div
                             key={item.mediaId}
@@ -1755,9 +1746,9 @@ export default function AdminCatalogClient({
                               readOnly
                             />
 
-                            {itemIsVideo && vidSrc ? (
+                            {itemIsVideo ? (
                               <video
-                                src={vidSrc}
+                                src={mediaSrc}
                                 muted
                                 loop
                                 playsInline
@@ -1766,7 +1757,7 @@ export default function AdminCatalogClient({
                               />
                             ) : (
                               <img
-                                src={imgSrc}
+                                src={mediaSrc}
                                 alt={item.media.alt || item.media.filename}
                                 style={{
                                   width: "100%",
@@ -2386,111 +2377,32 @@ function CatalogTable({
             {items.map((p) => (
               <tr key={p.id} className="hover:bg-thuy-800/40">
                 <td className="py-3.5 px-5">
-                  <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
-                    {p.thumbnail ? (
-                      (() => {
-                        const src =
-                          playableVideoUrl(p.thumbnail) || p.thumbnail;
-                        const lower = (p.thumbnail || "").toLowerCase();
-                        const isImageExt =
-                          /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(
-                            lower,
-                          );
-                        const isVideoExt =
-                          /\.(mp4|mov|webm|mkv|avi)(\?|$)/i.test(lower);
-                        const isDriveView =
-                          /drive\.google\.com\/uc\?export=view/i.test(lower);
-                        const isStream = src?.includes("/api/media/stream");
-                        const isDriveFile =
-                          /drive\.google\.com\/file\/d\//.test(lower);
-
-                        if (isDriveView && !isVideoExt) {
-                          const idMatch =
-                            p.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
-                          const imgSrc = idMatch
-                            ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
-                            : p.thumbnail;
-                          return (
-                            <img
-                              src={imgSrc}
-                              alt={p.name}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                          );
-                        }
-
-                        if (isImageExt && !isVideoExt && !isStream) {
-                          return (
-                            <Image
-                              src={p.thumbnail}
-                              alt={p.name}
-                              fill
-                              className="object-cover"
-                              unoptimized
-                            />
-                          );
-                        }
-
-                        if (isStream) {
-                          return (
-                            <video
-                              src={src}
-                              muted
-                              loop
-                              playsInline
-                              preload="metadata"
-                              className="w-full h-full object-cover"
-                            />
-                          );
-                        }
-
-                        if (
-                          isVideoExt ||
-                          (isVideoUrl(p.thumbnail) && !isImageExt)
-                        ) {
-                          if (src) {
+                    <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
+                      {p.thumbnail ? (
+                        (() => {
+                          const thumbSrc = proxiedMediaUrl(p.thumbnail);
+                          const isVid = isLikelyVideoUrl(p.thumbnail);
+                          if (isVid) {
                             return (
                               <video
-                                src={src}
+                                src={thumbSrc}
                                 muted
-                                loop
                                 playsInline
                                 preload="metadata"
                                 className="w-full h-full object-cover"
                               />
                             );
                           }
-                        }
-
-                        if (isDriveFile) {
-                          const idMatch =
-                            p.thumbnail.match(/id=([a-zA-Z0-9_-]+)/);
-                          const imgSrc = idMatch
-                            ? `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
-                            : p.thumbnail;
                           return (
-                            <Image
-                              src={imgSrc}
+                            <img
+                              src={thumbSrc}
                               alt={p.name}
-                              fill
-                              className="object-cover"
-                              unoptimized
+                              className="w-full h-full object-cover"
+                              loading="lazy"
                             />
                           );
-                        }
-
-                        return (
-                          <Image
-                            src={p.thumbnail}
-                            alt={p.name}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                          />
-                        );
-                      })()
-                    ) : (
+                        })()
+                      ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-600">
                         <FileCode className="w-4 h-4" />
                       </div>
