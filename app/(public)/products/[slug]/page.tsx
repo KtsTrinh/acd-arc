@@ -240,18 +240,22 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
             )}
 
             <div className="flex flex-wrap items-baseline gap-3 pt-1">
-              <span className="font-display font-bold text-3xl sm:text-4xl text-thuy-400 text-glow">
-                {formatVND(finalPrice || 0)}
-              </span>
-              {hasDiscount && (
+              {hasDiscount ? (
                 <>
-                  <span className="text-sm text-slate-500 line-through">
+                  <span className="font-display font-bold text-3xl sm:text-4xl text-thuy-400 text-glow">
+                    {formatVND(finalPrice || 0)}
+                  </span>
+                  <span className="text-base text-slate-400 line-through decoration-slate-400/80">
                     {formatVND(product.price)}
                   </span>
                   <span className="px-2 py-0.5 rounded bg-red-500/15 text-red-300 text-xs font-semibold border border-red-500/30">
                     -{formatVND(product.discount)}
                   </span>
                 </>
+              ) : (
+                <span className="font-display font-bold text-3xl sm:text-4xl text-thuy-400 text-glow">
+                  {formatVND(finalPrice || 0)}
+                </span>
               )}
             </div>
           </div>
@@ -275,12 +279,9 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
             <h3 className="text-xs font-semibold uppercase tracking-wider text-thuy-300 mb-2">
               Thông tin chi tiết
             </h3>
-            <InfoRow label="Nhóm sản phẩm" value={product.productGroup} />
-            <InfoRow label="Hạng mục" value={product.productCategory} />
-            <InfoRow label="Địa điểm" value={product.location} />
             <InfoRow label="Chủ đầu tư" value={product.client} />
+            <InfoRow label="Địa điểm" value={product.location} />
             <InfoRow label="Năm thiết kế" value={product.year} />
-            <InfoRow label="Phong cách" value={product.style} />
             <InfoRow
               label="Diện tích đất"
               value={product.landArea ? `${product.landArea} m²` : null}
@@ -289,30 +290,17 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               label="Diện tích xây dựng"
               value={product.buildingArea ? `${product.buildingArea} m²` : null}
             />
-            <InfoRow label="Số tầng" value={product.floors} />
+            <InfoRow label="Tầng cao" value={product.floors} />
             <InfoRow label="Tầng hầm" value={product.basementFloors} />
             <InfoRow
               label="Tổng diện tích sàn"
               value={product.totalFloorArea ? `${product.totalFloorArea} m²` : null}
             />
+            <InfoRow label="Phong cách" value={product.style} />
+            <InfoRow label="Nhóm sản phẩm" value={product.productGroup} />
+            <InfoRow label="Hạng mục" value={product.productCategory} />
             <InfoRow label="Định dạng file" value={product.fileFormat} />
             <InfoRow label="Dung lượng" value={product.fileSize} />
-            <InfoRow
-              label="Giá gốc"
-              value={product.price ? formatVND(product.price) : null}
-            />
-            <InfoRow
-              label="Giảm giá"
-              value={product.discount ? formatVND(product.discount) : null}
-            />
-            <InfoRow
-              label="Giá sau giảm"
-              value={
-                product.priceAfterDiscount
-                  ? formatVND(product.priceAfterDiscount)
-                  : null
-              }
-            />
           </div>
 
           {/* Description */}

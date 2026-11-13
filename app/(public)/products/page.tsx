@@ -16,6 +16,7 @@ import {
   MapPin,
   Calendar,
   Tag,
+  Ruler,
 } from "lucide-react";
 
 export const revalidate = 0;
@@ -214,6 +215,17 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                             {prod.year}
                           </span>
                         )}
+                        {prod.totalFloorArea ? (
+                          <span className="inline-flex items-center gap-1">
+                            <Ruler className="w-3 h-3" />
+                            {prod.totalFloorArea} m²
+                          </span>
+                        ) : prod.landArea ? (
+                          <span className="inline-flex items-center gap-1">
+                            <Ruler className="w-3 h-3" />
+                            {prod.landArea} m²
+                          </span>
+                        ) : null}
                       </div>
                       {tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 pt-0.5">
@@ -232,15 +244,21 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   </div>
 
                   <div className="pt-4 mt-4 border-t border-thuy-800 flex items-center justify-between">
-                    <div>
-                      <span className="font-bold text-base text-thuy-400">
-                        {formatVND(finalPrice)}
-                      </span>
+                    <div className="flex flex-col">
                       {prod.discount && prod.price ? (
-                        <span className="block text-[10px] text-slate-500 line-through">
-                          {formatVND(prod.price)}
+                        <>
+                          <span className="font-bold text-base text-thuy-400">
+                            {formatVND(finalPrice)}
+                          </span>
+                          <span className="text-[11px] text-slate-400 line-through decoration-slate-400/70">
+                            {formatVND(prod.price)}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="font-bold text-base text-thuy-400">
+                          {formatVND(finalPrice)}
                         </span>
-                      ) : null}
+                      )}
                     </div>
 
                     <Link
