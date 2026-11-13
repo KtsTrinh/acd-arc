@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -376,6 +376,24 @@ export default function AdminCatalogClient({
   const [gallerySelectedForDelete, setGallerySelectedForDelete] = useState<
     Set<string>
   >(new Set());
+  const galleryGridRef = useRef<HTMLDivElement>(null);
+  const [galleryDragStart, setGalleryDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [galleryDragCurrent, setGalleryDragCurrent] = useState<{ x: number; y: number } | null>(null);
+  const [galleryIsDragging, setGalleryIsDragging] = useState(false);
+  const galleryJustDragged = useRef(false);
+  const [galleryDragItemId, setGalleryDragItemId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleUp = () => {
+      if (galleryIsDragging) {
+        setGalleryDragStart(null);
+        setGalleryDragCurrent(null);
+        setGalleryIsDragging(false);
+      }
+    };
+    window.addEventListener("mouseup", handleUp);
+    return () => window.removeEventListener("mouseup", handleUp);
+  }, [galleryIsDragging]);
 
   const fetchAll = useCallback(async () => {
     try {
@@ -1028,15 +1046,16 @@ export default function AdminCatalogClient({
   };
 
   const handleGalleryReorder = async (reordered: GalleryItem[]) => {
+    const withOrder = reordered.map((item, idx) => ({ ...item, sortOrder: idx }));
+    setGalleryItems(withOrder);
     if (!form?.id) return;
-    setGalleryItems(reordered);
     setGallerySaving(true);
     try {
       await fetch(`/api/products/${form.id}/gallery`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: reordered.map((item) => ({
+          items: withOrder.map((item) => ({
             mediaId: item.mediaId,
             sortOrder: item.sortOrder,
           })),
@@ -1047,6 +1066,109 @@ export default function AdminCatalogClient({
     } finally {
       setGallerySaving(false);
     }
+  };
+
+  const handleGalleryGridMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    const target = e.target as HTMLElement;
+    if (target.closest("button") || target.closest("input") || target.closest('[draggable="true"]')) return;
+    const grid = galleryGridRef.current;
+    if (!grid) return;
+    const rect = grid.getBoundingClientRect();
+    setGalleryDragStart({ x: e.clientX - rect.left + grid.scrollLeft, y: e.clientY - rect.top + grid.scrollTop });
+    setGalleryDragCurrent({ x: e.clientX - rect.left + grid.scrollLeft, y: e.clientY - rect.top + grid.scrollTop });
+    setGalleryIsDragging(true);
+  };
+
+  const handleGalleryGridMouseMove = (e: React.MouseEvent) => {
+    if (!galleryDragStart || !galleryIsDragging) return;
+    const grid = galleryGridRef.current;
+    if (!grid) return;
+    const rect = grid.getBoundingClientRect();
+    setGalleryDragCurrent({ x: e.clientX - rect.left + grid.scrollLeft, y: e.clientY - rect.top + grid.scrollTop });
+  };
+
+  const handleGalleryGridMouseUp = (e: React.MouseEvent) => {
+    if (!galleryDragStart || !galleryDragCurrent || !galleryIsDragging) {
+      setGalleryDragStart(null);
+      setGalleryDragCurrent(null);
+      setGalleryIsDragging(false);
+      return;
+    }
+    const grid = galleryGridRef.current;
+    if (!grid) {
+      setGalleryDragStart(null);
+      setGalleryDragCurrent(null);
+      setGalleryIsDragging(false);
+      return;
+    }
+    const rect = grid.getBoundingClientRect();
+    const endX = e.clientX - rect.left + grid.scrollLeft;
+    const endY = e.clientY - rect.top + grid.scrollTop;
+    const dragDistance = Math.sqrt(
+      Math.pow(endX - galleryDragStart.x, 2) + Math.pow(endY - galleryDragStart.y, 2),
+    );
+    if (dragDistance >= 5) {
+      galleryJustDragged.current = true;
+      setTimeout(() => { galleryJustDragged.current = false; }, 0);
+      const selectRect = {
+        left: Math.min(galleryDragStart.x, endX),
+        top: Math.min(galleryDragStart.y, endY),
+        right: Math.max(galleryDragStart.x, endX),
+        bottom: Math.max(galleryDragStart.y, endY),
+      };
+      const next = new Set(gallerySelectedForDelete);
+      grid.querySelectorAll("[data-gallery-item]").forEach((el) => {
+        const itemRect = (el as HTMLElement).getBoundingClientRect();
+        const gridRect = grid.getBoundingClientRect();
+        const itemBox = {
+          left: itemRect.left - gridRect.left + grid.scrollLeft,
+          top: itemRect.top - gridRect.top + grid.scrollTop,
+          right: itemRect.right - gridRect.left + grid.scrollLeft,
+          bottom: itemRect.bottom - gridRect.top + grid.scrollTop,
+        };
+        const overlap = !(
+          itemBox.right < selectRect.left ||
+          itemBox.left > selectRect.right ||
+          itemBox.bottom < selectRect.top ||
+          itemBox.top > selectRect.bottom
+        );
+        if (overlap) {
+          const id = el.getAttribute("data-gallery-item");
+          if (id) next.add(id);
+        }
+      });
+      setGallerySelectedForDelete(next);
+    }
+    setGalleryDragStart(null);
+    setGalleryDragCurrent(null);
+    setGalleryIsDragging(false);
+  };
+
+  const handleGalleryItemDragStart = (mediaId: string) => {
+    setGalleryDragItemId(mediaId);
+  };
+
+  const handleGalleryItemDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleGalleryItemDrop = (targetMediaId: string) => {
+    if (!galleryDragItemId || galleryDragItemId === targetMediaId) {
+      setGalleryDragItemId(null);
+      return;
+    }
+    const from = galleryItems.findIndex((i) => i.mediaId === galleryDragItemId);
+    const to = galleryItems.findIndex((i) => i.mediaId === targetMediaId);
+    if (from < 0 || to < 0) {
+      setGalleryDragItemId(null);
+      return;
+    }
+    const next = [...galleryItems];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    void handleGalleryReorder(next);
+    setGalleryDragItemId(null);
   };
 
   const handleGalleryCover = (mediaId: string) => {
@@ -1718,7 +1840,31 @@ export default function AdminCatalogClient({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    <div
+                      ref={galleryGridRef}
+                      onMouseDown={handleGalleryGridMouseDown}
+                      onMouseMove={handleGalleryGridMouseMove}
+                      onMouseUp={handleGalleryGridMouseUp}
+                      onMouseLeave={() => {
+                        if (galleryIsDragging) {
+                          setGalleryDragStart(null);
+                          setGalleryDragCurrent(null);
+                          setGalleryIsDragging(false);
+                        }
+                      }}
+                      className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 select-none"
+                    >
+                      {galleryIsDragging && galleryDragStart && galleryDragCurrent && (
+                        <div
+                          className="absolute pointer-events-none z-30 bg-thuy-400/20 border border-thuy-400 rounded-sm"
+                          style={{
+                            left: Math.min(galleryDragStart.x, galleryDragCurrent.x),
+                            top: Math.min(galleryDragStart.y, galleryDragCurrent.y),
+                            width: Math.abs(galleryDragCurrent.x - galleryDragStart.x),
+                            height: Math.abs(galleryDragCurrent.y - galleryDragStart.y),
+                          }}
+                        />
+                      )}
                       {galleryItems.map((item) => {
                         const itemIsVideo = isLikelyVideoUrl(
                           item.media.url,
@@ -1734,17 +1880,37 @@ export default function AdminCatalogClient({
                         return (
                           <div
                             key={item.mediaId}
-                            className={`group relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all shadow-sm ${isCover ? "border-amber-400 ring-2 ring-amber-400/20" : isSelectedForDelete ? "border-red-500 ring-2 ring-red-500/20" : "border-thuy-700 hover:border-thuy-500"}`}
+                            data-gallery-item={item.mediaId}
+                            draggable
+                            onDragStart={() => handleGalleryItemDragStart(item.mediaId)}
+                            onDragOver={handleGalleryItemDragOver}
+                            onDrop={() => handleGalleryItemDrop(item.mediaId)}
+                            onDragEnd={() => setGalleryDragItemId(null)}
+                            className={`group relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all shadow-sm cursor-grab active:cursor-grabbing ${
+                              isCover
+                                ? "border-amber-400 ring-2 ring-amber-400/20"
+                                : isSelectedForDelete
+                                  ? "border-red-500 ring-2 ring-red-500/20"
+                                  : "border-thuy-700 hover:border-thuy-500"
+                            } ${galleryDragItemId === item.mediaId ? "opacity-50" : ""}`}
                           >
                             <input
                               type="checkbox"
                               checked={isSelectedForDelete}
-                              onChange={() =>
-                                toggleGalleryDeleteSelection(item.mediaId)
-                              }
+                              onChange={() => {
+                                if (!galleryJustDragged.current)
+                                  toggleGalleryDeleteSelection(item.mediaId);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
                               className="absolute top-2 left-2 z-20 w-4 h-4 rounded bg-thuy-900 border border-thuy-500 text-thuy-400 focus:ring-2 focus:ring-thuy-400 accent-thuy-400"
-                              readOnly
                             />
+
+                            <div
+                              className="absolute bottom-2 right-2 z-20 p-1 rounded-md bg-thuy-950/80 text-slate-300 border border-thuy-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Kéo để sắp xếp"
+                            >
+                              <GripVertical className="w-3.5 h-3.5" />
+                            </div>
 
                             {itemIsVideo ? (
                               <video
