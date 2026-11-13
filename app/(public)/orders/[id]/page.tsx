@@ -83,32 +83,15 @@ export default function OrderDetailPage({
   const [payment, setPayment] = useState<Record<string, string> | null>(null);
   const [loading, setLoading] = useState(true);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
-  const [isSimulatingPayment, setIsSimulatingPayment] = useState(false);
-
-  const fetchOrder = async () => {
-    try {
-      const res = await fetch(`/api/orders/${params.id}`);
-      const data = await res.json();
-      if (data.order) {
-        setOrder(data.order);
-      } else {
-        setOrder(null);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-          const [orderRes, settingsRes] = await Promise.all([
-            fetch(`/api/orders/${params.id}`, { cache: "no-store" }),
-            fetch("/api/settings", { cache: "no-store" }),
-          ]);
+        const [orderRes, settingsRes] = await Promise.all([
+          fetch(`/api/orders/${params.id}`, { cache: "no-store" }),
+          fetch("/api/settings", { cache: "no-store" }),
+        ]);
         const orderData = await orderRes.json().catch(() => ({}));
         const settingsData = await settingsRes.json().catch(() => ({}));
         if (!mounted) return;
@@ -125,27 +108,25 @@ export default function OrderDetailPage({
     };
   }, [params.id]);
 
-  const handleSimulatePayment = async () => {
-    if (!order) return;
-    setIsSimulatingPayment(true);
-    try {
-      const res = await fetch(`/api/orders/${order.id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "PAID" }),
-      });
-      const data = await res.json();
-      if (data.order) {
-        setOrder(data.order);
-      } else if (data.error) {
-        alert(data.error);
+  useEffect(() => {
+    if (!order || order.status !== "PENDING") return;
+    let active = true;
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/orders/${params.id}`, { cache: "no-store" });
+        const data = await res.json().catch(() => ({}));
+        if (!active) return;
+        if (data.order) setOrder(data.order);
+      } catch (err) {
+        console.error(err);
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsSimulatingPayment(false);
-    }
-  };
+    };
+    const timer = setInterval(poll, 8000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, [order?.status, order?.id, params.id]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);

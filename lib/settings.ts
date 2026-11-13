@@ -65,6 +65,7 @@ export interface SystemSettings {
   bankAccount: string;
   bankAccountName: string;
   bankQrUrl: string;
+  paymentWebhookSecret: string;
 
   // Nội bộ - không export ra source
   cmsAutoSync: string;
@@ -127,6 +128,7 @@ export const defaultSettings: SystemSettings = {
   bankAccount: "",
   bankAccountName: "",
   bankQrUrl: "",
+  paymentWebhookSecret: "",
 
   cmsAutoSync: "true",
   cmsLastSyncSha: "",
