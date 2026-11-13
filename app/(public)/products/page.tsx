@@ -67,7 +67,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     orderBy: { createdAt: "desc" },
     include: {
       tags: { include: { tag: true } },
-      gallery: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+      gallery: {
+        include: { media: { select: { url: true, mimeType: true } } },
+        orderBy: { sortOrder: "asc" },
+        take: 1,
+      },
     },
   })) as any[];
 
@@ -167,6 +171,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               const finalPrice = prod.priceAfterDiscount ?? prod.price ?? 0;
               const tags = (prod.tags || []).map((t: any) => t?.tag?.name).filter(Boolean).slice(0, 3);
               const thumbUrl = prod.thumbnail || prod.gallery?.[0]?.media?.url || "";
+              const thumbMime = prod.gallery?.[0]?.media?.mimeType || null;
+              const thumbIsVideo = isLikelyVideoUrl(thumbUrl, thumbMime);
+              const thumbSrc = proxiedMediaUrl(thumbUrl, thumbMime);
               return (
                 <div
                   key={prod.id}
@@ -175,9 +182,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   <div className="space-y-3">
                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950">
                       {thumbUrl ? (
-                        isLikelyVideoUrl(thumbUrl) ? (
+                        thumbIsVideo ? (
                           <video
-                            src={proxiedMediaUrl(thumbUrl)}
+                            src={thumbSrc}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             muted
                             playsInline
@@ -185,7 +192,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           />
                         ) : (
                           <Image
-                            src={proxiedMediaUrl(thumbUrl)}
+                            src={thumbSrc}
                             alt={prod.name}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-500"

@@ -52,17 +52,24 @@ export function isDriveFileUrl(url: string): boolean {
 /**
  * URL hiển thị/stream media qua proxy khi cần (Google Drive) để tránh chặn
  * hotlink/cookie hoặc header attachment khiến ảnh/video không hiện trên web.
- * Dùng /api/media/stream cho Drive để hỗ trợ cả ảnh/video và file lớn (confirm/range).
  */
 export function proxiedMediaUrl(
   url: string,
-  _mimeType?: string | null,
+  mimeType?: string | null,
 ): string {
   const trimmed = (url || "").trim();
   if (!trimmed) return "";
+  if (trimmed.startsWith("/api/media/")) return trimmed;
   if (isDriveFileUrl(trimmed)) {
     const normalized = normalizeDriveUrl(trimmed);
-    return `/api/media/stream?url=${encodeURIComponent(normalized)}`;
+    const endpoint = isLikelyVideoUrl(trimmed, mimeType)
+      ? "/api/media/stream"
+      : "/api/media/image-proxy";
+    return `${endpoint}?url=${encodeURIComponent(normalized)}`;
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    // Link ngoài: proxy qua stream để tránh hotlink/CORS; ảnh/video đều xử lý được
+    return `/api/media/stream?url=${encodeURIComponent(trimmed)}`;
   }
   return normalizeMediaUrl(trimmed);
 }
