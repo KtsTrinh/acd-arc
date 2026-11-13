@@ -399,16 +399,6 @@ export default function AdminMediaPage() {
             <Upload className="w-3.5 h-3.5" />
             <span>Upload File Ảnh</span>
           </button>
-
-          {selectedMediaIds.length > 0 && (
-            <button
-              onClick={() => setSelectedMediaIds([])}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-thuy-800 text-slate-400 hover:bg-thuy-700 hover:text-white text-xs font-semibold border border-thuy-700 transition-all"
-            >
-              <X className="w-3 h-3" />
-              <span>Bỏ chọn hết</span>
-            </button>
-          )}
         </div>
       </div>
 
