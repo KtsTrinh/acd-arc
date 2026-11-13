@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { formatVND, formatDateTime } from "@/lib/utils";
+import { proxiedMediaUrl } from "@/lib/media-url";
 import {
   CheckCircle2,
   Clock,
@@ -10,12 +12,61 @@ import {
   ShieldCheck,
   AlertCircle,
   Copy,
-  ExternalLink,
   QrCode,
-  ArrowRight,
-  FileCode,
   RefreshCw,
+  Package,
 } from "lucide-react";
+
+const bankList = [
+  { code: "VCB", shortName: "Vietcombank" },
+  { code: "ACB", shortName: "ACB" },
+  { code: "TCB", shortName: "Techcombank" },
+  { code: "MB", shortName: "MB" },
+  { code: "VTB", shortName: "VietinBank" },
+  { code: "BIDV", shortName: "BIDV" },
+  { code: "VPB", shortName: "VPBank" },
+  { code: "TPB", shortName: "TPBank" },
+  { code: "STB", shortName: "Sacombank" },
+  { code: "HDB", shortName: "HDBank" },
+  { code: "SHB", shortName: "SHB" },
+  { code: "VIB", shortName: "VIB" },
+  { code: "MSB", shortName: "MSB" },
+  { code: "OCB", shortName: "OCB" },
+  { code: "SCB", shortName: "SCB" },
+  { code: "EIB", shortName: "Eximbank" },
+  { code: "ABB", shortName: "ABBANK" },
+];
+
+function generateBankQr(
+  account: string,
+  bankName: string,
+  accountName: string,
+  amount?: number,
+  addInfo?: string,
+) {
+  if (!account || !bankName) return "";
+  const bank = bankList.find((b) =>
+    bankName.toLowerCase().includes(b.shortName.toLowerCase()),
+  );
+  const bankCode = bank?.code || "";
+  if (!bankCode) return "";
+  const sep = String.fromCharCode(38);
+  const amt = Math.max(0, Math.round(Number(amount || 0)));
+  return (
+    "https://img.vietqr.io/image/" +
+    bankCode +
+    "-" +
+    account +
+    "-compact2.png?amount=" +
+    amt +
+    sep +
+    "addInfo=" +
+    encodeURIComponent(addInfo || "Thanh toan") +
+    sep +
+    "accountName=" +
+    encodeURIComponent(accountName || "")
+  );
+}
 
 export default function OrderDetailPage({
   params,
@@ -23,21 +74,19 @@ export default function OrderDetailPage({
   params: { id: string };
 }) {
   const [order, setOrder] = useState<any>(null);
+  const [payment, setPayment] = useState<Record<string, string> | null>(null);
   const [loading, setLoading] = useState(true);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [isSimulatingPayment, setIsSimulatingPayment] = useState(false);
 
   const fetchOrder = async () => {
     try {
-      const res = await fetch(`/api/orders?search=${params.id}`);
+      const res = await fetch(`/api/orders/${params.id}`);
       const data = await res.json();
-      if (data.orders && data.orders.length > 0) {
-        // Find exact matching order by id or orderNumber
-        const found =
-          data.orders.find(
-            (o: any) => o.id === params.id || o.orderNumber === params.id,
-          ) || data.orders[0];
-        setOrder(found);
+      if (data.order) {
+        setOrder(data.order);
+      } else {
+        setOrder(null);
       }
     } catch (err) {
       console.error(err);
@@ -47,7 +96,27 @@ export default function OrderDetailPage({
   };
 
   useEffect(() => {
-    fetchOrder();
+    let mounted = true;
+    (async () => {
+      try {
+        const [orderRes, settingsRes] = await Promise.all([
+          fetch(`/api/orders/${params.id}`),
+          fetch("/api/settings"),
+        ]);
+        const orderData = await orderRes.json().catch(() => ({}));
+        const settingsData = await settingsRes.json().catch(() => ({}));
+        if (!mounted) return;
+        setOrder(orderData.order || null);
+        setPayment(settingsData.settings || {});
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, [params.id]);
 
   const handleSimulatePayment = async () => {
@@ -62,6 +131,8 @@ export default function OrderDetailPage({
       const data = await res.json();
       if (data.order) {
         setOrder(data.order);
+      } else if (data.error) {
+        alert(data.error);
       }
     } catch (err) {
       console.error(err);
@@ -96,6 +167,19 @@ export default function OrderDetailPage({
   }
 
   const isPaid = order.status === "PAID";
+  const qrUrl =
+    (payment?.bankQrUrl || "").trim() ||
+    generateBankQr(
+      payment?.bankAccount || "",
+      payment?.bankName || "",
+      payment?.bankAccountName || "",
+      order.total,
+      order.orderNumber,
+    );
+  const hasBankInfo = Boolean(
+    (payment?.bankName || payment?.bankAccount || payment?.bankAccountName || qrUrl),
+  );
+  const items: any[] = Array.isArray(order.items) ? order.items : [];
 
   return (
     <div className="pt-28 pb-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
@@ -176,61 +260,131 @@ export default function OrderDetailPage({
             <span>Thông Tin Chuyển Khoản Ngân Hàng</span>
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            {/* Mock VietQR Image */}
-            <div className="p-4 rounded-xl bg-white text-center flex flex-col items-center justify-center max-w-[240px] mx-auto w-full shadow-lg">
-              <div className="w-48 h-48 bg-slate-100 flex flex-col items-center justify-center rounded-lg border border-slate-300 p-2">
-                <QrCode className="w-28 h-28 text-slate-800" />
-                <span className="text-[10px] text-slate-600 font-bold mt-2">
-                  VIETQR PRO
+          {!hasBankInfo ? (
+            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 text-xs text-amber-300">
+              Quản trị viên chưa cấu hình tài khoản thanh toán trong CMS. Vui lòng liên hệ hỗ trợ để hoàn tất đơn hàng.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              {/* QR */}
+              <div className="p-4 rounded-xl bg-white text-center flex flex-col items-center justify-center max-w-[260px] mx-auto w-full shadow-lg">
+                {qrUrl ? (
+                  <img
+                    src={qrUrl}
+                    alt="Mã QR thanh toán"
+                    className="w-56 h-56 object-contain"
+                  />
+                ) : (
+                  <div className="w-56 h-56 bg-slate-100 flex flex-col items-center justify-center rounded-lg border border-slate-300 p-2">
+                    <QrCode className="w-28 h-28 text-slate-800" />
+                  </div>
+                )}
+                <span className="text-[11px] text-slate-700 font-semibold mt-2">
+                  Quét mã để thanh toán
                 </span>
-                <span className="text-[9px] text-slate-500 font-mono">
-                  {order.orderNumber}
+                <span className="text-[10px] text-slate-500 mt-0.5">
+                  Nội dung: {order.orderNumber}
                 </span>
               </div>
-              <span className="text-[11px] text-slate-700 font-semibold mt-2">
-                Quét mã để thanh toán tự động
-              </span>
-            </div>
 
-            {/* Account Details */}
-            <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                <span className="text-slate-400 block text-[10px]">
-                  Ngân hàng:
-                </span>
-                <span className="font-bold text-white text-sm">
-                  Techcombank - CN Sài Gòn
-                </span>
-              </div>
-              <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                <span className="text-slate-400 block text-[10px]">
-                  Số tài khoản:
-                </span>
-                <span className="font-bold text-white text-sm font-mono">
-                  1903 8888 666888
-                </span>
-              </div>
-              <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                <span className="text-slate-400 block text-[10px]">
-                  Chủ tài khoản:
-                </span>
-                <span className="font-bold text-white text-sm">
-                  ACD ARCHITECTURE STUDIO
-                </span>
-              </div>
-              <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                <span className="text-slate-400 block text-[10px]">
-                  Nội dung chuyển khoản (Bắt buộc):
-                </span>
-                <span className="font-bold text-emerald-400 text-sm font-mono">
-                  {order.orderNumber}
-                </span>
+              {/* Account Details */}
+              <div className="space-y-3 text-xs">
+                <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
+                  <span className="text-slate-400 block text-[10px]">
+                    Ngân hàng:
+                  </span>
+                  <span className="font-bold text-white text-sm">
+                    {payment?.bankName || "Chưa cấu hình"}
+                  </span>
+                </div>
+                <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
+                  <span className="text-slate-400 block text-[10px]">
+                    Số tài khoản:
+                  </span>
+                  <span className="font-bold text-white text-sm font-mono">
+                    {payment?.bankAccount || "Chưa cấu hình"}
+                  </span>
+                </div>
+                <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
+                  <span className="text-slate-400 block text-[10px]">
+                    Chủ tài khoản:
+                  </span>
+                  <span className="font-bold text-white text-sm">
+                    {payment?.bankAccountName || "Chưa cấu hình"}
+                  </span>
+                </div>
+                <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
+                  <span className="text-slate-400 block text-[10px]">
+                    Nội dung chuyển khoản (Bắt buộc):
+                  </span>
+                  <span className="font-bold text-emerald-400 text-sm font-mono">
+                    {order.orderNumber}
+                  </span>
+                </div>
+                <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
+                  <span className="text-slate-400 block text-[10px]">
+                    Số tiền:
+                  </span>
+                  <span className="font-bold text-thuy-400 text-sm">
+                    {formatVND(order.total)}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       )}
+
+      {/* Ordered products */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-thuy-850 border border-thuy-750 space-y-5">
+        <div className="flex items-center justify-between border-b border-thuy-750 pb-4">
+          <h2 className="font-display font-bold text-xl text-white flex items-center gap-2">
+            <Package className="w-5 h-5 text-thuy-400" />
+            <span>Sản Phẩm Trong Đơn Hàng</span>
+          </h2>
+          <span className="text-xs text-slate-400">{items.length} sản phẩm</span>
+        </div>
+        {items.length === 0 ? (
+          <div className="text-center py-6 text-slate-400 text-xs">
+            Không có sản phẩm trong đơn hàng này.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {items.map((item: any, idx: number) => {
+              const thumb = proxiedMediaUrl(item?.product?.thumbnail);
+              return (
+                <div
+                  key={item.id || idx}
+                  className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-thuy-900 border border-thuy-700/80"
+                >
+                  <div className="flex items-center gap-4 min-w-0">
+                    {thumb ? (
+                      <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-thuy-950 flex-shrink-0">
+                        <Image src={thumb} alt={item.productName || "Sản phẩm"} fill className="object-cover" unoptimized />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-xl bg-thuy-800 flex items-center justify-center text-slate-500 flex-shrink-0">
+                        <Package className="w-6 h-6" />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm text-white truncate">
+                        {item.productName || item?.product?.name || "Sản phẩm"}
+                      </p>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Số lượng: <b className="text-white">{item.quantity || 1}</b>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <span className="font-bold text-sm text-thuy-400">{formatVND(item.price || 0)}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {/* If Paid: Secure Download Links Center */}
       {isPaid && (

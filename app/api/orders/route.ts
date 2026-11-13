@@ -113,11 +113,16 @@ export async function POST(request: Request) {
         );
       }
 
-      calculatedTotal += (product.price ?? 0) * (item.quantity || 1);
+      const unitPrice =
+        typeof product.priceAfterDiscount === "number" &&
+        !Number.isNaN(product.priceAfterDiscount)
+          ? product.priceAfterDiscount
+          : (product.price ?? 0);
+      calculatedTotal += unitPrice * (item.quantity || 1);
       orderItemsData.push({
         productId: product.id,
         productName: product.name,
-        price: product.price ?? 0,
+        price: unitPrice,
         quantity: item.quantity || 1,
       });
     }
