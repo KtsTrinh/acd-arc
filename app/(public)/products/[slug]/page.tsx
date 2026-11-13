@@ -172,11 +172,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                 <Download className="w-12 h-12 text-slate-600" />
               </div>
             )}
-            {product.productGroup && (
-              <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-thuy-950/85 backdrop-blur-md border border-thuy-700 text-xs font-bold text-thuy-300">
-                {product.productGroup}
-              </span>
-            )}
+
           </div>
 
           {uniqueImages.length > 1 && (
@@ -217,11 +213,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                 <Sparkles className="w-3.5 h-3.5 text-thuy-400" />
                 <span>Tài nguyên bản quyền ACD</span>
               </div>
-              {product.productCategory && (
-                <span className="px-3 py-1 rounded-full bg-thuy-900 text-slate-300 text-xs border border-thuy-700">
-                  {product.productCategory}
-                </span>
-              )}
+
               {product.featured && (
                 <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 text-xs border border-amber-500/30">
                   Nổi bật
@@ -297,8 +289,6 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               value={product.totalFloorArea ? `${product.totalFloorArea} m²` : null}
             />
             <InfoRow label="Phong cách" value={product.style} />
-            <InfoRow label="Nhóm sản phẩm" value={product.productGroup} />
-            <InfoRow label="Hạng mục" value={product.productCategory} />
             <InfoRow label="Định dạng file" value={product.fileFormat} />
             <InfoRow label="Dung lượng" value={product.fileSize} />
           </div>
