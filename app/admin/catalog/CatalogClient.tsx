@@ -382,6 +382,11 @@ export default function AdminCatalogClient({
   const [galleryIsDragging, setGalleryIsDragging] = useState(false);
   const galleryJustDragged = useRef(false);
   const [galleryDragItemId, setGalleryDragItemId] = useState<string | null>(null);
+  const [galleryConfirm, setGalleryConfirm] = useState<{
+    open: boolean;
+    mode: "one" | "selected" | "all";
+    mediaId?: string | null;
+  }>({ open: false, mode: "one", mediaId: null });
 
   useEffect(() => {
     const handleUp = () => {
@@ -909,21 +914,20 @@ export default function AdminCatalogClient({
     }
   };
 
-  const handleGalleryDelete = async (mediaId: string) => {
-    if (!confirm("Bạn có chắc muốn gỡ mục này khỏi Gallery?")) return;
+  const requestGalleryDelete = (mediaId: string) => {
+    setGalleryConfirm({ open: true, mode: "one", mediaId });
+  };
 
+  const executeGalleryDeleteOne = async (mediaId: string) => {
     if (!form?.id) {
       const remaining = galleryItems.filter((i) => i.mediaId !== mediaId);
       setGalleryItems(remaining);
       if (galleryCoverMediaId === mediaId) {
-        setGalleryCoverMediaId(
-          remaining.length > 0 ? remaining[0].mediaId : null,
-        );
+        setGalleryCoverMediaId(remaining.length > 0 ? remaining[0].mediaId : null);
       }
       setNotice({ type: "ok", text: "Đã gỡ mục khỏi Gallery." });
       return;
     }
-
     setGallerySaving(true);
     try {
       const res = await fetch(
@@ -932,29 +936,29 @@ export default function AdminCatalogClient({
       );
       const data = await res.json();
       if (data.gallery) {
-        const mapped: GalleryItem[] = data.gallery.map(
-          (g: any, idx: number) => ({
-            id: g.id,
-            mediaId: g.mediaId,
-            sortOrder: g.sortOrder ?? idx,
-            media: {
-              id: g.media.id,
-              filename: g.media.filename,
-              originalName: g.media.originalName,
-              url: g.media.url,
-              folder: g.media.folder,
-              alt: g.media.alt,
-              mimeType: g.media.mimeType,
-            },
-          }),
-        );
+        const mapped: GalleryItem[] = data.gallery.map((g: any, idx: number) => ({
+          id: g.id,
+          mediaId: g.mediaId,
+          sortOrder: g.sortOrder ?? idx,
+          media: {
+            id: g.media.id,
+            filename: g.media.filename,
+            originalName: g.media.originalName,
+            url: g.media.url,
+            folder: g.media.folder,
+            alt: g.media.alt,
+            mimeType: g.media.mimeType,
+          },
+        }));
         setGalleryItems(mapped);
         if (galleryCoverMediaId === mediaId) {
           setGalleryCoverMediaId(mapped.length > 0 ? mapped[0].mediaId : null);
         }
       }
+      setNotice({ type: "ok", text: "Đã gỡ mục khỏi Gallery." });
     } catch (err) {
       console.error("Failed to delete gallery item:", err);
+      setNotice({ type: "err", text: "Không gỡ được mục khỏi Gallery." });
     } finally {
       setGallerySaving(false);
     }
@@ -969,22 +973,14 @@ export default function AdminCatalogClient({
     });
   };
 
-  const handleGalleryDeleteSelected = async () => {
+  const executeGalleryDeleteSelected = async () => {
     if (gallerySelectedForDelete.size === 0) return;
-    if (
-      !confirm(
-        `Bạn có chắc muốn xoá ${gallerySelectedForDelete.size} mục đã chọn khỏi Gallery?`,
-      )
-    )
-      return;
-
+    const count = gallerySelectedForDelete.size;
     if (!form?.id) {
-      setGalleryItems((prev) =>
-        prev.filter((i) => !gallerySelectedForDelete.has(i.mediaId)),
-      );
       const remaining = galleryItems.filter(
         (i) => !gallerySelectedForDelete.has(i.mediaId),
       );
+      setGalleryItems(remaining);
       if (
         galleryCoverMediaId &&
         gallerySelectedForDelete.has(galleryCoverMediaId)
@@ -994,13 +990,9 @@ export default function AdminCatalogClient({
         );
       }
       setGallerySelectedForDelete(new Set());
-      setNotice({
-        type: "ok",
-        text: `Đã gỡ ${gallerySelectedForDelete.size} mục khỏi Gallery.`,
-      });
+      setNotice({ type: "ok", text: `Đã gỡ ${count} mục khỏi Gallery.` });
       return;
     }
-
     setGallerySaving(true);
     try {
       await Promise.all(
@@ -1030,7 +1022,6 @@ export default function AdminCatalogClient({
           }),
         );
         setGalleryItems(mapped);
-        setGallerySelectedForDelete(new Set());
         if (
           galleryCoverMediaId &&
           gallerySelectedForDelete.has(galleryCoverMediaId)
@@ -1038,11 +1029,57 @@ export default function AdminCatalogClient({
           setGalleryCoverMediaId(mapped.length > 0 ? mapped[0].mediaId : null);
         }
       }
+      setGallerySelectedForDelete(new Set());
+      setNotice({ type: "ok", text: `Đã gỡ ${count} mục khỏi Gallery.` });
     } catch (err) {
       console.error("Failed to delete selected gallery items:", err);
+      setNotice({ type: "err", text: "Không gỡ được các mục đã chọn." });
     } finally {
       setGallerySaving(false);
     }
+  };
+
+  const executeGalleryDeleteAll = async () => {
+    const ids = galleryItems.map((i) => i.mediaId);
+    if (!form?.id) {
+      setGalleryItems([]);
+      setGallerySelectedForDelete(new Set());
+      setGalleryCoverMediaId(null);
+      setNotice({ type: "ok", text: "Đã xoá tất cả ảnh trong Gallery." });
+      return;
+    }
+    setGallerySaving(true);
+    try {
+      await Promise.all(
+        ids.map((mediaId) =>
+          fetch(`/api/products/${form.id}/gallery?mediaId=${mediaId}`, {
+            method: "DELETE",
+          }),
+        ),
+      );
+      setGalleryItems([]);
+      setGallerySelectedForDelete(new Set());
+      setGalleryCoverMediaId(null);
+      setNotice({ type: "ok", text: "Đã xoá tất cả ảnh trong Gallery." });
+    } catch (err) {
+      console.error("Failed to delete all gallery items:", err);
+      setNotice({ type: "err", text: "Không xoá được toàn bộ Gallery." });
+    } finally {
+      setGallerySaving(false);
+    }
+  };
+
+  const handleGalleryConfirm = async () => {
+    const { mode, mediaId } = galleryConfirm;
+    setGalleryConfirm({ open: false, mode: "one", mediaId: null });
+    if (mode === "one" && mediaId) await executeGalleryDeleteOne(mediaId);
+    else if (mode === "selected") await executeGalleryDeleteSelected();
+    else if (mode === "all") await executeGalleryDeleteAll();
+  };
+
+  const handleGalleryDeleteSelected = () => {
+    if (gallerySelectedForDelete.size === 0) return;
+    setGalleryConfirm({ open: true, mode: "selected", mediaId: null });
   };
 
   const handleGalleryReorder = async (reordered: GalleryItem[]) => {
@@ -1797,45 +1834,47 @@ export default function AdminCatalogClient({
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
+                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => setGalleryMediaPickerOpen(true)}
-                          className="px-3 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700 transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-400 text-xs font-semibold border border-thuy-700 transition-colors"
                         >
-                          <Plus className="w-3 h-3" /> Thêm
+                          <Plus className="w-3 h-3" />
+                          <span>Thêm</span>
                         </button>
                         {gallerySelectedForDelete.size > 0 && (
-                          <button
-                            type="button"
-                            onClick={handleGalleryDeleteSelected}
-                            disabled={gallerySaving}
-                            className="px-3 py-1.5 rounded-lg bg-red-900 hover:bg-red-800 text-red-400 text-xs font-semibold border border-red-700 transition-colors disabled:opacity-50"
-                          >
-                            <Trash2 className="w-3 h-3" /> Xóa đã chọn
-                          </button>
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => setGallerySelectedForDelete(new Set())}
+                              disabled={gallerySaving}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-slate-200 text-xs font-semibold border border-thuy-700 transition-colors disabled:opacity-50"
+                            >
+                              <X className="w-3 h-3" />
+                              <span>Bỏ chọn</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleGalleryDeleteSelected}
+                              disabled={gallerySaving}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-900 hover:bg-red-800 text-red-400 text-xs font-semibold border border-red-700 transition-colors disabled:opacity-50"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>Xóa đã chọn</span>
+                            </button>
+                          </>
                         )}
                         <button
                           type="button"
-                          onClick={() => {
-                            if (
-                              !confirm(
-                                "Bạn có chắc muốn xoá tất cả ảnh trong Gallery?",
-                              )
-                            )
-                              return;
-                            setGalleryItems([]);
-                            setGallerySelectedForDelete(new Set());
-                            setGalleryCoverMediaId(null);
-                            setNotice({
-                              type: "ok",
-                              text: "Đã xoá tất cả ảnh trong Gallery.",
-                            });
-                          }}
-                          disabled={gallerySaving}
-                          className="px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900 text-red-400 text-xs font-semibold border border-red-800 transition-colors disabled:opacity-50"
+                          onClick={() =>
+                            setGalleryConfirm({ open: true, mode: "all", mediaId: null })
+                          }
+                          disabled={gallerySaving || galleryItems.length === 0}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900 text-red-400 text-xs font-semibold border border-red-800 transition-colors disabled:opacity-50"
                         >
-                          Xóa tất cả
+                          <Trash2 className="w-3 h-3" />
+                          <span>Xóa tất cả</span>
                         </button>
                       </div>
                     </div>
@@ -1971,7 +2010,7 @@ export default function AdminCatalogClient({
                             {/* Delete */}
                             <button
                               type="button"
-                              onClick={() => handleGalleryDelete(item.mediaId)}
+                              onClick={() => requestGalleryDelete(item.mediaId)}
                               className="absolute top-2 left-10 p-1.5 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-900 border border-red-800 text-xs transition-colors opacity-0 group-hover:opacity-100"
                               title="Xóa khỏi gallery"
                             >
@@ -2464,8 +2503,8 @@ export default function AdminCatalogClient({
               setAlertDialog((prev) => ({ ...prev, open: false }));
           }}
         >
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" />
-          <div className="relative w-full max-w-md mx-4 transition-all duration-200 opacity-100 scale-100">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" />
+          <div className="relative w-full max-w-md mx-4 animate-in fade-in zoom-in-95 duration-200">
             <div className="bg-thuy-900 border border-red-500/30 rounded-2xl shadow-2xl overflow-hidden">
               <div className="p-6">
                 <div className="flex items-start gap-3 mb-4">
@@ -2487,6 +2526,57 @@ export default function AdminCatalogClient({
                     className="px-6 py-2 rounded-xl bg-red-600 text-white hover:bg-red-500 text-xs font-semibold shadow-lg shadow-red-500/20 transition-all"
                   >
                     Đã hiểu
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Xác nhận xoá Gallery */}
+      {galleryConfirm.open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget)
+              setGalleryConfirm((prev) => ({ ...prev, open: false }));
+          }}
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" />
+          <div className="relative w-full max-w-md mx-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-thuy-900 border border-thuy-700 rounded-2xl shadow-2xl overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="text-white font-bold text-sm">
+                      Xác nhận xoá khỏi Gallery
+                    </h3>
+                    <p className="text-slate-400 text-xs mt-1">
+                      {galleryConfirm.mode === "all"
+                        ? "Bạn có chắc muốn xoá tất cả ảnh/video trong Gallery?"
+                        : galleryConfirm.mode === "selected"
+                          ? `Bạn có chắc muốn xoá ${gallerySelectedForDelete.size} mục đã chọn khỏi Gallery?`
+                          : "Bạn có chắc muốn gỡ mục này khỏi Gallery?"}{" "}
+                      Hành động này không thể hoàn tác.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-3 pt-4">
+                  <button
+                    onClick={() =>
+                      setGalleryConfirm((prev) => ({ ...prev, open: false }))
+                    }
+                    className="px-4 py-2 rounded-xl bg-thuy-800 text-slate-400 hover:bg-thuy-700 hover:text-white text-xs font-semibold border border-thuy-700 transition-all"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={handleGalleryConfirm}
+                    className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-500 text-xs font-semibold shadow-lg shadow-red-500/20 transition-all"
+                  >
+                    Xoá
                   </button>
                 </div>
               </div>
