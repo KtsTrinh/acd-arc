@@ -1834,7 +1834,7 @@ export default function AdminCatalogClient({
               </div>
 
               {/* Price section */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-start">
                 <div className="space-y-1">
                   <label className="text-xs text-white">Giá bán (VNĐ):</label>
                   <input
@@ -1847,19 +1847,9 @@ export default function AdminCatalogClient({
                     placeholder="850.000 (để trống nếu miễn phí)"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
-                  {form.price && (
-                    <p className="text-[10px] text-slate-400 mt-1">
-                      Số chữ:{" "}
-                      <span className="text-thuy-300 font-medium">
-                        {numberToWordsVN(parsePriceDot(form.price) || 0)} đ
-                      </span>
-                    </p>
-                  )}
                 </div>
                 <div className="space-y-1">
-                  <label className="flex items-center gap-1 text-xs text-white">
-                    Giảm giá (%)<span className="text-slate-500">*</span>
-                  </label>
+                  <label className="text-xs text-white">Giảm giá (%):</label>
                   <input
                     type="text"
                     value={form.discountPercent}
@@ -1896,18 +1886,18 @@ export default function AdminCatalogClient({
                     readOnly
                     className="w-full px-3 py-2 rounded-xl bg-thuy-700 border border-thuy-600 text-xs text-white"
                   />
-                  {form.priceAfterDiscount && (
-                    <p className="text-[10px] text-slate-400 mt-1">
-                      Số chữ:{" "}
-                      <span className="text-thuy-400 font-medium">
-                        {numberToWordsVN(
-                          parsePriceDot(form.priceAfterDiscount) || 0,
-                        )} đ
-                      </span>
-                    </p>
-                  )}
                 </div>
               </div>
+              {form.priceAfterDiscount && (
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Số chữ (giá cuối cùng):{" "}
+                  <span className="text-thuy-400 font-medium">
+                    {numberToWordsVN(
+                      parsePriceDot(form.priceAfterDiscount) || 0,
+                    )} đ
+                  </span>
+                </p>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
