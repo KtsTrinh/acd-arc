@@ -389,6 +389,20 @@ export default function AdminCatalogClient({
   }>({ open: false, mode: "one", mediaId: null });
 
   useEffect(() => {
+    if (!form) return;
+    const hasThumb = (form.thumbnail || "").trim() || thumbImage.trim() || thumbVideo.trim();
+    if (hasThumb) return;
+    if (galleryItems.length === 0) return;
+    const first = galleryItems[0];
+    const firstUrl = first?.media?.url || "";
+    if (!firstUrl) return;
+    const isVid = isLikelyVideoUrl(firstUrl, first?.media?.mimeType);
+    setThumbImage(isVid ? "" : firstUrl);
+    setThumbVideo(isVid ? firstUrl : "");
+    setForm((prev) => (prev ? { ...prev, thumbnail: firstUrl } : prev));
+  }, [form, thumbImage, thumbVideo, galleryItems]);
+
+  useEffect(() => {
     const handleUp = () => {
       if (galleryIsDragging) {
         setGalleryDragStart(null);
