@@ -745,7 +745,7 @@ export default function AdminCatalogClient({
         fileSize: form.fileSize,
         fileKey: form.fileKey || null,
         fileName: form.fileName || null,
-        downloadLinkUrl: form.downloadLinkUrl || null,
+        downloadLinkUrl: (form.downloadLinkUrl || "").trim() || null,
         downloadExpiresMinutes: parseInt(
           form.downloadExpiresMinutes || "5",
           10,
@@ -2280,13 +2280,13 @@ export default function AdminCatalogClient({
                     Drive/Dropbox/CDN):
                   </label>
                   <input
-                    type="url"
+                    type="text"
                     value={form.downloadLinkUrl}
                     onChange={(e) =>
                       updateForm({ downloadLinkUrl: e.target.value })
                     }
                     placeholder="https://drive.google.com/... (dán link chia sẻ nội bộ)"
-                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white focus:outline-none focus:border-thuy-400"
                   />
                   <p className="text-[10px] text-slate-300">
                     Link này KHÔNG được hiển thị cho khách. Máy chủ sẽ phát lại

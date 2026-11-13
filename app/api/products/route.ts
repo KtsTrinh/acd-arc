@@ -152,7 +152,7 @@ export async function POST(request: Request) {
         thumbnail: thumbnail || null,
         active: active !== undefined ? Boolean(active) : true,
         featured: Boolean(featured),
-        downloadLinkUrl: downloadLinkUrl || null,
+        downloadLinkUrl: typeof downloadLinkUrl === "string" ? downloadLinkUrl.trim() || null : null,
         downloadExpiresMinutes: downloadExpiresMinutes
           ? parseInt(downloadExpiresMinutes, 10)
           : 5,

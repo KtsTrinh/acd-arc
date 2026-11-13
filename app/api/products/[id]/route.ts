@@ -115,7 +115,9 @@ export async function PATCH(
     if (thumbnail !== undefined) updateData.thumbnail = thumbnail;
     if (active !== undefined) updateData.active = Boolean(active);
     if (featured !== undefined) updateData.featured = Boolean(featured);
-    if (downloadLinkUrl !== undefined) updateData.downloadLinkUrl = downloadLinkUrl || null;
+    if (downloadLinkUrl !== undefined)
+      updateData.downloadLinkUrl =
+        typeof downloadLinkUrl === "string" ? downloadLinkUrl.trim() || null : null;
     if (downloadExpiresMinutes !== undefined)
       updateData.downloadExpiresMinutes = parseInt(downloadExpiresMinutes, 10) || 5;
     if (location !== undefined) updateData.location = location || null;
