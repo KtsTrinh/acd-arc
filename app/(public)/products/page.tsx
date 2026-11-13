@@ -248,19 +248,18 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs min-w-0">
                         {prod.discount && prod.price ? (
                           <>
-                            <span className="text-slate-400 line-through decoration-slate-400/70">
+                            <span className="text-slate-400 line-through decoration-slate-400/70 whitespace-nowrap">
                               Giá bán: {formatVND(prod.price)}
                             </span>
-                            <span className="text-red-300">
-                              Giảm: -{formatVND(prod.discount)} (
-                              {Math.round((prod.discount / prod.price) * 100)}%)
+                            <span className="text-red-300 whitespace-nowrap">
+                              Giảm: -{formatVND(prod.discount)} ({Math.round((prod.discount / prod.price) * 100)}%)
                             </span>
-                            <span className="font-bold text-base text-thuy-400">
+                            <span className="font-bold text-base text-thuy-400 whitespace-nowrap">
                               Sau giảm: {formatVND(finalPrice)}
                             </span>
                           </>
                         ) : (
-                          <span className="font-bold text-base text-thuy-400">
+                          <span className="font-bold text-base text-thuy-400 whitespace-nowrap">
                             Giá bán: {formatVND(finalPrice)}
                           </span>
                         )}
