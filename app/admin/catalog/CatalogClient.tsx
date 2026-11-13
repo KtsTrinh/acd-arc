@@ -2633,8 +2633,28 @@ function CatalogTable({
                     {p.productGroup || p.productCategory || p.productGroup}
                   </span>
                 </td>
-                <td className="py-3.5 px-5 font-bold text-thuy-400 text-sm">
-                  {formatVND(p.price)}
+                <td className="py-3.5 px-5 text-sm">
+                  {(() => {
+                    const finalPrice = p.priceAfterDiscount ?? p.price;
+                    const hasDiscount =
+                      p.price != null &&
+                      finalPrice != null &&
+                      finalPrice < p.price;
+                    return hasDiscount ? (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[11px] text-slate-500 line-through decoration-slate-500/70">
+                          {formatVND(p.price)}
+                        </span>
+                        <span className="font-bold text-thuy-400">
+                          {formatVND(finalPrice)}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="font-bold text-thuy-400">
+                        {formatVND(finalPrice ?? p.price)}
+                      </span>
+                    );
+                  })()}
                 </td>
                 <td className="py-3.5 px-5 text-slate-700">
                   {p.fileKey || p.downloadLinkUrl ? (
