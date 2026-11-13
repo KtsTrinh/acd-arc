@@ -88,10 +88,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { customerName, customerEmail, customerPhone, paymentMethod, items, autoPay } = body;
-
-    const isAdmin = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
-    const allowAutoPay = Boolean(autoPay) && isAdmin;
+    const { customerName, customerEmail, customerPhone, paymentMethod, items } = body;
 
     if (!customerName || !customerEmail || !items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
@@ -131,7 +128,6 @@ export async function POST(request: Request) {
     }
 
     const orderNumber = generateOrderNumber();
-    const initialStatus = allowAutoPay ? "PAID" : "PENDING";
 
     const order = await prisma.order.create({
       data: {
@@ -140,12 +136,10 @@ export async function POST(request: Request) {
         customerName,
         customerEmail: customerEmail.toLowerCase().trim(),
         customerPhone: customerPhone || "",
-        status: initialStatus,
+        status: "PENDING",
         total: calculatedTotal,
         paymentMethod: paymentMethod || "VIETQR",
-        paymentNote: allowAutoPay
-          ? "Thanh toán trực tuyến thành công (demo)"
-          : "Chờ xác nhận thanh toán",
+        paymentNote: "Chờ xác nhận thanh toán",
         items: {
           create: orderItemsData,
         },
@@ -155,10 +149,7 @@ export async function POST(request: Request) {
       },
     });
 
-    let downloadLinks: any[] = [];
-    if (initialStatus === "PAID") {
-      downloadLinks = await generateOrderDownloadLinks(order.id);
-    }
+    const downloadLinks: any[] = [];
 
     return NextResponse.json({
       success: true,
