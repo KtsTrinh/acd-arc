@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { formatVND, numberToWordsVN } from "@/lib/utils";
-import { proxiedMediaUrl } from "@/lib/media-url";
+import { proxiedMediaUrl, isLikelyVideoUrl } from "@/lib/media-url";
 import { CATALOG_GROUPS } from "@/lib/catalog";
 import {
   Download,
@@ -171,13 +171,23 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   <div className="space-y-3">
                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950">
                       {prod.thumbnail ? (
-                        <Image
-                          src={proxiedMediaUrl(prod.thumbnail)}
-                          alt={prod.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          unoptimized
-                        />
+                        isLikelyVideoUrl(prod.thumbnail) ? (
+                          <video
+                            src={proxiedMediaUrl(prod.thumbnail)}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            muted
+                            playsInline
+                            preload="metadata"
+                          />
+                        ) : (
+                          <Image
+                            src={proxiedMediaUrl(prod.thumbnail)}
+                            alt={prod.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            unoptimized
+                          />
+                        )
                       ) : (
                         <div className="w-full h-full bg-thuy-800 flex items-center justify-center text-slate-500">
                           <Download className="w-6 h-6" />
