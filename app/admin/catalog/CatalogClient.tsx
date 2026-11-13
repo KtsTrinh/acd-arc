@@ -9,7 +9,13 @@ import {
   isVideoUrl,
   normalizeMediaUrl,
 } from "@/lib/media-url";
-import { formatVND, formatPriceDot, parsePriceDot, numberToWordsVN, slugify } from "@/lib/utils";
+import {
+  formatVND,
+  formatPriceDot,
+  parsePriceDot,
+  numberToWordsVN,
+  slugify,
+} from "@/lib/utils";
 import MediaPickerModal, {
   MediaItem,
 } from "@/components/media/MediaPickerModal";
@@ -352,9 +358,9 @@ export default function AdminCatalogClient({
 
   const [form, setForm] = useState<ItemForm | null>(null);
 
-  const priceLastEdited = React.useRef<'price' | 'discount' | 'discountPercent' | null>(
-    null,
-  );
+  const priceLastEdited = React.useRef<
+    "price" | "discount" | "discountPercent" | null
+  >(null);
 
   /* ------------------------------------------------------------------ */
   /* Gallery state                                                      */
@@ -457,7 +463,9 @@ export default function AdminCatalogClient({
   const openEdit = async (item: any) => {
     let product = item;
     try {
-      const detailRes = await fetch(`/api/products/${item.id}`, { cache: "no-store" });
+      const detailRes = await fetch(`/api/products/${item.id}`, {
+        cache: "no-store",
+      });
       const detailData = await detailRes.json();
       if (detailData.product) {
         product = detailData.product;
@@ -479,7 +487,9 @@ export default function AdminCatalogClient({
           ? String(Math.round((product.discount / product.price) * 100))
           : "",
       priceAfterDiscount:
-        product.priceAfterDiscount != null ? String(product.priceAfterDiscount) : "",
+        product.priceAfterDiscount != null
+          ? String(product.priceAfterDiscount)
+          : "",
       productGroup: product.productGroup || "",
       productCategory: product.productCategory || "",
       fileFormat: product.fileFormat || "",
@@ -496,14 +506,20 @@ export default function AdminCatalogClient({
       buildingArea: product.buildingArea ? product.buildingArea.toString() : "",
       floors: product.floors?.toString() || "",
       basementFloors: product.basementFloors?.toString() || "",
-      totalFloorArea: product.totalFloorArea ? product.totalFloorArea.toString() : "",
+      totalFloorArea: product.totalFloorArea
+        ? product.totalFloorArea.toString()
+        : "",
       style: product.style || "",
       tagIds: product.tags?.map((t: any) => t.tagId) || [],
       active: product.active !== false,
       featured: Boolean(product.featured),
     });
-    setThumbImage(isVideoUrl(product.thumbnail || "") ? "" : product.thumbnail || "");
-    setThumbVideo(isVideoUrl(product.thumbnail || "") ? product.thumbnail || "" : "");
+    setThumbImage(
+      isVideoUrl(product.thumbnail || "") ? "" : product.thumbnail || "",
+    );
+    setThumbVideo(
+      isVideoUrl(product.thumbnail || "") ? product.thumbnail || "" : "",
+    );
 
     // Load gallery items for this product
     try {
@@ -547,7 +563,7 @@ export default function AdminCatalogClient({
     const percentNum = parseFloat(form.discountPercent) || 0;
     const patch: Partial<ItemForm> = {};
 
-    if (priceLastEdited.current === 'discountPercent') {
+    if (priceLastEdited.current === "discountPercent") {
       if (percentNum > 0 && priceNum > 0) {
         const calcDiscount = Math.round((priceNum * percentNum) / 100);
         const discountStr = formatPriceDot(String(calcDiscount));
@@ -559,7 +575,7 @@ export default function AdminCatalogClient({
         if (form.discount !== "") patch.discount = "";
         if (form.priceAfterDiscount !== "") patch.priceAfterDiscount = "";
       }
-    } else if (priceLastEdited.current === 'discount') {
+    } else if (priceLastEdited.current === "discount") {
       if (discountNum > 0 && priceNum > 0) {
         const calcPercent = Math.round((discountNum / priceNum) * 100);
         const percentStr = String(calcPercent);
@@ -572,7 +588,7 @@ export default function AdminCatalogClient({
         if (form.discountPercent !== "") patch.discountPercent = "";
         if (form.priceAfterDiscount !== "") patch.priceAfterDiscount = "";
       }
-    } else if (priceLastEdited.current === 'price' && priceNum > 0) {
+    } else if (priceLastEdited.current === "price" && priceNum > 0) {
       if (percentNum > 0) {
         const calcDiscount = Math.round((priceNum * percentNum) / 100);
         const discountStr = formatPriceDot(String(calcDiscount));
@@ -707,8 +723,12 @@ export default function AdminCatalogClient({
         landArea: form.landArea ? parseFloat(form.landArea) : null,
         buildingArea: form.buildingArea ? parseFloat(form.buildingArea) : null,
         floors: form.floors ? parseInt(form.floors, 10) : null,
-        basementFloors: form.basementFloors ? parseInt(form.basementFloors, 10) : null,
-        totalFloorArea: form.totalFloorArea ? parseFloat(form.totalFloorArea) : null,
+        basementFloors: form.basementFloors
+          ? parseInt(form.basementFloors, 10)
+          : null,
+        totalFloorArea: form.totalFloorArea
+          ? parseFloat(form.totalFloorArea)
+          : null,
         style: form.style || null,
         tagIds: form.tagIds,
         active: form.active,
@@ -1178,9 +1198,7 @@ export default function AdminCatalogClient({
                         <input
                           autoFocus
                           value={customGroupInput}
-                          onChange={(e) =>
-                            setCustomGroupInput(e.target.value)
-                          }
+                          onChange={(e) => setCustomGroupInput(e.target.value)}
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleAddCustomGroup();
                             if (e.key === "Escape") {
@@ -1210,7 +1228,7 @@ export default function AdminCatalogClient({
                       </div>
                     )}
                   </div>
-                    <div className="mt-2 space-y-1">
+                  <div className="mt-2 space-y-1">
                     <label className="text-xs text-white">Quản lý nhóm:</label>
                     <div className="flex flex-wrap justify-evenly gap-2">
                       {allGroups.map((g) => {
@@ -1230,9 +1248,7 @@ export default function AdminCatalogClient({
                               }}
                               className="p-0.5 hover:text-red-400"
                               title={
-                                used > 0
-                                  ? "Nhóm đang được sử dụng"
-                                  : "Xoá nhóm"
+                                used > 0 ? "Nhóm đang được sử dụng" : "Xoá nhóm"
                               }
                             >
                               <Trash2 className="w-3 h-3" />
@@ -1326,10 +1342,7 @@ export default function AdminCatalogClient({
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteCategory(
-                                    c,
-                                    form.productGroup,
-                                  );
+                                  handleDeleteCategory(c, form.productGroup);
                                 }}
                                 className="p-0.5 hover:text-red-400"
                                 title={
@@ -1354,42 +1367,42 @@ export default function AdminCatalogClient({
                 <label className="text-xs text-white">
                   Mô tả tóm tắt sản phẩm:
                 </label>
-                  <input
-                    type="text"
-                    value={form.shortDesc}
-                    onChange={(e) => updateForm({ shortDesc: e.target.value })}
-                    placeholder="Mô tả ngắn gọn về sản phẩm..."
+                <input
+                  type="text"
+                  value={form.shortDesc}
+                  onChange={(e) => updateForm({ shortDesc: e.target.value })}
+                  placeholder="Mô tả ngắn gọn về sản phẩm..."
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs text-white">Chủ đầu tư:</label>
-                    <input
-                      type="text"
-                      value={form.client || ""}
-                      onChange={(e) => updateForm({ client: e.target.value })}
-                      placeholder="Tên chủ đầu tư..."
+                  <input
+                    type="text"
+                    value={form.client || ""}
+                    onChange={(e) => updateForm({ client: e.target.value })}
+                    placeholder="Tên chủ đầu tư..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Địa điểm:</label>
-                    <input
-                      type="text"
-                      value={form.location}
-                      onChange={(e) => updateForm({ location: e.target.value })}
-                      placeholder="Quận 1, TP.HCM..."
+                  <input
+                    type="text"
+                    value={form.location}
+                    onChange={(e) => updateForm({ location: e.target.value })}
+                    placeholder="Quận 1, TP.HCM..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-white">Năm thiết kế:</label>
-                    <input
-                      type="number"
-                      value={form.year}
-                      onChange={(e) => updateForm({ year: e.target.value })}
-                      placeholder="2024"
+                  <input
+                    type="number"
+                    value={form.year}
+                    onChange={(e) => updateForm({ year: e.target.value })}
+                    placeholder="2024"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
                   />
                 </div>
@@ -1843,7 +1856,7 @@ export default function AdminCatalogClient({
                     type="text"
                     value={formatPriceDot(form.price)}
                     onChange={(e) => {
-                      priceLastEdited.current = 'price';
+                      priceLastEdited.current = "price";
                       updateForm({ price: formatPriceDot(e.target.value) });
                     }}
                     placeholder="850.000 (để trống nếu miễn phí)"
@@ -1856,9 +1869,9 @@ export default function AdminCatalogClient({
                     type="text"
                     value={form.discountPercent}
                     onChange={(e) => {
-                      priceLastEdited.current = 'discountPercent';
+                      priceLastEdited.current = "discountPercent";
                       updateForm({
-                        discountPercent: e.target.value.replace(/[^0-9]/g, ''),
+                        discountPercent: e.target.value.replace(/[^0-9]/g, ""),
                       });
                     }}
                     placeholder="0-100"
@@ -1871,7 +1884,7 @@ export default function AdminCatalogClient({
                     type="text"
                     value={formatPriceDot(form.discount)}
                     onChange={(e) => {
-                      priceLastEdited.current = 'discount';
+                      priceLastEdited.current = "discount";
                       updateForm({ discount: formatPriceDot(e.target.value) });
                     }}
                     placeholder="100.000"
@@ -1892,11 +1905,14 @@ export default function AdminCatalogClient({
               </div>
               {form.priceAfterDiscount && (
                 <div className="w-full text-[10px] text-slate-400 mt-1 leading-relaxed whitespace-normal break-words">
-                  Số chữ (giá cuối cùng):{" "}
+                  Số tiền bằng chữ:{" "}
                   <span className="text-thuy-400 font-medium">
-                    {numberToWordsVN(
-                      parsePriceDot(form.priceAfterDiscount) || 0,
-                    )}{" "}
+                    {(() => {
+                      const words = numberToWordsVN(
+                        parsePriceDot(form.priceAfterDiscount) || 0,
+                      );
+                      return words.charAt(0).toUpperCase() + words.slice(1);
+                    })()}{" "}
                     đồng
                   </span>
                 </div>
