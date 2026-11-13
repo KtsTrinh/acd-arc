@@ -324,7 +324,7 @@ export default function AdminOrdersPage() {
                 <h3 className="font-display text-lg font-bold text-white">
                   Xác nhận xoá đơn hàng
                 </h3>
-                <p className="text-sm text-slate-300 leading-relaxed">
+                <p className="text-sm text-slate-300 leading-relaxed text-justify">
                   Bạn có chắc muốn xoá đơn hàng{" "}
                   <span className="font-semibold text-white">
                     #{confirmDelete.orderNumber}
