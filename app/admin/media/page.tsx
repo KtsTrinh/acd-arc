@@ -14,7 +14,7 @@ import {
   Copy,
   AlertCircle,
 } from "lucide-react";
-import { normalizeMediaUrl, isVideoUrl, playableVideoUrl } from "@/lib/media-url";
+import { isLikelyVideoUrl, proxiedMediaUrl } from "@/lib/media-url";
 
 export default function AdminMediaPage() {
   const [mediaList, setMediaList] = useState<any[]>([]);
@@ -542,14 +542,9 @@ export default function AdminMediaPage() {
               />
             )}
             {mediaList.map((item) => {
-              const itemIsVideo = isVideoUrl(item.url || "");
+              const itemIsVideo = isLikelyVideoUrl(item.url || "", item.mimeType);
               const isSelected = selectedMediaIds.includes(item.id);
-              const rawUrl = item.url || "";
-              const isDriveUrl = /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)/i.test(rawUrl);
-              const imgSrc = isDriveUrl
-                ? `/api/media/image-proxy?url=${encodeURIComponent(rawUrl)}`
-                : normalizeMediaUrl(rawUrl);
-              const vidSrc = itemIsVideo ? playableVideoUrl(rawUrl) : "";
+              const mediaSrc = proxiedMediaUrl(item.url || "", item.mimeType);
 
               return (
                 <div
@@ -559,9 +554,9 @@ export default function AdminMediaPage() {
                   onClick={() => toggleSelectMedia(item.id)}
                   className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer border-thuy-750 hover:border-thuy-400`}
                 >
-                  {itemIsVideo && vidSrc ? (
+                  {itemIsVideo && mediaSrc ? (
                     <video
-                      src={vidSrc}
+                      src={mediaSrc}
                       muted
                       loop
                       playsInline
@@ -570,7 +565,7 @@ export default function AdminMediaPage() {
                     />
                   ) : (
                     <img
-                      src={imgSrc}
+                      src={mediaSrc}
                       alt={item.alt || item.filename}
                       style={{
                         width: "100%",
@@ -936,7 +931,7 @@ export default function AdminMediaPage() {
             <form onSubmit={handleUpdateMetadata} className="space-y-4">
               <div className="relative w-full h-36 rounded-xl overflow-hidden border border-thuy-750 bg-thuy-950">
                 <img
-                  src={normalizeMediaUrl(editingItem.url || "")}
+                  src={proxiedMediaUrl(editingItem.url || "", editingItem.mimeType)}
                   alt="Editing preview"
                   style={{
                     width: "100%",
