@@ -547,29 +547,31 @@ export default function AdminCatalogClient({
     const percentNum = parseFloat(form.discountPercent) || 0;
     const patch: Partial<ItemForm> = {};
 
-    if (
-      priceLastEdited.current === 'discountPercent' &&
-      percentNum > 0 &&
-      priceNum > 0
-    ) {
-      const calcDiscount = Math.round((priceNum * percentNum) / 100);
-      const discountStr = formatPriceDot(String(calcDiscount));
-      if (form.discount !== discountStr) patch.discount = discountStr;
-      const finalStr = formatPriceDot(String(priceNum - calcDiscount));
-      if (form.priceAfterDiscount !== finalStr)
-        patch.priceAfterDiscount = finalStr;
-    } else if (
-      priceLastEdited.current === 'discount' &&
-      discountNum > 0 &&
-      priceNum > 0
-    ) {
-      const calcPercent = Math.round((discountNum / priceNum) * 100);
-      const percentStr = String(calcPercent);
-      if (form.discountPercent !== percentStr)
-        patch.discountPercent = percentStr;
-      const finalStr = formatPriceDot(String(priceNum - discountNum));
-      if (form.priceAfterDiscount !== finalStr)
-        patch.priceAfterDiscount = finalStr;
+    if (priceLastEdited.current === 'discountPercent') {
+      if (percentNum > 0 && priceNum > 0) {
+        const calcDiscount = Math.round((priceNum * percentNum) / 100);
+        const discountStr = formatPriceDot(String(calcDiscount));
+        if (form.discount !== discountStr) patch.discount = discountStr;
+        const finalStr = formatPriceDot(String(priceNum - calcDiscount));
+        if (form.priceAfterDiscount !== finalStr)
+          patch.priceAfterDiscount = finalStr;
+      } else {
+        if (form.discount !== "") patch.discount = "";
+        if (form.priceAfterDiscount !== "") patch.priceAfterDiscount = "";
+      }
+    } else if (priceLastEdited.current === 'discount') {
+      if (discountNum > 0 && priceNum > 0) {
+        const calcPercent = Math.round((discountNum / priceNum) * 100);
+        const percentStr = String(calcPercent);
+        if (form.discountPercent !== percentStr)
+          patch.discountPercent = percentStr;
+        const finalStr = formatPriceDot(String(priceNum - discountNum));
+        if (form.priceAfterDiscount !== finalStr)
+          patch.priceAfterDiscount = finalStr;
+      } else {
+        if (form.discountPercent !== "") patch.discountPercent = "";
+        if (form.priceAfterDiscount !== "") patch.priceAfterDiscount = "";
+      }
     } else if (priceLastEdited.current === 'price' && priceNum > 0) {
       if (percentNum > 0) {
         const calcDiscount = Math.round((priceNum * percentNum) / 100);
@@ -1889,7 +1891,7 @@ export default function AdminCatalogClient({
                 </div>
               </div>
               {form.priceAfterDiscount && (
-                <p className="text-[10px] text-slate-400 mt-1">
+                <p className="text-[10px] text-slate-400 mt-1 leading-relaxed break-words">
                   Số chữ (giá cuối cùng):{" "}
                   <span className="text-thuy-400 font-medium">
                     {numberToWordsVN(

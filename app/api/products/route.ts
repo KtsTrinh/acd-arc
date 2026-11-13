@@ -138,8 +138,11 @@ export async function POST(request: Request) {
         description,
         shortDesc: shortDesc || null,
         price: price ? parseFloat(price) : null,
-        discount: discount ? parseFloat(discount) : null,
-        priceAfterDiscount: priceAfterDiscount ? parseFloat(priceAfterDiscount) : null,
+        discount: discount != null && discount !== "" ? parseFloat(discount) : null,
+        priceAfterDiscount:
+          priceAfterDiscount != null && priceAfterDiscount !== ""
+            ? parseFloat(priceAfterDiscount)
+            : null,
         productGroup: productGroup || null,
         productCategory: productCategory || null,
         fileFormat: fileFormat || null,
