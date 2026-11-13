@@ -1891,14 +1891,15 @@ export default function AdminCatalogClient({
                 </div>
               </div>
               {form.priceAfterDiscount && (
-                <p className="text-[10px] text-slate-400 mt-1 leading-relaxed break-words">
+                <div className="w-full text-[10px] text-slate-400 mt-1 leading-relaxed whitespace-normal break-words">
                   Số chữ (giá cuối cùng):{" "}
                   <span className="text-thuy-400 font-medium">
                     {numberToWordsVN(
                       parsePriceDot(form.priceAfterDiscount) || 0,
-                    )} đ
+                    )}{" "}
+                    đồng
                   </span>
-                </p>
+                </div>
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
