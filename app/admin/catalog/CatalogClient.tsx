@@ -37,7 +37,7 @@ import {
   Clock,
   ShieldCheck,
   Package,
-  Star,
+
   Image as ImageIcon,
   Video as VideoIcon,
   GripVertical,
@@ -369,9 +369,6 @@ export default function AdminCatalogClient({
   /* ------------------------------------------------------------------ */
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [galleryMediaPickerOpen, setGalleryMediaPickerOpen] = useState(false);
-  const [galleryCoverMediaId, setGalleryCoverMediaId] = useState<string | null>(
-    null,
-  );
   const [gallerySaving, setGallerySaving] = useState(false);
   const [gallerySelectedForDelete, setGallerySelectedForDelete] = useState<
     Set<string>
@@ -582,10 +579,6 @@ export default function AdminCatalogClient({
           }),
         );
         setGalleryItems(mapped);
-        // Use first item as cover if no cover set
-        if (mapped.length > 0) {
-          setGalleryCoverMediaId(mapped[0].mediaId);
-        }
       }
     } catch (err) {
       console.error("Failed to load product gallery:", err);
@@ -695,7 +688,6 @@ export default function AdminCatalogClient({
   const openCreate = () => {
     setForm({ ...EMPTY_FORM });
     setGalleryItems([]);
-    setGalleryCoverMediaId(null);
     setThumbImage("");
     setThumbVideo("");
   };
@@ -866,9 +858,6 @@ export default function AdminCatalogClient({
         }
         return next;
       });
-      if (galleryItems.length === 0 && mediaArray.length > 0) {
-        setGalleryCoverMediaId(mediaArray[0].id);
-      }
       setNotice({
         type: "ok",
         text: `Đã thêm ${mediaArray.length} mục vào Gallery.`,
@@ -904,9 +893,6 @@ export default function AdminCatalogClient({
           }),
         );
         setGalleryItems(mapped);
-        if (!galleryCoverMediaId && mapped.length > 0) {
-          setGalleryCoverMediaId(mapped[0].mediaId);
-        }
         if (mapped.length > 0 && !form.thumbnail) {
           const firstUrl = mapped[0].media?.url || "";
           if (firstUrl) {
@@ -936,9 +922,6 @@ export default function AdminCatalogClient({
     if (!form?.id) {
       const remaining = galleryItems.filter((i) => i.mediaId !== mediaId);
       setGalleryItems(remaining);
-      if (galleryCoverMediaId === mediaId) {
-        setGalleryCoverMediaId(remaining.length > 0 ? remaining[0].mediaId : null);
-      }
       setNotice({ type: "ok", text: "Đã gỡ mục khỏi Gallery." });
       return;
     }
@@ -965,9 +948,6 @@ export default function AdminCatalogClient({
           },
         }));
         setGalleryItems(mapped);
-        if (galleryCoverMediaId === mediaId) {
-          setGalleryCoverMediaId(mapped.length > 0 ? mapped[0].mediaId : null);
-        }
       }
       setNotice({ type: "ok", text: "Đã gỡ mục khỏi Gallery." });
     } catch (err) {
@@ -995,14 +975,6 @@ export default function AdminCatalogClient({
         (i) => !gallerySelectedForDelete.has(i.mediaId),
       );
       setGalleryItems(remaining);
-      if (
-        galleryCoverMediaId &&
-        gallerySelectedForDelete.has(galleryCoverMediaId)
-      ) {
-        setGalleryCoverMediaId(
-          remaining.length > 0 ? remaining[0].mediaId : null,
-        );
-      }
       setGallerySelectedForDelete(new Set());
       setNotice({ type: "ok", text: `Đã gỡ ${count} mục khỏi Gallery.` });
       return;
@@ -1036,12 +1008,6 @@ export default function AdminCatalogClient({
           }),
         );
         setGalleryItems(mapped);
-        if (
-          galleryCoverMediaId &&
-          gallerySelectedForDelete.has(galleryCoverMediaId)
-        ) {
-          setGalleryCoverMediaId(mapped.length > 0 ? mapped[0].mediaId : null);
-        }
       }
       setGallerySelectedForDelete(new Set());
       setNotice({ type: "ok", text: `Đã gỡ ${count} mục khỏi Gallery.` });
@@ -1058,7 +1024,6 @@ export default function AdminCatalogClient({
     if (!form?.id) {
       setGalleryItems([]);
       setGallerySelectedForDelete(new Set());
-      setGalleryCoverMediaId(null);
       setNotice({ type: "ok", text: "Đã xoá tất cả ảnh trong Gallery." });
       return;
     }
@@ -1073,7 +1038,6 @@ export default function AdminCatalogClient({
       );
       setGalleryItems([]);
       setGallerySelectedForDelete(new Set());
-      setGalleryCoverMediaId(null);
       setNotice({ type: "ok", text: "Đã xoá tất cả ảnh trong Gallery." });
     } catch (err) {
       console.error("Failed to delete all gallery items:", err);
@@ -1233,21 +1197,6 @@ export default function AdminCatalogClient({
     next.splice(to, 0, moved);
     void handleGalleryReorder(next);
     setGalleryDragItemId(null);
-  };
-
-  const handleGalleryCover = (mediaId: string) => {
-    if (galleryCoverMediaId === mediaId) {
-      setGalleryCoverMediaId(null);
-      return;
-    }
-    setGalleryCoverMediaId(mediaId);
-    if (form?.id) {
-      fetch(`/api/products/${form.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ thumbnail: null }),
-      }).catch(console.error);
-    }
   };
 
   return (
@@ -1940,7 +1889,6 @@ export default function AdminCatalogClient({
                           item.media.url,
                           item.media.mimeType,
                         );
-                        const isCover = galleryCoverMediaId === item.mediaId;
                         const isSelectedForDelete =
                           gallerySelectedForDelete.has(item.mediaId);
                         const mediaSrc = proxiedMediaUrl(
@@ -1957,11 +1905,9 @@ export default function AdminCatalogClient({
                             onDrop={() => handleGalleryItemDrop(item.mediaId)}
                             onDragEnd={() => setGalleryDragItemId(null)}
                             className={`group relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all shadow-sm cursor-grab active:cursor-grabbing ${
-                              isCover
-                                ? "border-amber-400 ring-2 ring-amber-400/20"
-                                : isSelectedForDelete
-                                  ? "border-red-500 ring-2 ring-red-500/20"
-                                  : "border-thuy-700 hover:border-thuy-500"
+                              isSelectedForDelete
+                                ? "border-red-500 ring-2 ring-red-500/20"
+                                : "border-thuy-700 hover:border-thuy-500"
                             } ${galleryDragItemId === item.mediaId ? "opacity-50" : ""}`}
                           >
                             <input
@@ -2018,34 +1964,11 @@ export default function AdminCatalogClient({
                               </div>
                             )}
 
-                            {/* Cover star */}
-                            <button
-                              type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleGalleryCover(item.mediaId);
-                                }}
-                                className={`absolute top-2 right-2 p-1.5 rounded-lg backdrop-blur-sm transition-all border ${
-                                  isCover
-                                    ? "bg-amber-400 text-thuy-950 border-amber-300 font-bold"
-                                    : "bg-thuy-950/80 text-slate-400 hover:text-amber-300 border-thuy-700"
-                                }`}
-                                title={
-                                  isCover
-                                    ? "Bỏ đánh dấu ảnh đại diện"
-                                    : "Đặt làm ảnh đại diện"
-                                }
-                            >
-                              <Star
-                                className={`w-4 h-4 ${isCover ? "fill-thuy-950" : ""}`}
-                              />
-                            </button>
-
                             {/* Delete */}
                             <button
                               type="button"
                               onClick={() => requestGalleryDelete(item.mediaId)}
-                              className="absolute top-2 left-10 p-1.5 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-900 border border-red-800 text-xs transition-colors opacity-0 group-hover:opacity-100"
+                              className="absolute top-2 right-2 p-1.5 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-900 border border-red-800 text-xs transition-colors opacity-0 group-hover:opacity-100"
                               title="Xóa khỏi gallery"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
