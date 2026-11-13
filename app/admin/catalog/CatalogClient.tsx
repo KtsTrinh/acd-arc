@@ -697,6 +697,9 @@ export default function AdminCatalogClient({
     if (!form) return;
     setSaving(true);
     try {
+      const fallbackThumb =
+        form.thumbnail ||
+        (galleryItems.length > 0 ? galleryItems[0].media?.url || "" : "");
       const payload = {
         name: form.name,
         slug: form.slug,
@@ -716,7 +719,7 @@ export default function AdminCatalogClient({
           form.downloadExpiresMinutes || "5",
           10,
         ),
-        thumbnail: form.thumbnail,
+        thumbnail: fallbackThumb,
         location: form.location || null,
         client: form.client || null,
         year: form.year ? parseInt(form.year, 10) : null,
@@ -811,7 +814,22 @@ export default function AdminCatalogClient({
         sortOrder: galleryItems.length + idx,
         media: m,
       }));
-      setGalleryItems((prev) => [...prev, ...newItems]);
+      setGalleryItems((prev) => {
+        const next = [...prev, ...newItems];
+        if (prev.length === 0 && next.length > 0 && !form?.thumbnail) {
+          const first = next[0].media;
+          const firstUrl = first?.url || "";
+          if (firstUrl) {
+            setThumbImage(isVideoUrl(firstUrl) ? "" : firstUrl);
+            setThumbVideo(isVideoUrl(firstUrl) ? firstUrl : "");
+            setForm((f) => (f ? { ...f, thumbnail: firstUrl } : f));
+          }
+        }
+        return next;
+      });
+      if (galleryItems.length === 0 && mediaArray.length > 0) {
+        setGalleryCoverMediaId(mediaArray[0].id);
+      }
       setNotice({
         type: "ok",
         text: `Đã thêm ${mediaArray.length} mục vào Gallery.`,
@@ -849,6 +867,14 @@ export default function AdminCatalogClient({
         setGalleryItems(mapped);
         if (!galleryCoverMediaId && mapped.length > 0) {
           setGalleryCoverMediaId(mapped[0].mediaId);
+        }
+        if (mapped.length > 0 && !form.thumbnail) {
+          const firstUrl = mapped[0].media?.url || "";
+          if (firstUrl) {
+            setThumbImage(isVideoUrl(firstUrl) ? "" : firstUrl);
+            setThumbVideo(isVideoUrl(firstUrl) ? firstUrl : "");
+            updateForm({ thumbnail: firstUrl });
+          }
         }
         setNotice({
           type: "ok",
