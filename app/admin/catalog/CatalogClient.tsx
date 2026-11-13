@@ -1122,10 +1122,9 @@ export default function AdminCatalogClient({
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs text-white">Slug: (*)</label>
+                <label className="text-xs text-white">Slug:</label>
                 <input
                   type="text"
-                  required
                   value={form.slug}
                   onChange={(e) => updateForm({ slug: e.target.value })}
                   placeholder="tranh-bo-hso-thiet-ke-biet-thu"
@@ -1138,7 +1137,6 @@ export default function AdminCatalogClient({
                   <div className="relative">
                     <select
                       value={form.productGroup || ""}
-                      required
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val === "+new") {
@@ -1234,7 +1232,6 @@ export default function AdminCatalogClient({
                   <div className="relative">
                     <select
                       value={form.productCategory || ""}
-                      required
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val === "+new") {
@@ -1344,7 +1341,6 @@ export default function AdminCatalogClient({
                   <input
                     type="text"
                     value={form.shortDesc}
-                    required
                     onChange={(e) => updateForm({ shortDesc: e.target.value })}
                     placeholder="Mô tả ngắn gọn về sản phẩm..."
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
@@ -1356,7 +1352,6 @@ export default function AdminCatalogClient({
                     <input
                       type="text"
                       value={form.client || ""}
-                      required
                       onChange={(e) => updateForm({ client: e.target.value })}
                       placeholder="Tên chủ đầu tư..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
@@ -1367,7 +1362,6 @@ export default function AdminCatalogClient({
                     <input
                       type="text"
                       value={form.location}
-                      required
                       onChange={(e) => updateForm({ location: e.target.value })}
                       placeholder="Quận 1, TP.HCM..."
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
@@ -1378,7 +1372,6 @@ export default function AdminCatalogClient({
                     <input
                       type="number"
                       value={form.year}
-                      required
                       onChange={(e) => updateForm({ year: e.target.value })}
                       placeholder="2024"
                     className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
