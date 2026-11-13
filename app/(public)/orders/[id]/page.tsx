@@ -45,9 +45,15 @@ function generateBankQr(
   addInfo?: string,
 ) {
   if (!account || !bankName) return "";
-  const bank = bankList.find((b) =>
-    bankName.toLowerCase().includes(b.shortName.toLowerCase()),
-  );
+  const name = bankName.toLowerCase().trim();
+  const bank =
+    bankList.find(
+      (b) =>
+        name === b.code.toLowerCase() ||
+        name === b.shortName.toLowerCase() ||
+        name.includes(b.shortName.toLowerCase()) ||
+        b.shortName.toLowerCase().includes(name),
+    ) || null;
   const bankCode = bank?.code || "";
   if (!bankCode) return "";
   const sep = String.fromCharCode(38);
@@ -56,7 +62,7 @@ function generateBankQr(
     "https://img.vietqr.io/image/" +
     bankCode +
     "-" +
-    account +
+    encodeURIComponent(account.trim()) +
     "-compact2.png?amount=" +
     amt +
     sep +
@@ -99,10 +105,10 @@ export default function OrderDetailPage({
     let mounted = true;
     (async () => {
       try {
-        const [orderRes, settingsRes] = await Promise.all([
-          fetch(`/api/orders/${params.id}`),
-          fetch("/api/settings"),
-        ]);
+          const [orderRes, settingsRes] = await Promise.all([
+            fetch(`/api/orders/${params.id}`, { cache: "no-store" }),
+            fetch("/api/settings", { cache: "no-store" }),
+          ]);
         const orderData = await orderRes.json().catch(() => ({}));
         const settingsData = await settingsRes.json().catch(() => ({}));
         if (!mounted) return;
@@ -228,26 +234,13 @@ export default function OrderDetailPage({
           </div>
         </div>
 
-        {/* Action if pending */}
+        {/* Info if pending */}
         {!isPaid && (
-          <div className="pt-4 border-t border-thuy-750 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-xs text-amber-300">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <span>
-                Vui lòng hoàn tất chuyển khoản theo nội dung bên dưới để mở khóa
-                link tải file.
-              </span>
-            </div>
-            <button
-              onClick={handleSimulatePayment}
-              disabled={isSimulatingPayment}
-              className="px-4 py-2 rounded-xl bg-emerald-500 text-thuy-950 font-bold text-xs hover:brightness-110 transition-all flex items-center gap-2 shadow-md"
-            >
-              <RefreshCw
-                className={`w-3.5 h-3.5 ${isSimulatingPayment ? "animate-spin" : ""}`}
-              />
-              <span>Mô Phỏng Đã Nhận Tiền (Chuyển Thành PAID)</span>
-            </button>
+          <div className="pt-4 border-t border-thuy-750 flex items-center gap-2 text-xs text-amber-300">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <span>
+              Vui lòng hoàn tất chuyển khoản đúng số tiền và nội dung bên dưới. Đơn hàng sẽ được xác nhận và cấp link tải sau khi thanh toán được ghi nhận.
+            </span>
           </div>
         )}
       </div>

@@ -90,6 +90,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { customerName, customerEmail, customerPhone, paymentMethod, items, autoPay } = body;
 
+    const isAdmin = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
+    const allowAutoPay = Boolean(autoPay) && isAdmin;
+
     if (!customerName || !customerEmail || !items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
         { error: "Vui lòng cung cấp đầy đủ thông tin khách hàng và giỏ hàng." },
@@ -128,7 +131,7 @@ export async function POST(request: Request) {
     }
 
     const orderNumber = generateOrderNumber();
-    const initialStatus = autoPay ? "PAID" : "PENDING";
+    const initialStatus = allowAutoPay ? "PAID" : "PENDING";
 
     const order = await prisma.order.create({
       data: {
@@ -140,7 +143,9 @@ export async function POST(request: Request) {
         status: initialStatus,
         total: calculatedTotal,
         paymentMethod: paymentMethod || "VIETQR",
-        paymentNote: autoPay ? "Thanh toán trực tuyến thành công" : "Chờ xác nhận thanh toán",
+        paymentNote: allowAutoPay
+          ? "Thanh toán trực tuyến thành công (demo)"
+          : "Chờ xác nhận thanh toán",
         items: {
           create: orderItemsData,
         },

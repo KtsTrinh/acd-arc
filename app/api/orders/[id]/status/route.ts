@@ -41,20 +41,20 @@ export async function PATCH(
     const isAdmin = user.role === "ADMIN" || (user.role as string) === "SUPER_ADMIN";
     const isOwner = Boolean(order.userId) && order.userId === user.id;
 
-    // Chỉ quản trị viên hoặc chủ đơn (mô phỏng thanh toán) được đổi trạng thái
-    if (!isAdmin && !isOwner) {
-      return NextResponse.json(
-        { error: "Bạn không có quyền cập nhật đơn hàng này." },
-        { status: 403 }
-      );
-    }
-
-    // Khách chỉ được tự xác nhận thanh toán cho đơn của mình đang chờ
-    if (!isAdmin && order.status !== "PENDING") {
-      return NextResponse.json(
-        { error: "Đơn hàng này đã được xử lý." },
-        { status: 400 }
-      );
+    // Chỉ quản trị viên được xác nhận thanh toán (PAID). Chủ đơn chỉ được huỷ đơn đang chờ.
+    if (!isAdmin) {
+      if (!isOwner) {
+        return NextResponse.json(
+          { error: "Bạn không có quyền cập nhật đơn hàng này." },
+          { status: 403 }
+        );
+      }
+      if (status !== "CANCELLED" || order.status !== "PENDING") {
+        return NextResponse.json(
+          { error: "Chỉ quản trị viên mới được xác nhận thanh toán. Vui lòng chờ xác nhận sau khi chuyển khoản." },
+          { status: 403 }
+        );
+      }
     }
 
     const updatedOrder = await prisma.order.update({

@@ -32,7 +32,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<
     "VIETQR" | "BANK_TRANSFER"
   >("VIETQR");
-  const [autoPay, setAutoPay] = useState(true); // Allows instant server-side payment simulation
+  const [autoPay, setAutoPay] = useState(false); // Demo only: auto-mark PAID (keep off for real payments)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -247,22 +247,21 @@ export default function CheckoutPage() {
               </label>
             </div>
 
-            {/* Test Simulation Mode Switch */}
-            <div className="p-4 rounded-xl bg-thuy-900/90 border border-thuy-700 flex items-center justify-between">
+            {/* Test Simulation Mode Switch (off by default) */}
+            <div className="p-4 rounded-xl bg-thuy-900/60 border border-amber-700/40 flex items-center justify-between">
               <div className="space-y-0.5">
-                <span className="text-xs font-semibold text-thuy-300 block">
-                  Mô phỏng xác nhận thanh toán tự động (Instant Webhook Demo)
+                <span className="text-xs font-semibold text-amber-300 block">
+                  [Demo] Mô phỏng xác nhận thanh toán tự động
                 </span>
                 <span className="text-[11px] text-slate-400 block">
-                  Tự động xác nhận PAID & sinh link tải (hiệu lực 5 phút) gắn
-                  với đúng tài khoản đã thanh toán.
+                  Chỉ dùng để kiểm thử: tự động xác nhận PAID & sinh link tải. Đơn thanh toán thật phải để tắt và chờ xác nhận chuyển khoản.
                 </span>
               </div>
               <input
                 type="checkbox"
                 checked={autoPay}
                 onChange={(e) => setAutoPay(e.target.checked)}
-                className="w-5 h-5 accent-thuy-400 rounded cursor-pointer"
+                className="w-5 h-5 accent-amber-400 rounded cursor-pointer"
               />
             </div>
           </div>
@@ -326,7 +325,7 @@ export default function CheckoutPage() {
               </>
             ) : (
               <>
-                <span>Xác Nhận & Nhận Link Tải</span>
+                <span>{autoPay ? "Xác Nhận & Nhận Link Tải (Demo)" : "Xác Nhận Đơn Hàng"}</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
