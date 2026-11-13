@@ -1107,22 +1107,35 @@ export default function AdminCatalogClient({
 
   const handleGalleryGridMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return;
+    if (galleryDragItemId) return;
     const target = e.target as HTMLElement;
-    if (target.closest("button") || target.closest("input") || target.closest('[draggable="true"]')) return;
+    if (
+      target.closest("button") ||
+      target.closest("input") ||
+      target.closest("a") ||
+      target.closest('[draggable="true"]')
+    )
+      return;
     const grid = galleryGridRef.current;
     if (!grid) return;
     const rect = grid.getBoundingClientRect();
     setGalleryDragStart({ x: e.clientX - rect.left + grid.scrollLeft, y: e.clientY - rect.top + grid.scrollTop });
     setGalleryDragCurrent({ x: e.clientX - rect.left + grid.scrollLeft, y: e.clientY - rect.top + grid.scrollTop });
-    setGalleryIsDragging(true);
+    setGalleryIsDragging(false);
   };
 
   const handleGalleryGridMouseMove = (e: React.MouseEvent) => {
-    if (!galleryDragStart || !galleryIsDragging) return;
+    if (!galleryDragStart) return;
     const grid = galleryGridRef.current;
     if (!grid) return;
     const rect = grid.getBoundingClientRect();
-    setGalleryDragCurrent({ x: e.clientX - rect.left + grid.scrollLeft, y: e.clientY - rect.top + grid.scrollTop });
+    const x = e.clientX - rect.left + grid.scrollLeft;
+    const y = e.clientY - rect.top + grid.scrollTop;
+    setGalleryDragCurrent({ x, y });
+    const dist = Math.sqrt(
+      Math.pow(x - galleryDragStart.x, 2) + Math.pow(y - galleryDragStart.y, 2),
+    );
+    if (dist >= 5) setGalleryIsDragging(true);
   };
 
   const handleGalleryGridMouseUp = (e: React.MouseEvent) => {
@@ -1209,6 +1222,10 @@ export default function AdminCatalogClient({
   };
 
   const handleGalleryCover = (mediaId: string) => {
+    if (galleryCoverMediaId === mediaId) {
+      setGalleryCoverMediaId(null);
+      return;
+    }
     setGalleryCoverMediaId(mediaId);
     if (form?.id) {
       fetch(`/api/products/${form.id}`, {
@@ -1990,17 +2007,20 @@ export default function AdminCatalogClient({
                             {/* Cover star */}
                             <button
                               type="button"
-                              onClick={() => handleGalleryCover(item.mediaId)}
-                              className={`absolute top-2 right-2 p-1.5 rounded-lg backdrop-blur-sm transition-all border ${
-                                isCover
-                                  ? "bg-amber-400 text-thuy-950 border-amber-300 font-bold"
-                                  : "bg-thuy-950/80 text-slate-400 hover:text-amber-300 border-thuy-700"
-                              }`}
-                              title={
-                                isCover
-                                  ? "Đang là ảnh đại diện"
-                                  : "Đặt làm ảnh đại diện"
-                              }
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleGalleryCover(item.mediaId);
+                                }}
+                                className={`absolute top-2 right-2 p-1.5 rounded-lg backdrop-blur-sm transition-all border ${
+                                  isCover
+                                    ? "bg-amber-400 text-thuy-950 border-amber-300 font-bold"
+                                    : "bg-thuy-950/80 text-slate-400 hover:text-amber-300 border-thuy-700"
+                                }`}
+                                title={
+                                  isCover
+                                    ? "Bỏ đánh dấu ảnh đại diện"
+                                    : "Đặt làm ảnh đại diện"
+                                }
                             >
                               <Star
                                 className={`w-4 h-4 ${isCover ? "fill-thuy-950" : ""}`}
