@@ -455,44 +455,55 @@ export default function AdminCatalogClient({
   }, [items, activeTab, searchQuery]);
 
   const openEdit = async (item: any) => {
+    let product = item;
+    try {
+      const detailRes = await fetch(`/api/products/${item.id}`, { cache: "no-store" });
+      const detailData = await detailRes.json();
+      if (detailData.product) {
+        product = detailData.product;
+      }
+    } catch (err) {
+      console.error("Failed to load product details:", err);
+    }
+
     setForm({
-      id: item.id,
-      name: item.name || "",
-      slug: item.slug || "",
-      shortDesc: item.shortDesc || "",
-      description: item.description || "",
-      price: String(item.price ?? ""),
-      discount: item.discount != null ? String(item.discount) : "",
+      id: product.id,
+      name: product.name || "",
+      slug: product.slug || "",
+      shortDesc: product.shortDesc || "",
+      description: product.description || "",
+      price: String(product.price ?? ""),
+      discount: product.discount != null ? String(product.discount) : "",
       discountPercent:
-        item.discount != null && item.price
-          ? String(Math.round((item.discount / item.price) * 100))
+        product.discount != null && product.price
+          ? String(Math.round((product.discount / product.price) * 100))
           : "",
       priceAfterDiscount:
-        item.priceAfterDiscount != null ? String(item.priceAfterDiscount) : "",
-      productGroup: item.productGroup || "",
-      productCategory: item.productCategory || "",
-      fileFormat: item.fileFormat || "",
-      fileSize: item.fileSize || "",
-      fileKey: item.fileKey || "",
-      fileName: item.fileName || "",
-      downloadLinkUrl: item.downloadLinkUrl || "",
-      downloadExpiresMinutes: String(item.downloadExpiresMinutes ?? 5),
-      thumbnail: item.thumbnail || "",
-      location: item.location || "",
-      client: item.client || "",
-      year: item.year ? item.year.toString() : "",
-      landArea: item.landArea ? item.landArea.toString() : "",
-      buildingArea: item.buildingArea ? item.buildingArea.toString() : "",
-      floors: item.floors?.toString() || "",
-      basementFloors: item.basementFloors?.toString() || "",
-      totalFloorArea: item.totalFloorArea ? item.totalFloorArea.toString() : "",
-      style: item.style || "",
-      tagIds: item.tags?.map((t: any) => t.tagId) || [],
-      active: item.active !== false,
-      featured: Boolean(item.featured),
+        product.priceAfterDiscount != null ? String(product.priceAfterDiscount) : "",
+      productGroup: product.productGroup || "",
+      productCategory: product.productCategory || "",
+      fileFormat: product.fileFormat || "",
+      fileSize: product.fileSize || "",
+      fileKey: product.fileKey || "",
+      fileName: product.fileName || "",
+      downloadLinkUrl: product.downloadLinkUrl || "",
+      downloadExpiresMinutes: String(product.downloadExpiresMinutes ?? 5),
+      thumbnail: product.thumbnail || "",
+      location: product.location || "",
+      client: product.client || "",
+      year: product.year ? product.year.toString() : "",
+      landArea: product.landArea ? product.landArea.toString() : "",
+      buildingArea: product.buildingArea ? product.buildingArea.toString() : "",
+      floors: product.floors?.toString() || "",
+      basementFloors: product.basementFloors?.toString() || "",
+      totalFloorArea: product.totalFloorArea ? product.totalFloorArea.toString() : "",
+      style: product.style || "",
+      tagIds: product.tags?.map((t: any) => t.tagId) || [],
+      active: product.active !== false,
+      featured: Boolean(product.featured),
     });
-    setThumbImage(isVideoUrl(item.thumbnail || "") ? "" : item.thumbnail || "");
-    setThumbVideo(isVideoUrl(item.thumbnail || "") ? item.thumbnail || "" : "");
+    setThumbImage(isVideoUrl(product.thumbnail || "") ? "" : product.thumbnail || "");
+    setThumbVideo(isVideoUrl(product.thumbnail || "") ? product.thumbnail || "" : "");
 
     // Load gallery items for this product
     try {
