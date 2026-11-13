@@ -15,11 +15,10 @@ import {
   Grid3X3,
 } from "lucide-react";
 import {
-  playableVideoUrl,
-  isVideoUrl,
+  proxiedMediaUrl,
+  isLikelyVideoUrl,
   DRIVE_FOLDER_REGEX,
   DRIVE_ID_REGEX,
-  normalizeMediaUrl,
 } from "@/lib/media-url";
 
 export interface MediaItem {
@@ -224,11 +223,7 @@ function getDriveImageDirectUrl(fileId: string): string {
 }
 
 function imagePreviewSrc(url: string): string {
-  const isDrive =
-    DRIVE_ID_REGEX.test(url) || /drive\.google\.com\/uc\?/i.test(url);
-  return isDrive
-    ? `/api/media/image-proxy?url=${encodeURIComponent(url)}`
-    : normalizeMediaUrl(url);
+  return proxiedMediaUrl(url);
 }
 
 function getYoutubeEmbedUrl(url: string): string | null {
@@ -303,14 +298,12 @@ export default function MediaPickerModal({
   const libraryGridRef = useRef<HTMLDivElement>(null);
   const justDraggedRef = useRef(false);
 
-  const externalIsVideoUrl = isVideoUrl(externalUrl);
-  const externalPlayable = externalIsVideoUrl
-    ? playableVideoUrl(externalUrl)
-    : externalUrl;
+  const externalIsVideoUrl = isLikelyVideoUrl(externalUrl);
+  const externalPlayable = proxiedMediaUrl(externalUrl);
 
   const isVideoItem = (item: MediaItem) => {
     if (item.mimeType && item.mimeType.startsWith("video/")) return true;
-    return isVideoUrl(item.url || "");
+    return isLikelyVideoUrl(item.url || "", item.mimeType);
   };
 
   const handleGridMouseDown = (e: React.MouseEvent) => {
@@ -723,9 +716,9 @@ export default function MediaPickerModal({
       return;
     }
 
-    const normalizedUrl = normalizeMediaUrl(externalUrl);
-    const detectedMime = isVideoUrl(externalUrl)
-      ? externalUrl.includes(".webm")
+    const normalizedUrl = externalUrl.trim();
+    const detectedMime = isLikelyVideoUrl(externalUrl)
+      ? externalUrl.toLowerCase().includes(".webm")
         ? "video/webm"
         : "video/mp4"
       : "image/jpeg";
@@ -962,14 +955,14 @@ export default function MediaPickerModal({
                         : "border-slate-700 hover:border-slate-500"
                     }`}
                   >
-                    <video
-                      src={playableVideoUrl(vidUrl) || vidUrl}
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      className="w-full h-full object-cover"
-                    />
+                      <video
+                        src={proxiedMediaUrl(vidUrl)}
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="w-full h-full object-cover"
+                      />
                     <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-cyan-400 uppercase">
                       Video
                     </div>
@@ -1028,10 +1021,8 @@ export default function MediaPickerModal({
 
     if (isDriveFile || isVideoFile || externalUrl) {
       const isVideo = isVideoFile || (isDriveFile && DRIVE_ID_REGEX.test(externalUrl));
-      const videoSrc = playableVideoUrl(externalUrl) || externalUrl;
-      const imageSrc = isDriveFile
-        ? `/api/media/image-proxy?url=${encodeURIComponent(externalUrl)}`
-        : externalUrl;
+      const videoSrc = proxiedMediaUrl(externalUrl);
+      const imageSrc = proxiedMediaUrl(externalUrl);
 
       if (isVideo) {
         return (
@@ -1225,7 +1216,7 @@ export default function MediaPickerModal({
                     >
                       {itemIsVideo ? (
                         <video
-                          src={playableVideoUrl(item.url)}
+                          src={proxiedMediaUrl(item.url, item.mimeType)}
                           muted
                           loop
                           playsInline
@@ -1234,7 +1225,7 @@ export default function MediaPickerModal({
                         />
                       ) : (
                         <img
-                          src={imagePreviewSrc(item.url)}
+                          src={proxiedMediaUrl(item.url, item.mimeType)}
                           alt={item.alt || item.filename}
                           style={{
                             width: "100%",
