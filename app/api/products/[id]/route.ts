@@ -82,6 +82,9 @@ export async function PATCH(
       year,
       landArea,
       buildingArea,
+      floors,
+      basementFloors,
+      totalFloorArea,
       style,
       tagIds,
       galleryMediaIds,
@@ -112,6 +115,11 @@ export async function PATCH(
     if (landArea !== undefined) updateData.landArea = landArea ? parseFloat(landArea) : null;
     if (buildingArea !== undefined)
       updateData.buildingArea = buildingArea ? parseFloat(buildingArea) : null;
+    if (floors !== undefined) updateData.floors = floors ? parseInt(floors, 10) : null;
+    if (basementFloors !== undefined)
+      updateData.basementFloors = basementFloors ? parseInt(basementFloors, 10) : null;
+    if (totalFloorArea !== undefined)
+      updateData.totalFloorArea = totalFloorArea ? parseFloat(totalFloorArea) : null;
     if (style !== undefined) updateData.style = style || null;
 
     const updated = await prisma.product.update({
