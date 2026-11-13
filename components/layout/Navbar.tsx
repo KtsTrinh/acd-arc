@@ -37,7 +37,6 @@ export default function Navbar() {
     new Set(),
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchOpen, setSearchOpen] = useState(false);
   const totalItems = useCartStore((state) => state.totalItems());
 
   useEffect(() => {
@@ -137,7 +136,6 @@ export default function Navbar() {
     const q = searchQuery.trim();
     if (q) {
       router.push(`/products?search=${encodeURIComponent(q)}`);
-      setSearchOpen(false);
       setSearchQuery("");
     }
   };
@@ -208,7 +206,7 @@ export default function Navbar() {
                 const isOpen = openDesktopSub.has(group);
                 return (
                   <div key={group} className="relative group">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -217,8 +215,8 @@ export default function Navbar() {
                         }}
                         className={
                           isActiveGroup(group)
-                            ? "flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all"
-                            : "flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all"
+                            ? "flex items-center gap-1.5 pl-4 pr-2.5 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all"
+                            : "flex items-center gap-1.5 pl-4 pr-2.5 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all"
                         }
                       >
                         {group}
@@ -238,7 +236,7 @@ export default function Navbar() {
                               return next;
                             });
                           }}
-                          className="px-2 py-2 rounded-full text-slate-400 hover:text-thuy-400 transition-colors"
+                          className="px-1.5 py-2 rounded-full text-slate-400 hover:text-thuy-400 transition-colors"
                           title="Xem hạng mục"
                         >
                           <ChevronDown
@@ -256,7 +254,6 @@ export default function Navbar() {
                             href={`/products?productGroup=${encodeURIComponent(group)}&productCategory=${encodeURIComponent(cat)}`}
                             onClick={() => {
                               setOpenDesktopSub(new Set());
-                              setSearchOpen(false);
                             }}
                             className="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-thuy-800 hover:text-white transition-colors border-l-2 border-transparent hover:border-thuy-400"
                           >
@@ -271,39 +268,20 @@ export default function Navbar() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2.5 rounded-full bg-thuy-850/80 hover:bg-thuy-700/80 text-slate-300 hover:text-thuy-300 border border-thuy-700/60 transition-colors"
-              title="Tìm kiếm"
+            <form
+              onSubmit={handleSearchSubmit}
+              className="relative w-64 sm:w-80 hidden sm:block"
             >
-              <Search className="w-4 h-4" />
-            </button>
-
-            {searchOpen && (
-              <form
-                onSubmit={handleSearchSubmit}
-                className="relative w-full sm:w-80"
-              >
-                <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                <input
-                  type="text"
-                  name="search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Escape") setSearchOpen(false);
-                  }}
-                  placeholder="Tìm CAD, 3D model..."
-                  className="w-full pl-9 pr-10 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-thuy-400"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-3 top-3 text-slate-400 hover:text-white"
-                >
-                  <Search className="w-3 h-3" />
-                </button>
-              </form>
-            )}
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                name="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm CAD, 3D model..."
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-thuy-900/80 border border-thuy-700/60 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-thuy-400"
+              />
+            </form>
 
             <button
               onClick={handleCartOpen}
