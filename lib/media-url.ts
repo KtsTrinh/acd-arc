@@ -62,10 +62,7 @@ export function proxiedMediaUrl(
   if (trimmed.startsWith("/api/media/")) return trimmed;
   if (isDriveFileUrl(trimmed)) {
     const normalized = normalizeDriveUrl(trimmed);
-    const endpoint = isLikelyVideoUrl(trimmed, mimeType)
-      ? "/api/media/stream"
-      : "/api/media/image-proxy";
-    return `${endpoint}?url=${encodeURIComponent(normalized)}`;
+    return `/api/media/stream?url=${encodeURIComponent(normalized)}`;
   }
   if (/^https?:\/\//i.test(trimmed)) {
     // Link ngoài: proxy qua stream để tránh hotlink/CORS; ảnh/video đều xử lý được
