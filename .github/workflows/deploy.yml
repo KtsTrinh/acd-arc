@@ -24,7 +24,8 @@ jobs:
             cd ~/acd-arc
             
             OLD_COMMIT=$(git rev-parse HEAD)
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             NEW_COMMIT=$(git rev-parse HEAD)
             
             if git diff --name-only $OLD_COMMIT $NEW_COMMIT | grep -q "package-lock.json"; then
