@@ -24,7 +24,13 @@ import {
   Tag,
   Images,
 } from "lucide-react";
-import { isVideoUrl, normalizeMediaUrl } from "@/lib/media-url";
+import {
+  isLikelyVideoUrl,
+  normalizeMediaUrl,
+  proxiedMediaUrl,
+  playableVideoUrl,
+  resolveHeroVideo,
+} from "@/lib/media-url";
 
 function InfoRow({
   label,
@@ -123,13 +129,29 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
   };
 
   const gallery: any[] = Array.isArray(product.gallery) ? product.gallery : [];
-  const galleryImages = gallery
-    .map((g: any) => g?.media?.url || g?.media?.originalName || null)
-    .filter(Boolean)
-    .map((u: string) => normalizeMediaUrl(u) || u);
-  const allImages = [product.thumbnail, ...galleryImages].filter(Boolean) as string[];
-  const uniqueImages = Array.from(new Set(allImages));
-  const mainImage = activeImage || product.thumbnail || uniqueImages[0] || null;
+  const galleryMedia = gallery
+    .map((g: any) => {
+      const url = g?.media?.url || "";
+      if (!url) return null;
+      return { url, mimeType: g?.media?.mimeType || null };
+    })
+    .filter(Boolean) as { url: string; mimeType: string | null }[];
+
+  const thumbUrl = product.thumbnail || "";
+  const allMedia: { url: string; mimeType: string | null }[] = [];
+  if (thumbUrl) allMedia.push({ url: thumbUrl, mimeType: null });
+  allMedia.push(...galleryMedia);
+  const seen = new Set<string>();
+  const uniqueMedia = allMedia.filter((m) => {
+    if (seen.has(m.url)) return false;
+    seen.add(m.url);
+    return true;
+  });
+
+  const active = activeImage || thumbUrl || uniqueMedia[0]?.url || null;
+  const activeMedia = uniqueMedia.find((m) => m.url === active) || (active ? { url: active, mimeType: null } : null);
+  const activeIsVideo = activeMedia ? isLikelyVideoUrl(activeMedia.url, activeMedia.mimeType) : false;
+  const activeSrc = active ? proxiedMediaUrl(active) : "";
 
   const tags: string[] = Array.isArray(product.tags)
     ? product.tags.map((t: any) => t?.tag?.name || t?.name).filter(Boolean)
@@ -152,20 +174,21 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
         {/* Left: Images & Gallery */}
         <div className="space-y-4">
           <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-thuy-950 border border-thuy-750 shadow-2xl">
-            {mainImage && !isVideoUrl(mainImage) ? (
+            {activeSrc && !activeIsVideo ? (
               <Image
-                src={mainImage}
+                src={activeSrc}
                 alt={product.name}
                 fill
                 className="object-cover"
                 priority
                 unoptimized
               />
-            ) : mainImage && isVideoUrl(mainImage) ? (
+            ) : activeSrc && activeIsVideo ? (
               <video
-                src={mainImage}
+                src={activeSrc}
                 className="w-full h-full object-cover"
                 controls
+                playsInline
               />
             ) : (
               <div className="w-full h-full bg-thuy-900 flex items-center justify-center text-slate-500">
@@ -175,31 +198,36 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
 
           </div>
 
-          {uniqueImages.length > 1 && (
+          {uniqueMedia.length > 1 && (
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs text-slate-400">
                 <Images className="w-4 h-4 text-thuy-400" />
-                <span>Thư viện hình ảnh ({uniqueImages.length})</span>
+                <span>Thư viện hình ảnh ({uniqueMedia.length})</span>
               </div>
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                {uniqueImages.map((img, idx) => (
-                  <button
-                    key={`${img}-${idx}`}
-                    type="button"
-                    onClick={() => setActiveImage(img)}
-                    className={`relative aspect-square rounded-xl overflow-hidden border transition-all ${
-                      (activeImage || mainImage) === img
-                        ? "border-thuy-400 ring-1 ring-thuy-400"
-                        : "border-thuy-700 hover:border-thuy-500"
-                    }`}
-                  >
-                    {isVideoUrl(img) ? (
-                      <video src={img} className="w-full h-full object-cover" muted />
-                    ) : (
-                      <Image src={img} alt="" fill className="object-cover" unoptimized />
-                    )}
-                  </button>
-                ))}
+                {uniqueMedia.map((m, idx) => {
+                  const src = proxiedMediaUrl(m.url);
+                  const isVid = isLikelyVideoUrl(m.url, m.mimeType);
+                  const selected = active === m.url;
+                  return (
+                    <button
+                      key={`${m.url}-${idx}`}
+                      type="button"
+                      onClick={() => setActiveImage(m.url)}
+                      className={`relative aspect-square rounded-xl overflow-hidden border transition-all ${
+                        selected
+                          ? "border-thuy-400 ring-1 ring-thuy-400"
+                          : "border-thuy-700 hover:border-thuy-500"
+                      }`}
+                    >
+                      {isVid ? (
+                        <video src={src} className="w-full h-full object-cover" muted playsInline />
+                      ) : (
+                        <Image src={src} alt="" fill className="object-cover" unoptimized />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

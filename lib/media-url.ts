@@ -45,12 +45,38 @@ export function normalizeMediaUrl(url: string): string {
   return normalizeDriveUrl(trimmed);
 }
 
-export function isVideoUrl(url: string): boolean {
+export function isDriveFileUrl(url: string): boolean {
+  return DRIVE_ID_REGEX.test((url || "").trim());
+}
+
+/**
+ * URL hiển thị/stream media qua proxy khi cần (Google Drive) để tránh chặn
+ * hotlink/cookie hoặc header attachment khiến ảnh/video không hiện trên web.
+ */
+export function proxiedMediaUrl(url: string): string {
+  const trimmed = (url || "").trim();
+  if (!trimmed) return "";
+  if (isDriveFileUrl(trimmed)) {
+    return `/api/media/stream?url=${encodeURIComponent(normalizeDriveUrl(trimmed))}`;
+  }
+  return normalizeMediaUrl(trimmed);
+}
+
+/**
+ * Xác định URL có phải video không (theo đuôi file, YouTube/Vimeo, hoặc mime).
+ */
+export function isLikelyVideoUrl(url: string, mimeType?: string | null): boolean {
+  if (mimeType && /^video\//i.test(mimeType)) return true;
   const trimmed = (url || "").trim();
   if (!trimmed) return false;
   if (VIDEO_FILE_REGEX.test(trimmed)) return true;
-  // Không coi tất cả link Drive là video (có thể là ảnh). Chỉ coi là video nếu có đuôi file video.
+  if (YOUTUBE_ID_REGEX.test(trimmed) || VIMEO_ID_REGEX.test(trimmed)) return true;
   return false;
+}
+
+/** @deprecated Use isLikelyVideoUrl */
+export function isVideoUrl(url: string): boolean {
+  return isLikelyVideoUrl(url);
 }
 
 /**

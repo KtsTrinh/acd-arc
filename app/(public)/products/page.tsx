@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { formatVND, numberToWordsVN } from "@/lib/utils";
+import { proxiedMediaUrl } from "@/lib/media-url";
 import { CATALOG_GROUPS } from "@/lib/catalog";
 import {
   Download,
@@ -171,7 +172,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950">
                       {prod.thumbnail ? (
                         <Image
-                          src={prod.thumbnail}
+                          src={proxiedMediaUrl(prod.thumbnail)}
                           alt={prod.name}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
