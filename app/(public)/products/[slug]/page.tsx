@@ -233,22 +233,21 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
 
             <div className="space-y-2 pt-1">
               {hasDiscount ? (
-                <>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-300">
-                    <span>
-                      Giá bán:{" "}
-                      <span className="line-through decoration-slate-400/80 text-slate-400">
-                        {formatVND(product.price)}
-                      </span>
+                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+                  <span className="text-base text-slate-300">
+                    Giá bán:{" "}
+                    <span className="line-through decoration-slate-400/80 text-slate-400">
+                      {formatVND(product.price)}
                     </span>
-                    <span className="text-red-300 font-medium">
-                      Giảm giá: -{formatVND(product.discount)}
-                    </span>
-                  </div>
-                  <div className="font-display font-bold text-3xl sm:text-4xl text-thuy-400 text-glow">
+                  </span>
+                  <span className="text-sm text-red-300 font-medium">
+                    Giảm giá: -{formatVND(product.discount)} (
+                    {Math.round((product.discount / product.price) * 100)}%)
+                  </span>
+                  <span className="font-display font-bold text-2xl sm:text-3xl text-thuy-400 text-glow">
                     Giá sau giảm: {formatVND(finalPrice || 0)}
-                  </div>
-                </>
+                  </span>
+                </div>
               ) : (
                 <div className="font-display font-bold text-3xl sm:text-4xl text-thuy-400 text-glow">
                   Giá bán: {formatVND(finalPrice || 0)}

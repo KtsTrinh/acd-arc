@@ -243,44 +243,47 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                     </div>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-thuy-800 flex items-end justify-between gap-3">
-                    <div className="flex flex-col gap-0.5 text-xs min-w-0">
-                      {prod.discount && prod.price ? (
-                        <>
-                          <span className="text-slate-400 line-through decoration-slate-400/70">
-                            Giá bán: {formatVND(prod.price)}
-                          </span>
-                          <span className="text-red-300">
-                            Giảm: -{formatVND(prod.discount)}
-                          </span>
+                  <div className="pt-4 mt-4 border-t border-thuy-800 space-y-1.5">
+                    <div className="flex items-end justify-between gap-3">
+                      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs min-w-0">
+                        {prod.discount && prod.price ? (
+                          <>
+                            <span className="text-slate-400 line-through decoration-slate-400/70">
+                              Giá bán: {formatVND(prod.price)}
+                            </span>
+                            <span className="text-red-300">
+                              Giảm: -{formatVND(prod.discount)} (
+                              {Math.round((prod.discount / prod.price) * 100)}%)
+                            </span>
+                            <span className="font-bold text-base text-thuy-400">
+                              Sau giảm: {formatVND(finalPrice)}
+                            </span>
+                          </>
+                        ) : (
                           <span className="font-bold text-base text-thuy-400">
-                            Sau giảm: {formatVND(finalPrice)}
+                            Giá bán: {formatVND(finalPrice)}
                           </span>
-                        </>
-                      ) : (
-                        <span className="font-bold text-base text-thuy-400">
-                          Giá bán: {formatVND(finalPrice)}
-                        </span>
-                      )}
-                      <span className="text-[10px] text-slate-400 leading-relaxed break-words">
-                        Số tiền bằng chữ:{" "}
-                        <span className="text-thuy-300">
-                          {(() => {
-                            const words = numberToWordsVN(finalPrice || 0);
-                            return words.charAt(0).toUpperCase() + words.slice(1);
-                          })()}{" "}
-                          đồng
-                        </span>
-                      </span>
-                    </div>
+                        )}
+                      </div>
 
-                    <Link
-                      href={`/products/${prod.slug}`}
-                      className="px-3.5 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-400 hover:text-thuy-950 text-slate-200 text-xs font-semibold transition-all flex items-center gap-1 shrink-0"
-                    >
-                      <span>Xem file</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                      <Link
+                        href={`/products/${prod.slug}`}
+                        className="px-3.5 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-400 hover:text-thuy-950 text-slate-200 text-xs font-semibold transition-all flex items-center gap-1 shrink-0"
+                      >
+                        <span>Xem file</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                    <p className="text-[10px] text-slate-400 leading-relaxed break-words">
+                      Số tiền bằng chữ:{" "}
+                      <span className="text-thuy-300">
+                        {(() => {
+                          const words = numberToWordsVN(finalPrice || 0);
+                          return words.charAt(0).toUpperCase() + words.slice(1);
+                        })()}{" "}
+                        đồng
+                      </span>
+                    </p>
                   </div>
                 </div>
               );
