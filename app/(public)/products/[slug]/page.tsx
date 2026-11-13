@@ -151,7 +151,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
   const active = activeImage || thumbUrl || uniqueMedia[0]?.url || null;
   const activeMedia = uniqueMedia.find((m) => m.url === active) || (active ? { url: active, mimeType: null } : null);
   const activeIsVideo = activeMedia ? isLikelyVideoUrl(activeMedia.url, activeMedia.mimeType) : false;
-  const activeSrc = active ? proxiedMediaUrl(active) : "";
+  const activeSrc = activeMedia ? proxiedMediaUrl(activeMedia.url, activeMedia.mimeType) : "";
 
   const tags: string[] = Array.isArray(product.tags)
     ? product.tags.map((t: any) => t?.tag?.name || t?.name).filter(Boolean)
@@ -206,7 +206,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               </div>
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                 {uniqueMedia.map((m, idx) => {
-                  const src = proxiedMediaUrl(m.url);
+                  const src = proxiedMediaUrl(m.url, m.mimeType);
                   const isVid = isLikelyVideoUrl(m.url, m.mimeType);
                   const selected = active === m.url;
                   return (

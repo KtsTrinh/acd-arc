@@ -53,11 +53,18 @@ export function isDriveFileUrl(url: string): boolean {
  * URL hiển thị/stream media qua proxy khi cần (Google Drive) để tránh chặn
  * hotlink/cookie hoặc header attachment khiến ảnh/video không hiện trên web.
  */
-export function proxiedMediaUrl(url: string): string {
+export function proxiedMediaUrl(
+  url: string,
+  mimeType?: string | null,
+): string {
   const trimmed = (url || "").trim();
   if (!trimmed) return "";
   if (isDriveFileUrl(trimmed)) {
-    return `/api/media/stream?url=${encodeURIComponent(normalizeDriveUrl(trimmed))}`;
+    const normalized = normalizeDriveUrl(trimmed);
+    const endpoint = isLikelyVideoUrl(trimmed, mimeType)
+      ? "/api/media/stream"
+      : "/api/media/image-proxy";
+    return `${endpoint}?url=${encodeURIComponent(normalized)}`;
   }
   return normalizeMediaUrl(trimmed);
 }
