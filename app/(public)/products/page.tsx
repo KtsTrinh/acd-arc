@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
-import { formatVND, numberToWordsVN } from "@/lib/utils";
+import { formatVND } from "@/lib/utils";
 import { proxiedMediaUrl, isLikelyVideoUrl } from "@/lib/media-url";
 import { CATALOG_GROUPS } from "@/lib/catalog";
 import {
@@ -285,16 +285,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] text-slate-400 leading-relaxed break-words">
-                      Số tiền bằng chữ:{" "}
-                      <span className="text-thuy-300">
-                        {(() => {
-                          const words = numberToWordsVN(finalPrice || 0);
-                          return words.charAt(0).toUpperCase() + words.slice(1);
-                        })()}{" "}
-                        đồng
-                      </span>
-                    </p>
                     <div className="pt-1">
                       <Link
                         href={`/products/${prod.slug}`}
