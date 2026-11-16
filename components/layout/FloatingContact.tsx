@@ -15,17 +15,14 @@ function normalizePhone(phone: string) {
 function ZaloIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true" focusable="false">
-      <path
-        fill="#0068FF"
-        d="M38 8H10C6.1 8 3 11.1 3 15v14c0 3.9 3.1 7 7 7h5v8l9-8h14c3.9 0 7-3.1 7-7V15c0-3.9-3.1-7-7-7Z"
-      />
+      <rect x="6" y="6" width="36" height="36" rx="10" fill="#fff" />
       <text
         x="24"
-        y="26.5"
+        y="29"
         textAnchor="middle"
-        fontSize="12"
+        fontSize="11"
         fontWeight="800"
-        fill="#FFFFFF"
+        fill="#0068FF"
         fontFamily="Arial, Helvetica, sans-serif"
       >
         Zalo
