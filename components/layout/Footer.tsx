@@ -38,31 +38,31 @@ export default async function Footer() {
 
         {/* Categories */}
         <div className="space-y-3">
-          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">Hạng Mục Dự Án</h4>
+          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">Danh Mục Sản Phẩm</h4>
           <ul className="space-y-2 text-xs">
             <li>
-              <Link href="/projects?category=biet-thu-villa" className="hover:text-thuy-400 transition-colors">
-                Biệt Thự & Villa Nghỉ Dưỡng
+              <Link href="/products" className="hover:text-thuy-400 transition-colors">
+                Tất cả sản phẩm
               </Link>
             </li>
             <li>
-              <Link href="/projects?category=nha-pho-hien-dai" className="hover:text-thuy-400 transition-colors">
-                Nhà Phố Hiện Đại
+              <Link href="/products?type=CAD" className="hover:text-thuy-400 transition-colors">
+                Hồ sơ bản vẽ & CAD
               </Link>
             </li>
             <li>
-              <Link href="/projects?category=noi-that-cao-cap" className="hover:text-thuy-400 transition-colors">
-                Nội Thất Sang Trọng
+              <Link href="/products?type=MODEL_3D" className="hover:text-thuy-400 transition-colors">
+                Thư viện 3D & Model
               </Link>
             </li>
             <li>
-              <Link href="/projects?category=penthouse-can-ho" className="hover:text-thuy-400 transition-colors">
-                Penthouse & Duplex
+              <Link href="/products?type=INTERIOR" className="hover:text-thuy-400 transition-colors">
+                Nội thất & vật liệu
               </Link>
             </li>
             <li>
-              <Link href="/projects?category=canh-quan-resort" className="hover:text-thuy-400 transition-colors">
-                Cảnh Quan & Resort Sinh Thái
+              <Link href="/cart" className="hover:text-thuy-400 transition-colors">
+                Giỏ hàng & thanh toán
               </Link>
             </li>
           </ul>

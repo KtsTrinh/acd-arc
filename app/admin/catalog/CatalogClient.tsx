@@ -134,8 +134,6 @@ export default function AdminCatalogClient({
     initialTab && initialTab !== "ALL" ? initialTab : "ALL",
   );
   const [items, setItems] = useState<any[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
   const [newTagName, setNewTagName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -413,73 +411,47 @@ export default function AdminCatalogClient({
 
   const fetchAll = useCallback(async () => {
     try {
-      const [itemsRes, projectsRes, categoriesRes, tagsRes] = await Promise.all(
-        [
-          fetch("/api/products?includeInactive=1"),
-          fetch("/api/projects"),
-          fetch("/api/categories"),
-          fetch("/api/tags"),
-        ],
-      );
-      const itemsData = await itemsRes.json();
-      const projectsData = await projectsRes.json();
-      const categoriesData = await categoriesRes.json();
-      const tagsData = await tagsRes.json();
+      const [itemsRes, groupsRes, tagsRes] = await Promise.all([
+        fetch("/api/products?includeInactive=1"),
+        fetch("/api/products/groups"),
+        fetch("/api/tags"),
+      ]);
+      const itemsData = await itemsRes.json().catch(() => ({}));
+      const groupsData = await groupsRes.json().catch(() => ({}));
+      const tagsData = await tagsRes.json().catch(() => ({}));
       setItems(itemsData.products || []);
-      setProjects(projectsData.projects || []);
-      setCategories(categoriesData.categories || []);
+      setGroups(groupsData.groups || []);
       setTags(tagsData.tags || []);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching catalog data:", err);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    let mounted = true;
-    const fetchAll = async () => {
-      try {
-        const [itemsRes, projectsRes, categoriesRes, tagsRes] =
-          await Promise.allSettled([
-            fetch("/api/products?includeInactive=1"),
-            fetch("/api/projects"),
-            fetch("/api/categories"),
-            fetch("/api/tags"),
-          ]);
-        if (!mounted) return;
-        const itemsData =
-          itemsRes.status === "fulfilled"
-            ? await itemsRes.value.json().catch(() => ({}))
-            : {};
-        const projectsData =
-          projectsRes.status === "fulfilled"
-            ? await projectsRes.value.json().catch(() => ({}))
-            : {};
-        const categoriesData =
-          categoriesRes.status === "fulfilled"
-            ? await categoriesRes.value.json().catch(() => ({}))
-            : {};
-        const tagsData =
-          tagsRes.status === "fulfilled"
-            ? await tagsRes.value.json().catch(() => ({}))
-            : {};
-        setItems(itemsData.products || []);
-        setProjects(projectsData.projects || []);
-        setCategories(categoriesData.categories || []);
-        setTags(tagsData.tags || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
     fetchAll();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  }, [fetchAll]);
 
+  useEffect(() => {
+    if (activeTab === "ALL" || !activeTab) {
+      setSubCategories([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/products/categories?group=${encodeURIComponent(activeTab)}`);
+        const data = await res.json().catch(() => ({}));
+        if (!cancelled) setSubCategories(data.categories || []);
+      } catch {
+        if (!cancelled) setSubCategories([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab, items]);
   const groupItems = useMemo(() => {
     let result = items;
     if (activeTab !== "ALL") {
@@ -1270,14 +1242,6 @@ export default function AdminCatalogClient({
           <Loader2 className="w-4 h-4 animate-spin" /> Đang tải danh mục sản
           phẩm...
         </div>
-      ) : activeTab === "MANAGE" ? (
-        <ManagePanel
-          categories={categories}
-          projects={projects}
-          items={items}
-          onRefresh={fetchAll}
-          onNotice={setNotice}
-        />
       ) : (
         <CatalogTable
           items={groupItems}
@@ -2711,258 +2675,6 @@ function CatalogTable({
             ))}
           </tbody>
         </table>
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Tab quản lý danh mục dự án + dự án hiển thị                        */
-/* ------------------------------------------------------------------ */
-function ManagePanel({
-  categories,
-  projects,
-  items,
-  onRefresh,
-  onNotice,
-}: {
-  categories: any[];
-  projects: any[];
-  items: any[];
-  onRefresh: () => void;
-  onNotice: (n: { type: "ok" | "err"; text: string }) => void;
-}) {
-  const [catName, setCatName] = useState("");
-  const [catDesc, setCatDesc] = useState("");
-  const [savingCat, setSavingCat] = useState(false);
-
-  const createCategory = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!catName.trim()) return;
-    setSavingCat(true);
-    try {
-      const res = await fetch("/api/categories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: catName, description: catDesc }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setCatName("");
-        setCatDesc("");
-        onNotice({ type: "ok", text: "Đã thêm danh mục dự án." });
-        onRefresh();
-      } else {
-        onNotice({ type: "err", text: data.error || "Không thêm được." });
-      }
-    } finally {
-      setSavingCat(false);
-    }
-  };
-
-  const deleteCategory = async (id: string, name: string) => {
-    if (!confirm(`Xoá danh mục "${name}"?`)) return;
-    const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
-    const data = await res.json();
-    onNotice(
-      data.success
-        ? { type: "ok", text: "Đã xoá danh mục." }
-        : { type: "err", text: data.error || "Không xoá được." },
-    );
-    if (data.success) onRefresh();
-  };
-
-  return (
-    <div className="space-y-6">
-      {/* Danh mục dự án */}
-      <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
-        <div className="px-5 py-4 border-b border-thuy-750 flex items-center justify-between">
-          <h2 className="font-bold text-sm text-[#142338] flex items-center gap-2">
-            <FolderTree className="w-4 h-4 text-thuy-400" /> Danh Mục Dự Án Hiển
-            Thị
-          </h2>
-          <span className="text-[10px] text-slate-600">
-            Phân loại dự án trên website (biệt thự, nhà phố, nội thất...)
-          </span>
-        </div>
-
-        <form
-          onSubmit={createCategory}
-          className="px-5 py-4 grid grid-cols-1 sm:grid-cols-[1fr_2fr_auto] gap-3 border-b border-thuy-750/60 bg-thuy-900/40"
-        >
-          <input
-            value={catName}
-            onChange={(e) => setCatName(e.target.value)}
-            placeholder="Tên danh mục *"
-            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-          />
-          <input
-            value={catDesc}
-            onChange={(e) => setCatDesc(e.target.value)}
-            placeholder="Mô tả ngắn"
-            className="px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
-          />
-          <button
-            type="submit"
-            disabled={savingCat}
-            className="px-4 py-2 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase hover:brightness-110 flex items-center gap-1.5 justify-center"
-          >
-            {savingCat ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Plus className="w-3.5 h-3.5" />
-            )}
-            Thêm
-          </button>
-        </form>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-white uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
-              <tr>
-                <th className="py-3 px-5">Tên danh mục</th>
-                <th className="py-3 px-5">Slug</th>
-                <th className="py-3 px-5">Số dự án</th>
-                <th className="py-3 px-5 text-right">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-thuy-750/60">
-              {categories.map((c) => (
-                <tr key={c.id} className="hover:bg-thuy-800/40">
-                  <td className="py-3 px-5 font-bold text-[#142338]">
-                    {c.name}
-                  </td>
-                  <td className="py-3 px-5 text-slate-600 font-mono text-[10px]">
-                    {c.slug}
-                  </td>
-                  <td className="py-3 px-5 text-slate-700">
-                    {c._count?.projects ?? 0}
-                  </td>
-                  <td className="py-3 px-5 text-right">
-                    <button
-                      onClick={() => deleteCategory(c.id, c.name)}
-                      className="p-1.5 rounded-lg bg-thuy-800 hover:bg-red-950 hover:text-red-400 text-slate-600 border border-thuy-700"
-                      title="Xoá"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {categories.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="py-6 text-center text-slate-500 text-xs"
-                  >
-                    Chưa có danh mục dự án nào.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Dự án hiển thị */}
-      <div className="rounded-2xl bg-thuy-850 border border-thuy-750 overflow-hidden shadow-xl">
-        <div className="px-5 py-4 border-b border-thuy-750 flex items-center justify-between">
-          <h2 className="font-bold text-sm text-[#142338] flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-thuy-400" /> Dự Án Kiến Trúc
-          </h2>
-          <Link
-            href="/admin/projects/new"
-            className="px-3 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-thuy-300 text-[10px] font-bold uppercase border border-thuy-700 flex items-center gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" /> Tạo dự án
-          </Link>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-thuy-900/80 text-white uppercase font-semibold text-[10px] tracking-wider border-b border-thuy-750">
-              <tr>
-                <th className="py-3 px-5">Ảnh</th>
-                <th className="py-3 px-5">Tên dự án</th>
-                <th className="py-3 px-5">Danh mục</th>
-                <th className="py-3 px-5">Mục danh mục đã bán</th>
-                <th className="py-3 px-5 text-right">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-thuy-750/60">
-              {projects.map((p) => {
-                const linked = items.filter((i) => i.projectId === p.id);
-                return (
-                  <tr key={p.id} className="hover:bg-thuy-800/40">
-                    <td className="py-3 px-5">
-                      <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
-                        {p.cover?.url ? (
-                          <Image
-                            src={p.cover.url}
-                            alt={p.title}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-slate-600">
-                            <Building2 className="w-4 h-4" />
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-3 px-5">
-                      <span className="font-bold text-[#142338] block">
-                        {p.title}
-                      </span>
-                      <span className="text-[10px] text-slate-600 font-mono">
-                        /projects/{p.slug}
-                      </span>
-                    </td>
-                    <td className="py-3 px-5 text-slate-700">
-                      {p.category?.name || "—"}
-                    </td>
-                    <td className="py-3 px-5">
-                      {linked.length === 0 ? (
-                        <span className="text-[10px] text-slate-500">
-                          Chưa gắn mục bán
-                        </span>
-                      ) : (
-                        linked.map((l) => (
-                          <span
-                            key={l.id}
-                            className="inline-block mr-1.5 px-2 py-0.5 rounded-full bg-thuy-800 text-thuy-300 text-[10px] font-bold border border-thuy-700"
-                          >
-                            {l.name}
-                          </span>
-                        ))
-                      )}
-                    </td>
-                    <td className="py-3 px-5 text-right">
-                      <Link
-                        href={`/admin/projects/${p.id}`}
-                        className="inline-block p-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-700 border border-thuy-700"
-                        title="Sửa dự án"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
-              {projects.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="py-6 text-center text-slate-500 text-xs"
-                  >
-                    Chưa có dự án nào.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   );

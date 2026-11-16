@@ -187,8 +187,7 @@ export default async function AdminDashboardPage() {
   const sevenDaysAgo = new Date(now);
   sevenDaysAgo.setDate(now.getDate() - 7);
 
-  const [projectCount, productCount, orderCount, mediaCount, recentOrders, paidOrders, ordersByDay] = await Promise.all([
-    prisma.project.count(),
+  const [productCount, orderCount, mediaCount, recentOrders, paidOrders, ordersByDay] = await Promise.all([
     prisma.product.count(),
     prisma.order.count(),
     prisma.media.count(),
@@ -237,17 +236,10 @@ export default async function AdminDashboardPage() {
 
   const stats = [
     {
-      label: "Dự Án Kiến Trúc",
-      value: projectCount,
-      icon: Building2,
-      sub: "Công trình & Portfolio",
-      href: "/admin/catalog?tab=MANAGE",
-    },
-    {
-      label: "Danh Mục Sản Phẩm",
+      label: "Sản Phẩm & Danh Mục",
       value: productCount,
       icon: Package,
-      sub: "Kiến trúc · Nội thất · Xây dựng · File",
+      sub: "Sản phẩm, hồ sơ, tài nguyên số",
       href: "/admin/catalog",
     },
     {
@@ -256,6 +248,13 @@ export default async function AdminDashboardPage() {
       icon: ShoppingBag,
       sub: "Lịch sử mua tài nguyên",
       href: "/admin/orders",
+    },
+    {
+      label: "Media Library",
+      value: mediaCount,
+      icon: Building2,
+      sub: "Ảnh/video/tài nguyên media",
+      href: "/admin/media",
     },
     {
       label: "Doanh Thu Đã Thu",

@@ -184,7 +184,7 @@ export async function POST(request: Request) {
 
     // Attach initial gallery media if provided
     if (galleryMediaIds && Array.isArray(galleryMediaIds) && galleryMediaIds.length > 0) {
-      await prisma.projectMedia.createMany({
+      await prisma.productMedia.createMany({
         data: galleryMediaIds.map((mediaId: string, index: number) => ({
           productId: product.id,
           mediaId,

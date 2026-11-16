@@ -149,40 +149,6 @@ model Verification {
   @@index([expiresAt])
 }
 
-model ProjectCategory {
-  id          String    @id @default(cuid())
-  name        String
-  slug        String    @unique
-  description String?
-  image       String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  projects    Project[]
-}
-
-model Project {
-  id           String           @id @default(cuid())
-  title        String
-  slug         String           @unique
-  shortDesc    String?
-  description  String?
-  location     String?
-  client       String?
-  year         Int?
-  area         Float?
-  style        String?
-  buildingType String?
-  isFeatured   Boolean          @default(false)
-  categoryId   String?
-  coverId      String?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  category     ProjectCategory? @relation(fields: [categoryId], references: [id])
-  cover        Media?           @relation("ProjectCover", fields: [coverId], references: [id])
-  gallery      ProjectMedia[]   @relation("ProjectGallery")
-  tags         ProjectTag[]
-}
-
 model Media {
   id            String         @id @default(cuid())
   filename      String
@@ -197,22 +163,18 @@ model Media {
   alt           String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  projectCovers Project[]      @relation("ProjectCover")
-  projectMedia  ProjectMedia[]
+  productMedia  ProductMedia[]
 }
 
-model ProjectMedia {
-  id        String   @id @default(cuid())
-  projectId String?
+model ProductMedia {
+  id        String  @id @default(cuid())
   mediaId   String
-  sortOrder Int      @default(0)
-  productId String?
-  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
-  product   Product? @relation("ProductGallery", fields: [productId], references: [id], onDelete: Cascade)
-  project   Project? @relation("ProjectGallery", fields: [projectId], references: [id], onDelete: Cascade)
+  sortOrder Int     @default(0)
+  productId String
+  media     Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  product   Product @relation("ProductGallery", fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([projectId, productId, mediaId])
-  @@index([projectId, sortOrder])
+  @@unique([productId, mediaId])
   @@index([productId, sortOrder])
 }
 
@@ -223,16 +185,6 @@ model Tag {
   createdAt DateTime     @default(now())
   posts     PostTag[]
   products  ProductTag[]
-  projects  ProjectTag[]
-}
-
-model ProjectTag {
-  projectId String
-  tagId     String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([projectId, tagId])
 }
 
 model Product {
@@ -269,7 +221,7 @@ model Product {
   downloadLinks          DownloadLink[]
   orderItems             OrderItem[]
   tags                   ProductTag[]
-  gallery                ProjectMedia[] @relation("ProductGallery")
+  gallery                ProductMedia[] @relation("ProductGallery")
 }
 
 model ProductTag {

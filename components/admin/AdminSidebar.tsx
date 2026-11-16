@@ -141,9 +141,7 @@ export default function AdminSidebar() {
                 const isActive =
                   item.href === "/admin"
                     ? pathname === "/admin"
-                    : pathname.startsWith(item.href) ||
-                      (item.href === "/admin/catalog" &&
-                        pathname.startsWith("/admin/projects"));
+                    : pathname.startsWith(item.href);
                 const Icon = item.icon;
                 return (
                   <Link

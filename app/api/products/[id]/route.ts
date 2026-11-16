@@ -155,8 +155,8 @@ export async function PATCH(
 
     // Replace gallery media if provided
     if (galleryMediaIds && Array.isArray(galleryMediaIds)) {
-      await prisma.projectMedia.deleteMany({ where: { productId: id } });
-      await prisma.projectMedia.createMany({
+      await prisma.productMedia.deleteMany({ where: { productId: id } });
+      await prisma.productMedia.createMany({
         data: galleryMediaIds.map((mediaId: string, index: number) => ({
           productId: id,
           mediaId,
@@ -204,7 +204,7 @@ export async function DELETE(
     await prisma.orderItem.deleteMany({ where: { productId: id } });
     await prisma.downloadLink.deleteMany({ where: { productId: id } });
     await prisma.productTag.deleteMany({ where: { productId: id } });
-    await prisma.projectMedia.deleteMany({ where: { productId: id } });
+    await prisma.productMedia.deleteMany({ where: { productId: id } });
 
     await prisma.product.delete({ where: { id } });
     const sync = await triggerCmsAutoSync("xóa sản phẩm");

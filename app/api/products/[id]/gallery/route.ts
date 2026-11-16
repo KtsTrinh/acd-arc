@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { id } = params;
 
-    const gallery = await prisma.projectMedia.findMany({
+    const gallery = await prisma.productMedia.findMany({
       where: { productId: id },
       orderBy: { sortOrder: "asc" },
       include: { media: true },
@@ -43,7 +43,7 @@ export async function POST(
       );
     }
 
-    const lastItem = await prisma.projectMedia.findFirst({
+    const lastItem = await prisma.productMedia.findFirst({
       where: { productId: id },
       orderBy: { sortOrder: "desc" },
     });
@@ -51,7 +51,7 @@ export async function POST(
 
     for (const mediaId of mediaIds) {
       // Avoid duplicate linking
-      const exists = await prisma.projectMedia.findFirst({
+      const exists = await prisma.productMedia.findFirst({
         where: {
           productId: id,
           mediaId,
@@ -59,7 +59,7 @@ export async function POST(
       });
 
       if (!exists) {
-        await prisma.projectMedia.create({
+        await prisma.productMedia.create({
           data: {
             productId: id,
             mediaId,
@@ -69,7 +69,7 @@ export async function POST(
       }
     }
 
-    const updatedGallery = await prisma.projectMedia.findMany({
+    const updatedGallery = await prisma.productMedia.findMany({
       where: { productId: id },
       orderBy: { sortOrder: "asc" },
       include: { media: true },
@@ -104,11 +104,11 @@ export async function PUT(
 
     await prisma.$transaction(async (prisma) => {
       for (const item of items) {
-        const record = await prisma.projectMedia.findFirst({
+        const record = await prisma.productMedia.findFirst({
           where: { productId: id, mediaId: item.mediaId },
         });
         if (record) {
-          await prisma.projectMedia.update({
+          await prisma.productMedia.update({
             where: { id: record.id },
             data: { sortOrder: item.sortOrder },
           });
@@ -116,7 +116,7 @@ export async function PUT(
       }
     });
 
-    const updatedGallery = await prisma.projectMedia.findMany({
+    const updatedGallery = await prisma.productMedia.findMany({
       where: { productId: id },
       orderBy: { sortOrder: "asc" },
       include: { media: true },
@@ -149,14 +149,14 @@ export async function DELETE(
       );
     }
 
-    await prisma.projectMedia.deleteMany({
+    await prisma.productMedia.deleteMany({
       where: {
         productId: id,
         mediaId,
       },
     });
 
-    const updatedGallery = await prisma.projectMedia.findMany({
+    const updatedGallery = await prisma.productMedia.findMany({
       where: { productId: id },
       orderBy: { sortOrder: "asc" },
       include: { media: true },
