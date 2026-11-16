@@ -38,7 +38,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       media: mediaList,
-      folders: folders.map((f) => f.folder).filter(Boolean),
+      folders: folders.map((f: (typeof folders)[number]) => f.folder).filter(Boolean),
     });
   } catch (error) {
     console.error("Error fetching media:", error);

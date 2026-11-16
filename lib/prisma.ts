@@ -1,14 +1,13 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from ".prisma/client/default";
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  prisma: InstanceType<typeof PrismaClient> | undefined;
 };
 
 /**
- * Serverless (Vercel) chạy nhiều lambda instance song song. Prisma mặc định mở
- * `num_cpus * 2 + 1` connection cho mỗi instance, khiến Postgres bị quá tải
- * ("too many connections for role ..."). Giới hạn còn 1 connection/instance và
- * chờ tối đa 30s thay vì lập tức lỗi.
+ * Serverless chạy nhiều instance song song. Prisma mặc định mở
+ * ~num_cpus*2+1 kết nối/instance, dễ vượt limit của MySQL/PlanetScale
+ * -> P2024 "Timed out fetching a new connection from the pool".
  */
 function withConnectionLimit(url?: string) {
   if (!url) return undefined;

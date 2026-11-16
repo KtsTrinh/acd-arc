@@ -33,7 +33,7 @@ async function githubRequest<T>(
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
     throw new Error(
-      "Chưa cấu hình GITHUB_TOKEN. Hãy thêm secret GITHUB_TOKEN vào Vercel."
+      "Chưa cấu hình GITHUB_TOKEN. Hãy thêm secret GITHUB_TOKEN vào biến môi trường."
     );
   }
 
@@ -87,7 +87,6 @@ interface GithubNewCommit {
 
 /**
  * Ghi nhiều file vào GitHub bằng 1 commit duy nhất (Git Data API).
- * Push vào nhánh production sẽ kích hoạt Vercel deploy tự động.
  */
 export async function pushFilesToGithub(
   files: GithubPushFile[],

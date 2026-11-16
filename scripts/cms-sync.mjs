@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Kéo nội dung CMS từ server về thư mục `content/` trong mã nguồn, sau đó
- * (tuỳ chọn) commit và push lên GitHub để Vercel tự deploy lại.
+ * (tuỳ chọn) commit và push lên GitHub.
  *
  *   npm run cms:sync                 # kéo về + commit + push
  *   npm run cms:sync -- --dry-run    # chỉ kéo về máy
@@ -123,9 +123,9 @@ async function main() {
     return;
   }
 
-  log("\n→ Đang push lên GitHub (Vercel sẽ tự deploy)...");
+  log("\n→ Đang push lên GitHub...");
   run("git push origin main");
-  log("\n✓ Hoàn tất. Vercel sẽ tự động deploy trong vài phút.");
+  log("\n✓ Hoàn tất. Nội dung CMS đã được đồng bộ lên GitHub.");
 }
 
 main().catch((error) => {

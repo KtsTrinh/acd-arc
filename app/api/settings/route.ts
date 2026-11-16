@@ -50,7 +50,7 @@ export async function PUT(request: Request) {
 
     await saveSettings(payload);
 
-    // Đồng bộ nội dung CMS ra mã nguồn (GitHub -> Vercel tự deploy)
+    // Đồng bộ nội dung CMS ra mã nguồn (GitHub)
     const sync = await triggerCmsAutoSync("cập nhật cấu hình hệ thống");
 
     const updated = await getSettings();

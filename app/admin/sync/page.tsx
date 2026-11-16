@@ -94,14 +94,14 @@ export default function AdminSyncPage() {
           <div>
             <h2 className="font-semibold text-sm text-[#142338] flex items-center gap-2">
               <GitBranch className="w-4 h-4 text-thuy-400" />
-              Đồng Bộ Mã Nguồn (CMS → GitHub → Vercel)
+              Đồng Bộ Mã Nguồn (CMS → GitHub)
             </h2>
             <p className="text-xs text-slate-600 mt-1.5">
               Mỗi lần bạn thay đổi nội dung trong CMS, bấm nút bên dưới (hoặc
               bật tự động đồng bộ) để ghi nội dung ra thư mục{" "}
-              <code className="text-thuy-300">content/</code> trong mã nguồn,
-              push lên GitHub. Vercel tự động deploy lại từ nhánh{" "}
-              <code className="text-thuy-300">{github?.branch || "main"}</code>.
+              <code className="text-thuy-300">content/</code> trong mã nguồn và
+              push lên GitHub (nhánh{" "}
+              <code className="text-thuy-300">{github?.branch || "main"}</code>).
             </p>
           </div>
           <CmsSyncButton label="Đồng bộ ngay" />
@@ -236,8 +236,8 @@ export default function AdminSyncPage() {
                 <div className="text-xs text-amber-200 space-y-1">
                   <p>
                     Thiếu secret{" "}
-                    <code className="text-thuy-300">GITHUB_TOKEN</code> trên
-                    Vercel. Thêm token có quyền{" "}
+                    <code className="text-thuy-300">GITHUB_TOKEN</code> trên môi
+                    trường máy chủ. Thêm token có quyền{" "}
                     <b>Contents: Read &amp; write</b> cho repo {github?.repo} để
                     nút đồng bộ hoạt động.
                   </p>

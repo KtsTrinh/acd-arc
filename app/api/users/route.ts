@@ -21,8 +21,8 @@ export async function GET() {
       },
     });
 
-    const roleOrder = { SUPER_ADMIN: 0, ADMIN: 1, USER: 2 };
-    users.sort((a, b) => {
+    const roleOrder: Record<string, number> = { SUPER_ADMIN: 0, ADMIN: 1, USER: 2 };
+    users.sort((a: (typeof users)[number], b: (typeof users)[number]) => {
       const orderA = roleOrder[a.role as keyof typeof roleOrder] ?? 99;
       const orderB = roleOrder[b.role as keyof typeof roleOrder] ?? 99;
       if (orderA !== orderB) return orderA - orderB;

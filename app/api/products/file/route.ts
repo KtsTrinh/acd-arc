@@ -4,7 +4,7 @@ import { savePrivateProductFile } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
-/** Giới hạn dung lượng upload trực tiếp (Vercel serverless giới hạn ~4.5MB request) */
+/** Giới hạn dung lượng upload trực tiếp (tùy thuộc giới hạn request của môi trường) */
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 
 /**

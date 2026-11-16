@@ -210,10 +210,14 @@ export default async function AdminDashboardPage() {
     }),
   ]);
 
-  const totalRevenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
+  type PaidOrder = (typeof paidOrders)[number];
+  type DayOrder = (typeof ordersByDay)[number];
+  type RecentOrder = (typeof recentOrders)[number];
 
-  const paidCount = ordersByDay.filter((o) => o.status === "PAID").length;
-  const pendingCount = ordersByDay.filter((o) => o.status !== "PAID").length;
+  const totalRevenue = paidOrders.reduce((sum: number, o: PaidOrder) => sum + o.total, 0);
+
+  const paidCount = ordersByDay.filter((o: DayOrder) => o.status === "PAID").length;
+  const pendingCount = ordersByDay.filter((o: DayOrder) => o.status !== "PAID").length;
 
   // Group orders by day for last 7 days
   const dayLabels = ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
@@ -224,11 +228,11 @@ export default async function AdminDashboardPage() {
     const nextDay = new Date(targetDate);
     nextDay.setDate(nextDay.getDate() + 1);
 
-    const dayOrders = ordersByDay.filter((o) => {
+    const dayOrders = ordersByDay.filter((o: DayOrder) => {
       const d = new Date(o.createdAt);
       return d >= targetDate && d < nextDay;
     });
-    const revenue = dayOrders.reduce((sum, o) => sum + (o.status === "PAID" ? o.total : 0), 0);
+    const revenue = dayOrders.reduce((sum: number, o: DayOrder) => sum + (o.status === "PAID" ? o.total : 0), 0);
     const count = dayOrders.length;
 
     return { name: label, revenue, count };
@@ -355,7 +359,7 @@ export default async function AdminDashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E1EAF2]">
-              {recentOrders.map((o) => (
+              {recentOrders.map((o: RecentOrder) => (
                 <tr key={o.id} className="hover:bg-[#F7FAFD] transition-colors">
                   <td className="py-3.5 px-5 font-mono font-semibold text-[#142338]">#{o.orderNumber}</td>
                   <td className="py-3.5 px-5">

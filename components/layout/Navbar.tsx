@@ -193,7 +193,7 @@ export default function Navbar() {
               href="/"
               className={
                 pathname === "/"
-                  ? "px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all whitespace-nowrap"
+                  ? "px-4 py-2 rounded-full text-xs uppercase tracking-wider text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all whitespace-nowrap"
                   : "px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all whitespace-nowrap"
               }
             >
@@ -215,7 +215,7 @@ export default function Navbar() {
                         }}
                         className={
                           isActiveGroup(group)
-                            ? "flex items-center gap-1.5 pl-4 pr-2.5 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all whitespace-nowrap"
+                            ? "flex items-center gap-1.5 pl-4 pr-2.5 py-2 rounded-full text-xs uppercase tracking-wider text-thuy-950 bg-thuy-400 font-semibold shadow-glow-cyan transition-all whitespace-nowrap"
                             : "flex items-center gap-1.5 pl-4 pr-2.5 py-2 rounded-full text-xs uppercase tracking-wider font-medium text-slate-300 hover:text-white hover:bg-thuy-750/50 transition-all whitespace-nowrap"
                         }
                       >
@@ -389,7 +389,7 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className={
                 pathname === "/"
-                  ? "block px-4 py-2.5 rounded-lg text-sm font-medium bg-thuy-400 text-thuy-950 font-bold transition-colors"
+                  ? "block px-4 py-2.5 rounded-lg text-sm bg-thuy-400 text-thuy-950 font-bold transition-colors"
                   : "block px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-thuy-850 transition-colors"
               }
             >
@@ -405,7 +405,7 @@ export default function Navbar() {
                       onClick={() => toggleMobileSub(group)}
                       className={
                         active
-                          ? "flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium bg-thuy-400 text-thuy-950 font-bold transition-colors"
+                          ? "flex items-center justify-between px-4 py-2.5 rounded-lg text-sm bg-thuy-400 text-thuy-950 font-bold transition-colors"
                           : "flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-thuy-850 transition-colors"
                       }
                     >

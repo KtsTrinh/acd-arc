@@ -20,7 +20,9 @@
         "panel": "dedicated",
         "clear": false
       },
-      "runOn": "folderOpen"
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
     },
     {
       "label": "A-C-D: Đồng bộ CMS ngay (kéo + commit + push)",

@@ -64,7 +64,6 @@ export async function GET() {
 
 /**
  * POST: ghi nội dung CMS ra source code và push lên GitHub.
- * Push vào nhánh production sẽ khiến Vercel deploy lại tự động.
  */
 export async function POST(request: Request) {
   const user = await requireAdmin();
@@ -79,8 +78,8 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Chưa cấu hình GITHUB_TOKEN trên Vercel nên chưa thể push mã nguồn. " +
-          "Hãy thêm secret GITHUB_TOKEN (repo KtsTrinh/acd-arc, quyền Contents: Read & write).",
+          "Chưa cấu hình GITHUB_TOKEN nên chưa thể push mã nguồn. " +
+          "Hãy thêm secret GITHUB_TOKEN (repo KtsTrinh/acd-arc, quyền Contents: Read & write) vào môi trường máy chủ.",
       },
       { status: 503 }
     );
@@ -106,8 +105,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       ...result,
-      message:
-        "Đã đồng bộ mã nguồn lên GitHub. Vercel sẽ tự động deploy lại trong vài phút.",
+      message: "Đã đồng bộ mã nguồn lên GitHub.",
     });
   } catch (error) {
     console.error("CMS sync error:", error);

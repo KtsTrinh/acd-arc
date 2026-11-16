@@ -135,9 +135,19 @@ export async function GET(request: Request) {
       }),
     ]);
 
+    type LiveSession = (typeof liveSessions)[number];
+    type SessionWithUser = (typeof sessions)[number];
+    type UserRow = (typeof users)[number];
+    type UserVisit = UserRow["visitSessions"][number];
+    type UserOrder = UserRow["orders"][number];
+    type OrderRow = (typeof orders)[number];
+    type OrderItem = OrderRow["items"][number];
+    type CartEventRow = (typeof cartAddEvents)[number];
+    type PageViewRow = (typeof pageViews)[number];
+
     /* ---------------- Lịch sử truy cập (khách đã truy cập) ---------------- */
     const sessionRows = sessions
-      .map((s) => ({
+      .map((s: SessionWithUser) => ({
         id: s.id,
         visitorId: s.visitorId,
         lastPath: s.lastPath,
@@ -160,7 +170,7 @@ export async function GET(request: Request) {
             }
           : null,
       }))
-      .filter((row) => {
+      .filter((row: { visitorId: string; lastPath: string | null; ip: string | null; user: { email: string | null; name: string | null } | null }) => {
         if (!search) return true;
         return (
           row.visitorId.toLowerCase().includes(search) ||
@@ -173,19 +183,19 @@ export async function GET(request: Request) {
 
     /* ---------------- Thông tin từng khách hàng đã đăng ký ---------------- */
     const customerRows = users
-      .map((u) => {
+      .map((u: UserRow) => {
         const visits = u.visitSessions.length;
-        const pageViews = u.visitSessions.reduce((sum, v) => sum + v.pageViews, 0);
-        const durationSec = u.visitSessions.reduce((sum, v) => sum + v.durationSec, 0);
+        const pageViews = u.visitSessions.reduce((sum: number, v: UserVisit) => sum + v.pageViews, 0);
+        const durationSec = u.visitSessions.reduce((sum: number, v: UserVisit) => sum + v.durationSec, 0);
         const lastVisitAt = u.visitSessions.reduce<Date | null>(
-          (latest, v) => (!latest || v.lastSeenAt > latest ? v.lastSeenAt : latest),
+          (latest: Date | null, v: UserVisit) => (!latest || v.lastSeenAt > latest ? v.lastSeenAt : latest),
           null
         );
         const totalSpent = u.orders
-          .filter((o) => o.status === "PAID")
-          .reduce((sum, o) => sum + o.total, 0);
+          .filter((o: UserOrder) => o.status === "PAID")
+          .reduce((sum: number, o: UserOrder) => sum + o.total, 0);
         const lastOrderAt = u.orders.length ? u.orders[0].createdAt : null;
-        const cartAdds = cartAddEvents.filter((c) => c.userId === u.id).length;
+        const cartAdds = cartAddEvents.filter((c: CartEventRow) => c.userId === u.id).length;
 
         return {
           id: u.id,
@@ -202,13 +212,13 @@ export async function GET(request: Request) {
           durationSec,
           lastVisitAt,
           orderCount: u.orders.length,
-          paidCount: u.orders.filter((o) => o.status === "PAID").length,
+          paidCount: u.orders.filter((o: UserOrder) => o.status === "PAID").length,
           totalSpent,
           lastOrderAt,
           cartAdds,
         };
       })
-      .filter((row) => {
+      .filter((row: { email: string | null; name: string | null; phone: string | null }) => {
         if (!search) return true;
         return (
           (row.email || "").toLowerCase().includes(search) ||
@@ -232,7 +242,7 @@ export async function GET(request: Request) {
       }
     >();
 
-    for (const order of orders) {
+    for (const order of orders as OrderRow[]) {
       const key = (order.customerEmail || order.userId || order.id).toLowerCase();
 
       if (!buyerMap.has(key)) {
@@ -257,7 +267,7 @@ export async function GET(request: Request) {
       if (order.createdAt.toISOString() > buyer.lastOrderAt) {
         buyer.lastOrderAt = order.createdAt.toISOString();
       }
-      order.items.forEach((item) => {
+      order.items.forEach((item: OrderItem) => {
         const existing = buyer.items.find((i) => i.name === item.productName);
         if (existing) existing.quantity += item.quantity;
         else
@@ -293,7 +303,7 @@ export async function GET(request: Request) {
       }
     >();
 
-    for (const event of cartAddEvents) {
+    for (const event of cartAddEvents as CartEventRow[]) {
       const key = event.productId || event.productName;
       if (!cartMap.has(key)) {
         cartMap.set(key, {
@@ -335,6 +345,7 @@ export async function GET(request: Request) {
       orderBy: { createdAt: "desc" },
       take: 30,
     });
+    type CartRecentRow = (typeof cartRecent)[number];
 
     /* ---------------- Trang được xem nhiều ---------------- */
     const pageMap = new Map<
@@ -342,7 +353,7 @@ export async function GET(request: Request) {
       { path: string; views: number; durationTotal: number; durationCount: number }
     >();
 
-    for (const view of pageViews) {
+    for (const view of pageViews as PageViewRow[]) {
       if (!pageMap.has(view.path)) {
         pageMap.set(view.path, {
           path: view.path,
@@ -373,16 +384,16 @@ export async function GET(request: Request) {
 
     /* ---------------- Chỉ số tổng quan ---------------- */
     const liveVisitors = new Set(
-      liveSessions.map((s) => s.userId || s.visitorId)
+      liveSessions.map((s: LiveSession) => s.userId || s.visitorId)
     ).size;
 
-    const totalDuration = sessions.reduce((sum, s) => sum + s.durationSec, 0);
+    const totalDuration = sessions.reduce((sum: number, s: SessionWithUser) => sum + s.durationSec, 0);
     const avgDurationSec = sessions.length
       ? Math.round(totalDuration / sessions.length)
       : 0;
 
-    const paidOrders = orders.filter((o) => o.status === "PAID");
-    const revenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
+    const paidOrders = orders.filter((o: OrderRow) => o.status === "PAID");
+    const revenue = paidOrders.reduce((sum: number, o: OrderRow) => sum + o.total, 0);
     const conversionRate = totalSessions
       ? Number(((orders.length / totalSessions) * 100).toFixed(2))
       : 0;
@@ -396,13 +407,13 @@ export async function GET(request: Request) {
         totalVisitors: totalSessions,
         totalViews,
         avgDurationSec,
-        registeredCustomers: users.filter((u) => u.role === "USER").length,
+        registeredCustomers: users.filter((u: UserRow) => u.role === "USER").length,
         cartAdds: cartAddEvents.length,
         orders: orders.length,
         revenue,
         conversionRate,
       },
-      live: liveSessions.map((s) => ({
+      live: liveSessions.map((s: LiveSession) => ({
         id: s.id,
         visitorId: s.visitorId,
         lastPath: s.lastPath,
@@ -420,7 +431,7 @@ export async function GET(request: Request) {
       customers: customerRows,
       buyers,
       cartTop,
-      cartRecent: cartRecent.map((event) => ({
+      cartRecent: cartRecent.map((event: CartRecentRow) => ({
         id: event.id,
         productName: event.productName,
         productSlug: event.productSlug,

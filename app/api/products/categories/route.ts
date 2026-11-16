@@ -22,8 +22,8 @@ export async function GET(request: Request) {
       const categories = Array.from(
         new Set(
           products
-            .map((p) => p.productCategory)
-            .filter((c): c is string => c !== null && c !== undefined),
+            .map((p: { productCategory: string | null }) => p.productCategory)
+            .filter((c: string | null): c is string => c !== null && c !== undefined),
         ),
       ).sort();
 

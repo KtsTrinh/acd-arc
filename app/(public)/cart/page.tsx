@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 
 export default function CartPage() {
+  const router = useRouter();
   const { items, removeItem, clearCart, totalPrice, totalItems } =
     useCartStore();
   const { user, loading: authLoading } = useCurrentUser();
@@ -31,10 +32,43 @@ export default function CartPage() {
     name: string;
   } | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [unavailableNames, setUnavailableNames] = useState<string[] | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleProceedCheckout = async () => {
+    if (checkingOut || items.length === 0) return;
+    setCheckingOut(true);
+    try {
+      const results = await Promise.all(
+        items.map(async (item) => {
+          try {
+            const res = await fetch(`/api/products/${item.id}`, { cache: "no-store" });
+            const data = await res.json().catch(() => ({}));
+            const p = data?.product as
+              | { hasFile?: boolean; hasDownloadLink?: boolean; fileKey?: string | null; downloadLinkUrl?: string | null }
+              | null
+              | undefined;
+            const ok = Boolean(p && (p.hasFile || p.hasDownloadLink || p.fileKey || p.downloadLinkUrl));
+            return { ok, name: item.name };
+          } catch {
+            return { ok: false, name: item.name };
+          }
+        })
+      );
+      const bad = results.filter((r) => !r.ok).map((r) => r.name);
+      if (bad.length > 0) {
+        setUnavailableNames(bad);
+        return;
+      }
+      router.push("/checkout");
+    } finally {
+      setCheckingOut(false);
+    }
+  };
 
   if (!mounted || authLoading) return null;
 

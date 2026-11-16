@@ -102,13 +102,13 @@ export async function PUT(
       );
     }
 
-    await prisma.$transaction(async (prisma) => {
+    await prisma.$transaction(async (tx: any) => {
       for (const item of items) {
-        const record = await prisma.productMedia.findFirst({
+        const record = await tx.productMedia.findFirst({
           where: { productId: id, mediaId: item.mediaId },
         });
         if (record) {
-          await prisma.productMedia.update({
+          await tx.productMedia.update({
             where: { id: record.id },
             data: { sortOrder: item.sortOrder },
           });

@@ -41,7 +41,7 @@ export async function generateOrderDownloadLinks(
     if (!item.productId) continue;
 
     const existing = order.downloads.find(
-      (d) => d.productId === item.productId
+      (d: (typeof order.downloads)[number]) => d.productId === item.productId
     );
 
     // Link còn hiệu lực -> giữ nguyên (trừ khi quản trị yêu cầu cấp lại)

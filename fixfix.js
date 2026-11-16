@@ -1,1 +1,0 @@
-const {PrismaClient} = require('@prisma/client');const p = new PrismaClient();(async function(){const users = await p.user.findMany({where:{role:'SUPER_ADMIN'}});for (let i=0;i<users.length;i++){const u = users[i];console.log('SUPER_ADMIN:',u.email);}const left = await p.user.findMany({where:{role:'SUPER_ADMIN'}});console.log(left.length);await p.();})();

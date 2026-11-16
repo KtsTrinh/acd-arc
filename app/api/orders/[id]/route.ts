@@ -40,7 +40,7 @@ export async function GET(
     }
 
     const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
-    const isOwner = Boolean(user?.id) && Boolean(order.userId) && order.userId === user.id;
+    const isOwner = Boolean(user?.id) && Boolean(order.userId) && order.userId === user?.id;
 
     if (!isAdmin && !isOwner) {
       return NextResponse.json({ error: "Bạn không có quyền xem đơn hàng này." }, { status: 403 });
@@ -48,11 +48,11 @@ export async function GET(
 
     const sanitized = {
       ...order,
-      items: order.items.map((item) => ({
+      items: order.items.map((item: (typeof order.items)[number]) => ({
         ...item,
         product: item.product ? sanitizeProduct(item.product) : null,
       })),
-      downloads: order.downloads.map((dl) => ({
+      downloads: order.downloads.map((dl: (typeof order.downloads)[number]) => ({
         ...dl,
         product: dl.product ? sanitizeProduct(dl.product) : null,
       })),

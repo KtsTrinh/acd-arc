@@ -7,7 +7,7 @@ import { isVideoUrl } from "./media-url";
 const PUBLIC_UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 const PRIVATE_STORAGE_DIR = path.join(process.cwd(), "storage", "private");
 
-// Vercel (serverless) có filesystem read-only ngoài /tmp -> dùng thư mục tạm
+// Môi trường serverless có filesystem read-only ngoài /tmp -> dùng thư mục tạm
 const PUBLIC_UPLOAD_FALLBACK_DIR = path.join(os.tmpdir(), "acd-uploads");
 const PRIVATE_STORAGE_FALLBACK_DIR = path.join(os.tmpdir(), "acd-private");
 

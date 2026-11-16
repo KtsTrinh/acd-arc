@@ -175,5 +175,4 @@ h4 {
 .content-protected video,
 .content-protected a {
   -webkit-user-drag: none;
-  user-drag: none;
 }

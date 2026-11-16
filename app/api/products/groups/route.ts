@@ -16,8 +16,8 @@ export async function GET(request: Request) {
       const groups = Array.from(
         new Set(
           products
-            .map((p) => p.productGroup)
-            .filter((g): g is string => g !== null && g !== undefined),
+            .map((p: { productGroup: string | null }) => p.productGroup)
+            .filter((g: string | null): g is string => g !== null && g !== undefined),
         ),
       ).sort();
 

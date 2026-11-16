@@ -12,7 +12,7 @@ export interface UserAgentInfo {
   os: string;
 }
 
-/** Lấy IP thật của khách (Vercel/Cloudflare đều gửi qua x-forwarded-for) */
+/** Lấy IP thật của khách (qua x-forwarded-for từ proxy/CDN) */
 export function getClientIp(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {

@@ -25,8 +25,7 @@ interface SyncResult {
 }
 
 /**
- * Đồng bộ nội dung CMS ra source code (thư mục `content/`) rồi push lên
- * GitHub — Vercel sẽ tự động deploy lại.
+ * Đồng bộ nội dung CMS ra source code (thư mục `content/`) rồi push lên GitHub.
  */
 export async function syncCmsToGithub(
   commitMessage?: string

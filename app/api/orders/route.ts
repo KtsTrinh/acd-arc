@@ -56,13 +56,16 @@ export async function GET(request: Request) {
     });
 
     // Không bao giờ trả khoá file / link gốc cho khách
-    const sanitized = orders.map((order) => ({
+    type OrderWithRelations = (typeof orders)[number];
+    type OrderItem = OrderWithRelations["items"][number];
+    type OrderDownload = OrderWithRelations["downloads"][number];
+    const sanitized = orders.map((order: OrderWithRelations) => ({
       ...order,
-      items: order.items.map((item) => ({
+      items: order.items.map((item: OrderItem) => ({
         ...item,
         product: item.product ? sanitizeProduct(item.product) : null,
       })),
-      downloads: order.downloads.map((dl) => ({
+      downloads: order.downloads.map((dl: OrderDownload) => ({
         ...dl,
         product: dl.product ? sanitizeProduct(dl.product) : null,
       })),

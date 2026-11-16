@@ -17,7 +17,7 @@ export interface CmsAutoSyncResult {
 
 /**
  * Tự động ghi nội dung CMS ra mã nguồn rồi push lên GitHub sau mỗi lần thay
- * đổi nội dung trong trang quản trị. Vercel sẽ tự deploy lại từ commit đó.
+ * đổi nội dung trong trang quản trị.
  *
  * Bật/tắt bằng setting `cmsAutoSync` (mặc định bật).
  */
