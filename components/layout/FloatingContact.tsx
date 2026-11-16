@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Phone } from "lucide-react";
 
 function normalizePhone(phone: string) {
@@ -15,9 +15,9 @@ function normalizePhone(phone: string) {
 function ZaloIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true" focusable="false">
-      <rect x="2" y="2" width="44" height="44" rx="14" fill="currentColor" />
+      <circle cx="24" cy="24" r="22" fill="currentColor" />
       <path
-        d="M14.2 16.2h19.6c.9 0 1.4 1 .9 1.8L23.1 33.2h10.2c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5H13.7c-.9 0-1.4-1-.9-1.8L24.4 19H14.2c-.8 0-1.5-.7-1.5-1.5s.7-1.3 1.5-1.3Z"
+        d="M16 15.5h16c.9 0 1.4 1 .9 1.8L22.5 31.5h9.8c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5H16.2c-.9 0-1.4-1-.9-1.8L25.6 18.5H16c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5Z"
         fill="#fff"
       />
     </svg>
@@ -31,6 +31,9 @@ export default function FloatingContact({
   phone?: string | null;
   zalo?: string | null;
 }) {
+  const [openPhone, setOpenPhone] = useState(false);
+  const [openZalo, setOpenZalo] = useState(false);
+
   const phoneDisplay = (phone || "").trim();
   const zaloDisplay = (zalo || phone || "").trim();
   const tel = normalizePhone(phoneDisplay);
@@ -40,36 +43,50 @@ export default function FloatingContact({
   return (
     <div className="fixed right-4 bottom-6 sm:right-6 sm:bottom-8 z-50 flex flex-col items-end gap-3">
       {tel && (
-        <a
-          href={`tel:${tel}`}
-          aria-label={`Gọi hotline ${phoneDisplay}`}
-          className="group flex items-center gap-2"
-        >
-          <span className="px-3 py-1.5 rounded-full bg-thuy-900/95 border border-emerald-400/40 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-emerald-900/30 whitespace-nowrap">
-            {phoneDisplay}
-          </span>
-          <span className="relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-lg shadow-emerald-900/40 ring-1 ring-white/20 transition-transform group-hover:scale-110">
+        <div className="flex items-center gap-2">
+          {openPhone && (
+            <a
+              href={`tel:${tel}`}
+              className="px-3 py-2 rounded-full bg-thuy-900/95 border border-emerald-400/40 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-emerald-900/30 whitespace-nowrap animate-in fade-in slide-in-from-right-2 duration-200"
+            >
+              {phoneDisplay}
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpenPhone((v) => !v)}
+            aria-label="Gọi hotline"
+            title="Hotline"
+            className="group relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-lg shadow-emerald-900/40 ring-1 ring-white/20 transition-transform hover:scale-110"
+          >
             <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30 animate-ping" />
             <Phone className="relative h-5 w-5 sm:h-6 sm:w-6 animate-[float-shake_1.8s_ease-in-out_infinite]" />
-          </span>
-        </a>
+          </button>
+        </div>
       )}
       {zaloNumber && (
-        <a
-          href={`https://zalo.me/${zaloNumber}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Chat Zalo ${zaloDisplay}`}
-          className="group flex items-center gap-2"
-        >
-          <span className="px-3 py-1.5 rounded-full bg-thuy-900/95 border border-[#0068FF]/50 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-blue-900/30 whitespace-nowrap">
-            {zaloDisplay}
-          </span>
-          <span className="relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#0068FF] text-white shadow-lg shadow-blue-900/40 ring-1 ring-white/20 transition-transform group-hover:scale-110">
+        <div className="flex items-center gap-2">
+          {openZalo && (
+            <a
+              href={`https://zalo.me/${zaloNumber}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-2 rounded-full bg-thuy-900/95 border border-[#0068FF]/50 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-blue-900/30 whitespace-nowrap animate-in fade-in slide-in-from-right-2 duration-200"
+            >
+              {zaloDisplay}
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpenZalo((v) => !v)}
+            aria-label="Zalo"
+            title="Zalo"
+            className="group relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#0068FF] text-white shadow-lg shadow-blue-900/40 ring-1 ring-white/20 transition-transform hover:scale-110"
+          >
             <span className="absolute inline-flex h-full w-full rounded-full bg-[#0068FF] opacity-25 animate-ping" />
-            <ZaloIcon className="relative h-7 w-7 sm:h-8 sm:w-8 animate-[float-shake_1.8s_ease-in-out_infinite]" />
-          </span>
-        </a>
+            <ZaloIcon className="relative h-8 w-8 sm:h-9 sm:w-9 animate-[float-shake_1.8s_ease-in-out_infinite]" />
+          </button>
+        </div>
       )}
       <style jsx>{`
         @keyframes float-shake {
