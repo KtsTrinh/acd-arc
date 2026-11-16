@@ -33,10 +33,9 @@ jobs:
               npm ci --prefer-offline --no-audit
             fi
             
-            if git diff --name-only $OLD_COMMIT $NEW_COMMIT | grep -q "prisma/schema.prisma"; then
-              echo "Dang cap nhat Prisma Client..."
-              npx prisma generate
-            fi
+            echo "Dong bo Prisma schema va database..."
+            npx prisma generate
+            npx prisma db push --accept-data-loss
             
             NEXT_TELEMETRY_DISABLED=1 npm run build
             pm2 reload acd-arc --update-env
