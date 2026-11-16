@@ -71,7 +71,7 @@ export default function CheckoutPage() {
 
     if (!customerName || !customerEmail) {
       setErrorMessage(
-        "Vui lòng điền họ tên và email để nhận liên kết tải file.",
+        "Vui lòng điền họ tên và email để tiếp tục đặt hàng.",
       );
       return;
     }
@@ -122,8 +122,7 @@ export default function CheckoutPage() {
           Thanh Toán & Kích Hoạt Tải File
         </h1>
         <p className="text-xs sm:text-sm text-slate-400">
-          Vui lòng kiểm tra email chính xác. Liên kết tải mã hóa sẽ được gửi tới
-          email của bạn.
+          Vui lòng kiểm tra thông tin chính xác. Sau khi thanh toán được xác nhận, liên kết tải sẽ hiển thị trực tiếp trên trang đơn hàng.
         </p>
       </div>
 
@@ -166,7 +165,7 @@ export default function CheckoutPage() {
 
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-300">
-                  Email nhận link tải <span className="text-red-400">*</span>:
+                  Email <span className="text-red-400">*</span>:
                 </label>
                 <input
                   type="email"
