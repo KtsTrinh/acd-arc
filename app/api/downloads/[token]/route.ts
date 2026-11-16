@@ -37,6 +37,101 @@ function sanitizeFileName(name: string): string {
   return name.replace(/["\\\r\n]/g, "_").trim() || "acd-download";
 }
 
+function parseContentDispositionFilename(header: string | null): string | null {
+  if (!header) return null;
+  // RFC 5987: filename*=UTF-8''...
+  const star = header.match(/filename\*\s*=\s*([^';]*)'[^']*'([^;\r\n]+)/i);
+  if (star) {
+    const encoded = (star[2] || "").trim().replace(/^"(.*)"$/, "$1");
+    try {
+      return decodeURIComponent(encoded);
+    } catch {
+      return encoded;
+    }
+  }
+  const plain = header.match(/filename\s*=\s*"([^"]+)"|filename\s*=\s*([^;\r\n]+)/i);
+  if (plain) {
+    const val = (plain[1] || plain[2] || "").trim();
+    try {
+      return decodeURIComponent(val);
+    } catch {
+      return val;
+    }
+  }
+  return null;
+}
+
+function extFromContentType(contentType: string): string {
+  const t = (contentType || "").toLowerCase().split(";")[0].trim();
+  const map: Record<string, string> = {
+    "application/pdf": ".pdf",
+    "application/zip": ".zip",
+    "application/x-zip-compressed": ".zip",
+    "application/x-rar-compressed": ".rar",
+    "application/vnd.rar": ".rar",
+    "application/x-rar": ".rar",
+    "application/x-7z-compressed": ".7z",
+    "application/x-tar": ".tar",
+    "application/gzip": ".gz",
+    "application/x-gzip": ".gz",
+    "application/octet-stream": "",
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+    "image/svg+xml": ".svg",
+    "video/mp4": ".mp4",
+    "video/webm": ".webm",
+    "application/acad": ".dwg",
+    "application/x-acad": ".dwg",
+    "application/autocad_dwg": ".dwg",
+    "application/dwg": ".dwg",
+    "image/vnd.dwg": ".dwg",
+    "image/x-dwg": ".dwg",
+    "application/dxf": ".dxf",
+    "application/x-dxf": ".dxf",
+    "image/vnd.dxf": ".dxf",
+    "application/vnd.sketchup.skp": ".skp",
+    "model/vnd.skp": ".skp",
+    "application/x-sketchup": ".skp",
+  };
+  return map[t] || "";
+}
+
+function hasFileExtension(name: string): boolean {
+  return /\.[a-z0-9]{1,10}$/i.test(name);
+}
+
+function ensureFileNameWithExtension(
+  baseName: string,
+  contentType: string
+): string {
+  const safe = sanitizeFileName(baseName);
+  if (hasFileExtension(safe)) return safe;
+  const ext = extFromContentType(contentType);
+  return ext ? `${safe}${ext}` : safe;
+}
+
+function resolveDownloadFileName(opts: {
+  upstreamContentDisposition: string | null;
+  upstreamContentType: string;
+  product: any;
+  fileKey?: string | null;
+}): string {
+  const { upstreamContentDisposition, upstreamContentType, product, fileKey } = opts;
+  const cdName = parseContentDispositionFilename(upstreamContentDisposition);
+  if (cdName) {
+    return ensureFileNameWithExtension(cdName, upstreamContentType);
+  }
+  const base =
+    product?.fileName ||
+    (fileKey ? path.basename(fileKey) : "") ||
+    product?.slug ||
+    product?.name ||
+    "acd-download";
+  return ensureFileNameWithExtension(base, upstreamContentType);
+}
+
 function extractDriveId(url: string): string | null {
   const m = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?[^#]*[?&]id=)([a-zA-Z0-9_-]+)/);
   return m ? m[1] : null;
@@ -100,10 +195,6 @@ export async function GET(
     // 3. Nguồn file
     const fileKey = (product as any).fileKey as string | null | undefined;
     const remoteUrl = ((product as any).downloadLinkUrl as string | null | undefined)?.trim() || "";
-    const displayName = sanitizeFileName(
-      (product as any).fileName ||
-        (fileKey ? path.basename(fileKey) : (product as any).name)
-    );
 
     if (!fileKey && !remoteUrl) {
       return errorResponse(
@@ -160,9 +251,16 @@ export async function GET(
 
         await incrementDownloadCount(downloadLink.id);
 
+        const finalFileName = resolveDownloadFileName({
+          upstreamContentDisposition: upstream.headers.get("content-disposition"),
+          upstreamContentType: contentType,
+          product,
+          fileKey,
+        });
+
         const headers: Record<string, string> = {
           "Content-Type": contentType || "application/octet-stream",
-          "Content-Disposition": `attachment; filename="${encodeURIComponent(displayName)}"; filename*=UTF-8''${encodeURIComponent(displayName)}`,
+          "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(finalFileName)}`,
           "Cache-Control": "no-store, no-cache, must-revalidate",
         };
 
@@ -200,11 +298,18 @@ export async function GET(
         fs.createReadStream(filePath)
       ) as unknown as ReadableStream;
 
+      const localFileName = resolveDownloadFileName({
+        upstreamContentDisposition: null,
+        upstreamContentType: "application/octet-stream",
+        product,
+        fileKey,
+      });
+
       return new NextResponse(stream, {
         status: 200,
         headers: {
-          "Content-Disposition": `attachment; filename="${encodeURIComponent(displayName)}"; filename*=UTF-8''${encodeURIComponent(displayName)}`,
           "Content-Type": "application/octet-stream",
+          "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(localFileName)}`,
           "Content-Length": stat.size.toString(),
           "Cache-Control": "no-store, no-cache, must-revalidate",
         },
