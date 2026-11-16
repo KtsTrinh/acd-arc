@@ -112,34 +112,6 @@ export async function GET(
       );
     }
 
-    if (fileKey) {
-      const filePath = getPrivateFilePath(fileKey);
-      if (filePath) {
-        const stat = fs.statSync(filePath);
-        await incrementDownloadCount(downloadLink.id);
-        const stream = Readable.toWeb(
-          fs.createReadStream(filePath)
-        ) as unknown as ReadableStream;
-
-        return new NextResponse(stream, {
-          status: 200,
-          headers: {
-            "Content-Disposition": `attachment; filename="${encodeURIComponent(displayName)}"; filename*=UTF-8''${encodeURIComponent(displayName)}`,
-            "Content-Type": "application/octet-stream",
-            "Content-Length": stat.size.toString(),
-            "Cache-Control": "no-store, no-cache, must-revalidate",
-          },
-        });
-      }
-      // fileKey set but file missing (e.g. serverless ephemeral storage) -> try remote if any, else error
-      if (!remoteUrl) {
-        return errorResponse(
-          "File tải lên không còn tồn tại trên máy chủ. Vui lòng dùng 'Link tải nội bộ' (Drive/CDN công khai) cho sản phẩm hoặc liên hệ quản trị viên.",
-          404
-        );
-      }
-    }
-
     if (remoteUrl) {
       if (!isSafeRemoteUrl(remoteUrl)) {
         return errorResponse(
@@ -177,6 +149,7 @@ export async function GET(
 
         // Drive share pages / virus-scan interstitials return HTML, not the file
         if (isHtml && isDrive) {
+          sawNonFile = true;
           continue;
         }
         // Do not stream web pages or API/JSON payloads (e.g. misconfigured link pointing to site/product page)
@@ -199,16 +172,9 @@ export async function GET(
         return new NextResponse(upstream.body, { status: 200, headers });
       }
 
-      if (sawNonFile) {
+      if (sawNonFile || extractDriveId(remoteUrl)) {
         return errorResponse(
-          "Link tải nội bộ không trỏ tới file tải trực tiếp (đang trả về trang web/dữ liệu). Vui lòng cấu hình link file trực tiếp (Google Drive file công khai, Dropbox/CDN/storage).",
-          502
-        );
-      }
-
-      if (extractDriveId(remoteUrl)) {
-        return errorResponse(
-          "Không thể tải file từ Google Drive. Vui lòng kiểm tra: (1) file đã ở chế độ 'Anyone with the link' (Viewer), (2) không phải link thư mục, (3) file không yêu cầu xác nhận tải lớn đặc biệt. Nên dùng link tải trực tiếp (CDN/storage) nếu có.",
+          "Không thể tải file từ Google Drive/link nguồn. Vui lòng kiểm tra: (1) file ở chế độ 'Anyone with the link' (Viewer), (2) không phải link thư mục, (3) file không yêu cầu xác nhận tải lớn đặc biệt. Nếu vẫn lỗi, dùng link tải trực tiếp (CDN/storage).",
           502
         );
       }
@@ -217,6 +183,32 @@ export async function GET(
         `Không thể tải file từ liên kết nguồn (HTTP ${lastStatus}). Vui lòng kiểm tra link tải nội bộ hoặc liên hệ quản trị.`,
         502
       );
+    }
+
+    if (fileKey) {
+      const filePath = getPrivateFilePath(fileKey);
+      if (!filePath) {
+        return errorResponse(
+          "File tải lên không còn tồn tại trên máy chủ. Vui lòng dùng 'Link tải nội bộ' (Drive/CDN công khai) cho sản phẩm hoặc liên hệ quản trị viên.",
+          404
+        );
+      }
+
+      const stat = fs.statSync(filePath);
+      await incrementDownloadCount(downloadLink.id);
+      const stream = Readable.toWeb(
+        fs.createReadStream(filePath)
+      ) as unknown as ReadableStream;
+
+      return new NextResponse(stream, {
+        status: 200,
+        headers: {
+          "Content-Disposition": `attachment; filename="${encodeURIComponent(displayName)}"; filename*=UTF-8''${encodeURIComponent(displayName)}`,
+          "Content-Type": "application/octet-stream",
+          "Content-Length": stat.size.toString(),
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+        },
+      });
     }
 
     return errorResponse(
