@@ -27,7 +27,7 @@ export default async function Footer() {
 
           <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
             {settings.siteDescription ||
-              "Studio kiến trúc & nội thất tiên phong ứng dụng triết lý phong thủy ngũ hành hợp mệnh (Kim - Mộc - Thủy - Hỏa - Thổ). Tối giản, sang trọng và kiến tạo không gian sống tương sinh mang lại thịnh vượng cho từng gia chủ."}
+              "Studio kiến trúc tiên phong ứng dụng triết lý phong thủy ngũ hành hợp mệnh (Kim - Mộc - Thủy - Hỏa - Thổ). Tối giản, sang trọng và kiến tạo không gian sống tương sinh mang lại thịnh vượng cho từng gia chủ."}
           </p>
 
           <div className="pt-2 flex items-center gap-2 text-xs text-thuy-300">
@@ -46,55 +46,30 @@ export default async function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/products?type=CAD" className="hover:text-thuy-400 transition-colors">
-                Hồ sơ bản vẽ & CAD
-              </Link>
-            </li>
-            <li>
-              <Link href="/products?type=MODEL_3D" className="hover:text-thuy-400 transition-colors">
-                Thư viện 3D & Model
-              </Link>
-            </li>
-            <li>
-              <Link href="/products?type=INTERIOR" className="hover:text-thuy-400 transition-colors">
-                Nội thất & vật liệu
-              </Link>
-            </li>
-            <li>
               <Link href="/cart" className="hover:text-thuy-400 transition-colors">
-                Giỏ hàng & thanh toán
+                Giỏ hàng &amp; thanh toán
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Resources E-commerce */}
+        {/* Resources */}
         <div className="space-y-3">
-          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">Kho Tài Nguyên Kỹ Thuật</h4>
+          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">Tài Nguyên &amp; Dịch Vụ</h4>
           <ul className="space-y-2 text-xs">
             <li>
-              <Link href="/products?type=CAD" className="hover:text-thuy-400 transition-colors">
-                Hồ Sơ Bản Vẽ AutoCAD (.DWG)
-              </Link>
-            </li>
-            <li>
-              <Link href="/products?type=MODEL_3D" className="hover:text-thuy-400 transition-colors">
-                Thư Viện 3D Max & SketchUp
-              </Link>
-            </li>
-            <li>
-              <Link href="/products?type=INTERIOR" className="hover:text-thuy-400 transition-colors">
-                Model Nội Thất PBR 4K
-              </Link>
-            </li>
-            <li>
-              <Link href="/products?type=TEMPLATE" className="hover:text-thuy-400 transition-colors">
-                Template Photoshop & Layout
+              <Link href="/products" className="hover:text-thuy-400 transition-colors">
+                Khám phá sản phẩm
               </Link>
             </li>
             <li>
               <Link href="/account" className="hover:text-thuy-400 transition-colors">
-                Kiểm Tra Link Tải Đã Mua
+                Kiểm tra link tải đã mua
+              </Link>
+            </li>
+            <li>
+              <Link href="/blog" className="hover:text-thuy-400 transition-colors">
+                Bài viết &amp; tin tức
               </Link>
             </li>
           </ul>
@@ -166,7 +141,7 @@ export default async function Footer() {
             </Link>
             <span>•</span>
             <Link href="/blog" className="hover:text-thuy-400 transition-colors">
-              Tạp Chí Phong Thủy Hợp Mệnh (Ngũ Hành)
+              Bài viết &amp; tin tức
             </Link>
           </div>
         </div>
