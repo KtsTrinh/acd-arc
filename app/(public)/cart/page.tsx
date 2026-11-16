@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useCartStore } from "@/lib/cart";
 import { useCurrentUser } from "@/components/auth/useCurrentUser";
 import { formatVND } from "@/lib/utils";
+import { proxiedMediaUrl } from "@/lib/media-url";
 import {
   ShoppingBag,
   Trash2,
@@ -124,7 +125,7 @@ export default function CartPage() {
                     {item.thumbnail ? (
                       <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-thuy-950 flex-shrink-0">
                         <Image
-                          src={item.thumbnail}
+                          src={proxiedMediaUrl(item.thumbnail) || item.thumbnail}
                           alt={item.name}
                           fill
                           className="object-cover"
