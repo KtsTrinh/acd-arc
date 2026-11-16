@@ -8,7 +8,6 @@ import { useCartStore } from "@/lib/cart";
 import { useCurrentUser } from "@/components/auth/useCurrentUser";
 import { formatVND } from "@/lib/utils";
 import {
-  CreditCard,
   QrCode,
   ShieldCheck,
   CheckCircle2,
@@ -29,9 +28,7 @@ export default function CheckoutPage() {
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<
-    "VIETQR" | "BANK_TRANSFER"
-  >("VIETQR");
+  const paymentMethod = "PAYOS";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -205,44 +202,16 @@ export default function CheckoutPage() {
               <span>Phương Thức Thanh Toán</span>
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <label
-                onClick={() => setPaymentMethod("VIETQR")}
-                className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-3 ${
-                  paymentMethod === "VIETQR"
-                    ? "border-thuy-400 bg-thuy-800/80 shadow-glow-cyan"
-                    : "border-thuy-700 bg-thuy-900 hover:border-thuy-600"
-                }`}
-              >
-                <QrCode className="w-5 h-5 text-thuy-400 mt-0.5" />
-                <div>
-                  <h4 className="text-xs font-semibold text-white">
-                    Mã VietQR Tự Động
-                  </h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    Quét mã QR từ mọi ứng dụng Mobile Banking (VCB, TCB, MB...)
-                  </p>
-                </div>
-              </label>
-
-              <label
-                onClick={() => setPaymentMethod("BANK_TRANSFER")}
-                className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-3 ${
-                  paymentMethod === "BANK_TRANSFER"
-                    ? "border-thuy-400 bg-thuy-800/80 shadow-glow-cyan"
-                    : "border-thuy-700 bg-thuy-900 hover:border-thuy-600"
-                }`}
-              >
-                <CreditCard className="w-5 h-5 text-thuy-400 mt-0.5" />
-                <div>
-                  <h4 className="text-xs font-semibold text-white">
-                    Chuyển Khoản Ngân Hàng
-                  </h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    Số tài khoản chuyên dụng ACD Studio Studio Tech
-                  </p>
-                </div>
-              </label>
+            <div className="p-4 rounded-xl border-2 border-thuy-400 bg-thuy-800/80 shadow-glow-cyan flex items-start gap-3">
+              <QrCode className="w-5 h-5 text-thuy-400 mt-0.5" />
+              <div>
+                <h4 className="text-xs font-semibold text-white">
+                  Thanh toán qua payOS
+                </h4>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Quét mã QR từ ứng dụng ngân hàng để hoàn tất thanh toán. Đơn hàng sẽ được xác nhận tự động sau khi thanh toán thành công.
+                </p>
+              </div>
             </div>
 
           </div>
