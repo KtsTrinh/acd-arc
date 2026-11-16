@@ -282,21 +282,24 @@ model ProductTag {
 }
 
 model Order {
-  id            String         @id @default(cuid())
-  orderNumber   String         @unique
-  userId        String?
-  customerName  String
-  customerEmail String
-  customerPhone String?
-  status        OrderStatus    @default(PENDING)
-  total         Float
-  paymentMethod String         @default("BANK_TRANSFER")
-  paymentNote   String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  downloads     DownloadLink[]
-  user          User?          @relation(fields: [userId], references: [id])
-  items         OrderItem[]
+  id               String         @id @default(cuid())
+  orderNumber      String         @unique
+  payosOrderCode   Int?           @unique
+  userId           String?
+  customerName     String
+  customerEmail    String
+  customerPhone    String?
+  status           OrderStatus    @default(PENDING)
+  total            Float
+  paymentMethod    String         @default("BANK_TRANSFER")
+  paymentNote      String?
+  payosCheckoutUrl String?
+  payosQrCode      String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  downloads        DownloadLink[]
+  user             User?          @relation(fields: [userId], references: [id])
+  items            OrderItem[]
 }
 
 model OrderItem {

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import QRCode from "qrcode";
 import { formatVND, formatDateTime } from "@/lib/utils";
 import { proxiedMediaUrl } from "@/lib/media-url";
 import {
@@ -13,66 +14,9 @@ import {
   AlertCircle,
   Copy,
   QrCode,
-  RefreshCw,
+  ExternalLink,
   Package,
 } from "lucide-react";
-
-const bankList = [
-  { code: "VCB", shortName: "Vietcombank" },
-  { code: "ACB", shortName: "ACB" },
-  { code: "TCB", shortName: "Techcombank" },
-  { code: "MB", shortName: "MB" },
-  { code: "VTB", shortName: "VietinBank" },
-  { code: "BIDV", shortName: "BIDV" },
-  { code: "VPB", shortName: "VPBank" },
-  { code: "TPB", shortName: "TPBank" },
-  { code: "STB", shortName: "Sacombank" },
-  { code: "HDB", shortName: "HDBank" },
-  { code: "SHB", shortName: "SHB" },
-  { code: "VIB", shortName: "VIB" },
-  { code: "MSB", shortName: "MSB" },
-  { code: "OCB", shortName: "OCB" },
-  { code: "SCB", shortName: "SCB" },
-  { code: "EIB", shortName: "Eximbank" },
-  { code: "ABB", shortName: "ABBANK" },
-];
-
-function generateBankQr(
-  account: string,
-  bankName: string,
-  accountName: string,
-  amount?: number,
-  addInfo?: string,
-) {
-  if (!account || !bankName) return "";
-  const name = bankName.toLowerCase().trim();
-  const bank =
-    bankList.find(
-      (b) =>
-        name === b.code.toLowerCase() ||
-        name === b.shortName.toLowerCase() ||
-        name.includes(b.shortName.toLowerCase()) ||
-        b.shortName.toLowerCase().includes(name),
-    ) || null;
-  const bankCode = bank?.code || "";
-  if (!bankCode) return "";
-  const sep = String.fromCharCode(38);
-  const amt = Math.max(0, Math.round(Number(amount || 0)));
-  return (
-    "https://img.vietqr.io/image/" +
-    bankCode +
-    "-" +
-    encodeURIComponent(account.trim()) +
-    "-compact2.png?amount=" +
-    amt +
-    sep +
-    "addInfo=" +
-    encodeURIComponent(addInfo || "Thanh toan") +
-    sep +
-    "accountName=" +
-    encodeURIComponent(accountName || "")
-  );
-}
 
 export default function OrderDetailPage({
   params,
@@ -83,6 +27,7 @@ export default function OrderDetailPage({
   const [payment, setPayment] = useState<Record<string, string> | null>(null);
   const [loading, setLoading] = useState(true);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
+  const [payosQrImage, setPayosQrImage] = useState<string>("");
 
   useEffect(() => {
     let mounted = true;
@@ -128,6 +73,25 @@ export default function OrderDetailPage({
     };
   }, [order?.status, order?.id, params.id]);
 
+  useEffect(() => {
+    const qr = order?.payosQrCode;
+    if (!qr) {
+      setPayosQrImage("");
+      return;
+    }
+    let cancelled = false;
+    QRCode.toDataURL(String(qr), { width: 320, margin: 1 })
+      .then((url) => {
+        if (!cancelled) setPayosQrImage(url);
+      })
+      .catch(() => {
+        if (!cancelled) setPayosQrImage("");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [order?.payosQrCode]);
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedToken(text);
@@ -154,18 +118,7 @@ export default function OrderDetailPage({
   }
 
   const isPaid = order.status === "PAID";
-  const qrUrl =
-    (payment?.bankQrUrl || "").trim() ||
-    generateBankQr(
-      payment?.bankAccount || "",
-      payment?.bankName || "",
-      payment?.bankAccountName || "",
-      order.total,
-      order.orderNumber,
-    );
-  const hasBankInfo = Boolean(
-    (payment?.bankName || payment?.bankAccount || payment?.bankAccountName || qrUrl),
-  );
+  const hasPayOS = Boolean(order.payosQrCode || order.payosCheckoutUrl);
   const items: any[] = Array.isArray(order.items) ? order.items : [];
 
   return (
@@ -226,26 +179,25 @@ export default function OrderDetailPage({
         )}
       </div>
 
-      {/* If Pending: Bank Transfer / QR instructions */}
+      {/* If Pending: payOS payment */}
       {!isPaid && (
         <div className="p-6 rounded-2xl bg-thuy-850 border border-thuy-750 space-y-6">
           <h2 className="font-semibold text-base text-white flex items-center gap-2">
             <QrCode className="w-5 h-5 text-thuy-400" />
-            <span>Thông Tin Chuyển Khoản Ngân Hàng</span>
+            <span>Thanh Toán Qua payOS</span>
           </h2>
 
-          {!hasBankInfo ? (
+          {!hasPayOS ? (
             <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 text-xs text-amber-300">
-              Quản trị viên chưa cấu hình tài khoản thanh toán trong CMS. Vui lòng liên hệ hỗ trợ để hoàn tất đơn hàng.
+              Không tìm thấy liên kết thanh toán payOS cho đơn hàng này. Vui lòng liên hệ hỗ trợ hoặc tạo lại đơn hàng.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              {/* QR */}
-              <div className="p-4 rounded-xl bg-white text-center flex flex-col items-center justify-center max-w-[260px] mx-auto w-full shadow-lg">
-                {qrUrl ? (
+              <div className="p-4 rounded-xl bg-white text-center flex flex-col items-center justify-center max-w-[280px] mx-auto w-full shadow-lg">
+                {payosQrImage ? (
                   <img
-                    src={qrUrl}
-                    alt="Mã QR thanh toán"
+                    src={payosQrImage}
+                    alt="Mã QR thanh toán payOS"
                     className="w-56 h-56 object-contain"
                   />
                 ) : (
@@ -254,55 +206,40 @@ export default function OrderDetailPage({
                   </div>
                 )}
                 <span className="text-[11px] text-slate-700 font-semibold mt-2">
-                  Quét mã để thanh toán
+                  Quét mã QR để thanh toán
                 </span>
                 <span className="text-[10px] text-slate-500 mt-0.5">
-                  Nội dung: {order.orderNumber}
+                  Đơn hàng: {order.orderNumber}
                 </span>
               </div>
 
-              {/* Account Details */}
               <div className="space-y-3 text-xs">
                 <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                  <span className="text-slate-400 block text-[10px]">
-                    Ngân hàng:
-                  </span>
-                  <span className="font-bold text-white text-sm">
-                    {payment?.bankName || "Chưa cấu hình"}
-                  </span>
+                  <span className="text-slate-400 block text-[10px]">Mã đơn hàng</span>
+                  <span className="font-bold text-white text-sm font-mono">{order.orderNumber}</span>
                 </div>
                 <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                  <span className="text-slate-400 block text-[10px]">
-                    Số tài khoản:
-                  </span>
-                  <span className="font-bold text-white text-sm font-mono">
-                    {payment?.bankAccount || "Chưa cấu hình"}
-                  </span>
+                  <span className="text-slate-400 block text-[10px]">Mã giao dịch payOS (orderCode)</span>
+                  <span className="font-bold text-emerald-400 text-sm font-mono">{order.payosOrderCode ?? "—"}</span>
                 </div>
                 <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                  <span className="text-slate-400 block text-[10px]">
-                    Chủ tài khoản:
-                  </span>
-                  <span className="font-bold text-white text-sm">
-                    {payment?.bankAccountName || "Chưa cấu hình"}
-                  </span>
+                  <span className="text-slate-400 block text-[10px]">Số tiền</span>
+                  <span className="font-bold text-thuy-400 text-sm">{formatVND(order.total)}</span>
                 </div>
-                <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                  <span className="text-slate-400 block text-[10px]">
-                    Nội dung chuyển khoản (Bắt buộc):
-                  </span>
-                  <span className="font-bold text-emerald-400 text-sm font-mono">
-                    {order.orderNumber}
-                  </span>
-                </div>
-                <div className="p-3 rounded-lg bg-thuy-900 border border-thuy-800">
-                  <span className="text-slate-400 block text-[10px]">
-                    Số tiền:
-                  </span>
-                  <span className="font-bold text-thuy-400 text-sm">
-                    {formatVND(order.total)}
-                  </span>
-                </div>
+                {order.payosCheckoutUrl && (
+                  <a
+                    href={order.payosCheckoutUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-thuy-400 to-aqua-400 text-thuy-950 font-bold text-xs hover:brightness-110 transition-all"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Mở trang thanh toán payOS</span>
+                  </a>
+                )}
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Hệ thống sẽ tự động xác nhận thanh toán và cấp link tải ngay sau khi giao dịch thành công (trang sẽ tự cập nhật).
+                </p>
               </div>
             </div>
           )}

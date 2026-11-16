@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { generateOrderNumber } from "@/lib/utils";
-import { generateOrderDownloadLinks } from "@/lib/downloads";
+import { sanitizeProduct } from "@/lib/catalog";
+import { getBaseUrl } from "@/lib/app-url";
+import { getPayOSClient, toPayOSOrderCode } from "@/lib/payos";
 
 export const dynamic = "force-dynamic";
-import { sanitizeProduct } from "@/lib/catalog";
 
 export async function GET(request: Request) {
   try {
@@ -128,18 +129,55 @@ export async function POST(request: Request) {
     }
 
     const orderNumber = generateOrderNumber();
+    let payosOrderCode: number | null = null;
+    let payosCheckoutUrl: string | null = null;
+    let payosQrCode: string | null = null;
 
-    const order = await prisma.order.create({
+    try {
+      const payos = await getPayOSClient();
+      // ensure unique numeric orderCode
+      for (let i = 0; i < 5; i++) {
+        const candidate = toPayOSOrderCode(orderNumber) + i;
+        const exists = await (prisma.order as any).findFirst({ where: { payosOrderCode: candidate } });
+        if (!exists) {
+          payosOrderCode = candidate;
+          break;
+        }
+      }
+      if (!payosOrderCode) payosOrderCode = Math.floor(Date.now() / 1000);
+
+      const baseUrl = getBaseUrl(request);
+      const paymentLink = await payos.paymentRequests.create({
+        orderCode: payosOrderCode,
+        amount: Math.round(calculatedTotal),
+        description: orderNumber.slice(0, 25),
+        returnUrl: `${baseUrl}/orders/created`, // will be redirected after creation via client using order.id; payOS requires valid URL
+        cancelUrl: `${baseUrl}/checkout`,
+      });
+      payosCheckoutUrl = paymentLink.checkoutUrl || null;
+      payosQrCode = paymentLink.qrCode || null;
+    } catch (err) {
+      console.error("payOS createPaymentLink error:", err);
+      return NextResponse.json(
+        { error: "Không thể tạo liên kết thanh toán payOS. Vui lòng kiểm tra cấu hình PAYOS_CLIENT_ID/PAYOS_API_KEY/PAYOS_CHECKSUM_KEY." },
+        { status: 500 }
+      );
+    }
+
+    const order = await (prisma.order as any).create({
       data: {
         orderNumber,
+        payosOrderCode,
+        payosCheckoutUrl,
+        payosQrCode,
         userId: user.id,
         customerName,
         customerEmail: customerEmail.toLowerCase().trim(),
         customerPhone: customerPhone || "",
         status: "PENDING",
         total: calculatedTotal,
-        paymentMethod: paymentMethod || "VIETQR",
-        paymentNote: "Chờ xác nhận thanh toán",
+        paymentMethod: paymentMethod || "PAYOS",
+        paymentNote: "Chờ thanh toán payOS",
         items: {
           create: orderItemsData,
         },
@@ -149,16 +187,11 @@ export async function POST(request: Request) {
       },
     });
 
-    const downloadLinks: any[] = [];
-
     return NextResponse.json({
       success: true,
       order: {
         ...order,
-        downloadLinks: downloadLinks.map((dl: any) => ({
-          ...dl,
-          product: dl.product ? sanitizeProduct(dl.product) : null,
-        })),
+        downloadLinks: [],
       },
     });
   } catch (error) {

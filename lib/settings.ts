@@ -66,6 +66,9 @@ export interface SystemSettings {
   bankAccountName: string;
   bankQrUrl: string;
   paymentWebhookSecret: string;
+  payosClientId: string;
+  payosApiKey: string;
+  payosChecksumKey: string;
 
   // Nội bộ - không export ra source
   cmsAutoSync: string;
@@ -129,6 +132,9 @@ export const defaultSettings: SystemSettings = {
   bankAccountName: "",
   bankQrUrl: "",
   paymentWebhookSecret: "",
+  payosClientId: "",
+  payosApiKey: "",
+  payosChecksumKey: "",
 
   cmsAutoSync: "true",
   cmsLastSyncSha: "",
