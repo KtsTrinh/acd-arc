@@ -100,7 +100,7 @@ export default function CartPage() {
             href="/products"
             className="inline-block px-6 py-3 rounded-xl bg-thuy-400 text-thuy-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-glow-cyan"
           >
-            Khám phá kho CAD & 3D
+            Khám phá sản phẩm
           </Link>
         </div>
       ) : (

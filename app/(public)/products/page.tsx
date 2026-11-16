@@ -83,7 +83,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           Danh mục sản phẩm
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 max-w-2xl font-light">
-          Khám phá hồ sơ, bản vẽ và tài nguyên thiết kế từ ACD Studio.
+          Khám phá các sản phẩm từ ACD Studio.
         </p>
       </div>
 

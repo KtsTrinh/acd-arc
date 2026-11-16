@@ -142,7 +142,7 @@ export default function AccountPage() {
                 href="/products"
                 className="inline-block px-4 py-2 rounded-lg bg-thuy-400 text-thuy-950 font-semibold text-xs"
               >
-                Khám phá kho CAD & 3D
+                Khám phá sản phẩm
               </Link>
             </div>
           ) : (
