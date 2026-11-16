@@ -85,9 +85,9 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 w-full max-w-5xl">
+          <div className="flex flex-wrap justify-center gap-4 w-full max-w-5xl mx-auto">
             {productGroups.map((cat) => (
-              <Link key={cat.name} href={`/products?productGroup=${encodeURIComponent(cat.name)}`} className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black/30 backdrop-blur-md px-5 py-6 text-center transition-all duration-500 hover:border-white/40 hover:bg-black/50 hover:-translate-y-1 hover:shadow-2xl">
+              <Link key={cat.name} href={`/products?productGroup=${encodeURIComponent(cat.name)}`} className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black/30 backdrop-blur-md px-5 py-6 text-center transition-all duration-500 hover:border-white/40 hover:bg-black/50 hover:-translate-y-1 hover:shadow-2xl w-[calc(50%-0.5rem)] sm:w-[calc(33.333%-0.75rem)] lg:w-[calc(20%-0.8rem)] max-w-[220px]">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative space-y-2">
                   <span className="block text-[10px] uppercase tracking-widest text-slate-400 group-hover:text-slate-200 transition-colors">{cat.count} sản phẩm</span>
