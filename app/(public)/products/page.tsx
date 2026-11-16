@@ -106,13 +106,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <Link
                   key={g.name}
                   href={`/products?productGroup=${encodeURIComponent(g.name)}`}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  className={`whitespace-nowrap px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
                     isActive
-                      ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
-                      : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-700"
+                      ? "bg-thuy-400 text-thuy-950"
+                      : "bg-thuy-850 border border-thuy-700 text-slate-300 hover:border-thuy-500"
                   }`}
                 >
-                  <span>{g.name}</span>
+                  {g.name} ({g.count})
                 </Link>
               );
             })}
@@ -195,7 +195,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           <Download className="w-6 h-6" />
                         </div>
                       )}
-                      <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-thuy-950/85 backdrop-blur-sm border border-thuy-700 text-[10px] font-bold text-thuy-300">
+                      <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-thuy-950/85 backdrop-blur-sm border border-thuy-700 text-[10px] font-bold text-thuy-300 whitespace-nowrap max-w-[70%] truncate">
                         {prod.productCategory || prod.productGroup || "Sản phẩm"}
                       </span>
                       {prod.fileSize && (

@@ -91,7 +91,7 @@ export default async function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative space-y-2">
                   <span className="block text-[10px] uppercase tracking-widest text-slate-400 group-hover:text-slate-200 transition-colors">{cat.count} sản phẩm</span>
-                  <h3 className="font-display font-semibold text-sm sm:text-base text-white group-hover:text-white transition-colors">{cat.name}</h3>
+                  <h3 className="font-display font-semibold text-sm sm:text-base text-white group-hover:text-white transition-colors whitespace-nowrap">{cat.name}</h3>
                   <ArrowRight className="mx-auto w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
                 </div>
               </Link>
