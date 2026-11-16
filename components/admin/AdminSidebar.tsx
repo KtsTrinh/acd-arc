@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   Package,
   ShoppingBag,
-  BookOpen,
   Tags,
   Image as ImageIcon,
   Users,
@@ -49,12 +48,6 @@ export default function AdminSidebar() {
         href: "/admin/customers",
         icon: Activity,
         group: "Nghiệp vụ",
-      },
-      {
-        label: "Tạp Chí & Bài Viết",
-        href: "/admin/blog",
-        icon: BookOpen,
-        group: "Nội dung",
       },
       { label: "Thẻ Tags", href: "/admin/tags", icon: Tags, group: "Nội dung" },
       {

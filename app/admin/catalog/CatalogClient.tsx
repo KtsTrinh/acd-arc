@@ -135,6 +135,8 @@ export default function AdminCatalogClient({
   );
   const [items, setItems] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
+  const [groups, setGroups] = useState<{ name: string; count: number }[]>([]);
+  const [subCategories, setSubCategories] = useState<{ name: string; count: number }[]>([]);
   const [newTagName, setNewTagName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{
