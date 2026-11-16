@@ -43,21 +43,26 @@ export default function FloatingContact({
   return (
     <div className="fixed right-4 bottom-6 sm:right-6 sm:bottom-8 z-50 flex flex-col items-end gap-3">
       {tel && (
-        <div className="flex items-center gap-2">
-          {openPhone && (
-            <a
-              href={`tel:${tel}`}
-              className="px-3 py-2 rounded-full bg-thuy-900/95 border border-emerald-400/40 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-emerald-900/30 whitespace-nowrap animate-in fade-in slide-in-from-right-2 duration-200"
-            >
-              {phoneDisplay}
-            </a>
-          )}
+        <div className="flex items-center justify-end gap-2">
+          <a
+            href={`tel:${tel}`}
+            tabIndex={openPhone ? 0 : -1}
+            aria-hidden={!openPhone}
+            className={`px-3 py-2 rounded-full bg-thuy-900/95 border border-emerald-400/40 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-emerald-900/30 whitespace-nowrap transition-all duration-300 ease-out ${
+              openPhone
+                ? "opacity-100 translate-x-0 max-w-[220px] scale-100"
+                : "opacity-0 translate-x-3 max-w-0 scale-95 pointer-events-none overflow-hidden"
+            }`}
+          >
+            {phoneDisplay}
+          </a>
           <button
             type="button"
             onClick={() => setOpenPhone((v) => !v)}
             aria-label="Gọi hotline"
+            aria-expanded={openPhone}
             title="Hotline"
-            className="group relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-lg shadow-emerald-900/40 ring-1 ring-white/20 transition-transform hover:scale-110"
+            className="group relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-lg shadow-emerald-900/40 ring-1 ring-white/20 transition-all duration-300 ease-out hover:scale-110 hover:shadow-emerald-500/30"
           >
             <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30 animate-ping" />
             <Phone className="relative h-5 w-5 sm:h-6 sm:w-6 animate-[float-shake_1.8s_ease-in-out_infinite]" />
@@ -65,23 +70,28 @@ export default function FloatingContact({
         </div>
       )}
       {zaloNumber && (
-        <div className="flex items-center gap-2">
-          {openZalo && (
-            <a
-              href={`https://zalo.me/${zaloNumber}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-2 rounded-full bg-thuy-900/95 border border-[#0068FF]/50 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-blue-900/30 whitespace-nowrap animate-in fade-in slide-in-from-right-2 duration-200"
-            >
-              {zaloDisplay}
-            </a>
-          )}
+        <div className="flex items-center justify-end gap-2">
+          <a
+            href={`https://zalo.me/${zaloNumber}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            tabIndex={openZalo ? 0 : -1}
+            aria-hidden={!openZalo}
+            className={`px-3 py-2 rounded-full bg-thuy-900/95 border border-[#0068FF]/50 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-blue-900/30 whitespace-nowrap transition-all duration-300 ease-out ${
+              openZalo
+                ? "opacity-100 translate-x-0 max-w-[220px] scale-100"
+                : "opacity-0 translate-x-3 max-w-0 scale-95 pointer-events-none overflow-hidden"
+            }`}
+          >
+            {zaloDisplay}
+          </a>
           <button
             type="button"
             onClick={() => setOpenZalo((v) => !v)}
             aria-label="Zalo"
+            aria-expanded={openZalo}
             title="Zalo"
-            className="group relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#0068FF] text-white shadow-lg shadow-blue-900/40 ring-1 ring-white/20 transition-transform hover:scale-110"
+            className="group relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#0068FF] text-white shadow-lg shadow-blue-900/40 ring-1 ring-white/20 transition-all duration-300 ease-out hover:scale-110 hover:shadow-blue-500/30"
           >
             <span className="absolute inline-flex h-full w-full rounded-full bg-[#0068FF] opacity-25 animate-ping" />
             <ZaloIcon className="relative h-8 w-8 sm:h-9 sm:w-9 animate-[float-shake_1.8s_ease-in-out_infinite]" />
