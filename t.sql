@@ -1,1 +1,0 @@
-UPDATE User SET role='ADMIN' WHERE role='SUPER_ADMIN'
