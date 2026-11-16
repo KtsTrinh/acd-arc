@@ -26,6 +26,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, removeItem, totalPrice, totalItems } = useCartStore();
   const { user, loading: authLoading } = useCurrentUser();
   const [mounted, setMounted] = useState(false);
+  const [confirmItem, setConfirmItem] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -136,7 +137,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       {formatVND(item.price)}
                     </span>
                     <button
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => setConfirmItem({ id: item.id, name: item.name })}
                       className="text-slate-400 hover:text-red-400 transition-colors p-1"
                       title="Xóa"
                     >
@@ -184,6 +185,51 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           </div>
         )}
       </div>
+
+      {/* Confirm remove item */}
+      {confirmItem && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => setConfirmItem(null)}
+          />
+          <div className="relative w-full max-w-md mx-4 animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200">
+            <div className="rounded-2xl border border-red-500/30 bg-gradient-to-b from-thuy-900 to-thuy-950 p-6 shadow-2xl shadow-red-950/30">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center">
+                  <Trash2 className="w-6 h-6 text-red-400" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-white font-semibold text-base">Xóa sản phẩm khỏi giỏ hàng?</h3>
+                  <p className="text-slate-400 text-xs mt-1.5 leading-relaxed">
+                    Bạn có chắc muốn xóa <b className="text-white">{confirmItem.name}</b> khỏi giỏ hàng không?
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setConfirmItem(null)}
+                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 bg-thuy-800 hover:bg-thuy-700 border border-thuy-700 transition-all"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    removeItem(confirmItem.id);
+                    setConfirmItem(null);
+                  }}
+                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-red-500 to-rose-500 hover:brightness-110 shadow-lg shadow-red-900/40 transition-all flex items-center gap-2"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Xóa khỏi giỏ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
