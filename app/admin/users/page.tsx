@@ -1,8 +1,14 @@
 ﻿"use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { formatDateTime } from "@/lib/utils";
-import { Users, Shield, User, Plus, X, Trash2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Plus, Shield, Trash2, User, X } from "lucide-react";
+
+type Notice = { type: "ok" | "err"; text: string } | null;
+type ConfirmModal =
+  | { type: "delete"; id: string; name: string }
+  | { type: "transfer"; id: string; name: string }
+  | null;
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -12,6 +18,14 @@ export default function AdminUsersPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", role: "ADMIN" });
   const [creating, setCreating] = useState(false);
+  const [notice, setNotice] = useState<Notice>(null);
+  const [confirmModal, setConfirmModal] = useState<ConfirmModal>(null);
+
+  useEffect(() => {
+    if (!notice) return;
+    const t = setTimeout(() => setNotice(null), 3500);
+    return () => clearTimeout(t);
+  }, [notice]);
 
   const fetchUsers = async () => {
     try {
@@ -35,12 +49,7 @@ export default function AdminUsersPage() {
   }, []);
 
   const handleTransfer = async (userId: string) => {
-    if (
-      !confirm(
-        "Chuyển nhượng toàn quyền Super Admin cho tài khoản này? Tài khoản hiện tại của bạn sẽ bị hạ xuống User.",
-      )
-    )
-      return;
+    setConfirmModal(null);
     setUpdatingId(userId);
     try {
       const res = await fetch("/api/users", {
@@ -52,36 +61,36 @@ export default function AdminUsersPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        alert(
-          data.message ||
-            "Chuyển nhượng quyền lực thành công. Hệ thống sẽ đăng xuất để cập nhật lại quyền.",
-        );
-
-        // 🔥 1. ĐÁNH SẬP COOKIE NGAY TẠI CLIENT (Xóa tất cả các tên phổ biến)
-        const cookiesToClear = [
-          "token",
-          "session",
-          "auth-token",
-          "accessToken",
-          "next-auth.session-token",
-        ];
-        cookiesToClear.forEach((name) => {
-          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
-          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        setNotice({
+          type: "ok",
+          text:
+            data.message ||
+            "Chuyển nhượng quyền thành công. Hệ thống sẽ đăng xuất để cập nhật quyền.",
         });
 
-        // 🔥 2. XÓA BỘ NHỚ LƯU TRỮ TẠM THỜI
-        localStorage.clear();
-        sessionStorage.clear();
-
-        // 🔥 3. CHUYỂN HƯỚNG CỨNG VỀ TRANG LOGIN (Không dùng reload)
-        window.location.href = "/login";
+        setTimeout(() => {
+          const cookiesToClear = [
+            "token",
+            "session",
+            "auth-token",
+            "accessToken",
+            "next-auth.session-token",
+          ];
+          cookiesToClear.forEach((name) => {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          });
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.href = "/login";
+        }, 1200);
         return;
       } else {
-        alert(data.error || "Không thể chuyển nhượng quyền");
+        setNotice({ type: "err", text: data.error || "Không thể chuyển nhượng quyền" });
       }
     } catch (err) {
       console.error(err);
+      setNotice({ type: "err", text: "Không thể chuyển nhượng quyền" });
     } finally {
       setUpdatingId(null);
     }
@@ -97,31 +106,35 @@ export default function AdminUsersPage() {
         body: JSON.stringify({ id: userId, role: newRole }),
       });
       const data = await res.json();
-      if (data.user) fetchUsers();
-      else if (data.error) alert(data.error);
+      if (data.user) {
+        fetchUsers();
+        setNotice({ type: "ok", text: "Đã cập nhật vai trò tài khoản." });
+      } else if (data.error) {
+        setNotice({ type: "err", text: data.error });
+      }
     } catch (err) {
       console.error(err);
+      setNotice({ type: "err", text: "Không thể cập nhật vai trò." });
     } finally {
       setUpdatingId(null);
     }
   };
 
-  const handleDelete = async (userId: string, userName: string) => {
-    if (
-      !confirm(`Xóa tài khoản "${userName}"? Hành động này không thể hoàn tác.`)
-    )
-      return;
+  const handleDelete = async (userId: string) => {
+    setConfirmModal(null);
     setUpdatingId(userId);
     try {
       const res = await fetch(`/api/users?id=${userId}`, { method: "DELETE" });
       const data = await res.json();
       if (res.ok && data.success) {
         fetchUsers();
+        setNotice({ type: "ok", text: "Đã xóa tài khoản." });
       } else {
-        alert(data.error || "Không thể xóa tài khoản");
+        setNotice({ type: "err", text: data.error || "Không thể xóa tài khoản" });
       }
     } catch (err) {
       console.error(err);
+      setNotice({ type: "err", text: "Không thể xóa tài khoản" });
     } finally {
       setUpdatingId(null);
     }
@@ -129,8 +142,10 @@ export default function AdminUsersPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.email)
-      return alert("Vui lòng nhập đầy đủ thông tin");
+    if (!form.name || !form.email) {
+      setNotice({ type: "err", text: "Vui lòng nhập đầy đủ thông tin" });
+      return;
+    }
     setCreating(true);
     try {
       const res = await fetch("/api/users", {
@@ -143,11 +158,13 @@ export default function AdminUsersPage() {
         setShowCreate(false);
         setForm({ name: "", email: "", role: "ADMIN" });
         fetchUsers();
+        setNotice({ type: "ok", text: "Đã tạo tài khoản." });
       } else {
-        alert(data.error || "Không thể tạo tài khoản");
+        setNotice({ type: "err", text: data.error || "Không thể tạo tài khoản" });
       }
     } catch (err) {
       console.error(err);
+      setNotice({ type: "err", text: "Không thể tạo tài khoản" });
     } finally {
       setCreating(false);
     }
@@ -160,6 +177,32 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-8 max-w-6xl">
+      {notice && (
+        <div className="fixed top-4 right-4 z-[120] animate-in fade-in slide-in-from-top-2 duration-300">
+          <div
+            className={`flex items-start gap-3 min-w-[280px] max-w-md px-4 py-3 rounded-xl border shadow-lg backdrop-blur-sm ${
+              notice.type === "ok"
+                ? "bg-emerald-50/95 border-emerald-200 text-emerald-800"
+                : "bg-red-50/95 border-red-200 text-red-700"
+            }`}
+          >
+            {notice.type === "ok" ? (
+              <CheckCircle2 className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            ) : (
+              <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            )}
+            <p className="text-sm font-medium flex-1">{notice.text}</p>
+            <button
+              type="button"
+              onClick={() => setNotice(null)}
+              className="text-current/60 hover:text-current transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#142338]">
@@ -180,7 +223,7 @@ export default function AdminUsersPage() {
       </div>
 
       {showCreate && currentUser?.role === "SUPER_ADMIN" && (
-        <div className="rounded-xl bg-white border border-[#E1EAF2] p-5 shadow-sm">
+        <div className="rounded-xl bg-white border border-[#E1EAF2] p-5 shadow-sm animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold text-[#142338]">
               Thêm tài khoản
@@ -287,7 +330,13 @@ export default function AdminUsersPage() {
                         {currentUser?.role === "SUPER_ADMIN" &&
                           u.role === "ADMIN" && (
                             <button
-                              onClick={() => handleTransfer(u.id)}
+                              onClick={() =>
+                                setConfirmModal({
+                                  type: "transfer",
+                                  id: u.id,
+                                  name: u.name || u.email,
+                                })
+                              }
                               disabled={updatingId === u.id}
                               className="px-2.5 py-1 rounded-lg bg-white border border-[#E1EAF2] text-xs text-[#142338] hover:border-[#22C7E8]"
                             >
@@ -298,7 +347,11 @@ export default function AdminUsersPage() {
                           u.role !== "SUPER_ADMIN" && (
                             <button
                               onClick={() =>
-                                handleDelete(u.id, u.name || u.email)
+                                setConfirmModal({
+                                  type: "delete",
+                                  id: u.id,
+                                  name: u.name || u.email,
+                                })
                               }
                               disabled={updatingId === u.id}
                               className="p-1.5 rounded-lg hover:bg-red-50 text-red-500"
@@ -369,7 +422,11 @@ export default function AdminUsersPage() {
                           currentUser?.role === "ADMIN") && (
                           <button
                             onClick={() =>
-                              handleDelete(u.id, u.name || u.email)
+                              setConfirmModal({
+                                type: "delete",
+                                id: u.id,
+                                name: u.name || u.email,
+                              })
                             }
                             disabled={updatingId === u.id}
                             className="p-1.5 rounded-lg hover:bg-red-50 text-red-500"
@@ -386,6 +443,85 @@ export default function AdminUsersPage() {
           </div>
         </div>
       </div>
+
+      {confirmModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => setConfirmModal(null)}
+          />
+          <div className="relative w-full max-w-md mx-4 animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200">
+            <div className="rounded-2xl border border-[#E1EAF2] bg-white p-6 shadow-2xl">
+              <div className="flex items-start gap-4">
+                <div
+                  className={`flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center border ${
+                    confirmModal.type === "transfer"
+                      ? "bg-amber-50 border-amber-200 text-amber-600"
+                      : "bg-red-50 border-red-200 text-red-500"
+                  }`}
+                >
+                  {confirmModal.type === "transfer" ? (
+                    <Shield className="w-6 h-6" />
+                  ) : (
+                    <Trash2 className="w-6 h-6" />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-[#142338] font-semibold text-base">
+                    {confirmModal.type === "transfer"
+                      ? "Chuyển nhượng quyền Super Admin?"
+                      : "Xóa tài khoản?"}
+                  </h3>
+                  <p className="text-[#526780] text-sm mt-1.5 leading-relaxed">
+                    {confirmModal.type === "transfer" ? (
+                      <>
+                        Chuyển toàn quyền Super Admin cho{" "}
+                        <b className="text-[#142338]">{confirmModal.name}</b>? Tài khoản
+                        hiện tại của bạn sẽ bị hạ xuống User và hệ thống sẽ đăng xuất.
+                      </>
+                    ) : (
+                      <>
+                        Bạn có chắc muốn xóa tài khoản{" "}
+                        <b className="text-[#142338]">{confirmModal.name}</b>? Hành động
+                        này không thể hoàn tác.
+                      </>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setConfirmModal(null)}
+                  className="px-4 py-2.5 rounded-xl text-sm font-semibold text-[#526780] bg-[#F7FAFD] hover:bg-[#E1EAF2] border border-[#E1EAF2] transition-all"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirmModal.type === "transfer") handleTransfer(confirmModal.id);
+                    else handleDelete(confirmModal.id);
+                  }}
+                  disabled={updatingId === confirmModal.id}
+                  className={`px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all flex items-center gap-2 disabled:opacity-60 ${
+                    confirmModal.type === "transfer"
+                      ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:brightness-110 shadow-lg shadow-amber-200"
+                      : "bg-gradient-to-r from-red-500 to-rose-500 hover:brightness-110 shadow-lg shadow-red-200"
+                  }`}
+                >
+                  {confirmModal.type === "transfer" ? (
+                    <Shield className="w-4 h-4" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                  {confirmModal.type === "transfer" ? "Chuyển nhượng" : "Xóa tài khoản"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
