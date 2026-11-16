@@ -14,7 +14,6 @@ import {
   AlertCircle,
   Copy,
   QrCode,
-  ExternalLink,
   Package,
 } from "lucide-react";
 
@@ -226,17 +225,6 @@ export default function OrderDetailPage({
                   <span className="text-slate-400 block text-[10px]">Số tiền</span>
                   <span className="font-bold text-thuy-400 text-sm">{formatVND(order.total)}</span>
                 </div>
-                {order.payosCheckoutUrl && (
-                  <a
-                    href={order.payosCheckoutUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-thuy-400 to-aqua-400 text-thuy-950 font-bold text-xs hover:brightness-110 transition-all"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    <span>Mở trang thanh toán payOS</span>
-                  </a>
-                )}
                 <p className="text-[11px] text-slate-400 leading-relaxed">
                   Hệ thống sẽ tự động xác nhận thanh toán và cấp link tải ngay sau khi giao dịch thành công (trang sẽ tự cập nhật).
                 </p>
