@@ -13,7 +13,7 @@ export async function GET(
   try {
     const { id } = params;
     const user = await getCurrentUser();
-    const isAdmin = user?.role === "ADMIN";
+    const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
 
     const product = await prisma.product.findFirst({
       where: {

@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     const includeInactive = searchParams.get("includeInactive") === "1";
 
     const user = await getCurrentUser();
-    const isAdmin = user?.role === "ADMIN";
+    const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
 
     const where: any = {};
 
