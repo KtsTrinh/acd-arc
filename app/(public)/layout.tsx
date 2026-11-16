@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import FloatingContact from "@/components/layout/FloatingContact";
 import VisitorTracker from "@/components/tracking/VisitorTracker";
 import { getSettings } from "@/lib/settings";
 
@@ -39,6 +40,7 @@ export default async function PublicLayout({
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
+      <FloatingContact phone={settings.contactPhone} zalo={settings.zaloNumber} />
     </div>
   );
 }
