@@ -108,9 +108,14 @@ export async function POST(request: Request) {
         where: { id: item.id },
       });
 
-      if (!product || !product.active) {
+      const productName = String(item.name || (product as any)?.name || item.id || "Sản phẩm").trim();
+      const hasDownloadSource = Boolean(
+        (product as any)?.fileKey || String((product as any)?.downloadLinkUrl || "").trim()
+      );
+
+      if (!product || !(product as any).active || !hasDownloadSource) {
         return NextResponse.json(
-          { error: `Sản phẩm ${item.name || item.id} không còn khả dụng.` },
+          { error: `Sản phẩm "${productName}" hiện chưa kinh doanh.` },
           { status: 400 }
         );
       }
