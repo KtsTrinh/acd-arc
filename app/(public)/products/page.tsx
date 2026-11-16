@@ -4,16 +4,10 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { formatVND } from "@/lib/utils";
 import { proxiedMediaUrl, isLikelyVideoUrl } from "@/lib/media-url";
-import { CATALOG_GROUPS } from "@/lib/catalog";
 import {
   Download,
   Search,
   ArrowRight,
-  Layers,
-  Building2,
-  Layout,
-  HardHat,
-  FileCode,
   MapPin,
   Calendar,
   Tag,
@@ -24,7 +18,6 @@ export const revalidate = 0;
 
 interface ProductsPageProps {
   searchParams: {
-    type?: string;
     productGroup?: string;
     productCategory?: string;
     search?: string;
@@ -32,21 +25,14 @@ interface ProductsPageProps {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const { type, productGroup, productCategory, search } = searchParams;
+  const { productGroup, productCategory, search } = searchParams;
 
   const where: any = { active: true };
   if (productGroup) {
     where.productGroup = productGroup;
-    if (productCategory) {
-      where.productCategory = productCategory;
-    }
-  } else if (type && type !== "ALL") {
-    const group = CATALOG_GROUPS.find((g) => g.key === type);
-    if (group) {
-      where.type = { in: [...group.types] };
-    } else {
-      where.type = type;
-    }
+  }
+  if (productCategory) {
+    where.productCategory = productCategory;
   }
   if (search) {
     where.OR = [
@@ -62,80 +48,85 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     ];
   }
 
-  const products = (await prisma.product.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: {
-      tags: { include: { tag: true } },
-      gallery: {
-        include: { media: { select: { url: true, mimeType: true } } },
-        orderBy: { sortOrder: "asc" },
-        take: 1,
+  const [products, groups] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: {
+        tags: { include: { tag: true } },
+        gallery: {
+          include: { media: { select: { url: true, mimeType: true } } },
+          orderBy: { sortOrder: "asc" },
+          take: 1,
+        },
       },
-    },
-  })) as any[];
+    }) as any,
+    prisma.product.groupBy({
+      by: ["productGroup"],
+      where: { active: true, productGroup: { not: null } },
+      _count: { _all: true },
+      orderBy: { productGroup: "asc" },
+    }).catch(() => [] as any[]),
+  ]);
 
-  const productTypes = [
-    { label: "Tất Cả", value: "ALL", icon: Layers },
-    ...CATALOG_GROUPS.map((g) => ({
-      label: g.label,
-      value: g.key,
-      icon:
-        g.key === "ARCHITECTURE"
-          ? Building2
-          : g.key === "INTERIOR"
-          ? Layout
-          : g.key === "CONSTRUCTION"
-          ? HardHat
-          : FileCode,
-    })),
-  ];
+  const productGroups = (groups as any[])
+    .map((g) => ({ name: String(g.productGroup || "").trim(), count: g?._count?._all || 0 }))
+    .filter((g) => g.name);
 
   return (
     <div className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
       <div className="space-y-3">
         <span className="text-xs text-thuy-400 uppercase tracking-widest font-semibold block">
-          Kho Tài Nguyên Kiến Trúc
+          Sản phẩm & tài nguyên
         </span>
         <h1 className="font-display font-bold text-3xl sm:text-5xl text-white">
-          Thư Viện CAD, Model 3D & Bản Vẽ Chuẩn
+          Danh mục sản phẩm
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 max-w-2xl font-light">
-          Cung cấp trọn bộ hồ sơ kỹ thuật thi công, mô hình 3D vật liệu PBR 4K và template trình chiếu
-          được thiết kế chuẩn mực bởi ACD Studio.
+          Khám phá hồ sơ, bản vẽ và tài nguyên thiết kế từ ACD Studio.
         </p>
       </div>
 
       <div className="p-4 rounded-2xl bg-thuy-850/80 border border-thuy-750 backdrop-blur-md space-y-4">
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
           <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
-            {productTypes.map((pt) => {
-              const isActive = (type || "ALL") === pt.value;
-              const Icon = pt.icon;
+            <Link
+              href="/products"
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                !productGroup
+                  ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
+                  : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-700"
+              }`}
+            >
+              <span>Tất cả</span>
+            </Link>
+            {productGroups.map((g) => {
+              const isActive = productGroup === g.name;
               return (
                 <Link
-                  key={pt.value}
-                  href={`/products?type=${pt.value}`}
+                  key={g.name}
+                  href={`/products?productGroup=${encodeURIComponent(g.name)}`}
                   className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                     isActive
                       ? "bg-thuy-400 text-thuy-950 shadow-glow-cyan"
                       : "bg-thuy-900 text-slate-400 hover:text-white border border-thuy-700"
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{pt.label}</span>
+                  <span>{g.name}</span>
                 </Link>
               );
             })}
           </div>
 
           <form method="GET" className="relative w-full sm:w-72">
+            {productGroup ? <input type="hidden" name="productGroup" value={productGroup} /> : null}
+            {productCategory ? <input type="hidden" name="productCategory" value={productCategory} /> : null}
             <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
             <input
               type="text"
               name="search"
               defaultValue={search || ""}
-              placeholder="Tìm CAD, 3D model..."
+              placeholder="Tìm sản phẩm..."
               className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-thuy-900 border border-thuy-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-thuy-400"
             />
           </form>
@@ -157,17 +148,17 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
         {products.length === 0 ? (
           <div className="text-center py-20 rounded-2xl bg-thuy-850/40 border border-thuy-800 space-y-3">
-            <p className="text-slate-400 text-sm">Không tìm thấy tài nguyên phù hợp.</p>
+            <p className="text-slate-400 text-sm">Không tìm thấy sản phẩm phù hợp.</p>
             <Link
               href="/products"
               className="inline-block px-4 py-2 rounded-lg bg-thuy-400 text-thuy-950 font-semibold text-xs"
             >
-              Xem tất cả tài nguyên
+              Xem tất cả sản phẩm
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map((prod) => {
+            {products.map((prod: any) => {
               const finalPrice = prod.priceAfterDiscount ?? prod.price ?? 0;
               const tags = (prod.tags || []).map((t: any) => t?.tag?.name).filter(Boolean).slice(0, 3);
               const thumbUrl = prod.thumbnail || prod.gallery?.[0]?.media?.url || "";
@@ -205,7 +196,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                         </div>
                       )}
                       <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-thuy-950/85 backdrop-blur-sm border border-thuy-700 text-[10px] font-bold text-thuy-300">
-                        {prod.productCategory || prod.productGroup || "Tài nguyên"}
+                        {prod.productCategory || prod.productGroup || "Sản phẩm"}
                       </span>
                       {prod.fileSize && (
                         <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-thuy-950/85 text-[10px] text-slate-300 border border-thuy-700">
@@ -290,7 +281,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                         href={`/products/${prod.slug}`}
                         className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-400 hover:text-thuy-950 text-slate-200 text-xs font-semibold transition-all"
                       >
-                        <span>Xem file</span>
+                        <span>Xem chi tiết</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>
