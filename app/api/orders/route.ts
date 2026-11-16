@@ -5,6 +5,7 @@ import { generateOrderNumber } from "@/lib/utils";
 import { sanitizeProduct } from "@/lib/catalog";
 import { getBaseUrl } from "@/lib/app-url";
 import { getPayOSClient, toPayOSOrderCode } from "@/lib/payos";
+import { generateOrderDownloadLinks } from "@/lib/downloads";
 
 export const dynamic = "force-dynamic";
 
@@ -129,6 +130,43 @@ export async function POST(request: Request) {
     }
 
     const orderNumber = generateOrderNumber();
+    const isFreeOrder = calculatedTotal <= 0;
+
+    if (isFreeOrder) {
+      const order = await (prisma.order as any).create({
+        data: {
+          orderNumber,
+          userId: user.id,
+          customerName,
+          customerEmail: customerEmail.toLowerCase().trim(),
+          customerPhone: customerPhone || "",
+          status: "PAID",
+          total: calculatedTotal,
+          paymentMethod: "FREE",
+          paymentNote: "Đơn hàng 0đ - tự động cấp link tải",
+          items: {
+            create: orderItemsData,
+          },
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      const downloadLinks = await generateOrderDownloadLinks(order.id);
+
+      return NextResponse.json({
+        success: true,
+        order: {
+          ...order,
+          downloadLinks: downloadLinks.map((dl: any) => ({
+            ...dl,
+            product: dl.product ? sanitizeProduct(dl.product) : null,
+          })),
+        },
+      });
+    }
+
     let payosOrderCode: number | null = null;
     let payosCheckoutUrl: string | null = null;
     let payosQrCode: string | null = null;
