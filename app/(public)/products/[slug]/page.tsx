@@ -351,7 +351,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               <li>
                 Chỉ <b className="text-white">tài khoản đã thanh toán</b> mới tải được.
               </li>
-              <li>Số lượt tải tối đa: <b>5 lần</b>.</li>
+              <li>Số lượt tải tối đa: <b>3 lần</b>.</li>
               {product.downloadExpiresMinutes && (
                 <li>Link có hiệu lực trong <b>{product.downloadExpiresMinutes} phút</b>.</li>
               )}

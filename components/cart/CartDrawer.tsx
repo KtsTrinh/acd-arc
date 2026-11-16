@@ -26,7 +26,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, removeItem, totalPrice, totalItems } = useCartStore();
   const { user, loading: authLoading } = useCurrentUser();
   const [mounted, setMounted] = useState(false);
-  const [confirmItem, setConfirmItem] = useState<{ id: string; name: string } | null>(null);
+  const [confirmItem, setConfirmItem] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -51,7 +54,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <ShoppingBag className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-semibold text-lg text-white">Giỏ Tài Nguyên Của Bạn</h2>
+              <h2 className="font-semibold text-lg text-white">
+                Giỏ Tài Nguyên Của Bạn
+              </h2>
               <p className="text-xs text-slate-400">
                 {totalItems()} sản phẩm kỹ thuật số được chọn
               </p>
@@ -88,13 +93,15 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <div className="w-16 h-16 mx-auto rounded-full bg-thuy-800 flex items-center justify-center text-slate-500">
                 <ShoppingBag className="w-8 h-8" />
               </div>
-              <p className="text-slate-400 text-sm">Giỏ hàng của bạn đang trống.</p>
+              <p className="text-slate-400 text-sm">
+                Giỏ hàng của bạn đang trống.
+              </p>
               <Link
                 href="/products"
                 onClick={onClose}
                 className="inline-block px-5 py-2.5 rounded-lg bg-thuy-400/10 hover:bg-thuy-400/20 text-thuy-400 text-sm font-medium border border-thuy-400/30 transition-all"
               >
-                Khám phá kho CAD & 3D
+                Khám phá sản phẩm
               </Link>
             </div>
           ) : (
@@ -137,7 +144,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       {formatVND(item.price)}
                     </span>
                     <button
-                      onClick={() => setConfirmItem({ id: item.id, name: item.name })}
+                      onClick={() =>
+                        setConfirmItem({ id: item.id, name: item.name })
+                      }
                       className="text-slate-400 hover:text-red-400 transition-colors p-1"
                       title="Xóa"
                     >
@@ -162,7 +171,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
             <div className="flex items-center gap-2 text-xs text-slate-400 bg-thuy-900/60 p-2.5 rounded-lg border border-thuy-700/50">
               <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-              <span>Link tải trực tiếp tốc độ cao, kích hoạt ngay sau thanh toán.</span>
+              <span>
+                Link tải trực tiếp tốc độ cao, kích hoạt ngay sau thanh toán.
+              </span>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -200,9 +211,13 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <Trash2 className="w-6 h-6 text-red-400" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-white font-semibold text-base">Xóa sản phẩm khỏi giỏ hàng?</h3>
+                  <h3 className="text-white font-semibold text-base">
+                    Xóa sản phẩm khỏi giỏ hàng?
+                  </h3>
                   <p className="text-slate-400 text-xs mt-1.5 leading-relaxed">
-                    Bạn có chắc muốn xóa <b className="text-white">{confirmItem.name}</b> khỏi giỏ hàng không?
+                    Bạn có chắc muốn xóa{" "}
+                    <b className="text-white">{confirmItem.name}</b> khỏi giỏ
+                    hàng không?
                   </p>
                 </div>
               </div>
@@ -233,4 +248,3 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     </div>
   );
 }
-

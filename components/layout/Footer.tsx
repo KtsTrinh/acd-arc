@@ -67,11 +67,6 @@ export default async function Footer() {
                 Kiểm tra link tải đã mua
               </Link>
             </li>
-            <li>
-              <Link href="/blog" className="hover:text-thuy-400 transition-colors">
-                Bài viết &amp; tin tức
-              </Link>
-            </li>
           </ul>
         </div>
 
@@ -138,10 +133,6 @@ export default async function Footer() {
           <div className="flex items-center gap-6">
             <Link href="/admin" className="hover:text-thuy-400 transition-colors">
               Hệ thống Quản Trị CMS
-            </Link>
-            <span>•</span>
-            <Link href="/blog" className="hover:text-thuy-400 transition-colors">
-              Bài viết &amp; tin tức
             </Link>
           </div>
         </div>

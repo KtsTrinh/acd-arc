@@ -26,16 +26,12 @@ export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [userDropdown, setUserDropdown] = useState(false);
-  const [groupCategories, setGroupCategories] = useState<Record<string, string[]>>(
-    {},
-  );
+  const [groupCategories, setGroupCategories] = useState<
+    Record<string, string[]>
+  >({});
   const [groupsLoaded, setGroupsLoaded] = useState(false);
-  const [openDesktopSub, setOpenDesktopSub] = useState<Set<string>>(
-    new Set(),
-  );
-  const [openMobileSub, setOpenMobileSub] = useState<Set<string>>(
-    new Set(),
-  );
+  const [openDesktopSub, setOpenDesktopSub] = useState<Set<string>>(new Set());
+  const [openMobileSub, setOpenMobileSub] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const totalItems = useCartStore((state) => state.totalItems());
 
@@ -92,7 +88,9 @@ export default function Navbar() {
     loadData();
   }, []);
 
-  const searchTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const isInitialSearch = React.useRef(true);
 
   useEffect(() => {
@@ -159,8 +157,7 @@ export default function Navbar() {
     });
   };
 
-  const isMobileGroupOpen = (group: string) =>
-    openMobileSub.has(group);
+  const isMobileGroupOpen = (group: string) => openMobileSub.has(group);
 
   return (
     <>
@@ -182,7 +179,8 @@ export default function Navbar() {
             </div>
             <div className="flex flex-col">
               <span className="font-display font-bold text-lg tracking-wider text-white flex items-center gap-1.5">
-                ACD <span className="text-thuy-400 text-xs font-light">STUDIO</span>
+                ACD{" "}
+                <span className="text-thuy-400 text-xs font-light">STUDIO</span>
               </span>
               <span className="text-[10px] text-slate-400 uppercase tracking-widest -mt-1">
                 Architecture & Interior
@@ -211,7 +209,9 @@ export default function Navbar() {
                         onClick={(e) => {
                           e.stopPropagation();
                           setOpenDesktopSub(new Set());
-                          router.push(`/products?productGroup=${encodeURIComponent(group)}`);
+                          router.push(
+                            `/products?productGroup=${encodeURIComponent(group)}`,
+                          );
                         }}
                         className={
                           isActiveGroup(group)
@@ -221,47 +221,50 @@ export default function Navbar() {
                       >
                         {group}
                       </button>
-                      {groupCategories[group] && groupCategories[group].length > 0 && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenDesktopSub((prev) => {
-                              const next = new Set(prev);
-                              if (next.has(group)) {
-                                next.delete(group);
-                              } else {
-                                next.clear();
-                                next.add(group);
-                              }
-                              return next;
-                            });
-                          }}
-                          className="px-1.5 py-2 rounded-full text-slate-400 hover:text-thuy-400 transition-colors"
-                          title="Xem hạng mục"
-                        >
-                          <ChevronDown
-                            className={`w-3 h-3 ${isOpen ? "rotate-180" : ""}`}
-                          />
-                        </button>
-                      )}
+                      {groupCategories[group] &&
+                        groupCategories[group].length > 0 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenDesktopSub((prev) => {
+                                const next = new Set(prev);
+                                if (next.has(group)) {
+                                  next.delete(group);
+                                } else {
+                                  next.clear();
+                                  next.add(group);
+                                }
+                                return next;
+                              });
+                            }}
+                            className="px-1.5 py-2 rounded-full text-slate-400 hover:text-thuy-400 transition-colors"
+                            title="Xem hạng mục"
+                          >
+                            <ChevronDown
+                              className={`w-3 h-3 ${isOpen ? "rotate-180" : ""}`}
+                            />
+                          </button>
+                        )}
                     </div>
 
-                    {isOpen && groupCategories[group] && groupCategories[group].length > 0 && (
-                      <div className="absolute left-0 top-full mt-1 w-56 rounded-xl bg-thuy-900 border border-thuy-700 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                        {groupCategories[group].map((cat) => (
-                          <Link
-                            key={cat}
-                            href={`/products?productGroup=${encodeURIComponent(group)}&productCategory=${encodeURIComponent(cat)}`}
-                            onClick={() => {
-                              setOpenDesktopSub(new Set());
-                            }}
-                            className="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-thuy-800 hover:text-white transition-colors border-l-2 border-transparent hover:border-thuy-400"
-                          >
-                            {cat}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                    {isOpen &&
+                      groupCategories[group] &&
+                      groupCategories[group].length > 0 && (
+                        <div className="absolute left-0 top-full mt-1 w-56 rounded-xl bg-thuy-900 border border-thuy-700 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                          {groupCategories[group].map((cat) => (
+                            <Link
+                              key={cat}
+                              href={`/products?productGroup=${encodeURIComponent(group)}&productCategory=${encodeURIComponent(cat)}`}
+                              onClick={() => {
+                                setOpenDesktopSub(new Set());
+                              }}
+                              className="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-thuy-800 hover:text-white transition-colors border-l-2 border-transparent hover:border-thuy-400"
+                            >
+                              {cat}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                   </div>
                 );
               })}
@@ -278,7 +281,7 @@ export default function Navbar() {
                 name="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tìm CAD, 3D model..."
+                placeholder="Tìm sản phẩm"
                 className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-thuy-900/80 border border-thuy-700/60 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-thuy-400"
               />
             </form>
@@ -314,9 +317,12 @@ export default function Navbar() {
                 {userDropdown && (
                   <div className="absolute right-0 mt-2 w-52 rounded-xl bg-thuy-900 border border-thuy-700 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-4 py-2 border-b border-thuy-700/60 text-xs">
-                      <p className="text-white font-medium truncate">{user.name}</p>
+                      <p className="text-white font-medium truncate">
+                        {user.name}
+                      </p>
                       <p className="text-slate-400 truncate">{user.email}</p>
-                      {(user.role === "ADMIN" || user.role === "SUPER_ADMIN") && (
+                      {(user.role === "ADMIN" ||
+                        user.role === "SUPER_ADMIN") && (
                         <span className="inline-block mt-1 px-2 py-0.5 rounded bg-thuy-500/20 text-thuy-300 font-bold text-[10px] border border-thuy-500/30">
                           Hệ thống Quản Trị
                         </span>
@@ -367,7 +373,11 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2.5 rounded-xl bg-thuy-850 text-slate-300 border border-thuy-700"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
@@ -400,7 +410,9 @@ export default function Navbar() {
                       }
                     >
                       {group}
-                      <ChevronDown className={`w-3.5 h-3.5 ${isOpen ? "rotate-180" : ""}`} />
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 ${isOpen ? "rotate-180" : ""}`}
+                      />
                     </button>
                     {isOpen && (
                       <div className="ml-4 mt-1 space-y-1">
