@@ -11,7 +11,7 @@ export async function GET() {
     const tags = await prisma.tag.findMany({
       include: {
         _count: {
-          select: { posts: true, products: true },
+          select: { products: true },
         },
       },
       orderBy: { name: "asc" },
@@ -80,17 +80,14 @@ export async function DELETE(request: Request) {
 
     const tag = await prisma.tag.findUnique({
       where: { id },
-      include: { _count: { select: { posts: true, products: true } } },
+      include: { _count: { select: { products: true } } },
     });
     if (!tag) {
       return NextResponse.json({ error: "Không tìm thấy thẻ tag." }, { status: 404 });
     }
-    const usedIn: string[] = [];
-    if (tag._count.products) usedIn.push(`${tag._count.products} sản phẩm`);
-    if (tag._count.posts) usedIn.push(`${tag._count.posts} bài viết`);
-    if (usedIn.length) {
+    if (tag._count.products) {
       return NextResponse.json(
-        { error: `Thẻ tag đang được sử dụng (${usedIn.join(", ")}). Hãy gỡ thẻ khỏi các mục này trước khi xóa.` },
+        { error: `Thẻ tag đang được sử dụng (${tag._count.products} sản phẩm). Hãy gỡ thẻ khỏi sản phẩm trước khi xóa.` },
         { status: 400 }
       );
     }
