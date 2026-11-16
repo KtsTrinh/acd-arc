@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart";
 import { useCurrentUser } from "@/components/auth/useCurrentUser";
 import { formatVND } from "@/lib/utils";
@@ -15,13 +16,20 @@ import {
   ShieldCheck,
   Download,
   LogIn,
+  AlertCircle,
+  X,
+  Loader2,
 } from "lucide-react";
 
 export default function CartPage() {
-  const { items, removeItem, clearCart, totalPrice, totalItems } = useCartStore();
+  const { items, removeItem, clearCart, totalPrice, totalItems } =
+    useCartStore();
   const { user, loading: authLoading } = useCurrentUser();
   const [mounted, setMounted] = useState(false);
-  const [confirmItem, setConfirmItem] = useState<{ id: string; name: string } | null>(null);
+  const [confirmItem, setConfirmItem] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
@@ -77,13 +85,13 @@ export default function CartPage() {
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-thuy-400 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Tiếp tục chọn tài nguyên</span>
+          <span>Tiếp tục chọn sản phẩm</span>
         </Link>
         <h1 className="font-display font-bold text-3xl sm:text-4xl text-white">
-          Giỏ Hàng Tài Nguyên Kỹ Thuật Số
+          Giỏ Hàng Sản Phẩm
         </h1>
         <p className="text-xs sm:text-sm text-slate-400">
-          Bạn đang có {totalItems()} sản phẩm kỹ thuật số trong giỏ
+          Bạn đang có {totalItems()} sản phẩm trong giỏ
         </p>
       </div>
 
@@ -92,9 +100,11 @@ export default function CartPage() {
           <div className="w-16 h-16 mx-auto rounded-full bg-thuy-800 flex items-center justify-center text-slate-500">
             <ShoppingBag className="w-8 h-8" />
           </div>
-          <h2 className="text-lg font-semibold text-white">Giỏ hàng của bạn đang trống</h2>
+          <h2 className="text-lg font-semibold text-white">
+            Giỏ hàng của bạn đang trống
+          </h2>
           <p className="text-xs text-slate-400 max-w-md mx-auto">
-            Khám phá kho bản vẽ AutoCAD, model 3ds Max/SketchUp và thư viện nội thất để bổ sung vào giỏ hàng.
+            Khám phá kho sản phẩm để bổ sung vào giỏ hàng.
           </p>
           <Link
             href="/products"
@@ -127,7 +137,9 @@ export default function CartPage() {
                     {item.thumbnail ? (
                       <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-thuy-950 flex-shrink-0">
                         <Image
-                          src={proxiedMediaUrl(item.thumbnail) || item.thumbnail}
+                          src={
+                            proxiedMediaUrl(item.thumbnail) || item.thumbnail
+                          }
                           alt={item.name}
                           fill
                           className="object-cover"
@@ -148,8 +160,12 @@ export default function CartPage() {
                         {item.name}
                       </h3>
                       <div className="flex items-center gap-3 text-xs text-slate-400">
-                        {item.fileSize && <span>Dung lượng: {item.fileSize}</span>}
-                        {item.fileFormat && <span>Định dạng: {item.fileFormat}</span>}
+                        {item.fileSize && (
+                          <span>Dung lượng: {item.fileSize}</span>
+                        )}
+                        {item.fileFormat && (
+                          <span>Định dạng: {item.fileFormat}</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -159,7 +175,9 @@ export default function CartPage() {
                       {formatVND(item.price)}
                     </span>
                     <button
-                      onClick={() => setConfirmItem({ id: item.id, name: item.name })}
+                      onClick={() =>
+                        setConfirmItem({ id: item.id, name: item.name })
+                      }
                       className="p-2 text-slate-400 hover:text-red-400 transition-colors"
                       title="Xóa"
                     >
@@ -184,14 +202,18 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between text-slate-300">
                 <span>Hình thức giao nhận:</span>
-                <span className="text-emerald-400 font-medium">Tải trực tiếp (Kỹ thuật số)</span>
+                <span className="text-emerald-400 font-medium">
+                  Tải trực tiếp (Kỹ thuật số)
+                </span>
               </div>
               <div className="flex justify-between text-slate-300">
                 <span>Thời hạn hiệu lực link:</span>
                 <span className="text-thuy-300 font-medium">72 Giờ</span>
               </div>
               <div className="pt-3 border-t border-thuy-750 flex justify-between items-baseline">
-                <span className="text-sm font-semibold text-white">Tổng cộng:</span>
+                <span className="text-sm font-semibold text-white">
+                  Tổng cộng:
+                </span>
                 <span className="font-display font-bold text-2xl text-thuy-400 text-glow">
                   {formatVND(totalPrice())}
                 </span>
@@ -201,18 +223,29 @@ export default function CartPage() {
             <div className="p-3 rounded-xl bg-thuy-900 border border-thuy-800 flex items-start gap-2.5 text-xs text-slate-400">
               <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
               <span>
-                Thanh toán an toàn qua chuyển khoản ngân hàng hoặc mã VietQR. Quyền tải kích hoạt
-                ngay sau xác nhận.
+                Thanh toán an toàn qua chuyển khoản ngân hàng hoặc mã VietQR.
+                Quyền tải kích hoạt ngay sau xác nhận.
               </span>
             </div>
 
-            <Link
-              href="/checkout"
-              className="w-full py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all flex items-center justify-center gap-2"
+            <button
+              type="button"
+              onClick={handleProceedCheckout}
+              disabled={checkingOut}
+              className="w-full py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all flex items-center justify-center gap-2 disabled:opacity-60"
             >
-              <span>Tiến Hành Thanh Toán</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+              {checkingOut ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Đang kiểm tra...</span>
+                </>
+              ) : (
+                <>
+                  <span>Tiến Hành Thanh Toán</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
           </div>
         </div>
       )}
@@ -230,9 +263,13 @@ export default function CartPage() {
                   <Trash2 className="w-6 h-6 text-red-400" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-white font-semibold text-base">Xóa sản phẩm khỏi giỏ hàng?</h3>
+                  <h3 className="text-white font-semibold text-base">
+                    Xóa sản phẩm khỏi giỏ hàng?
+                  </h3>
                   <p className="text-slate-400 text-xs mt-1.5 leading-relaxed">
-                    Bạn có chắc muốn xóa <b className="text-white">{confirmItem.name}</b> khỏi giỏ hàng không?
+                    Bạn có chắc muốn xóa{" "}
+                    <b className="text-white">{confirmItem.name}</b> khỏi giỏ
+                    hàng không?
                   </p>
                 </div>
               </div>
@@ -275,9 +312,13 @@ export default function CartPage() {
                   <Trash2 className="w-6 h-6 text-red-400" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-white font-semibold text-base">Xóa tất cả sản phẩm?</h3>
+                  <h3 className="text-white font-semibold text-base">
+                    Xóa tất cả sản phẩm?
+                  </h3>
                   <p className="text-slate-400 text-xs mt-1.5 leading-relaxed">
-                    Bạn có chắc muốn xóa toàn bộ <b className="text-white">{items.length} sản phẩm</b> khỏi giỏ hàng không? Hành động này không thể hoàn tác.
+                    Bạn có chắc muốn xóa toàn bộ{" "}
+                    <b className="text-white">{items.length} sản phẩm</b> khỏi
+                    giỏ hàng không? Hành động này không thể hoàn tác.
                   </p>
                 </div>
               </div>
@@ -305,7 +346,50 @@ export default function CartPage() {
           </div>
         </div>
       )}
+      {unavailableNames && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => setUnavailableNames(null)}
+          />
+          <div className="relative w-full max-w-md mx-4 animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300">
+            <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-b from-thuy-900 to-thuy-950 p-6 shadow-2xl shadow-amber-950/20">
+              <button
+                type="button"
+                onClick={() => setUnavailableNames(null)}
+                className="absolute top-3 right-3 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-thuy-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-start gap-4 pr-6">
+                <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
+                  <AlertCircle className="w-6 h-6 text-amber-400" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-white font-semibold text-base">Sản phẩm hiện chưa kinh doanh</h3>
+                  <p className="text-slate-400 text-sm mt-1.5 leading-relaxed">
+                    {unavailableNames.length === 1 ? (
+                      <>Sản phẩm <b className="text-white">{unavailableNames[0]}</b> hiện chưa có file/link tải nên tạm thời chưa thể thanh toán.</>
+                    ) : (
+                      <>Các sản phẩm sau hiện chưa có file/link tải nên tạm thời chưa thể thanh toán: <b className="text-white">{unavailableNames.join(", ")}</b>.</>
+                    )}
+                  </p>
+                  <p className="text-slate-500 text-xs mt-2">Vui lòng xóa các sản phẩm này khỏi giỏ hàng hoặc quay lại sau.</p>
+                </div>
+              </div>
+              <div className="mt-6 flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={() => setUnavailableNames(null)}
+                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all"
+                >
+                  Đã hiểu
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

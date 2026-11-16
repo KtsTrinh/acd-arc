@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart";
 import { useCurrentUser } from "@/components/auth/useCurrentUser";
 import { formatVND } from "@/lib/utils";
@@ -15,6 +16,8 @@ import {
   ShieldCheck,
   Download,
   LogIn,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
 
 interface CartDrawerProps {
@@ -23,6 +26,7 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
+  const router = useRouter();
   const { items, removeItem, totalPrice, totalItems } = useCartStore();
   const { user, loading: authLoading } = useCurrentUser();
   const [mounted, setMounted] = useState(false);
@@ -30,10 +34,41 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     id: string;
     name: string;
   } | null>(null);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [unavailableNames, setUnavailableNames] = useState<string[] | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleCheckout = async () => {
+    if (checkingOut || items.length === 0) return;
+    setCheckingOut(true);
+    try {
+      const results = await Promise.all(
+        items.map(async (item) => {
+          try {
+            const res = await fetch(`/api/products/${item.id}`, { cache: "no-store" });
+            const data = await res.json().catch(() => ({}));
+            const p = data?.product;
+            const ok = p && (p.hasFile || p.hasDownloadLink || p.fileKey || p.downloadLinkUrl);
+            return { ok: Boolean(ok), name: item.name };
+          } catch {
+            return { ok: false, name: item.name };
+          }
+        })
+      );
+      const bad = results.filter((r) => !r.ok).map((r) => r.name);
+      if (bad.length > 0) {
+        setUnavailableNames(bad);
+        return;
+      }
+      onClose();
+      router.push("/checkout");
+    } finally {
+      setCheckingOut(false);
+    }
+  };
 
   if (!mounted || !isOpen) return null;
 
@@ -184,14 +219,21 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               >
                 Xem chi tiết giỏ
               </Link>
-              <Link
-                href="/checkout"
-                onClick={onClose}
-                className="py-2.5 px-4 rounded-xl text-center text-sm font-medium text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all flex items-center justify-center gap-1.5"
+              <button
+                type="button"
+                onClick={handleCheckout}
+                disabled={checkingOut}
+                className="py-2.5 px-4 rounded-xl text-center text-sm font-medium text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all flex items-center justify-center gap-1.5 disabled:opacity-60"
               >
-                <span>Thanh toán</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+                {checkingOut ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    <span>Thanh toán</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             </div>
           </div>
         )}
@@ -239,6 +281,50 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   Xóa khỏi giỏ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {unavailableNames && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => setUnavailableNames(null)}
+          />
+          <div className="relative w-full max-w-md mx-4 animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300">
+            <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-b from-thuy-900 to-thuy-950 p-6 shadow-2xl shadow-amber-950/20">
+              <button
+                type="button"
+                onClick={() => setUnavailableNames(null)}
+                className="absolute top-3 right-3 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-thuy-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-start gap-4 pr-6">
+                <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
+                  <AlertCircle className="w-6 h-6 text-amber-400" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-white font-semibold text-base">Sản phẩm hiện chưa kinh doanh</h3>
+                  <p className="text-slate-400 text-sm mt-1.5 leading-relaxed">
+                    {unavailableNames.length === 1 ? (
+                      <>Sản phẩm <b className="text-white">{unavailableNames[0]}</b> hiện chưa có file/link tải nên tạm thời chưa thể thanh toán.</>
+                    ) : (
+                      <>Các sản phẩm sau hiện chưa có file/link tải nên tạm thời chưa thể thanh toán: <b className="text-white">{unavailableNames.join(", ")}</b>.</>
+                    )}
+                  </p>
+                  <p className="text-slate-500 text-xs mt-2">Vui lòng xóa các sản phẩm này khỏi giỏ hàng hoặc quay lại sau.</p>
+                </div>
+              </div>
+              <div className="mt-6 flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={() => setUnavailableNames(null)}
+                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all"
+                >
+                  Đã hiểu
                 </button>
               </div>
             </div>

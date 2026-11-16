@@ -23,6 +23,8 @@ import {
   Layers,
   Tag,
   Images,
+  AlertCircle,
+  X,
 } from "lucide-react";
 import { isLikelyVideoUrl, proxiedMediaUrl } from "@/lib/media-url";
 
@@ -42,7 +44,11 @@ function InfoRow({
   );
 }
 
-export default function ProductDetailPage({ params }: { params: { slug: string } }) {
+export default function ProductDetailPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
   const router = useRouter();
   const { addItem } = useCartStore();
   const { user, loading: authLoading } = useCurrentUser();
@@ -50,6 +56,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
   const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(false);
   const [activeImage, setActiveImage] = useState<string | null>(null);
+  const [showUnavailable, setShowUnavailable] = useState(false);
 
   const isLoggedIn = Boolean(user);
   const currentPath = `/products/${params.slug}`;
@@ -105,6 +112,10 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
     setTimeout(() => setAdded(false), 3000);
   };
 
+  const isAvailable = Boolean(
+    product?.hasFile || product?.hasDownloadLink || product?.fileKey || product?.downloadLinkUrl
+  );
+
   const handleAddToCart = () => {
     if (!isLoggedIn) {
       requireLogin();
@@ -116,6 +127,10 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
   const handleBuyNow = () => {
     if (!isLoggedIn) {
       requireLogin();
+      return;
+    }
+    if (!isAvailable) {
+      setShowUnavailable(true);
       return;
     }
     addToCart();
@@ -143,9 +158,15 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
   });
 
   const active = activeImage || thumbUrl || uniqueMedia[0]?.url || null;
-  const activeMedia = uniqueMedia.find((m) => m.url === active) || (active ? { url: active, mimeType: null } : null);
-  const activeIsVideo = activeMedia ? isLikelyVideoUrl(activeMedia.url, activeMedia.mimeType) : false;
-  const activeSrc = activeMedia ? proxiedMediaUrl(activeMedia.url, activeMedia.mimeType) : "";
+  const activeMedia =
+    uniqueMedia.find((m) => m.url === active) ||
+    (active ? { url: active, mimeType: null } : null);
+  const activeIsVideo = activeMedia
+    ? isLikelyVideoUrl(activeMedia.url, activeMedia.mimeType)
+    : false;
+  const activeSrc = activeMedia
+    ? proxiedMediaUrl(activeMedia.url, activeMedia.mimeType)
+    : "";
 
   const tags: string[] = Array.isArray(product.tags)
     ? product.tags.map((t: any) => t?.tag?.name || t?.name).filter(Boolean)
@@ -189,7 +210,6 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                 <Download className="w-12 h-12 text-slate-600" />
               </div>
             )}
-
           </div>
 
           {uniqueMedia.length > 1 && (
@@ -215,9 +235,20 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                       }`}
                     >
                       {isVid ? (
-                        <video src={src} className="w-full h-full object-cover" muted playsInline />
+                        <video
+                          src={src}
+                          className="w-full h-full object-cover"
+                          muted
+                          playsInline
+                        />
                       ) : (
-                        <Image src={src} alt="" fill className="object-cover" unoptimized />
+                        <Image
+                          src={src}
+                          alt=""
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
                       )}
                     </button>
                   );
@@ -322,7 +353,9 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
             <InfoRow label="Tầng hầm" value={product.basementFloors} />
             <InfoRow
               label="Tổng diện tích sàn"
-              value={product.totalFloorArea ? `${product.totalFloorArea} m²` : null}
+              value={
+                product.totalFloorArea ? `${product.totalFloorArea} m²` : null
+              }
             />
             <InfoRow label="Phong cách" value={product.style} />
             <InfoRow label="Định dạng file" value={product.fileFormat} />
@@ -344,16 +377,22 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
           <div className="p-4 rounded-xl bg-thuy-900 border border-thuy-800 space-y-2 text-xs text-slate-300">
             <div className="flex items-center gap-2 text-emerald-400 font-semibold">
               <ShieldCheck className="w-4 h-4" />
-              <span>Chính sách cấp quyền tải kỹ thuật số:</span>
+              <span>Chính sách cấp quyền tải sản phẩm của ACD:</span>
             </div>
             <ul className="space-y-1.5 pl-6 list-disc text-slate-400">
               <li>Link tải được tạo tự động sau khi xác nhận thanh toán.</li>
               <li>
-                Chỉ <b className="text-white">tài khoản đã thanh toán</b> mới tải được.
+                Chỉ <b className="text-white">tài khoản đã thanh toán</b> mới
+                tải được.
               </li>
-              <li>Số lượt tải tối đa: <b>3 lần</b>.</li>
+              <li>
+                Số lượt tải tối đa: <b>3 lần</b>.
+              </li>
               {product.downloadExpiresMinutes && (
-                <li>Link có hiệu lực trong <b>{product.downloadExpiresMinutes} phút</b>.</li>
+                <li>
+                  Link có hiệu lực trong{" "}
+                  <b>{product.downloadExpiresMinutes} phút</b>.
+                </li>
               )}
             </ul>
           </div>
@@ -364,7 +403,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 text-xs text-amber-300 flex items-start gap-2.5">
                 <LogIn className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <span>
-                  Bạn cần <b>đăng nhập</b> để thêm tài nguyên vào giỏ hàng và thanh toán.
+                  Bạn cần <b>đăng nhập</b> để thêm sản phẩm vào giỏ hàng.
                 </span>
               </div>
             )}
@@ -384,8 +423,8 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                   {added
                     ? "Đã thêm vào giỏ ✓"
                     : isLoggedIn
-                    ? "Thêm vào giỏ"
-                    : "Đăng nhập để thêm giỏ"}
+                      ? "Thêm vào giỏ"
+                      : "Đăng nhập để thêm giỏ"}
                 </span>
               </button>
 
@@ -408,7 +447,46 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
           </div>
         </div>
       </div>
+
+      {showUnavailable && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => setShowUnavailable(false)}
+          />
+          <div className="relative w-full max-w-md mx-4 animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300">
+            <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-b from-thuy-900 to-thuy-950 p-6 shadow-2xl shadow-amber-950/20">
+              <button
+                type="button"
+                onClick={() => setShowUnavailable(false)}
+                className="absolute top-3 right-3 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-thuy-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-start gap-4 pr-6">
+                <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
+                  <AlertCircle className="w-6 h-6 text-amber-400" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-white font-semibold text-base">Sản phẩm hiện chưa kinh doanh</h3>
+                  <p className="text-slate-400 text-sm mt-1.5 leading-relaxed">
+                    Sản phẩm <b className="text-white">{product.name}</b> hiện chưa có file/link tải nên tạm thời chưa thể mua. Vui lòng quay lại sau hoặc liên hệ hỗ trợ.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowUnavailable(false)}
+                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-thuy-950 bg-gradient-to-r from-thuy-400 to-aqua-400 hover:brightness-110 shadow-glow-cyan transition-all"
+                >
+                  Đã hiểu
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
