@@ -85,9 +85,13 @@ export async function DELETE(request: Request) {
     if (!tag) {
       return NextResponse.json({ error: "Không tìm thấy thẻ tag." }, { status: 404 });
     }
-    if (tag._count.projects || tag._count.posts || tag._count.products) {
+    const usedIn: string[] = [];
+    if (tag._count.products) usedIn.push(`${tag._count.products} sản phẩm`);
+    if (tag._count.projects) usedIn.push(`${tag._count.projects} dự án`);
+    if (tag._count.posts) usedIn.push(`${tag._count.posts} bài viết`);
+    if (usedIn.length) {
       return NextResponse.json(
-        { error: "Thẻ tag đang được sử dụng. Hãy gỡ thẻ tag khỏi tất cả sản phẩm trước khi xóa." },
+        { error: `Thẻ tag đang được sử dụng (${usedIn.join(", ")}). Hãy gỡ thẻ khỏi các mục này trước khi xóa.` },
         { status: 400 }
       );
     }
