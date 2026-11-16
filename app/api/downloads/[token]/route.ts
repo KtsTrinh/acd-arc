@@ -112,13 +112,11 @@ export async function GET(
       );
     }
 
-    // 4. Tăng bộ đếm lượt tải chỉ khi có nguồn tải hợp lệ
-    await incrementDownloadCount(downloadLink.id);
-
     if (fileKey) {
       const filePath = getPrivateFilePath(fileKey);
       if (filePath) {
         const stat = fs.statSync(filePath);
+        await incrementDownloadCount(downloadLink.id);
         const stream = Readable.toWeb(
           fs.createReadStream(filePath)
         ) as unknown as ReadableStream;
@@ -152,6 +150,7 @@ export async function GET(
 
       const candidates = buildDriveCandidates(remoteUrl);
       let lastStatus = 502;
+      let sawNonFile = false;
 
       for (const fetchUrl of candidates) {
         let upstream: Response;
@@ -173,16 +172,20 @@ export async function GET(
 
         const contentType = upstream.headers.get("content-type") || "";
         const isHtml = /text\/html/i.test(contentType);
-        const isDrive = /drive\.google\.com|drive\.usercontent\.google\.com/i.test(fetchUrl) || extractDriveId(remoteUrl);
+        const isJson = /application\/(json|ld\+json)/i.test(contentType);
+        const isDrive = /drive\.google\.com|drive\.usercontent\.google\.com/i.test(fetchUrl) || !!extractDriveId(remoteUrl);
 
         // Drive share pages / virus-scan interstitials return HTML, not the file
         if (isHtml && isDrive) {
           continue;
         }
-        // If upstream unexpectedly returns HTML for a non-drive URL, don't stream it as a download
-        if (isHtml && !/\btext\/html\b/i.test((product as any).fileName || "")) {
+        // Do not stream web pages or API/JSON payloads (e.g. misconfigured link pointing to site/product page)
+        if (isHtml || isJson) {
+          sawNonFile = true;
           continue;
         }
+
+        await incrementDownloadCount(downloadLink.id);
 
         const headers: Record<string, string> = {
           "Content-Type": contentType || "application/octet-stream",
@@ -194,6 +197,13 @@ export async function GET(
         if (length) headers["Content-Length"] = length;
 
         return new NextResponse(upstream.body, { status: 200, headers });
+      }
+
+      if (sawNonFile) {
+        return errorResponse(
+          "Link tải nội bộ không trỏ tới file tải trực tiếp (đang trả về trang web/dữ liệu). Vui lòng cấu hình link file trực tiếp (Google Drive file công khai, Dropbox/CDN/storage).",
+          502
+        );
       }
 
       if (extractDriveId(remoteUrl)) {
