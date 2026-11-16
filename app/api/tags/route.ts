@@ -11,7 +11,7 @@ export async function GET() {
     const tags = await prisma.tag.findMany({
       include: {
         _count: {
-          select: { projects: true, posts: true },
+          select: { projects: true, posts: true, products: true },
         },
       },
       orderBy: { name: "asc" },

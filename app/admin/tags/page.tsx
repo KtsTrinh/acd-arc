@@ -203,7 +203,7 @@ export default function AdminTagsPage() {
             >
               <span>#{t.name}</span>
               <span className="text-[10px] text-thuy-400 font-bold bg-thuy-800 px-1.5 py-0.5 rounded">
-                {t._count?.projects || 0} sản phẩm
+                {t._count?.products || 0} sản phẩm
               </span>
               <button
                 onClick={() =>
