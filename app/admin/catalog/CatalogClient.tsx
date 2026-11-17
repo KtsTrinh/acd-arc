@@ -525,10 +525,14 @@ export default function AdminCatalogClient({
       featured: Boolean(product.featured),
     });
     setThumbImage(
-      isVideoUrl(product.thumbnail || "") ? "" : product.thumbnail || "",
+      /\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(product.thumbnail || "")
+        ? product.thumbnail || ""
+        : "",
     );
     setThumbVideo(
-      isVideoUrl(product.thumbnail || "") ? product.thumbnail || "" : "",
+      /\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(product.thumbnail || "")
+        ? ""
+        : product.thumbnail || "",
     );
 
     // Load gallery items for this product
