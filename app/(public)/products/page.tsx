@@ -217,12 +217,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       <h3 className="font-semibold text-sm text-white line-clamp-2 leading-snug group-hover:text-thuy-300 transition-colors">
                         {prod.name}
                       </h3>
-                      {prod.shortDesc && (
-                        <p className="text-[11px] text-slate-300 line-clamp-2">{prod.shortDesc}</p>
-                      )}
-                      <p className="text-[11px] text-slate-400 line-clamp-2">
-                         {prod.shortDesc || prod.fileFormat || "—"}
-                      </p>
+                       {prod.shortDesc && (
+                         <p className="text-[11px] text-slate-300 line-clamp-2">{prod.shortDesc}</p>
+                       )}
                       <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-slate-400">
                         {prod.location && (
                           <span className="inline-flex items-center gap-1">

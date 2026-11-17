@@ -328,7 +328,7 @@ export default function ProductDetailPage({
             </h1>
 
             {product.shortDesc && (
-              <p className="text-sm text-slate-300 leading-relaxed">
+               <p className="text-sm text-slate-300 leading-relaxed text-justify">
                 {product.shortDesc}
               </p>
             )}
