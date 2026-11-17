@@ -31,7 +31,7 @@ export default async function AdminLayout({
             borderColor: "var(--admin-border, #E1EAF2)",
           }}
         >
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500" />
             <span
               className="text-sm"
@@ -42,11 +42,11 @@ export default async function AdminLayout({
           </div>
 
           <div className="flex items-center gap-3 text-sm">
-            <span style={{ color: "var(--admin-text-muted, #8192A8)" }}>
+            <span className="hidden sm:inline" style={{ color: "var(--admin-text-muted, #8192A8)" }}>
               Đang quản trị:
             </span>
             <span
-              className="font-medium px-3 py-1.5 rounded-lg border shadow-sm"
+              className="font-medium px-3 py-1.5 rounded-lg border shadow-sm max-w-[40vw] sm:max-w-none truncate"
               style={{
                 color: "var(--admin-text-primary, #142338)",
                 backgroundColor: "var(--admin-surface, #FFFFFF)",
