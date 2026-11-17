@@ -216,9 +216,7 @@ export default function ProductDetailPage({
                  allow="autoplay; fullscreen; encrypted-media"
                  className="w-full h-full border-0"
                />
-             ) : activeSrc && activeIsVideo && activeHeroVideo?.kind === "embed" ? (
-               <iframe ... />
-             ) : activeSrc && activeIsVideo ? (
+              ) : activeSrc && activeIsVideo ? (
                <video
                  src={activeSrc}
                  className="w-full h-full object-cover"
