@@ -1699,17 +1699,17 @@ export default function AdminCatalogClient({
                              allow="autoplay; fullscreen; encrypted-media"
                              className="w-full h-full border-0"
                            />
-                         ) : (
-                           <video
-                             src={proxiedMediaUrl(thumbVideo)}
-                             muted
-                             autoPlay
-                             loop
-                             playsInline
-                             controls
-                             className="w-full h-full object-cover"
-                           />
-                         )
+                          ) : (
+                            <video
+                              src={/drive\.google\.com/i.test(thumbVideo) ? proxiedMediaUrl(thumbVideo) : thumbVideo}
+                              muted
+                              autoPlay
+                              loop
+                              playsInline
+                              controls
+                              className="w-full h-full object-cover"
+                            />
+                          )
                        ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
                           <VideoIcon className="w-6 h-6" />
