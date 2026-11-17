@@ -14,6 +14,9 @@ import {
   ShieldCheck,
   FileCode,
   ArrowLeft,
+  Facebook,
+  Twitter,
+  Copy,
   Sparkles,
   LogIn,
   MapPin,
@@ -496,9 +499,9 @@ export default function ProductDetailPage({
           </div>
           <div className="flex items-center gap-2 pt-2">
             <span className="text-xs text-slate-400">Chia sẻ:</span>
-            <button type="button" onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, "_blank")} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs hover:bg-thuy-700">Facebook</button>
-            <button type="button" onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(product.name)}`, "_blank")} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs hover:bg-thuy-700">Twitter</button>
-            <button type="button" onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Đã sao chép link"); }} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs hover:bg-thuy-700">Sao chép link</button>
+            <button type="button" onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, "_blank")} className="p-2 rounded-lg bg-thuy-800 text-white hover:bg-thuy-700" title="Facebook"><Facebook className="w-4 h-4" /></button>
+            <button type="button" onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(product.name)}`, "_blank")} className="p-2 rounded-lg bg-thuy-800 text-white hover:bg-thuy-700" title="Twitter"><Twitter className="w-4 h-4" /></button>
+            <button type="button" onClick={() => { navigator.clipboard.writeText(window.location.href); }} className="p-2 rounded-lg bg-thuy-800 text-white hover:bg-thuy-700" title="Sao chép link"><Copy className="w-4 h-4" /></button>
           </div>
         </div>
       </div>
