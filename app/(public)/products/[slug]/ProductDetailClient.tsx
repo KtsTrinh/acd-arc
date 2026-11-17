@@ -389,7 +389,7 @@ export default function ProductDetailPage({
             </h3>
             <InfoRow label="Chủ đầu tư" value={product.client} />
             <InfoRow label="Địa điểm" value={product.location} />
-            <InfoRow label="Năm thiết kế" value={product.year} />
+            <InfoRow label="Năm triển khai" value={product.year} />
             <InfoRow
               label="Diện tích đất"
               value={product.landArea ? `${product.landArea} m²` : null}

@@ -1,6 +1,12 @@
 ﻿"use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -37,7 +43,6 @@ import {
   Clock,
   ShieldCheck,
   Package,
-
   Image as ImageIcon,
   Video as VideoIcon,
   GripVertical,
@@ -136,7 +141,9 @@ export default function AdminCatalogClient({
   const [items, setItems] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
   const [groups, setGroups] = useState<{ name: string; count: number }[]>([]);
-  const [subCategories, setSubCategories] = useState<{ name: string; count: number }[]>([]);
+  const [subCategories, setSubCategories] = useState<
+    { name: string; count: number }[]
+  >([]);
   const [newTagName, setNewTagName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{
@@ -374,11 +381,19 @@ export default function AdminCatalogClient({
     Set<string>
   >(new Set());
   const galleryGridRef = useRef<HTMLDivElement>(null);
-  const [galleryDragStart, setGalleryDragStart] = useState<{ x: number; y: number } | null>(null);
-  const [galleryDragCurrent, setGalleryDragCurrent] = useState<{ x: number; y: number } | null>(null);
+  const [galleryDragStart, setGalleryDragStart] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [galleryDragCurrent, setGalleryDragCurrent] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [galleryIsDragging, setGalleryIsDragging] = useState(false);
   const galleryJustDragged = useRef(false);
-  const [galleryDragItemId, setGalleryDragItemId] = useState<string | null>(null);
+  const [galleryDragItemId, setGalleryDragItemId] = useState<string | null>(
+    null,
+  );
   const [galleryConfirm, setGalleryConfirm] = useState<{
     open: boolean;
     mode: "one" | "selected" | "all";
@@ -443,7 +458,9 @@ export default function AdminCatalogClient({
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`/api/products/categories?group=${encodeURIComponent(activeTab)}`);
+        const res = await fetch(
+          `/api/products/categories?group=${encodeURIComponent(activeTab)}`,
+        );
         const data = await res.json().catch(() => ({}));
         if (!cancelled) setSubCategories(data.categories || []);
       } catch {
@@ -524,12 +541,8 @@ export default function AdminCatalogClient({
       active: product.active !== false,
       featured: Boolean(product.featured),
     });
-    setThumbImage(
-      product.thumbnailIsVideo ? "" : product.thumbnail || "",
-    );
-    setThumbVideo(
-      product.thumbnailIsVideo ? product.thumbnail || "" : "",
-    );
+    setThumbImage(product.thumbnailIsVideo ? "" : product.thumbnail || "");
+    setThumbVideo(product.thumbnailIsVideo ? product.thumbnail || "" : "");
 
     // Load gallery items for this product
     try {
@@ -724,8 +737,8 @@ export default function AdminCatalogClient({
           form.downloadExpiresMinutes || "5",
           10,
         ),
-         thumbnail: fallbackThumb,
-         thumbnailIsVideo: !!thumbVideo,
+        thumbnail: fallbackThumb,
+        thumbnailIsVideo: !!thumbVideo,
         location: form.location || null,
         client: form.client || null,
         year: form.year ? parseInt(form.year, 10) : null,
@@ -909,20 +922,22 @@ export default function AdminCatalogClient({
       );
       const data = await res.json();
       if (data.gallery) {
-        const mapped: GalleryItem[] = data.gallery.map((g: any, idx: number) => ({
-          id: g.id,
-          mediaId: g.mediaId,
-          sortOrder: g.sortOrder ?? idx,
-          media: {
-            id: g.media.id,
-            filename: g.media.filename,
-            originalName: g.media.originalName,
-            url: g.media.url,
-            folder: g.media.folder,
-            alt: g.media.alt,
-            mimeType: g.media.mimeType,
-          },
-        }));
+        const mapped: GalleryItem[] = data.gallery.map(
+          (g: any, idx: number) => ({
+            id: g.id,
+            mediaId: g.mediaId,
+            sortOrder: g.sortOrder ?? idx,
+            media: {
+              id: g.media.id,
+              filename: g.media.filename,
+              originalName: g.media.originalName,
+              url: g.media.url,
+              folder: g.media.folder,
+              alt: g.media.alt,
+              mimeType: g.media.mimeType,
+            },
+          }),
+        );
         setGalleryItems(mapped);
       }
       setNotice({ type: "ok", text: "Đã gỡ mục khỏi Gallery." });
@@ -1037,7 +1052,10 @@ export default function AdminCatalogClient({
   };
 
   const handleGalleryReorder = async (reordered: GalleryItem[]) => {
-    const withOrder = reordered.map((item, idx) => ({ ...item, sortOrder: idx }));
+    const withOrder = reordered.map((item, idx) => ({
+      ...item,
+      sortOrder: idx,
+    }));
     setGalleryItems(withOrder);
     if (!form?.id) return;
     setGallerySaving(true);
@@ -1073,8 +1091,14 @@ export default function AdminCatalogClient({
     const grid = galleryGridRef.current;
     if (!grid) return;
     const rect = grid.getBoundingClientRect();
-    setGalleryDragStart({ x: e.clientX - rect.left + grid.scrollLeft, y: e.clientY - rect.top + grid.scrollTop });
-    setGalleryDragCurrent({ x: e.clientX - rect.left + grid.scrollLeft, y: e.clientY - rect.top + grid.scrollTop });
+    setGalleryDragStart({
+      x: e.clientX - rect.left + grid.scrollLeft,
+      y: e.clientY - rect.top + grid.scrollTop,
+    });
+    setGalleryDragCurrent({
+      x: e.clientX - rect.left + grid.scrollLeft,
+      y: e.clientY - rect.top + grid.scrollTop,
+    });
     setGalleryIsDragging(false);
   };
 
@@ -1110,11 +1134,14 @@ export default function AdminCatalogClient({
     const endX = e.clientX - rect.left + grid.scrollLeft;
     const endY = e.clientY - rect.top + grid.scrollTop;
     const dragDistance = Math.sqrt(
-      Math.pow(endX - galleryDragStart.x, 2) + Math.pow(endY - galleryDragStart.y, 2),
+      Math.pow(endX - galleryDragStart.x, 2) +
+        Math.pow(endY - galleryDragStart.y, 2),
     );
     if (dragDistance >= 5) {
       galleryJustDragged.current = true;
-      setTimeout(() => { galleryJustDragged.current = false; }, 0);
+      setTimeout(() => {
+        galleryJustDragged.current = false;
+      }, 0);
       const selectRect = {
         left: Math.min(galleryDragStart.x, endX),
         top: Math.min(galleryDragStart.y, endY),
@@ -1283,10 +1310,10 @@ export default function AdminCatalogClient({
                   required
                   value={form.name}
                   onChange={(e) =>
-                     updateForm({
-                       name: e.target.value,
-                       slug: slugify(e.target.value),
-                     })
+                    updateForm({
+                      name: e.target.value,
+                      slug: slugify(e.target.value),
+                    })
                   }
                   placeholder="Trọn bộ hồ sơ thiết kế biệt thự hiện đại 3 tầng"
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
@@ -1532,7 +1559,7 @@ export default function AdminCatalogClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-white">Năm thiết kế:</label>
+                  <label className="text-xs text-white">Năm triển khai:</label>
                   <input
                     type="number"
                     value={form.year}
@@ -1687,27 +1714,31 @@ export default function AdminCatalogClient({
                         Chọn video
                       </button>
                     </div>
-                     <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
-                       {thumbVideo ? (
-                         resolveHeroVideo(thumbVideo)?.kind === "embed" ? (
-                           <iframe
-                             src={resolveHeroVideo(thumbVideo)!.src}
-                             title="Video thumbnail"
-                             allow="autoplay; fullscreen; encrypted-media"
-                             className="w-full h-full border-0"
-                           />
-                          ) : (
-                            <video
-                              src={/drive\.google\.com/i.test(thumbVideo) ? proxiedMediaUrl(thumbVideo) : thumbVideo}
-                              muted
-                              autoPlay
-                              loop
-                              playsInline
-                              controls
-                              className="w-full h-full object-cover"
-                            />
-                          )
-                       ) : (
+                    <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
+                      {thumbVideo ? (
+                        resolveHeroVideo(thumbVideo)?.kind === "embed" ? (
+                          <iframe
+                            src={resolveHeroVideo(thumbVideo)!.src}
+                            title="Video thumbnail"
+                            allow="autoplay; fullscreen; encrypted-media"
+                            className="w-full h-full border-0"
+                          />
+                        ) : (
+                          <video
+                            src={
+                              /drive\.google\.com/i.test(thumbVideo)
+                                ? proxiedMediaUrl(thumbVideo)
+                                : thumbVideo
+                            }
+                            muted
+                            autoPlay
+                            loop
+                            playsInline
+                            controls
+                            className="w-full h-full object-cover"
+                          />
+                        )
+                      ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
                           <VideoIcon className="w-6 h-6" />
                           <span className="text-[10px]">
@@ -1792,7 +1823,7 @@ export default function AdminCatalogClient({
                           </span>
                         )}
                       </div>
-                       <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => setGalleryMediaPickerOpen(true)}
@@ -1805,7 +1836,9 @@ export default function AdminCatalogClient({
                           <>
                             <button
                               type="button"
-                              onClick={() => setGallerySelectedForDelete(new Set())}
+                              onClick={() =>
+                                setGallerySelectedForDelete(new Set())
+                              }
                               disabled={gallerySaving}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-750 text-slate-200 text-xs font-semibold border border-thuy-700 transition-colors disabled:opacity-50"
                             >
@@ -1826,7 +1859,11 @@ export default function AdminCatalogClient({
                         <button
                           type="button"
                           onClick={() =>
-                            setGalleryConfirm({ open: true, mode: "all", mediaId: null })
+                            setGalleryConfirm({
+                              open: true,
+                              mode: "all",
+                              mediaId: null,
+                            })
                           }
                           disabled={gallerySaving || galleryItems.length === 0}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900 text-red-400 text-xs font-semibold border border-red-800 transition-colors disabled:opacity-50"
@@ -1851,41 +1888,61 @@ export default function AdminCatalogClient({
                       }}
                       className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 select-none"
                     >
-                      {galleryIsDragging && galleryDragStart && galleryDragCurrent && (
-                        <div
-                          className="absolute pointer-events-none z-30 bg-thuy-400/20 border border-thuy-400 rounded-sm"
-                          style={{
-                            left: Math.min(galleryDragStart.x, galleryDragCurrent.x),
-                            top: Math.min(galleryDragStart.y, galleryDragCurrent.y),
-                            width: Math.abs(galleryDragCurrent.x - galleryDragStart.x),
-                            height: Math.abs(galleryDragCurrent.y - galleryDragStart.y),
-                          }}
-                        />
-                      )}
+                      {galleryIsDragging &&
+                        galleryDragStart &&
+                        galleryDragCurrent && (
+                          <div
+                            className="absolute pointer-events-none z-30 bg-thuy-400/20 border border-thuy-400 rounded-sm"
+                            style={{
+                              left: Math.min(
+                                galleryDragStart.x,
+                                galleryDragCurrent.x,
+                              ),
+                              top: Math.min(
+                                galleryDragStart.y,
+                                galleryDragCurrent.y,
+                              ),
+                              width: Math.abs(
+                                galleryDragCurrent.x - galleryDragStart.x,
+                              ),
+                              height: Math.abs(
+                                galleryDragCurrent.y - galleryDragStart.y,
+                              ),
+                            }}
+                          />
+                        )}
                       {galleryItems.map((item) => {
-                         const itemIsVideo = isLikelyVideoUrl(
-                           item.media.url,
-                           item.media.mimeType,
-                         );
-                         const heroVideo = itemIsVideo
-                           ? resolveHeroVideo(item.media.url)
-                           : null;
+                        const itemIsVideo = isLikelyVideoUrl(
+                          item.media.url,
+                          item.media.mimeType,
+                        );
+                        const heroVideo = itemIsVideo
+                          ? resolveHeroVideo(item.media.url)
+                          : null;
                         const isSelectedForDelete =
                           gallerySelectedForDelete.has(item.mediaId);
-                         const mediaSrc =
-                           heroVideo?.kind === "file"
-                             ? /drive\.google\.com/i.test(item.media.url || "")
-                               ? proxiedMediaUrl(item.media.url, item.media.mimeType)
-                               : heroVideo.src
-                             : itemIsVideo
-                             ? item.media.url || ""
-                             : proxiedMediaUrl(item.media.url, item.media.mimeType);
+                        const mediaSrc =
+                          heroVideo?.kind === "file"
+                            ? /drive\.google\.com/i.test(item.media.url || "")
+                              ? proxiedMediaUrl(
+                                  item.media.url,
+                                  item.media.mimeType,
+                                )
+                              : heroVideo.src
+                            : itemIsVideo
+                              ? item.media.url || ""
+                              : proxiedMediaUrl(
+                                  item.media.url,
+                                  item.media.mimeType,
+                                );
                         return (
                           <div
                             key={item.mediaId}
                             data-gallery-item={item.mediaId}
                             draggable
-                            onDragStart={() => handleGalleryItemDragStart(item.mediaId)}
+                            onDragStart={() =>
+                              handleGalleryItemDragStart(item.mediaId)
+                            }
                             onDragOver={handleGalleryItemDragOver}
                             onDrop={() => handleGalleryItemDrop(item.mediaId)}
                             onDragEnd={() => setGalleryDragItemId(null)}
@@ -1913,24 +1970,24 @@ export default function AdminCatalogClient({
                               <GripVertical className="w-3.5 h-3.5" />
                             </div>
 
-                             {itemIsVideo && heroVideo?.kind === "embed" ? (
-                               <iframe
-                                 src={heroVideo.src}
-                                 title={item.media.alt || item.media.filename}
-                                 allow="autoplay; fullscreen; encrypted-media"
-                                 className="w-full h-full border-0"
-                               />
-                             ) : itemIsVideo && mediaSrc ? (
-                               <video
-                                 src={mediaSrc}
-                                 muted
-                                 autoPlay
-                                 loop
-                                 playsInline
-                                 preload="metadata"
-                                 className="w-full h-full object-cover"
-                               />
-                             ) : (
+                            {itemIsVideo && heroVideo?.kind === "embed" ? (
+                              <iframe
+                                src={heroVideo.src}
+                                title={item.media.alt || item.media.filename}
+                                allow="autoplay; fullscreen; encrypted-media"
+                                className="w-full h-full border-0"
+                              />
+                            ) : itemIsVideo && mediaSrc ? (
+                              <video
+                                src={mediaSrc}
+                                muted
+                                autoPlay
+                                loop
+                                playsInline
+                                preload="metadata"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
                               <img
                                 src={mediaSrc}
                                 alt={item.media.alt || item.media.filename}
@@ -2583,34 +2640,34 @@ function CatalogTable({
             {items.map((p) => (
               <tr key={p.id} className="hover:bg-thuy-800/40">
                 <td className="py-3.5 px-5">
-                    <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
-                      {p.thumbnail ? (
-                        (() => {
-                           const thumbSrc = /drive\.google\.com/i.test(p.thumbnail)
-                             ? proxiedMediaUrl(p.thumbnail)
-                             : p.thumbnail;
-                           const isVid = Boolean(p.thumbnailIsVideo);
-                          if (isVid) {
-                            return (
-                              <video
-                                src={thumbSrc}
-                                muted
-                                playsInline
-                                preload="metadata"
-                                className="w-full h-full object-cover"
-                              />
-                            );
-                          }
+                  <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
+                    {p.thumbnail ? (
+                      (() => {
+                        const thumbSrc = /drive\.google\.com/i.test(p.thumbnail)
+                          ? proxiedMediaUrl(p.thumbnail)
+                          : p.thumbnail;
+                        const isVid = Boolean(p.thumbnailIsVideo);
+                        if (isVid) {
                           return (
-                            <img
+                            <video
                               src={thumbSrc}
-                              alt={p.name}
+                              muted
+                              playsInline
+                              preload="metadata"
                               className="w-full h-full object-cover"
-                              loading="lazy"
                             />
                           );
-                        })()
-                      ) : (
+                        }
+                        return (
+                          <img
+                            src={thumbSrc}
+                            alt={p.name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        );
+                      })()
+                    ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-600">
                         <FileCode className="w-4 h-4" />
                       </div>
