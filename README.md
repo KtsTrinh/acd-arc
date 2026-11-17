@@ -28,16 +28,19 @@ graph TD
 ## Request Logic Flow
 
 ```mermaid
-flowchart LR
-  U[User] --> R[Route Handler]
-  R --> V[Validate Auth/Params]
-  V --> S[Service/Prisma]
-  S --> DB[(PostgreSQL)]
+flowchart TD
+  U[User Request] --> R[Next.js Route Handler]
+  R --> Auth{Auth Check}
+  Auth -->|Fail| E403[403 Forbidden]
+  Auth -->|Pass| V[Validate Params/Body]
+  V --> S[Service Layer]
+  S --> DB[(PostgreSQL via Prisma)]
+  S --> MP[Media Proxy /api/media/stream]
+  MP --> EXT[Google Drive / External Storage]
   DB --> S
+  MP --> S
   S --> R
   R --> U
-  R --> M[Media Proxy]
-  M --> EXT[External Storage]
 ```
 
 ## Design Thinking
