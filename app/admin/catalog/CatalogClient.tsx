@@ -2334,7 +2334,7 @@ export default function AdminCatalogClient({
                      </div>
                    )}
                    {deleteFileOpen && (
-                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
+                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in">
                        <div className="bg-thuy-850 border border-thuy-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl animate-in zoom-in-95">
                          <h3 className="text-white font-semibold mb-2">Xóa file đã tải?</h3>
                          <p className="text-slate-400 text-sm mb-4">File sẽ bị xóa vĩnh viễn và không thể khôi phục.</p>
