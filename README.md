@@ -25,6 +25,21 @@ graph TD
   H --> I[Google Drive / External]
 ```
 
+## Request Logic Flow
+
+```mermaid
+flowchart LR
+  U[User] --> R[Route Handler]
+  R --> V[Validate Auth/Params]
+  V --> S[Service/Prisma]
+  S --> DB[(PostgreSQL)]
+  DB --> S
+  S --> R
+  R --> U
+  R --> M[Media Proxy]
+  M --> EXT[External Storage]
+```
+
 ## Design Thinking
 
 - Single source of truth in PostgreSQL via Prisma.
