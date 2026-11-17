@@ -14,42 +14,15 @@ Next.js (App Router) + Prisma + TypeScript website for ACD Studio.
 ## Architecture & Data Flow
 
 ```mermaid
-flowchart LR
-  U[User Browser] -->|request| N[Next.js App Router]
-  N -->|render| P[Public Pages]
-  N -->|render| A[Admin CMS]
-  P -->|fetch| API[API Routes]
-  A -->|fetch| API
-  API -->|query| PR[Prisma Client]
-  PR -->|SQL| DB[(PostgreSQL)]
-  API -->|stream/proxy| M[Media Proxy]
-  M -->|fetch| EXT[Google Drive / External Media]
-  DB -->|data| PR
-  PR -->|JSON| API
-  API -->|JSON/HTML| N
-  N -->|HTML| U
-```
-
-## Layered Stack
-
-```mermaid
-graph TB
-  subgraph Client
-    C1[React Components]
-    C2[Tailwind CSS]
-  end
-  subgraph Server
-    S1[Next.js API Routes]
-    S2[Prisma ORM]
-  end
-  subgraph Data
-    D1[(PostgreSQL)]
-    D2[Media Storage]
-  end
-  C1 --> S1
-  S1 --> S2
-  S2 --> D1
-  S1 --> D2
+graph TD
+  A[Browser] --> B[Next.js App Router]
+  B --> C[Public Pages]
+  B --> D[Admin CMS]
+  B --> E[API Routes]
+  E --> F[Prisma]
+  F --> G[(PostgreSQL)]
+  E --> H[Media Proxy]
+  H --> I[Google Drive / External]
 ```
 
 ## Design Thinking
