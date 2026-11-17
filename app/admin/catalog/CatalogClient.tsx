@@ -394,8 +394,12 @@ export default function AdminCatalogClient({
     const firstUrl = first?.media?.url || "";
     if (!firstUrl) return;
     const isVid = isLikelyVideoUrl(firstUrl, first?.media?.mimeType);
-    setThumbImage(isVid ? "" : firstUrl);
-    setThumbVideo(isVid ? firstUrl : "");
+    const isImg = !isVid && /\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(firstUrl);
+    if (isVid) {
+      setThumbVideo(firstUrl);
+    } else if (isImg) {
+      setThumbImage(firstUrl);
+    }
     setForm((prev) => (prev ? { ...prev, thumbnail: firstUrl } : prev));
   }, [form, thumbImage, thumbVideo, galleryItems]);
 
