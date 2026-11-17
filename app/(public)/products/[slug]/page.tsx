@@ -470,6 +470,12 @@ export default function ProductDetailPage({
               </p>
             )}
           </div>
+          <div className="flex items-center gap-2 pt-2">
+            <span className="text-xs text-slate-400">Chia sẻ:</span>
+            <button type="button" onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, "_blank")} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs hover:bg-thuy-700">Facebook</button>
+            <button type="button" onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(product.name)}`, "_blank")} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs hover:bg-thuy-700">Twitter</button>
+            <button type="button" onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Đã sao chép link"); }} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs hover:bg-thuy-700">Sao chép link</button>
+          </div>
         </div>
       </div>
 
