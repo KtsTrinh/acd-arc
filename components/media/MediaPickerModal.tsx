@@ -737,6 +737,7 @@ export default function MediaPickerModal({
           alt: null,
           folder: "external",
           mimeType: detectedMime,
+          isVideo: detectedMime.startsWith("video/"),
         }),
       });
       const saveData = await saveRes.json();

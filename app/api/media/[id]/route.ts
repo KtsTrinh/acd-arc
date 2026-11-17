@@ -18,9 +18,9 @@ export async function PATCH(
 
     const { id } = params;
     const body = await request.json();
-    const { filename, alt, folder } = body;
+    const { filename, alt, folder, isVideo } = body;
 
-    const updated = await updateMediaMetadata(id, { filename, alt, folder });
+    const updated = await updateMediaMetadata(id, { filename, alt, folder, isVideo });
     const sync = await triggerCmsAutoSync("cập nhật media");
     return NextResponse.json({ success: true, media: updated, sync });
   } catch (error) {

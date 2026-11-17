@@ -51,6 +51,7 @@ export interface SaveMediaInput {
   width?: number;
   height?: number;
   alt?: string;
+  isVideo?: boolean;
 }
 
 /**
@@ -75,6 +76,7 @@ export async function createMediaItem(input: SaveMediaInput) {
       filename: input.filename,
       originalName: input.originalName || input.filename,
       mimeType: input.mimeType || "image/jpeg",
+      isVideo: input.isVideo ?? false,
       size: input.size || 0,
       url: finalUrl || "",
       storageKey: storageKey,
@@ -119,7 +121,7 @@ export async function registerExternalMedia(url: string) {
  */
 export async function updateMediaMetadata(
   id: string,
-  data: { filename?: string; alt?: string; folder?: string }
+  data: { filename?: string; alt?: string; folder?: string; isVideo?: boolean }
 ) {
   return prisma.media.update({
     where: { id },

@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     // 1. Case: Adding media from external URL (Pinterest, Unsplash, Mixkit, CDN...)
     if (contentType.includes("application/json")) {
       const body = await request.json();
-      const { url, filename, alt, folder, mimeType } = body;
+       const { url, filename, alt, folder, mimeType, isVideo } = body;
 
       if (!url) {
         return NextResponse.json(
@@ -95,11 +95,12 @@ export async function POST(request: Request) {
       const media = await createMediaItem({
         filename: filename || url.split("/").pop()?.split("?")[0] || "media.jpg",
         originalName: filename || "External Media",
-        mimeType: detectedMime,
-        size: 0,
-        url: normalizedUrl,
-        folder: folder || "external",
-        alt: alt || "ACD Media",
+         mimeType: detectedMime,
+         size: 0,
+         url: normalizedUrl,
+         folder: folder || "external",
+         alt: alt || "ACD Media",
+         isVideo: isVideo ?? detectedMime.startsWith("video/"),
       });
 
       return NextResponse.json({ success: true, media, external: true });

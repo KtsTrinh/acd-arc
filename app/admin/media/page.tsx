@@ -70,6 +70,7 @@ export default function AdminMediaPage() {
   const [editFilename, setEditFilename] = useState("");
   const [editAlt, setEditAlt] = useState("");
   const [editFolder, setEditFolder] = useState("");
+  const [editIsVideo, setEditIsVideo] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const fetchMedia = async () => {
@@ -320,9 +321,10 @@ export default function AdminMediaPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          filename: editFilename,
-          alt: editAlt,
-          folder: editFolder,
+           filename: editFilename,
+           alt: editAlt,
+           folder: editFolder,
+           isVideo: editIsVideo,
         }),
       });
       const data = await res.json();
@@ -532,14 +534,7 @@ export default function AdminMediaPage() {
               />
             )}
             {mediaList.map((item) => {
-                const itemIsVideo =
-                  typeof item.isVideo === "boolean"
-                    ? item.isVideo
-                    : item.mimeType && item.mimeType.startsWith("video/")
-                    ? true
-                    : item.mimeType && item.mimeType.startsWith("image/")
-                    ? false
-                    : !/\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(item.url || "");
+                const itemIsVideo = Boolean(item.isVideo);
                const isSelected = selectedMediaIds.includes(item.id);
                const heroVideo = itemIsVideo ? resolveHeroVideo(item.url || "") : null;
                const mediaSrc =
@@ -631,8 +626,9 @@ export default function AdminMediaPage() {
                         onClick={() => {
                           setEditingItem(item);
                           setEditFilename(item.filename);
-                          setEditAlt(item.alt || "");
-                          setEditFolder(item.folder);
+                           setEditAlt(item.alt || "");
+                           setEditFolder(item.folder);
+                           setEditIsVideo(Boolean(item.isVideo));
                         }}
                         className="p-1.5 rounded-lg bg-thuy-800 hover:bg-thuy-700 text-slate-200 border border-thuy-700"
                         title="Đổi tên / Sửa thông tin"
@@ -993,9 +989,19 @@ export default function AdminMediaPage() {
                   onChange={(e) => setEditAlt(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg bg-thuy-800 border border-thuy-700 text-xs text-[#142338]"
                 />
-              </div>
+               </div>
 
-              <div className="pt-2 flex gap-2">
+               <label className="flex items-center gap-2 text-xs text-slate-700">
+                 <input
+                   type="checkbox"
+                   checked={editIsVideo}
+                   onChange={(e) => setEditIsVideo(e.target.checked)}
+                   className="w-4 h-4"
+                 />
+                 Đây là video
+               </label>
+
+               <div className="pt-2 flex gap-2">
                 <button
                   type="button"
                   onClick={() => setEditingItem(null)}
