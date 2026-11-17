@@ -24,6 +24,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     price ? `Giá: ${price}` : "",
     product.productCategory ? `Danh mục: ${product.productCategory}` : "",
     product.location ? `Địa điểm: ${product.location}` : "",
+    product.client ? `Chủ đầu tư: ${product.client}` : "",
+    product.year ? `Năm: ${product.year}` : "",
     product.floors ? `Tầng: ${product.floors}` : "",
     product.landArea ? `Đất: ${product.landArea}m²` : "",
     product.buildingArea ? `Sàn: ${product.buildingArea}m²` : "",
