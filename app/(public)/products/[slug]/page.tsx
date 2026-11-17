@@ -216,14 +216,20 @@ export default function ProductDetailPage({
                  allow="autoplay; fullscreen; encrypted-media"
                  className="w-full h-full border-0"
                />
+             ) : activeSrc && activeIsVideo && activeHeroVideo?.kind === "embed" ? (
+               <iframe ... />
              ) : activeSrc && activeIsVideo ? (
-              <video
-                src={activeSrc}
-                className="w-full h-full object-cover"
-                controls
-                playsInline
-              />
-            ) : (
+               <video
+                 src={activeSrc}
+                 className="w-full h-full object-cover"
+                 autoPlay
+                 muted
+                 loop
+                 playsInline
+                 controlsList="nodownload"
+                 disablePictureInPicture
+               />
+             ) : (
               <div className="w-full h-full bg-thuy-900 flex items-center justify-center text-slate-500">
                 <Download className="w-12 h-12 text-slate-600" />
               </div>

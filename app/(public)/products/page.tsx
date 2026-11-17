@@ -177,15 +177,19 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   <div className="space-y-3">
                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950">
                       {thumbUrl ? (
-                        thumbIsVideo ? (
-                          <video
-                            src={thumbSrc}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            muted
-                            playsInline
-                            preload="metadata"
-                          />
-                        ) : (
+                         thumbIsVideo ? (
+                           <video
+                             src={thumbSrc}
+                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                             autoPlay
+                             muted
+                             loop
+                             playsInline
+                             controlsList="nodownload"
+                             disablePictureInPicture
+                             preload="metadata"
+                           />
+                         ) : (
                           <Image
                             src={thumbSrc}
                             alt={prod.name}
