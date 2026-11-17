@@ -2317,11 +2317,33 @@ export default function AdminCatalogClient({
                       <Loader2 className="w-4 h-4 animate-spin text-thuy-400" />
                     )}
                   </div>
-                  {form.fileKey && (
-                    <p className="text-[10px] text-emerald-400 font-mono truncate">
-                      Đang lưu: {form.fileKey}
-                    </p>
-                  )}
+                   {form.fileKey && (
+                     <div className="flex items-center gap-2">
+                       <p className="text-[10px] text-emerald-400 font-mono truncate">
+                         Đang lưu: {form.fileKey}
+                       </p>
+                       <button
+                         type="button"
+                         onClick={async () => {
+                           if (!confirm("Xóa file đã tải lên?")) return;
+                           try {
+                             const res = await fetch("/api/products/file", {
+                               method: "DELETE",
+                               headers: { "Content-Type": "application/json" },
+                               body: JSON.stringify({ productId: form.id }),
+                             });
+                             if (!res.ok) throw new Error("Xóa thất bại");
+                             updateForm({ fileKey: "", fileName: "", fileSize: "" });
+                           } catch (e) {
+                             alert("Không thể xóa file.");
+                           }
+                         }}
+                         className="text-[10px] text-red-400 hover:text-red-300 border border-red-500/30 rounded px-1.5 py-0.5"
+                       >
+                         Xóa file
+                       </button>
+                     </div>
+                   )}
                 </div>
 
                 <div className="space-y-1">
