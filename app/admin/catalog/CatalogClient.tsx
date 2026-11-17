@@ -1283,10 +1283,10 @@ export default function AdminCatalogClient({
                   required
                   value={form.name}
                   onChange={(e) =>
-                    updateForm({
-                      name: e.target.value,
-                      slug: form.id ? form.slug : slugify(e.target.value),
-                    })
+                     updateForm({
+                       name: e.target.value,
+                       slug: slugify(e.target.value),
+                     })
                   }
                   placeholder="Trọn bộ hồ sơ thiết kế biệt thự hiện đại 3 tầng"
                   className="w-full px-3 py-2 rounded-xl bg-thuy-800 border border-thuy-700 text-xs text-white"
