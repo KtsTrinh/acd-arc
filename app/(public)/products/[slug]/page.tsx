@@ -74,6 +74,30 @@ export default function ProductDetailPage({
       .finally(() => setLoading(false));
   }, [params.slug]);
 
+  useEffect(() => {
+    if (!product) return;
+    const setMeta = (name: string, content: string, prop = false) => {
+      let el = document.querySelector(prop ? `meta[property="${name}"]` : `meta[name="${name}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        if (prop) el.setAttribute("property", name);
+        else el.setAttribute("name", name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+    const url = window.location.href;
+    const img = product.thumbnail ? (product.thumbnail.startsWith("http") ? product.thumbnail : `${window.location.origin}${product.thumbnail}`) : "";
+    setMeta("og:title", product.name, true);
+    setMeta("og:description", product.shortDesc || product.description || "", true);
+    setMeta("og:image", img, true);
+    setMeta("og:url", url, true);
+    setMeta("twitter:card", "summary_large_image");
+    setMeta("twitter:title", product.name);
+    setMeta("twitter:image", img);
+    document.title = product.name;
+  }, [product]);
+
   if (loading) {
     return (
       <div className="pt-36 pb-20 text-center text-slate-400">
