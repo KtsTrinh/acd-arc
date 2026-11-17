@@ -18,7 +18,18 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       : `https://acd-arc.com${product.thumbnail}`
     : "";
   const price = product.priceAfterDiscount ?? product.price;
-  const desc = [product.shortDesc || product.description, price ? `Giá: ${price}` : "", product.productCategory ? `Danh mục: ${product.productCategory}` : ""].filter(Boolean).join(" | ");
+  const tags = (product.tags || []).map((t: any) => t?.tag?.name || t?.name).filter(Boolean).join(", ");
+  const parts = [
+    product.shortDesc || product.description,
+    price ? `Giá: ${price}` : "",
+    product.productCategory ? `Danh mục: ${product.productCategory}` : "",
+    product.location ? `Địa điểm: ${product.location}` : "",
+    product.floors ? `Tầng: ${product.floors}` : "",
+    product.landArea ? `Đất: ${product.landArea}m²` : "",
+    product.buildingArea ? `Sàn: ${product.buildingArea}m²` : "",
+    tags ? `Tags: ${tags}` : "",
+  ].filter(Boolean);
+  const desc = parts.join(" | ");
   return {
     title: product.name,
     description: desc,
