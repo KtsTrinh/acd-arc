@@ -525,14 +525,10 @@ export default function AdminCatalogClient({
       featured: Boolean(product.featured),
     });
     setThumbImage(
-      /\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(product.thumbnail || "")
-        ? product.thumbnail || ""
-        : "",
+      product.thumbnailIsVideo ? "" : product.thumbnail || "",
     );
     setThumbVideo(
-      /\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(product.thumbnail || "")
-        ? ""
-        : product.thumbnail || "",
+      product.thumbnailIsVideo ? product.thumbnail || "" : "",
     );
 
     // Load gallery items for this product
@@ -728,7 +724,8 @@ export default function AdminCatalogClient({
           form.downloadExpiresMinutes || "5",
           10,
         ),
-        thumbnail: fallbackThumb,
+         thumbnail: fallbackThumb,
+         thumbnailIsVideo: !!thumbVideo,
         location: form.location || null,
         client: form.client || null,
         year: form.year ? parseInt(form.year, 10) : null,

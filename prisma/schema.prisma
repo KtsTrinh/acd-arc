@@ -197,6 +197,7 @@ model Product {
   fileSize               String?
   fileKey                String?
   thumbnail              String?
+  thumbnailIsVideo       Boolean @default(false)
   active                 Boolean        @default(true)
   featured               Boolean        @default(false)
   createdAt              DateTime       @default(now())

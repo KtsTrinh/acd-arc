@@ -74,7 +74,8 @@ export async function PATCH(
       fileSize,
       fileKey,
       fileName,
-      thumbnail,
+       thumbnail,
+       thumbnailIsVideo,
       active,
       featured,
       downloadLinkUrl,
@@ -113,6 +114,7 @@ export async function PATCH(
     if (fileKey !== undefined) updateData.fileKey = fileKey;
     if (fileName !== undefined) updateData.fileName = fileName;
     if (thumbnail !== undefined) updateData.thumbnail = thumbnail;
+    if (thumbnailIsVideo !== undefined) updateData.thumbnailIsVideo = Boolean(thumbnailIsVideo);
     if (active !== undefined) updateData.active = Boolean(active);
     if (featured !== undefined) updateData.featured = Boolean(featured);
     if (downloadLinkUrl !== undefined)
