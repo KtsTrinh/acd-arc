@@ -548,6 +548,7 @@ export default function AdminMediaPage() {
                     <video
                       src={mediaSrc}
                       muted
+                      autoPlay
                       loop
                       playsInline
                       preload="metadata"
