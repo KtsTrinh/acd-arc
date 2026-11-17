@@ -387,7 +387,7 @@ export default function AdminCatalogClient({
 
   useEffect(() => {
     if (!form) return;
-    const hasThumb = (form.thumbnail || "").trim() || thumbImage.trim() || thumbVideo.trim();
+    const hasThumb = (form.thumbnail || "").trim();
     if (hasThumb) return;
     if (galleryItems.length === 0) return;
     const first = galleryItems[0];
@@ -397,7 +397,7 @@ export default function AdminCatalogClient({
     setThumbImage(isVid ? "" : firstUrl);
     setThumbVideo(isVid ? firstUrl : "");
     setForm((prev) => (prev ? { ...prev, thumbnail: firstUrl } : prev));
-  }, [form, thumbImage, thumbVideo, galleryItems]);
+  }, [form?.id, galleryItems]);
 
   useEffect(() => {
     const handleUp = () => {
