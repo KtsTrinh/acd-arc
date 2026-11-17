@@ -14,7 +14,7 @@ import {
   Copy,
   AlertCircle,
 } from "lucide-react";
-import { isLikelyVideoUrl, proxiedMediaUrl } from "@/lib/media-url";
+import { isLikelyVideoUrl, proxiedMediaUrl, resolveHeroVideo } from "@/lib/media-url";
 
 export default function AdminMediaPage() {
   const [mediaList, setMediaList] = useState<any[]>([]);
@@ -534,9 +534,15 @@ export default function AdminMediaPage() {
             {mediaList.map((item) => {
                const itemIsVideo = isLikelyVideoUrl(item.url || "", item.mimeType);
                const isSelected = selectedMediaIds.includes(item.id);
-               const mediaSrc = itemIsVideo && !/drive\.google\.com/i.test(item.url || "")
-                 ? (item.url || "")
-                 : proxiedMediaUrl(item.url || "", item.mimeType);
+               const heroVideo = itemIsVideo ? resolveHeroVideo(item.url || "") : null;
+               const mediaSrc =
+                 heroVideo?.kind === "file"
+                   ? /drive\.google\.com/i.test(item.url || "")
+                     ? proxiedMediaUrl(item.url || "", item.mimeType)
+                     : heroVideo.src
+                   : itemIsVideo
+                   ? (item.url || "")
+                   : proxiedMediaUrl(item.url || "", item.mimeType);
 
               return (
                 <div
@@ -546,18 +552,25 @@ export default function AdminMediaPage() {
                   onClick={() => toggleSelectMedia(item.id)}
                   className={`group relative aspect-square rounded-2xl overflow-hidden bg-thuy-950 border transition-all duration-300 hover:shadow-card-dark flex flex-col justify-end cursor-pointer border-thuy-750 hover:border-thuy-400`}
                 >
-                  {itemIsVideo && mediaSrc ? (
-                    <video
-                      src={mediaSrc}
-                      muted
-                      autoPlay
-                      loop
-                      playsInline
-                      preload="metadata"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <img
+                   {itemIsVideo && heroVideo?.kind === "embed" ? (
+                     <iframe
+                       src={heroVideo.src}
+                       title={item.alt || item.filename}
+                       allow="autoplay; fullscreen; encrypted-media"
+                       className="w-full h-full border-0"
+                     />
+                   ) : itemIsVideo && mediaSrc ? (
+                     <video
+                       src={mediaSrc}
+                       muted
+                       autoPlay
+                       loop
+                       playsInline
+                       preload="metadata"
+                       className="w-full h-full object-cover"
+                     />
+                   ) : (
+                     <img
                       src={mediaSrc}
                       alt={item.alt || item.filename}
                       style={{
