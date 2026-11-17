@@ -353,7 +353,8 @@ export default function AdminCatalogClient({
   };
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+   const [uploading, setUploading] = useState(false);
+   const [deleteFileOpen, setDeleteFileOpen] = useState(false);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [mediaTarget, setMediaTarget] = useState<
     "thumbnailImage" | "thumbnailVideo" | null
@@ -2324,24 +2325,49 @@ export default function AdminCatalogClient({
                        </p>
                        <button
                          type="button"
-                         onClick={async () => {
-                           if (!confirm("Xóa file đã tải lên?")) return;
-                           try {
-                             const res = await fetch("/api/products/file", {
-                               method: "DELETE",
-                               headers: { "Content-Type": "application/json" },
-                               body: JSON.stringify({ productId: form.id }),
-                             });
-                             if (!res.ok) throw new Error("Xóa thất bại");
-                             updateForm({ fileKey: "", fileName: "", fileSize: "" });
-                           } catch (e) {
-                             alert("Không thể xóa file.");
-                           }
-                         }}
-                         className="text-[10px] text-red-400 hover:text-red-300 border border-red-500/30 rounded px-1.5 py-0.5"
+                         onClick={() => setDeleteFileOpen(true)}
+                         className="text-red-400 hover:text-red-300 border border-red-500/30 rounded p-1"
+                         title="Xóa file"
                        >
-                         Xóa file
+                         <Trash2 className="w-3.5 h-3.5" />
                        </button>
+                     </div>
+                   )}
+                   {deleteFileOpen && (
+                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
+                       <div className="bg-thuy-850 border border-thuy-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl animate-in zoom-in-95">
+                         <h3 className="text-white font-semibold mb-2">Xóa file đã tải?</h3>
+                         <p className="text-slate-400 text-sm mb-4">File sẽ bị xóa vĩnh viễn và không thể khôi phục.</p>
+                         <div className="flex justify-end gap-2">
+                           <button
+                             type="button"
+                             onClick={() => setDeleteFileOpen(false)}
+                             className="px-3 py-1.5 rounded-lg bg-thuy-900 text-slate-300 text-xs hover:bg-thuy-700"
+                           >
+                             Hủy
+                           </button>
+                           <button
+                             type="button"
+                             onClick={async () => {
+                               try {
+                                 const res = await fetch("/api/products/file", {
+                                   method: "DELETE",
+                                   headers: { "Content-Type": "application/json" },
+                                   body: JSON.stringify({ productId: form.id }),
+                                 });
+                                 if (!res.ok) throw new Error("Xóa thất bại");
+                                 updateForm({ fileKey: "", fileName: "", fileSize: "" });
+                                 setDeleteFileOpen(false);
+                               } catch (e) {
+                                 alert("Không thể xóa file.");
+                               }
+                             }}
+                             className="px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs hover:bg-red-600"
+                           >
+                             Xóa
+                           </button>
+                         </div>
+                       </div>
                      </div>
                    )}
                 </div>
