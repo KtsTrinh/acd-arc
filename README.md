@@ -25,45 +25,48 @@ graph TD
   H --> I[Google Drive / External]
 ```
 
-## Request Logic Flow
+## System Architecture & Business Flows (ASCII)
 
 ```
-┌──────────────┐
-│ User Request │
-└──────┬───────┘
-       ▼
-┌────────────────────┐
-│ Next.js Route      │
-│ Handler            │
-└──────┬─────────────┘
-       ▼
-┌────────────────────┐
-│ Auth Check         │
-└──────┬─────────────┘
-       ▼
-┌────────────────────┐
-│ Validate Params    │
-└──────┬─────────────┘
-       ▼
-┌────────────────────┐
-│ Service / Prisma   │
-└──────┬─────────────┘
-       ├──► ┌──────────────┐
-       │    │ PostgreSQL   │
-       │    └──────────────┘
-       │
-       └──► ┌──────────────┐
-            │ Media Proxy  │
-            └──────┬───────┘
-                   ▼
-            ┌──────────────┐
-            │ Google Drive │
-            │ / External   │
-            └──────────────┘
-       ▼
-┌────────────────────┐
-│ Response to User   │
-└────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              USER BROWSER                                    │
+└──────────────┬──────────────────────────────┬────────────────────────────────┘
+               │                              │
+               ▼                              ▼
+┌──────────────────────────┐      ┌──────────────────────────┐
+│   PUBLIC SITE            │      │   ADMIN CMS              │
+│  - Product list/detail   │      │  - Login/Auth            │
+│  - Cart / Checkout       │      │  - Products (CRUD)       │
+│  - Orders / Downloads    │      │  - Orders (confirm)      │
+│  - Share (OG metadata)   │      │  - Users / Settings      │
+│  - Video autoplay/loop   │      │  - Media Library         │
+└──────────────┬───────────┘      └──────────────┬───────────┘
+               │                              │
+               ▼                              ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         NEXT.JS API ROUTES                                 │
+│  /api/products  /api/orders  /api/media  /api/downloads  /api/auth  /api/cms │
+└──────────────┬──────────────────────────────┬────────────────────────────────┘
+               │                              │
+               ▼                              ▼
+┌──────────────────────────┐      ┌──────────────────────────┐
+│   AUTH (getCurrentUser)  │      │   MEDIA PROXY            │
+│  - Cookie/JWT verify     │      │  /api/media/stream       │
+│  - Role check (ADMIN)    │      │  - Drive uc/preview      │
+└──────────────┬───────────┘      │  - Range / CORS          │
+               │                  └──────────────┬───────────┘
+               ▼                                 │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           PRISMA / POSTGRESQL                               │
+│  Product, Order, OrderItem, DownloadLink, Media, User, Settings, Tag...     │
+└──────────────┬──────────────────────────────┬────────────────────────────────┘
+               │                              │
+               ▼                              ▼
+┌──────────────────────────┐      ┌──────────────────────────┐
+│   FILE STORAGE           │      │   EXTERNAL MEDIA         │
+│  storage/private (files) │      │  Google Drive / CDN      │
+│  storage/public (media)  │      │  (images/videos)         │
+└──────────────────────────┘      └──────────────────────────┘
 ```
 
 ## Design Thinking
