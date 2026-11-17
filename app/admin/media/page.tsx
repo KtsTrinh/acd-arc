@@ -565,15 +565,16 @@ export default function AdminMediaPage() {
                        className="w-full h-full border-0"
                      />
                    ) : itemIsVideo && mediaSrc ? (
-                     <video
-                       src={mediaSrc}
-                       muted
-                       autoPlay
-                       loop
-                       playsInline
-                       preload="metadata"
-                       className="w-full h-full object-cover"
-                     />
+                      <video
+                        src={mediaSrc}
+                        muted
+                        autoPlay
+                        loop
+                        playsInline
+                        controls
+                        preload="metadata"
+                        className="w-full h-full object-cover"
+                      />
                    ) : (
                      <img
                       src={mediaSrc}
