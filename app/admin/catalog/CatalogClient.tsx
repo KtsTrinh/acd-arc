@@ -2586,8 +2586,10 @@ function CatalogTable({
                     <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
                       {p.thumbnail ? (
                         (() => {
-                          const thumbSrc = proxiedMediaUrl(p.thumbnail);
-                          const isVid = isLikelyVideoUrl(p.thumbnail);
+                           const thumbSrc = /drive\.google\.com/i.test(p.thumbnail)
+                             ? proxiedMediaUrl(p.thumbnail)
+                             : p.thumbnail;
+                           const isVid = Boolean(p.thumbnailIsVideo);
                           if (isVid) {
                             return (
                               <video

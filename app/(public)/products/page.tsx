@@ -163,8 +163,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               const tags = (prod.tags || []).map((t: any) => t?.tag?.name).filter(Boolean).slice(0, 3);
               const thumbUrl = prod.thumbnail || prod.gallery?.[0]?.media?.url || "";
               const thumbMime = prod.gallery?.[0]?.media?.mimeType || null;
-              const thumbIsVideo = isLikelyVideoUrl(thumbUrl, thumbMime);
-              const thumbSrc = proxiedMediaUrl(thumbUrl, thumbMime);
+               const thumbIsVideo = thumbUrl === prod.thumbnail
+                 ? Boolean(prod.thumbnailIsVideo)
+                 : isLikelyVideoUrl(thumbUrl, thumbMime);
+               const thumbSrc = thumbIsVideo && !/drive\.google\.com/i.test(thumbUrl)
+                 ? thumbUrl
+                 : proxiedMediaUrl(thumbUrl, thumbMime);
               return (
                 <div
                   key={prod.id}
