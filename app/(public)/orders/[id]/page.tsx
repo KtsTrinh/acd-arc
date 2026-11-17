@@ -53,7 +53,11 @@ export default function OrderDetailPage({
   }, [params.id]);
 
   useEffect(() => {
-    if (!order || order.status !== "PENDING") return;
+    if (!order) return;
+    const needsPoll =
+      order.status === "PENDING" ||
+      (order.status === "PAID" && (!order.downloads || order.downloads.length === 0));
+    if (!needsPoll) return;
     let active = true;
     const poll = async () => {
       try {
@@ -65,12 +69,12 @@ export default function OrderDetailPage({
         console.error(err);
       }
     };
-    const timer = setInterval(poll, 8000);
+    const timer = setInterval(poll, 3000);
     return () => {
       active = false;
       clearInterval(timer);
     };
-  }, [order?.status, order?.id, params.id]);
+  }, [order?.status, order?.id, params.id, order?.downloads?.length]);
 
   useEffect(() => {
     const qr = order?.payosQrCode;
