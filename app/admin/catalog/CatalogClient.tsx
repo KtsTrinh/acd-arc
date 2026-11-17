@@ -804,7 +804,8 @@ export default function AdminCatalogClient({
 
   const isVideoItem = (item: MediaItem) => {
     if (item.mimeType && item.mimeType.startsWith("video/")) return true;
-    return /\.(mp4|webm|mov|avi)(\?|$)/i.test(item.url || "");
+    if (item.mimeType && item.mimeType.startsWith("image/")) return false;
+    return isLikelyVideoUrl(item.url || "", item.mimeType);
   };
 
   const handleGalleryAdd = async (selected: MediaItem | MediaItem[]) => {
