@@ -154,6 +154,7 @@ model Media {
   filename      String
   originalName  String?
   mimeType      String         @default("image/jpeg")
+  isVideo       Boolean        @default(false)
   size          Int            @default(0)
   url           String
   storageKey    String

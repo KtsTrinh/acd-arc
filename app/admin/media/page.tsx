@@ -532,12 +532,14 @@ export default function AdminMediaPage() {
               />
             )}
             {mediaList.map((item) => {
-               const itemIsVideo =
-                 item.mimeType && item.mimeType.startsWith("video/")
-                   ? true
-                   : item.mimeType && item.mimeType.startsWith("image/")
-                   ? false
-                   : !/\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(item.url || "");
+                const itemIsVideo =
+                  typeof item.isVideo === "boolean"
+                    ? item.isVideo
+                    : item.mimeType && item.mimeType.startsWith("video/")
+                    ? true
+                    : item.mimeType && item.mimeType.startsWith("image/")
+                    ? false
+                    : !/\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(item.url || "");
                const isSelected = selectedMediaIds.includes(item.id);
                const heroVideo = itemIsVideo ? resolveHeroVideo(item.url || "") : null;
                const mediaSrc =
