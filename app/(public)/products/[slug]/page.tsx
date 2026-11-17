@@ -162,8 +162,7 @@ export default function ProductDetailPage({
     uniqueMedia.find((m) => m.url === active) ||
     (active ? { url: active, mimeType: null } : null);
   const activeIsVideo = activeMedia
-    ? isLikelyVideoUrl(activeMedia.url, activeMedia.mimeType) ||
-      !/\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(activeMedia.url || "")
+    ? isLikelyVideoUrl(activeMedia.url, activeMedia.mimeType)
     : false;
   const activeHeroVideo = activeMedia && activeIsVideo
     ? resolveHeroVideo(activeMedia.url)
@@ -238,9 +237,7 @@ export default function ProductDetailPage({
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                 {uniqueMedia.map((m, idx) => {
                   const src = proxiedMediaUrl(m.url, m.mimeType);
-                   const isVid =
-                     isLikelyVideoUrl(m.url, m.mimeType) ||
-                     !/\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(m.url || "");
+                   const isVid = isLikelyVideoUrl(m.url, m.mimeType);
                   const selected = active === m.url;
                   return (
                     <button
