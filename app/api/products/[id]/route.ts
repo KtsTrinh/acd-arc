@@ -95,7 +95,16 @@ export async function PATCH(
 
     const updateData: any = {};
     if (name !== undefined) updateData.name = name;
-    if (slug !== undefined) updateData.slug = slugify(slug);
+    if (slug !== undefined) {
+      let baseSlug = slugify(slug);
+      let candidate = baseSlug;
+      let counter = 1;
+      while (await prisma.product.findFirst({ where: { slug: candidate, NOT: { id } } })) {
+        candidate = `${baseSlug}-${counter}`;
+        counter += 1;
+      }
+      updateData.slug = candidate;
+    }
     if (description !== undefined) updateData.description = description;
     if (shortDesc !== undefined) updateData.shortDesc = shortDesc || null;
     if (price !== undefined) updateData.price = price ? parseFloat(price) : null;
