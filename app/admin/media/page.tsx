@@ -532,7 +532,12 @@ export default function AdminMediaPage() {
               />
             )}
             {mediaList.map((item) => {
-               const itemIsVideo = isLikelyVideoUrl(item.url || "", item.mimeType);
+               const itemIsVideo =
+                 item.mimeType && item.mimeType.startsWith("video/")
+                   ? true
+                   : item.mimeType && item.mimeType.startsWith("image/")
+                   ? false
+                   : !/\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(item.url || "");
                const isSelected = selectedMediaIds.includes(item.id);
                const heroVideo = itemIsVideo ? resolveHeroVideo(item.url || "") : null;
                const mediaSrc =

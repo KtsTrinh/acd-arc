@@ -717,11 +717,13 @@ export default function MediaPickerModal({
     }
 
     const normalizedUrl = externalUrl.trim();
-    const detectedMime = isLikelyVideoUrl(externalUrl)
+    const detectedMime = /\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i.test(externalUrl)
+      ? "image/jpeg"
+      : isLikelyVideoUrl(externalUrl)
       ? externalUrl.toLowerCase().includes(".webm")
         ? "video/webm"
         : "video/mp4"
-      : "image/jpeg";
+      : "video/mp4";
     const filename =
       externalUrl.split("/").pop()?.split("?")[0] || "media";
 
