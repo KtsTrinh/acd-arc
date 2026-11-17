@@ -44,7 +44,7 @@ graph TD
                │                              │
                ▼                              ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         NEXT.JS API ROUTES                                 │
+│                         NEXT.JS API ROUTES                                  │
 │  /api/products  /api/orders  /api/media  /api/downloads  /api/auth  /api/cms │
 └──────────────┬──────────────────────────────┬────────────────────────────────┘
                │                              │
