@@ -13,6 +13,7 @@ const YOUTUBE_ID_REGEX =
 const VIMEO_ID_REGEX = /vimeo\.com\/(?:video\/)?(\d+)/;
 
 const VIDEO_FILE_REGEX = /\.(mp4|webm|mov|m4v|ogv)(\?.*)?$/i;
+const IMAGE_FILE_REGEX = /\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)(\?.*)?$/i;
 
 /**
  * Chuẩn hoá link Google Drive về link trực tiếp (dùng cho thẻ <img> hoặc <video>).
@@ -74,9 +75,13 @@ export function proxiedMediaUrl(
  * Xác định URL có phải video không (theo đuôi file, YouTube/Vimeo, hoặc mime).
  */
 export function isLikelyVideoUrl(url: string, mimeType?: string | null): boolean {
-  if (mimeType && /^video\//i.test(mimeType)) return true;
+  if (mimeType) {
+    if (/^image\//i.test(mimeType)) return false;
+    if (/^video\//i.test(mimeType)) return true;
+  }
   const trimmed = (url || "").trim();
   if (!trimmed) return false;
+  if (IMAGE_FILE_REGEX.test(trimmed)) return false;
   if (VIDEO_FILE_REGEX.test(trimmed)) return true;
   if (YOUTUBE_ID_REGEX.test(trimmed) || VIMEO_ID_REGEX.test(trimmed)) return true;
   return false;
