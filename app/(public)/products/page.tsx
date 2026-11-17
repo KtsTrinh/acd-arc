@@ -221,7 +221,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                         <p className="text-[11px] text-slate-300 line-clamp-2">{prod.shortDesc}</p>
                       )}
                       <p className="text-[11px] text-slate-400 line-clamp-2">
-                        {prod.fileFormat || prod.description || "—"}
+                         {prod.shortDesc || prod.fileFormat || "—"}
                       </p>
                       <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-slate-400">
                         {prod.location && (

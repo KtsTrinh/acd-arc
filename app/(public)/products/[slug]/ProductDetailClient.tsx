@@ -416,7 +416,7 @@ export default function ProductDetailPage({
             <h3 className="text-xs font-semibold uppercase tracking-wider text-thuy-300">
               Mô tả chi tiết
             </h3>
-            <p className="text-sm text-slate-300 leading-relaxed font-light whitespace-pre-line">
+             <p className="text-sm text-slate-300 leading-relaxed font-light whitespace-pre-line text-justify">
               {product.description ||
                 "Bộ hồ sơ kỹ thuật bao gồm đầy đủ các bản vẽ chi tiết phục vụ cho công tác thiết kế, xin phép và thi công thực tế."}
             </p>
