@@ -26,7 +26,7 @@ import {
   AlertCircle,
   X,
 } from "lucide-react";
-import { isLikelyVideoUrl, proxiedMediaUrl } from "@/lib/media-url";
+import { isLikelyVideoUrl, proxiedMediaUrl, resolveHeroVideo } from "@/lib/media-url";
 
 function InfoRow({
   label,
@@ -164,8 +164,17 @@ export default function ProductDetailPage({
   const activeIsVideo = activeMedia
     ? isLikelyVideoUrl(activeMedia.url, activeMedia.mimeType)
     : false;
+  const activeHeroVideo = activeMedia && activeIsVideo
+    ? resolveHeroVideo(activeMedia.url)
+    : null;
   const activeSrc = activeMedia
-    ? proxiedMediaUrl(activeMedia.url, activeMedia.mimeType)
+    ? activeHeroVideo?.kind === "file"
+      ? /drive\.google\.com/i.test(activeMedia.url || "")
+        ? proxiedMediaUrl(activeMedia.url, activeMedia.mimeType)
+        : activeHeroVideo.src
+      : activeHeroVideo?.kind === "embed"
+      ? activeHeroVideo.src
+      : proxiedMediaUrl(activeMedia.url, activeMedia.mimeType)
     : "";
 
   const tags: string[] = Array.isArray(product.tags)
@@ -198,7 +207,14 @@ export default function ProductDetailPage({
                 priority
                 unoptimized
               />
-            ) : activeSrc && activeIsVideo ? (
+             ) : activeSrc && activeIsVideo && activeHeroVideo?.kind === "embed" ? (
+               <iframe
+                 src={activeSrc}
+                 title={product.name}
+                 allow="autoplay; fullscreen; encrypted-media"
+                 className="w-full h-full border-0"
+               />
+             ) : activeSrc && activeIsVideo ? (
               <video
                 src={activeSrc}
                 className="w-full h-full object-cover"

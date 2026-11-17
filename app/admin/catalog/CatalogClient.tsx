@@ -1686,17 +1686,27 @@ export default function AdminCatalogClient({
                         Chọn video
                       </button>
                     </div>
-                    <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
-                      {thumbVideo ? (
-                        <video
-                          src={proxiedMediaUrl(thumbVideo)}
-                          muted
-                          loop
-                          playsInline
-                          controls
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
+                     <div className="relative w-full h-40 rounded-xl overflow-hidden bg-thuy-950 border border-thuy-700">
+                       {thumbVideo ? (
+                         resolveHeroVideo(thumbVideo)?.kind === "embed" ? (
+                           <iframe
+                             src={resolveHeroVideo(thumbVideo)!.src}
+                             title="Video thumbnail"
+                             allow="autoplay; fullscreen; encrypted-media"
+                             className="w-full h-full border-0"
+                           />
+                         ) : (
+                           <video
+                             src={proxiedMediaUrl(thumbVideo)}
+                             muted
+                             autoPlay
+                             loop
+                             playsInline
+                             controls
+                             className="w-full h-full object-cover"
+                           />
+                         )
+                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
                           <VideoIcon className="w-6 h-6" />
                           <span className="text-[10px]">
@@ -1852,16 +1862,23 @@ export default function AdminCatalogClient({
                         />
                       )}
                       {galleryItems.map((item) => {
-                        const itemIsVideo = isLikelyVideoUrl(
-                          item.media.url,
-                          item.media.mimeType,
-                        );
+                         const itemIsVideo = isLikelyVideoUrl(
+                           item.media.url,
+                           item.media.mimeType,
+                         );
+                         const heroVideo = itemIsVideo
+                           ? resolveHeroVideo(item.media.url)
+                           : null;
                         const isSelectedForDelete =
                           gallerySelectedForDelete.has(item.mediaId);
-                        const mediaSrc = proxiedMediaUrl(
-                          item.media.url,
-                          item.media.mimeType,
-                        );
+                         const mediaSrc =
+                           heroVideo?.kind === "file"
+                             ? /drive\.google\.com/i.test(item.media.url || "")
+                               ? proxiedMediaUrl(item.media.url, item.media.mimeType)
+                               : heroVideo.src
+                             : itemIsVideo
+                             ? item.media.url || ""
+                             : proxiedMediaUrl(item.media.url, item.media.mimeType);
                         return (
                           <div
                             key={item.mediaId}
@@ -1895,16 +1912,24 @@ export default function AdminCatalogClient({
                               <GripVertical className="w-3.5 h-3.5" />
                             </div>
 
-                            {itemIsVideo ? (
-                              <video
-                                src={mediaSrc}
-                                muted
-                                loop
-                                playsInline
-                                preload="metadata"
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
+                             {itemIsVideo && heroVideo?.kind === "embed" ? (
+                               <iframe
+                                 src={heroVideo.src}
+                                 title={item.media.alt || item.media.filename}
+                                 allow="autoplay; fullscreen; encrypted-media"
+                                 className="w-full h-full border-0"
+                               />
+                             ) : itemIsVideo && mediaSrc ? (
+                               <video
+                                 src={mediaSrc}
+                                 muted
+                                 autoPlay
+                                 loop
+                                 playsInline
+                                 preload="metadata"
+                                 className="w-full h-full object-cover"
+                               />
+                             ) : (
                               <img
                                 src={mediaSrc}
                                 alt={item.media.alt || item.media.filename}
