@@ -17,19 +17,21 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       ? product.thumbnail
       : `https://acd-arc.com${product.thumbnail}`
     : "";
+  const price = product.priceAfterDiscount ?? product.price;
+  const desc = [product.shortDesc || product.description, price ? `Giá: ${price}` : "", product.productCategory ? `Danh mục: ${product.productCategory}` : ""].filter(Boolean).join(" | ");
   return {
     title: product.name,
-    description: product.shortDesc || product.description || "",
+    description: desc,
     openGraph: {
       title: product.name,
-      description: product.shortDesc || product.description || "",
+      description: desc,
       url: `https://acd-arc.com/products/${params.slug}`,
       images: img ? [{ url: img }] : [],
     },
     twitter: {
       card: "summary_large_image",
       title: product.name,
-      description: product.shortDesc || product.description || "",
+      description: desc,
       images: img ? [img] : [],
     },
   };
