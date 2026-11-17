@@ -494,7 +494,7 @@ export default function ProductDetailPage({
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-white font-semibold text-base">Sản phẩm hiện chưa kinh doanh</h3>
-                  <p className="text-slate-400 text-sm mt-1.5 leading-relaxed">
+                   <p className="text-slate-400 text-sm mt-1.5 leading-relaxed text-justify">
                     Sản phẩm <b className="text-white">{product.name}</b> hiện chưa có file/link tải nên tạm thời chưa thể mua. Vui lòng quay lại sau hoặc liên hệ hỗ trợ.
                   </p>
                 </div>

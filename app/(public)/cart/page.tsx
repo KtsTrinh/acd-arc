@@ -401,7 +401,7 @@ export default function CartPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-white font-semibold text-base">Sản phẩm hiện chưa kinh doanh</h3>
-                  <p className="text-slate-400 text-sm mt-1.5 leading-relaxed">
+                  <p className="text-slate-400 text-sm mt-1.5 leading-relaxed text-justify">
                     {unavailableNames.length === 1 ? (
                       <>Sản phẩm <b className="text-white">{unavailableNames[0]}</b> hiện chưa có file/link tải nên tạm thời chưa thể thanh toán.</>
                     ) : (
