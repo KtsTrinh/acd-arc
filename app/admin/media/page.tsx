@@ -532,9 +532,11 @@ export default function AdminMediaPage() {
               />
             )}
             {mediaList.map((item) => {
-              const itemIsVideo = isLikelyVideoUrl(item.url || "", item.mimeType);
-              const isSelected = selectedMediaIds.includes(item.id);
-              const mediaSrc = proxiedMediaUrl(item.url || "", item.mimeType);
+               const itemIsVideo = isLikelyVideoUrl(item.url || "", item.mimeType);
+               const isSelected = selectedMediaIds.includes(item.id);
+               const mediaSrc = itemIsVideo && !/drive\.google\.com/i.test(item.url || "")
+                 ? (item.url || "")
+                 : proxiedMediaUrl(item.url || "", item.mimeType);
 
               return (
                 <div
