@@ -63,9 +63,10 @@ export async function POST(request: Request) {
               originalName: file.name || `Google Drive ${file.id}`,
               mimeType: file.mimeType || (isVideo ? "video/mp4" : "image/jpeg"),
               size: 0,
-              url: fileUrl,
-              folder,
-              alt: file.name?.replace(/\.[^/.]+$/, "") || "ACD Media",
+           url: fileUrl,
+           folder,
+           alt: file.name?.replace(/\.[^/.]+$/, "") || "ACD Media",
+           isVideo,
             });
             results.push(media);
           } catch (e) {}
@@ -159,9 +160,10 @@ export async function POST(request: Request) {
           originalName: name,
           mimeType,
           size: 0,
-          url: fileUrl,
-          folder,
-          alt: name.replace(/\.[^/.]+$/, "") || "ACD Media",
+           url: fileUrl,
+           folder,
+           alt: name.replace(/\.[^/.]+$/, "") || "ACD Media",
+           isVideo,
         });
         results.push(media);
       } catch (e) {}
