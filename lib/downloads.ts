@@ -36,6 +36,10 @@ export async function generateOrderDownloadLinks(
   const links: any[] = [];
   const now = Date.now();
 
+  const productIds = order.items.map((i) => i.productId).filter(Boolean) as string[];
+  const products = await prisma.product.findMany({ where: { id: { in: productIds } } });
+  const productMap = new Map(products.map((p) => [p.id, p]));
+
   for (const item of order.items) {
     // Sản phẩm đã bị xoá khỏi danh mục -> không cấp link
     if (!item.productId) continue;
@@ -54,9 +58,7 @@ export async function generateOrderDownloadLinks(
       continue;
     }
 
-    const product = await prisma.product.findUnique({
-      where: { id: item.productId },
-    });
+    const product = productMap.get(item.productId as string);
 
     const expiresInMinutes =
       product?.downloadExpiresMinutes && product.downloadExpiresMinutes > 0
