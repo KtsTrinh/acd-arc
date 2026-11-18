@@ -316,9 +316,19 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <div className="flex items-center justify-center gap-2 mt-6 flex-wrap">
               <div className="flex items-center gap-2 text-xs text-slate-400">
                 <span>Hiển thị</span>
-                {[10, 20, 50].map((s) => (
-                  <Link key={s} href={`/products?page=1&size=${s}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className={`px-2 py-1 rounded ${pageSize === s ? "bg-thuy-400 text-thuy-950" : "bg-thuy-800 text-white"}`}>{s}</Link>
-                ))}
+                <form method="get" className="inline">
+                  <input type="hidden" name="page" value="1" />
+                  {productGroup && <input type="hidden" name="productGroup" value={productGroup} />}
+                  {productCategory && <input type="hidden" name="productCategory" value={productCategory} />}
+                  {search && <input type="hidden" name="search" value={search} />}
+                  {featured && <input type="hidden" name="featured" value={featured} />}
+                  <select name="size" defaultValue={String(pageSize)} className="bg-thuy-900 border border-thuy-700 rounded px-2 py-1 text-white">
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                  </select>
+                  <button type="submit" className="px-2 py-1 rounded bg-thuy-800 text-white text-xs">OK</button>
+                </form>
                 <span>/ trang</span>
               </div>
               <div className="flex items-center gap-1">
