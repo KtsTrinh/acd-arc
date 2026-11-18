@@ -23,13 +23,14 @@ interface ProductsPageProps {
   search?: string;
   featured?: string;
   page?: string;
+  size?: string;
   };
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const { productGroup, productCategory, search, featured, page } = searchParams;
+  const { productGroup, productCategory, search, featured, page, size } = searchParams;
   const pageNum = Math.max(1, parseInt(page || "1", 10) || 1);
-  const pageSize = 12;
+  const pageSize = [10, 20, 50].includes(Number(size)) ? Number(size) : 12;
 
   const where: any = { active: true };
   if (productGroup) {
@@ -311,17 +312,32 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             })}
           </div>
         )}
-        {total > pageSize && (
-            <div className="flex items-center justify-center gap-2 mt-6">
-              {pageNum > 1 && (
-                <Link href={`/products?page=${pageNum - 1}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs">Trước</Link>
-              )}
-              <span className="text-xs text-slate-400">{pageNum} / {Math.ceil(total / pageSize)}</span>
-              {pageNum < Math.ceil(total / pageSize) && (
-                <Link href={`/products?page=${pageNum + 1}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs">Sau</Link>
-              )}
+          {total > 10 && (
+            <div className="flex items-center justify-center gap-2 mt-6 flex-wrap">
+              <div className="flex items-center gap-2 text-xs text-slate-400">
+                <span>Hiển thị</span>
+                {[10, 20, 50].map((s) => (
+                  <Link key={s} href={`/products?page=1&size=${s}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className={`px-2 py-1 rounded ${pageSize === s ? "bg-thuy-400 text-thuy-950" : "bg-thuy-800 text-white"}`}>{s}</Link>
+                ))}
+                <span>/ trang</span>
+              </div>
+              <div className="flex items-center gap-1">
+                {pageNum > 1 && (
+                  <>
+                    <Link href={`/products?page=1&size=${pageSize}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-2 py-1 rounded bg-thuy-800 text-white text-xs">{"<<"}</Link>
+                    <Link href={`/products?page=${pageNum - 1}&size=${pageSize}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-2 py-1 rounded bg-thuy-800 text-white text-xs">{"<"}</Link>
+                  </>
+                )}
+                <span className="px-2 text-xs text-slate-400">{pageNum} / {Math.max(1, Math.ceil(total / pageSize))}</span>
+                {pageNum < Math.ceil(total / pageSize) && (
+                  <>
+                    <Link href={`/products?page=${pageNum + 1}&size=${pageSize}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-2 py-1 rounded bg-thuy-800 text-white text-xs">{">"}</Link>
+                    <Link href={`/products?page=${Math.ceil(total / pageSize)}&size=${pageSize}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-2 py-1 rounded bg-thuy-800 text-white text-xs">{">>"}</Link>
+                  </>
+                )}
+              </div>
             </div>
-           )}
+          )}
        </div>
     </div>
   );
