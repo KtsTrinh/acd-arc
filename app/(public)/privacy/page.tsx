@@ -54,7 +54,39 @@ export default function PrivacyPage() {
 
       <section className="mb-10">
         <h2 className="text-xl font-semibold mb-2">2. Chính sách thanh toán</h2>
-        <p>Nội dung chính sách thanh toán...</p>
+        <p>ACD Studio cung cấp đa dạng các phương thức thanh toán linh hoạt và an toàn. Hệ thống đáp ứng cả nhu cầu mua tài nguyên bản vẽ trực tuyến lẫn ký kết hợp đồng thiết kế, thi công thực tế.</p>
+        <h3>2.1. Các hình thức thanh toán được chấp nhận</h3>
+        <p>Khách hàng có thể lựa chọn một trong các hình thức thanh toán sau tùy theo loại sản phẩm hoặc dịch vụ sử dụng:</p>
+        <ul>
+          <li><b>Thanh toán trực tuyến qua cổng thanh toán / Ví điện tử.</b> Áp dụng cho khách hàng mua tài nguyên bản vẽ thiết kế có sẵn trên website. Hệ thống hỗ trợ thanh toán qua thẻ ATM nội địa, thẻ tín dụng/ghi nợ quốc tế (Visa, Mastercard, JCB) hoặc quét mã QR qua các ví điện tử được tích hợp.</li>
+          <li><b>Thanh toán chuyển khoản ngân hàng.</b> Áp dụng cho cả đơn hàng mua tài nguyên số và thanh toán tạm ứng hợp đồng thiết kế, thi công. Khách hàng chuyển khoản trực tiếp vào tài khoản chính thức của ACD Studio theo thông tin bên dưới.</li>
+          <li><b>Thanh toán tiền mặt trực tiếp.</b> Chỉ áp dụng đối với khách hàng đến ký kết hợp đồng dịch vụ thiết kế hoặc thi công xây dựng trực tiếp tại văn phòng trụ sở của ACD Studio.</li>
+        </ul>
+        <h3>2.2. Thông tin tài khoản nhận thanh toán chính thức</h3>
+        <p>Để đảm bảo an toàn giao dịch, khách hàng vui lòng chỉ chuyển khoản vào duy nhất tài khoản đứng tên đơn vị sở hữu website dưới đây:</p>
+        <ul>
+          <li>Tên chủ tài khoản: [Tên đầy đủ Công ty / Hộ kinh doanh trên Giấy phép kinh doanh]</li>
+          <li>Số tài khoản: [Nhập số tài khoản ngân hàng]</li>
+          <li>Ngân hàng: [Nhập tên Ngân hàng - Chi nhánh]</li>
+          <li>Nội dung chuyển khoản: [Mã đơn hàng / Số hợp đồng] - [Số điện thoại khách hàng]</li>
+        </ul>
+        <h3>2.3. Quy trình xác nhận thanh toán</h3>
+        <ul>
+          <li><b>Đối với tài nguyên bản vẽ số.</b> Ngay sau khi cổng thanh toán hoặc hệ thống ngân hàng xác nhận giao dịch thành công, hệ thống tự động kích hoạt quyền tải tệp bản vẽ trong tài khoản của khách hàng hoặc gửi đường dẫn tải về qua email đăng ký trong vòng 5 đến 15 phút.</li>
+          <li><b>Đối với dịch vụ thiết kế và thi công.</b> Việc thanh toán được chia thành các đợt theo tiến độ nghiệm thu quy định cụ thể trong Hợp đồng kinh tế đã ký kết giữa hai bên. Kế toán của ACD Studio sẽ xuất phiếu thu hoặc hóa đơn giá trị gia tăng (VAT) điện tử gửi tới khách hàng sau mỗi đợt thanh toán.</li>
+        </ul>
+        <h3>2.4. Cam kết bảo mật thông tin thanh toán</h3>
+        <ul>
+          <li><b>Bảo mật giao dịch thẻ.</b> Hệ thống thanh toán thẻ trên website được cung cấp bởi các đối tác cổng thanh toán đã được cấp phép hoạt động hợp pháp tại Việt Nam. Các thông tin thẻ thanh toán của khách hàng được bảo mật theo tiêu chuẩn quốc tế PCI DSS.</li>
+          <li><b>Không lưu trữ dữ liệu thẻ.</b> ACD Studio không trực tiếp lưu trữ thông tin thẻ ngân hàng hay mã bảo mật CVV của khách hàng trên máy chủ của mình. Mọi dữ liệu giao dịch đều được mã hóa SSL nhằm ngăn chặn hành vi đánh cắp thông tin.</li>
+        </ul>
+        <h3>2.5. Xử lý sự cố thanh toán</h3>
+        <p>Trong trường hợp tài khoản ngân hàng của quý khách đã bị trừ tiền nhưng hệ thống chưa cập nhật trạng thái đơn hàng hoặc chưa mở khóa quyền tải bản vẽ, quý khách vui lòng liên hệ ngay với bộ phận hỗ trợ qua:</p>
+        <ul>
+          <li>Hotline: [Nhập số điện thoại hotline]</li>
+          <li>Email: [Nhập địa chỉ email chính thức]</li>
+        </ul>
+        <p>Chúng tôi sẽ kiểm tra đối soát với ngân hàng và kích hoạt quyền lợi cho quý khách chậm nhất trong vòng 2 giờ làm việc.</p>
       </section>
 
       <section className="mb-10">
