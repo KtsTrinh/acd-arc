@@ -181,7 +181,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   <div className="space-y-3">
                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-thuy-950">
                      {prod.featured && (
-                       <span className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full bg-amber-500/90 text-white text-[10px] font-bold">
+                       <span className="absolute top-2 right-2 z-10 px-2 py-0.5 rounded-full bg-amber-500/90 text-white text-[10px] font-bold">
                          Nổi bật
                        </span>
                      )}
