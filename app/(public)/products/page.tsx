@@ -22,11 +22,14 @@ interface ProductsPageProps {
   productCategory?: string;
   search?: string;
   featured?: string;
+  page?: string;
   };
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const { productGroup, productCategory, search, featured } = searchParams;
+  const { productGroup, productCategory, search, featured, page } = searchParams;
+  const pageNum = Math.max(1, parseInt(page || "1", 10) || 1);
+  const pageSize = 12;
 
   const where: any = { active: true };
   if (productGroup) {
@@ -52,10 +55,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     ];
   }
 
-  const [products, groups] = await Promise.all([
+  const [products, groups, total] = await Promise.all([
     prisma.product.findMany({
       where,
       orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+      skip: (pageNum - 1) * pageSize,
+      take: pageSize,
       include: {
         tags: { include: { tag: true } },
         gallery: {
@@ -71,6 +76,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       _count: { _all: true },
       orderBy: { productGroup: "asc" },
     }).catch(() => [] as any[]),
+    prisma.product.count({ where }),
   ]);
 
   const productGroups = (groups as any[])
@@ -304,6 +310,17 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               );
             })}
           </div>
+          {total > pageSize && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              {pageNum > 1 && (
+                <Link href={`/products?page=${pageNum - 1}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs">Trước</Link>
+              )}
+              <span className="text-xs text-slate-400">{pageNum} / {Math.ceil(total / pageSize)}</span>
+              {pageNum < Math.ceil(total / pageSize) && (
+                <Link href={`/products?page=${pageNum + 1}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs">Sau</Link>
+              )}
+            </div>
+          )}
         )}
       </div>
     </div>
