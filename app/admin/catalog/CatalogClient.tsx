@@ -2703,8 +2703,19 @@ function CatalogTable({
   onDelete: (id: string, name: string) => void;
 }) {
   const group = groupKey;
+  const groupItems = items;
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const pagedItems = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return groupItems.slice(start, start + pageSize);
+  }, [groupItems, page, pageSize]);
 
-  if (items.length === 0) {
+  useEffect(() => {
+    setPage(1);
+  }, [groupItems, pageSize]);
+
+  if (groupItems.length === 0) {
     return (
       <div className="py-16 text-center text-slate-600 text-xs rounded-2xl bg-thuy-850/50 border border-thuy-750">
         <Package className="w-8 h-8 mx-auto mb-3 text-slate-600" />
