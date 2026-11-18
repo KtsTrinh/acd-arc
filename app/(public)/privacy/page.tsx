@@ -1,6 +1,6 @@
 export default function PrivacyPage() {
   return (
-    <div className="container mx-auto px-4 py-12 max-w-3xl text-justify">
+    <div className="container mx-auto px-4 py-12 max-w-3xl text-justify pt-24">
       <h1 className="text-2xl font-bold mb-6">Điều khoản và chính sách chung</h1>
 
       <details className="mb-4 border border-thuy-700 rounded-xl overflow-hidden">
