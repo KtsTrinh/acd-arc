@@ -90,8 +90,46 @@ export default function PrivacyPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-xl font-semibold mb-2">3. Chính sách giao nhận & Hoàn tiền</h2>
-        <p>Nội dung chính sách giao nhận & hoàn tiền...</p>
+        <h2 className="text-xl font-semibold mb-2">3. Chính sách giao nhận, cung cấp dịch vụ và hoàn tiền</h2>
+        <h3>Phần I: Đối với tài nguyên bản vẽ số (file thiết kế có sẵn)</h3>
+        <p><b>Phương thức và thời gian giao nhận.</b> Toàn bộ hồ sơ bản vẽ kiến trúc, kết cấu, điện nước (MEP) và phối cảnh 3D được cung cấp dưới dạng tệp tin kỹ thuật số (định dạng PDF, CAD, SketchUp hoặc file nén ZIP/RAR). Khách hàng không phải chịu bất kỳ chi phí vận chuyển vật lý nào.</p>
+        <p>Thời gian nhận hàng: Ngay sau khi hệ thống xác nhận thanh toán thành công, đường dẫn (link) tải bộ hồ sơ bản vẽ sẽ tự động kích hoạt trong mục &quot;Tài khoản của tôi / Đơn hàng đã mua&quot; trên website và gửi đồng thời về địa chỉ email khách hàng đã đăng ký trong vòng 5 đến 15 phút.</p>
+        <p>Thời hạn tải tệp: Khách hàng có thể tải lại tệp bản vẽ đã mua không giới hạn số lần trong vòng 30/60/365 ngày kể từ thời điểm thanh toán thành công.</p>
+        <h3>Chính sách đổi trả và hoàn tiền tài nguyên số</h3>
+        <p>Do đặc thù của sản phẩm kỹ thuật số có thể sao chép ngay sau khi tải về, ACD Studio áp dụng quy định đổi trả và hoàn tiền như sau:</p>
+        <ul>
+          <li><b>Trường hợp không áp dụng hoàn tiền.</b> Chúng tôi từ chối yêu cầu hủy đơn hoặc hoàn tiền sau khi hệ thống đã cấp quyền truy cập và khách hàng đã tải tệp bản vẽ thành công, trừ các trường hợp lỗi kỹ thuật nêu dưới đây.</li>
+          <li><b>Trường hợp được hỗ trợ đổi file hoặc hoàn tiền 100%.</b> Khách hàng được quyền yêu cầu gửi lại tệp mới hoặc hoàn lại 100% giá trị đơn hàng nếu gặp một trong các sự cố sau:
+            <ul>
+              <li>Tệp tin tải về bị lỗi hỏng định dạng, thiếu trang bản vẽ hoặc không đúng với mô tả thông số kích thước, công năng đã niêm yết trên website.</li>
+              <li>Hệ thống gặp sự cố kỹ thuật khiến khách hàng không thể tải được tệp sau khi đã thanh toán và bộ phận kỹ thuật không thể khắc phục trong vòng 24 giờ làm việc.</li>
+              <li>Khách hàng thanh toán trùng lặp nhiều lần cho cùng một mã sản phẩm do lỗi đường truyền hoặc cổng thanh toán.</li>
+            </ul>
+          </li>
+        </ul>
+        <h3>Phần II: Đối với dịch vụ thiết kế và thi công xây dựng</h3>
+        <h4>Phương thức cung cấp và nghiệm thu dịch vụ</h4>
+        <ul>
+          <li><b>Quy trình triển khai.</b> Dịch vụ tư vấn thiết kế kiến trúc, nội thất và thi công xây dựng trọn gói được thực hiện dựa trên Hợp đồng kinh tế ký kết trực tiếp giữa ACD Studio và khách hàng sau bước khảo sát hiện trạng thực tế.</li>
+          <li><b>Hình thức bàn giao.</b> Hồ sơ thiết kế kỹ thuật thi công được bàn giao theo từng giai đoạn (phương án mặt bằng 2D, phối cảnh 3D, hồ sơ kỹ thuật chi tiết) dưới cả hai hình thức: tệp mềm qua email và hồ sơ bản cứng in đóng quyển gửi trực tiếp tại văn phòng hoặc qua chuyển phát nhanh tới địa chỉ công trình.</li>
+          <li><b>Nghiệm thu công trình.</b> Đối với dịch vụ thi công, hai bên tiến hành kiểm tra, nghiệm thu khối lượng và chất lượng từng hạng mục theo đúng tiến độ cam kết trong hợp đồng.</li>
+        </ul>
+        <h4>Chính sách chấm dứt dịch vụ và hoàn phí</h4>
+        <ul>
+          <li><b>Chấm dứt dịch vụ do lỗi từ phía ACD Studio.</b> Nếu ACD Studio vi phạm nghiêm trọng tiến độ bàn giao hồ sơ hoặc chất lượng thi công không đúng cam kết mà không khắc phục trong thời hạn thỏa thuận, khách hàng có quyền đơn phương chấm dứt hợp đồng và nhận lại phần tiền tạm ứng tương ứng với khối lượng công việc chưa thực hiện.</li>
+          <li><b>Chấm dứt dịch vụ từ phía khách hàng.</b> Trường hợp khách hàng chủ động đề nghị tạm dừng hoặc chấm dứt hợp đồng khi đang triển khai, hai bên sẽ tiến hành đối soát khối lượng công việc thực tế ACD Studio đã hoàn thành tính đến thời điểm thông báo hủy:
+            <ul>
+              <li>Nếu số tiền khách hàng đã tạm ứng lớn hơn giá trị khối lượng công việc đã thực hiện, ACD Studio sẽ hoàn trả lại phần tiền chênh lệch dư cho khách hàng.</li>
+              <li>Nếu số tiền đã tạm ứng nhỏ hơn giá trị khối lượng công việc đã thực hiện, khách hàng có trách nhiệm thanh toán bổ sung phần chi phí còn thiếu trước khi thanh lý hợp đồng.</li>
+            </ul>
+          </li>
+        </ul>
+        <h3>Phần III: Quy trình và thời gian hoàn tiền</h3>
+        <ul>
+          <li><b>Bước 1 - Gửi yêu cầu.</b> Khách hàng gửi thông tin yêu cầu hoàn tiền (kèm mã đơn hàng/hợp đồng và hình ảnh mô tả lỗi nếu có) qua email [Nhập địa chỉ email chính thức] hoặc gọi hotline [Nhập số điện thoại hotline].</li>
+          <li><b>Bước 2 - Xác minh.</b> Bộ phận chăm sóc khách hàng và kỹ thuật của ACD Studio tiếp nhận, kiểm tra thông tin và phản hồi kết quả xác minh trong vòng 24 giờ làm việc.</li>
+          <li><b>Bước 3 - Thực hiện hoàn tiền.</b> Sau khi xác nhận đủ điều kiện hoàn tiền, ACD Studio sẽ chuyển khoản hoàn lại tiền vào đúng số tài khoản ngân hàng mà khách hàng đã sử dụng để thanh toán trước đó trong vòng 3 đến 5 ngày làm việc (không tính thứ Bảy, Chủ nhật và ngày lễ).</li>
+        </ul>
       </section>
 
       <section className="mb-10">
