@@ -38,6 +38,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   if (featured === "true") {
     where.featured = true;
   }
+  if (search) {
     where.OR = [
       { name: { contains: search, mode: "insensitive" } },
       { description: { contains: search, mode: "insensitive" } },
