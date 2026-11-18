@@ -57,11 +57,16 @@ export default async function Footer() {
         <div className="space-y-3">
           <h4 className="text-white font-semibold text-xs uppercase tracking-wider">Tài Nguyên &amp; Dịch Vụ</h4>
           <ul className="space-y-2 text-xs">
-            <li>
-              <Link href="/products" className="hover:text-thuy-400 transition-colors">
-                Khám phá sản phẩm
-              </Link>
-            </li>
+             <li>
+               <Link href="/products" className="hover:text-thuy-400 transition-colors">
+                 Khám phá sản phẩm
+               </Link>
+             </li>
+             <li>
+               <Link href="/privacy" className="hover:text-thuy-400 transition-colors">
+                 Chính sách bảo mật
+               </Link>
+             </li>
             <li>
               <Link href="/account" className="hover:text-thuy-400 transition-colors">
                 Kiểm tra link tải đã mua
