@@ -4,6 +4,7 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { formatVND } from "@/lib/utils";
 import { proxiedMediaUrl, isLikelyVideoUrl } from "@/lib/media-url";
+import PaginationControls from "./PaginationControls";
 import {
   Download,
   Search,
@@ -30,7 +31,7 @@ interface ProductsPageProps {
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const { productGroup, productCategory, search, featured, page, size } = searchParams;
   const pageNum = Math.max(1, parseInt(page || "1", 10) || 1);
-  const pageSize = [10, 20, 50].includes(Number(size)) ? Number(size) : 12;
+  const pageSize = [12, 24, 36].includes(Number(size)) ? Number(size) : 12;
 
   const where: any = { active: true };
   if (productGroup) {
@@ -312,44 +313,19 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             })}
           </div>
         )}
-          {total > 10 && (
-            <div className="flex items-center justify-center gap-2 mt-6 flex-wrap">
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span>Hiển thị</span>
-                <form method="get" className="inline">
-                  <input type="hidden" name="page" value="1" />
-                  {productGroup && <input type="hidden" name="productGroup" value={productGroup} />}
-                  {productCategory && <input type="hidden" name="productCategory" value={productCategory} />}
-                  {search && <input type="hidden" name="search" value={search} />}
-                  {featured && <input type="hidden" name="featured" value={featured} />}
-                  <select name="size" defaultValue={String(pageSize)} className="bg-thuy-900 border border-thuy-700 rounded px-2 py-1 text-white">
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                  </select>
-                  <button type="submit" className="px-2 py-1 rounded bg-thuy-800 text-white text-xs">OK</button>
-                </form>
-                <span>/ trang</span>
-              </div>
-              <div className="flex items-center gap-1">
-                {pageNum > 1 && (
-                  <>
-                    <Link href={`/products?page=1&size=${pageSize}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-2 py-1 rounded bg-thuy-800 text-white text-xs">{"<<"}</Link>
-                    <Link href={`/products?page=${pageNum - 1}&size=${pageSize}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-2 py-1 rounded bg-thuy-800 text-white text-xs">{"<"}</Link>
-                  </>
-                )}
-                <span className="px-2 text-xs text-slate-400">{pageNum} / {Math.max(1, Math.ceil(total / pageSize))}</span>
-                {pageNum < Math.ceil(total / pageSize) && (
-                  <>
-                    <Link href={`/products?page=${pageNum + 1}&size=${pageSize}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-2 py-1 rounded bg-thuy-800 text-white text-xs">{">"}</Link>
-                    <Link href={`/products?page=${Math.ceil(total / pageSize)}&size=${pageSize}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-2 py-1 rounded bg-thuy-800 text-white text-xs">{">>"}</Link>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
+          {total > pageSize && (
+            <PaginationControls
+              pageNum={pageNum}
+              pageSize={pageSize}
+              total={total}
+              productGroup={productGroup}
+              productCategory={productCategory}
+              search={search}
+              featured={featured}
+            />
+           )}
        </div>
-    </div>
-  );
+     </div>
+   );
 }
 
