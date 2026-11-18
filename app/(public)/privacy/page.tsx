@@ -134,7 +134,50 @@ export default function PrivacyPage() {
 
       <section className="mb-10">
         <h2 className="text-xl font-semibold mb-2">4. Điều khoản giao dịch & Khiếu nại</h2>
-        <p>Nội dung điều khoản giao dịch & khiếu nại...</p>
+        <p>Chào mừng quý khách đến với website ACD Studio. Khi truy cập và thực hiện giao dịch trên nền tảng, quý khách đồng ý tuân thủ các điều khoản và quy định dưới đây.</p>
+        <h3>Phần I: Các điều kiện và hạn chế cung cấp hàng hóa, dịch vụ</h3>
+        <h4>1. Đối tượng và phạm vi áp dụng</h4>
+        <ul>
+          <li><b>Đối tượng giao dịch.</b> Khách hàng giao dịch trên website phải là cá nhân từ đủ 18 tuổi trở lên có đầy đủ năng lực hành vi dân sự, hoặc tổ chức/doanh nghiệp được thành lập hợp pháp theo quy định của pháp luật Việt Nam.</li>
+          <li><b>Phạm vi địa lý.</b>
+            <ul>
+              <li>Đối với tài nguyên bản vẽ số, hệ thống cung cấp trực tuyến trên toàn lãnh thổ Việt Nam và quốc tế.</li>
+              <li>Đối với dịch vụ thi công xây dựng thực tế, ACD Studio nhận triển khai tại khu vực [Nhập khu vực nhận thi công, ví dụ: Hà Nội và các tỉnh thành miền Bắc / Toàn quốc].</li>
+            </ul>
+          </li>
+        </ul>
+        <h4>2. Hạn chế về quyền sử dụng và bản quyền tài nguyên số</h4>
+        <ul>
+          <li>Toàn bộ hồ sơ bản vẽ kiến trúc, kết cấu, phối cảnh 3D được bán trên website thuộc bản quyền trí tuệ của ACD Studio.</li>
+          <li>Khách hàng mua bộ hồ sơ bản vẽ chỉ được cấp quyền sử dụng cho mục đích tham khảo hoặc thi công xây dựng tối đa 01 (một) công trình cá nhân/tổ chức.</li>
+          <li>Nghiêm cấm các hành vi: Sao chép, chỉnh sửa logo, phân phối lại, rao bán thương mại hoặc chia sẻ công khai miễn phí các tệp bản vẽ đã mua lên mạng Internet dưới bất kỳ hình thức nào. Nếu phát hiện vi phạm, ACD Studio có quyền khóa vĩnh viễn tài khoản thành viên và yêu cầu bồi thường theo Luật Sở hữu trí tuệ.</li>
+        </ul>
+        <h4>3. Điều kiện áp dụng đối với hồ sơ bản vẽ có sẵn</h4>
+        <ul>
+          <li>Các bộ bản vẽ mẫu trên website được thiết kế dựa trên kích thước khu đất và tiêu chuẩn kỹ thuật giả định. Trước khi áp dụng vào thi công thực tế, khách hàng cần kiểm tra sự phù hợp với địa chất, hiện trạng khu đất và quy định cấp phép xây dựng tại địa phương.</li>
+          <li>ACD Studio không chịu trách nhiệm pháp lý nếu khách hàng tự ý thay đổi kết cấu chịu lực của bản vẽ mẫu mà không có sự tư vấn hoặc giám sát của kỹ sư chuyên ngành.</li>
+        </ul>
+        <h3>Phần II: Phương thức tiếp nhận và giải quyết phản ánh, yêu cầu, khiếu nại</h3>
+        <p>ACD Studio luôn đề cao trải nghiệm khách hàng và cam kết tiếp nhận, xử lý mọi phản ánh, khiếu nại một cách khách quan, nhanh chóng và đúng pháp luật.</p>
+        <h4>1. Kênh tiếp nhận thông tin khiếu nại</h4>
+        <p>Khách hàng có bất kỳ thắc mắc, phản ánh về chất lượng tệp bản vẽ, tiến độ dịch vụ hoặc thái độ phục vụ có thể gửi yêu cầu qua các kênh chính thức sau:</p>
+        <ul>
+          <li>Hotline hỗ trợ trực tiếp: [Nhập số điện thoại hotline] (Thời gian làm việc: 08h00 – 17h30 từ Thứ 2 đến Thứ 7).</li>
+          <li>Email tiếp nhận khiếu nại: [Nhập địa chỉ email chính thức]</li>
+          <li>Địa chỉ văn phòng trực tiếp: [Nhập địa chỉ chi tiết theo Giấy phép kinh doanh]</li>
+        </ul>
+        <h4>2. Quy trình 4 bước giải quyết khiếu nại</h4>
+        <ul>
+          <li><b>Bước 1 - Tiếp nhận phản ánh.</b> Ngay khi nhận được thông tin khiếu nại qua email, điện thoại hoặc trực tiếp tại văn phòng, bộ phận Chăm sóc khách hàng của ACD Studio sẽ ghi nhận nội dung và cấp mã số theo dõi yêu cầu cho khách hàng.</li>
+          <li><b>Bước 2 - Xác minh và phản hồi ban đầu.</b> Trong vòng 24 giờ làm việc kể từ khi tiếp nhận, nhân sự phụ trách sẽ liên hệ lại với khách hàng để xác nhận thông tin, thu thập thêm bằng chứng (hình ảnh lỗi file, biên bản nghiệm thu, chứng từ thanh toán) nếu cần thiết.</li>
+          <li><b>Bước 3 - Đưa ra phương án xử lý.</b> Trong vòng 02 đến 05 ngày làm việc tùy theo mức độ phức tạp của vụ việc, ACD Studio sẽ đưa ra phương án giải quyết cụ thể (gửi lại tệp bản vẽ chuẩn, hỗ trợ chỉnh sửa kỹ thuật, thực hiện hoàn tiền hoặc bảo hành hạng mục thi công) trên tinh thần thương lượng và bảo vệ quyền lợi chính đáng của khách hàng.</li>
+          <li><b>Bước 4 - Hoàn tất và đóng khiếu nại.</b> Sau khi hai bên thống nhất phương án và hoàn tất việc khắc phục, bộ phận Chăm sóc khách hàng sẽ xác nhận lại với khách hàng để đóng hồ sơ khiếu nại.</li>
+        </ul>
+        <h4>3. Giải quyết tranh chấp tại cơ quan có thẩm quyền</h4>
+        <ul>
+          <li>Mọi tranh chấp phát sinh trong quá trình giao dịch sẽ được ưu tiên giải quyết thông qua thương lượng và hòa giải giữa ACD Studio và khách hàng.</li>
+          <li>Trong trường hợp không thể đạt được thỏa thuận chung trong vòng 30 ngày kể từ ngày phát sinh khiếu nại, một trong hai bên có quyền đưa vụ việc ra Tòa án nhân dân có thẩm quyền tại nơi ACD Studio đặt trụ sở chính để giải quyết theo quy định của pháp luật Việt Nam.</li>
+        </ul>
       </section>
     </div>
   );
