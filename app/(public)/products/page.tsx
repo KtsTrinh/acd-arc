@@ -18,14 +18,15 @@ export const revalidate = 0;
 
 interface ProductsPageProps {
   searchParams: {
-    productGroup?: string;
-    productCategory?: string;
-    search?: string;
+  productGroup?: string;
+  productCategory?: string;
+  search?: string;
+  featured?: string;
   };
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const { productGroup, productCategory, search } = searchParams;
+  const { productGroup, productCategory, search, featured } = searchParams;
 
   const where: any = { active: true };
   if (productGroup) {
@@ -34,7 +35,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   if (productCategory) {
     where.productCategory = productCategory;
   }
-  if (search) {
+  if (featured === "true") {
+    where.featured = true;
+  }
     where.OR = [
       { name: { contains: search, mode: "insensitive" } },
       { description: { contains: search, mode: "insensitive" } },
