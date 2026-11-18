@@ -1286,36 +1286,12 @@ export default function AdminCatalogClient({
           phẩm...
         </div>
        ) : (
-        <>
         <CatalogTable
-          items={pagedItems}
+          items={groupItems}
           groupKey={activeTab}
           onEdit={openEdit}
           onDelete={handleDelete}
         />
-        <div className="flex items-center justify-between px-5 py-3 border-t border-thuy-750">
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span>Hiển thị</span>
-            <select
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-              className="bg-thuy-900 border border-thuy-700 rounded px-2 py-1 text-white"
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-            <span>/ trang</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <button onClick={() => setPage(1)} disabled={page === 1} className="px-2 py-1 rounded bg-thuy-900 text-white disabled:opacity-40">{"<<"}</button>
-            <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2 py-1 rounded bg-thuy-900 text-white disabled:opacity-40">{"<"}</button>
-            <span className="px-2 text-xs text-slate-400">{page} / {Math.max(1, Math.ceil(groupItems.length / pageSize))}</span>
-            <button onClick={() => setPage((p) => Math.min(Math.ceil(groupItems.length / pageSize), p + 1))} disabled={page >= Math.ceil(groupItems.length / pageSize)} className="px-2 py-1 rounded bg-thuy-900 text-white disabled:opacity-40">{">"}</button>
-            <button onClick={() => setPage(Math.ceil(groupItems.length / pageSize))} disabled={page >= Math.ceil(groupItems.length / pageSize)} className="px-2 py-1 rounded bg-thuy-900 text-white disabled:opacity-40">{">>"}</button>
-          </div>
-        </div>
-        </>
       )}
 
       {/* Modal create / edit */}
