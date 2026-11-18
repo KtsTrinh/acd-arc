@@ -138,6 +138,8 @@ export default function AdminCatalogClient({
   const [activeTab, setActiveTab] = useState(
     initialTab && initialTab !== "ALL" ? initialTab : "ALL",
   );
+  const [pageSize, setPageSize] = useState(10);
+  const [page, setPage] = useState(1);
   const [items, setItems] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
   const [groups, setGroups] = useState<{ name: string; count: number }[]>([]);
@@ -487,6 +489,15 @@ export default function AdminCatalogClient({
     }
     return result;
   }, [items, activeTab, searchQuery]);
+
+  const pagedItems = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return groupItems.slice(start, start + pageSize);
+  }, [groupItems, page, pageSize]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [groupItems, pageSize]);
 
   const openEdit = async (item: any) => {
     let product = item;
@@ -2695,7 +2706,7 @@ function CatalogTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-thuy-750/60">
-            {items.map((p) => (
+            {pagedItems.map((p) => (
               <tr key={p.id} className="hover:bg-thuy-800/40">
                 <td className="py-3.5 px-5">
                   <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-thuy-950 border border-thuy-700">
@@ -2821,6 +2832,28 @@ function CatalogTable({
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="flex items-center justify-between px-5 py-3 border-t border-thuy-750">
+        <div className="flex items-center gap-2 text-xs text-slate-400">
+          <span>Hiển thị</span>
+          <select
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+            className="bg-thuy-900 border border-thuy-700 rounded px-2 py-1 text-white"
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+          <span>/ trang</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <button onClick={() => setPage(1)} disabled={page === 1} className="px-2 py-1 rounded bg-thuy-900 text-white disabled:opacity-40">{"<<"}</button>
+          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2 py-1 rounded bg-thuy-900 text-white disabled:opacity-40">{"<"}</button>
+          <span className="px-2 text-xs text-slate-400">{page} / {Math.max(1, Math.ceil(groupItems.length / pageSize))}</span>
+          <button onClick={() => setPage((p) => Math.min(Math.ceil(groupItems.length / pageSize), p + 1))} disabled={page >= Math.ceil(groupItems.length / pageSize)} className="px-2 py-1 rounded bg-thuy-900 text-white disabled:opacity-40">{">"}</button>
+          <button onClick={() => setPage(Math.ceil(groupItems.length / pageSize))} disabled={page >= Math.ceil(groupItems.length / pageSize)} className="px-2 py-1 rounded bg-thuy-900 text-white disabled:opacity-40">{">>"}</button>
+        </div>
       </div>
     </div>
   );
