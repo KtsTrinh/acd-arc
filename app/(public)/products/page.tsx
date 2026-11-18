@@ -310,7 +310,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               );
             })}
           </div>
-          {total > pageSize && (
+        )}
+        {total > pageSize && (
             <div className="flex items-center justify-center gap-2 mt-6">
               {pageNum > 1 && (
                 <Link href={`/products?page=${pageNum - 1}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs">Trước</Link>
@@ -320,9 +321,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <Link href={`/products?page=${pageNum + 1}${productGroup ? `&productGroup=${productGroup}` : ""}${productCategory ? `&productCategory=${productCategory}` : ""}${search ? `&search=${search}` : ""}${featured ? `&featured=${featured}` : ""}`} className="px-3 py-1.5 rounded-lg bg-thuy-800 text-white text-xs">Sau</Link>
               )}
             </div>
-          )}
-        )}
-      </div>
+           )}
+       </div>
     </div>
   );
 }
