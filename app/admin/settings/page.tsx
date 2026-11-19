@@ -730,8 +730,21 @@ export default function AdminSettingsPage() {
           </h2>
           <div className="space-y-3">
             {policySections.map((sec, idx) => (
-              <div key={idx} className="p-4 rounded-xl bg-thuy-900 border border-thuy-750 space-y-2">
-                <div className="flex items-center gap-2">
+              <details key={idx} className="p-4 rounded-xl bg-thuy-900 border border-thuy-750 space-y-2" open>
+                <summary className="cursor-pointer text-xs font-semibold text-slate-200 flex items-center gap-2">
+                  <span>{sec.title || `Hạng mục ${idx + 1}`}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPolicySections(policySections.filter((_, i) => i !== idx));
+                    }}
+                    className="ml-auto px-3 py-1 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-600 hover:text-red-300 border border-thuy-750 text-xs"
+                  >
+                    Xóa
+                  </button>
+                </summary>
+                <div className="space-y-2 pt-2">
                   <input
                     type="text"
                     value={sec.title}
@@ -743,26 +756,19 @@ export default function AdminSettingsPage() {
                     className={inputCls}
                     placeholder="Tiêu đề hạng mục"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setPolicySections(policySections.filter((_, i) => i !== idx))}
-                    className="px-3 py-2 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-600 hover:text-red-300 border border-thuy-750 text-xs"
-                  >
-                    Xóa
-                  </button>
+                  <textarea
+                    rows={6}
+                    value={sec.content}
+                    onChange={(e) => {
+                      const next = [...policySections];
+                      next[idx] = { ...next[idx], content: e.target.value };
+                      setPolicySections(next);
+                    }}
+                    className={`${inputCls} font-mono leading-relaxed`}
+                    placeholder="Nội dung (hỗ trợ HTML)"
+                  />
                 </div>
-                <textarea
-                  rows={6}
-                  value={sec.content}
-                  onChange={(e) => {
-                    const next = [...policySections];
-                    next[idx] = { ...next[idx], content: e.target.value };
-                    setPolicySections(next);
-                  }}
-                  className={`${inputCls} font-mono leading-relaxed`}
-                  placeholder="Nội dung (hỗ trợ HTML)"
-                />
-              </div>
+              </details>
             ))}
             <button
               type="button"
