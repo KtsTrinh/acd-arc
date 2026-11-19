@@ -11,6 +11,7 @@ import {
   resolveVideoFit,
 } from "@/lib/media-url";
 import CmsSyncButton from "@/components/admin/CmsSyncButton";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 import {
   Settings,
@@ -756,16 +757,13 @@ export default function AdminSettingsPage() {
                     className={inputCls}
                     placeholder="Tiêu đề hạng mục"
                   />
-                  <textarea
-                    rows={12}
+                  <RichTextEditor
                     value={sec.content}
-                    onChange={(e) => {
+                    onChange={(html) => {
                       const next = [...policySections];
-                      next[idx] = { ...next[idx], content: e.target.value };
+                      next[idx] = { ...next[idx], content: html };
                       setPolicySections(next);
                     }}
-                    className={`${inputCls} font-mono leading-relaxed min-h-[200px]`}
-                    placeholder="Nội dung (hỗ trợ HTML)"
                   />
                 </div>
               </details>
