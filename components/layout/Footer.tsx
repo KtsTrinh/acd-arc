@@ -5,6 +5,8 @@ import {
   Phone,
   Mail,
   MapPin,
+  User,
+  FileText,
   ShieldCheck,
   ArrowUpRight,
 } from "lucide-react";
@@ -104,7 +106,7 @@ export default async function Footer() {
           </h4>
           <ul className="space-y-2.5 text-xs">
             <li className="flex items-start gap-2">
-              <MapPin className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
+              <User className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
               <span>Chủ sở hữu website: {settings.siteOwner}</span>
             </li>
             <li className="flex items-start gap-2">
@@ -113,15 +115,13 @@ export default async function Footer() {
             </li>
             {settings.taxCode && (
               <li className="flex items-start gap-2">
-                <MapPin className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
+                <FileText className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
                 <span>Mã số thuế: {settings.taxCode}</span>
               </li>
             )}
             <li className="flex items-center gap-2">
               <Phone className="w-3.5 h-3.5 text-thuy-400 flex-shrink-0" />
-              <span className="text-slate-200 font-medium">
-                Hotline: {settings.contactPhone}
-              </span>
+              <span>Hotline: {settings.contactPhone}</span>
             </li>
             <li className="flex items-center gap-2">
               <Mail className="w-3.5 h-3.5 text-thuy-400 flex-shrink-0" />
@@ -129,7 +129,7 @@ export default async function Footer() {
                 href={`mailto:${settings.contactEmail}`}
                 className="hover:text-thuy-400 transition-colors"
               >
-                {settings.contactEmail}
+                Email: {settings.contactEmail}
               </a>
             </li>
             {(settings.facebookUrl ||
