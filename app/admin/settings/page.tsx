@@ -242,7 +242,7 @@ export default function AdminSettingsPage() {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-2">
+            <div>
               <label className={labelCls}>Chủ Sở Hữu Website</label>
               <input
                 type="text"
@@ -250,6 +250,35 @@ export default function AdminSettingsPage() {
                 onChange={(e) => update("siteOwner", e.target.value)}
                 className={inputCls}
                 placeholder="Tên chủ sở hữu website"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Mã Số Thuế</label>
+              <input
+                type="text"
+                value={settings.taxCode || ""}
+                onChange={(e) => update("taxCode", e.target.value)}
+                className={inputCls}
+                placeholder="Mã số thuế"
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Địa Chỉ Văn Phòng</label>
+              <input
+                type="text"
+                value={settings.contactAddress || ""}
+                onChange={(e) => update("contactAddress", e.target.value)}
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Số Zalo</label>
+              <input
+                type="text"
+                value={settings.zaloNumber || ""}
+                onChange={(e) => update("zaloNumber", e.target.value)}
+                className={inputCls}
+                placeholder="0912345678"
               />
             </div>
             <div>
@@ -268,25 +297,6 @@ export default function AdminSettingsPage() {
                 value={settings.contactPhone || ""}
                 onChange={(e) => update("contactPhone", e.target.value)}
                 className={inputCls}
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className={labelCls}>Địa Chỉ Văn Phòng</label>
-              <input
-                type="text"
-                value={settings.contactAddress || ""}
-                onChange={(e) => update("contactAddress", e.target.value)}
-                className={inputCls}
-              />
-            </div>
-            <div>
-              <label className={labelCls}>Số Zalo</label>
-              <input
-                type="text"
-                value={settings.zaloNumber || ""}
-                onChange={(e) => update("zaloNumber", e.target.value)}
-                className={inputCls}
-                placeholder="0912345678"
               />
             </div>
           </div>

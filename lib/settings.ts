@@ -15,6 +15,7 @@ export interface SystemSettings {
   siteTagline: string;
   siteDescription: string;
   siteOwner: string;
+  taxCode: string;
   contactEmail: string;
   contactPhone: string;
   contactAddress: string;
@@ -86,6 +87,7 @@ export const defaultSettings: SystemSettings = {
   siteDescription:
     "ACD Studio - ÄÆ¡n vá»‹ thiáº¿t káº¿ kiáº¿n trÃºc biá»‡t thá»±, nhÃ  phá»‘, penthouse vÃ  ná»™i tháº¥t cao cáº¥p theo phong thá»§y há»£p má»‡nh (Kim - Má»™c - Thá»§y - Há»a - Thá»•).",
   siteOwner: "",
+  taxCode: "",
   contactEmail: "contact@acd.vn",
   contactPhone: "0988.ACD.888",
   contactAddress: "TÃ²a nhÃ  Heritage, P. Phan Chu Trinh, HoÃ n Kiáº¿m, HÃ  Ná»™i",
