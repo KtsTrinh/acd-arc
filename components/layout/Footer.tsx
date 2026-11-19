@@ -101,7 +101,7 @@ export default async function Footer() {
 
         {/* Policy */}
         <div className="space-y-3">
-          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">
+          <h4 className="text-white font-semibold text-xs uppercase tracking-wider whitespace-nowrap">
             Điều Khoản Và Chính Sách Chung
           </h4>
           <ul className="space-y-2 text-xs">
