@@ -181,3 +181,82 @@ h4 {
 .ProseMirror p { margin: 0.5em 0; }
 .ProseMirror h2 { font-size: 1.25rem; font-weight: 700; margin: 0.75em 0 0.25em; }
 .ProseMirror ul { list-style: disc; padding-left: 1.25rem; }
+
+/* === GIAO DIỆN TRANG CHÍNH SÁCH & ĐIỀU KHOẢN (ACD STUDIO) === */
+.policy-rich-text {
+  color: #cbd5e1;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.policy-rich-text p {
+  margin-bottom: 1.15rem;
+}
+
+.policy-rich-text strong,
+.policy-rich-text b {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Tiêu đề mục lớn H2 */
+.policy-rich-text h2 {
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1.1rem;
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.15) 0%, rgba(15, 23, 42, 0) 100%);
+  border-left: 4px solid #38bdf8;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+/* Tiêu đề mục phụ H3 */
+.policy-rich-text h3 {
+  color: #7dd3fc;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Danh sách gạch đầu dòng */
+.policy-rich-text ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.policy-rich-text ul ul {
+  list-style-type: circle;
+  margin-top: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.policy-rich-text li {
+  margin-bottom: 0.6rem;
+  padding-left: 0.25rem;
+}
+
+.policy-rich-text li::marker {
+  color: #38bdf8;
+}
+
+/* Khung thông tin nổi bật & Lưu ý bản quyền */
+.policy-rich-text blockquote {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  border-left: 4px solid #38bdf8;
+  border-radius: 0.75rem;
+  padding: 1.15rem 1.35rem;
+  margin: 1.25rem 0;
+  color: #e2e8f0;
+}
+
+.policy-rich-text blockquote p:last-child,
+.policy-rich-text blockquote ul:last-child {
+  margin-bottom: 0;
+}
