@@ -20,7 +20,7 @@ export default async function Footer() {
   return (
     <footer className="border-t border-thuy-750 bg-thuy-950 text-slate-400 text-sm mt-24">
       {/* Top Banner with Water Motif */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-10">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-10">
         {/* Brand & Philosophy */}
         <div className="lg:col-span-2 space-y-4">
           <Link href="/" className="flex items-center gap-3">
@@ -203,7 +203,7 @@ export default async function Footer() {
 
       {/* Bottom Legal bar */}
       <div className="border-t border-thuy-850 bg-thuy-950/60 py-6">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs gap-4 text-slate-500">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs gap-4 text-slate-500">
           <p className="whitespace-nowrap">
             © {new Date().getFullYear()} ACD Architecture & Interior Design
             Studio. All rights reserved.
