@@ -126,7 +126,7 @@ export default async function Footer() {
         </div>
 
         {/* Office Contact */}
-        <div className="lg:col-span-2 space-y-3 lg:ml-28">
+        <div className="lg:col-span-2 space-y-3 lg:ml-32">
           <h4 className="text-white font-semibold text-xs uppercase tracking-wider">
             Liên Hệ ACD Studio
           </h4>
