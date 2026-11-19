@@ -90,6 +90,14 @@ export default async function Footer() {
             </li>
             <li>
               <Link
+                href="/privacy"
+                className="hover:text-thuy-400 transition-colors"
+              >
+                Điều khoản và chính sách chung
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/account"
                 className="hover:text-thuy-400 transition-colors"
               >
