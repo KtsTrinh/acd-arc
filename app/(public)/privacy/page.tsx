@@ -5,7 +5,7 @@ export default function PrivacyPage() {
         Điều khoản và chính sách chung
       </h1>
 
-      <details className="mb-4 border border-thuy-700 rounded-xl overflow-hidden">
+      <details id="section-1" className="mb-4 border border-thuy-700 rounded-xl overflow-hidden">
         <summary className="cursor-pointer px-4 py-3 bg-thuy-800 text-white font-semibold">
           1. Chính sách bảo mật
         </summary>
@@ -166,7 +166,7 @@ export default function PrivacyPage() {
         </div>
       </details>
 
-      <details className="mb-4 border border-thuy-700 rounded-xl overflow-hidden">
+      <details id="section-2" className="mb-4 border border-thuy-700 rounded-xl overflow-hidden">
         <summary className="cursor-pointer px-4 py-3 bg-thuy-800 text-white font-semibold">
           2. Chính sách thanh toán
         </summary>
@@ -244,7 +244,7 @@ export default function PrivacyPage() {
         </div>
       </details>
 
-      <details className="mb-4 border border-thuy-700 rounded-xl overflow-hidden">
+      <details id="section-3" className="mb-4 border border-thuy-700 rounded-xl overflow-hidden">
         <summary className="cursor-pointer px-4 py-3 bg-thuy-800 text-white font-semibold">
           3. Chính sách giao nhận, cung cấp dịch vụ và hoàn tiền
         </summary>
@@ -317,7 +317,7 @@ export default function PrivacyPage() {
         </div>
       </details>
 
-      <details className="mb-4 border border-thuy-700 rounded-xl overflow-hidden">
+      <details id="section-4" className="mb-4 border border-thuy-700 rounded-xl overflow-hidden">
         <summary className="cursor-pointer px-4 py-3 bg-thuy-800 text-white font-semibold">
           4. Điều khoản giao dịch & Khiếu nại
         </summary>

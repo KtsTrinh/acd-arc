@@ -63,22 +63,22 @@ export default async function Footer() {
                </Link>
              </li>
 <li>
-                <Link href="/privacy" className="hover:text-thuy-400 transition-colors">
+                <Link href="/privacy#section-1" className="hover:text-thuy-400 transition-colors">
                   1. Chính sách bảo mật
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-thuy-400 transition-colors">
+                <Link href="/privacy#section-1" className="hover:text-thuy-400 transition-colors">
                   2. Chính sách thanh toán
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-thuy-400 transition-colors">
+                <Link href="/privacy#section-1" className="hover:text-thuy-400 transition-colors">
                   3. Chính sách giao nhận & hoàn tiền
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-thuy-400 transition-colors">
+                <Link href="/privacy#section-1" className="hover:text-thuy-400 transition-colors">
                   4. Điều khoản giao dịch & khiếu nại
                 </Link>
               </li>
