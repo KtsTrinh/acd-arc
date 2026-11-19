@@ -20,7 +20,7 @@ export default async function Footer() {
   return (
     <footer className="border-t border-thuy-750 bg-thuy-950 text-slate-400 text-sm mt-24">
       {/* Top Banner with Water Motif */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-10">
         {/* Brand & Philosophy */}
         <div className="lg:col-span-2 space-y-4">
           <Link href="/" className="flex items-center gap-3">
@@ -90,18 +90,27 @@ export default async function Footer() {
             </li>
             <li>
               <Link
-                href="/privacy"
-                className="hover:text-thuy-400 transition-colors"
-              >
-                Điều khoản và chính sách chung
-              </Link>
-            </li>
-            <li>
-              <Link
                 href="/account"
                 className="hover:text-thuy-400 transition-colors"
               >
                 Kiểm tra link tải đã mua
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Policy */}
+        <div className="space-y-3">
+          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">
+            Chính Sách
+          </h4>
+          <ul className="space-y-2 text-xs">
+            <li>
+              <Link
+                href="/privacy"
+                className="hover:text-thuy-400 transition-colors"
+              >
+                Điều khoản và chính sách chung
               </Link>
             </li>
           </ul>
