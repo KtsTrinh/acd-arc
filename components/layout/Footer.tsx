@@ -1,6 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { Compass, Phone, Mail, MapPin, ShieldCheck, ArrowUpRight } from "lucide-react";
+import {
+  Compass,
+  Phone,
+  Mail,
+  MapPin,
+  ShieldCheck,
+  ArrowUpRight,
+} from "lucide-react";
 import { getSettings } from "@/lib/settings";
 
 export const revalidate = 0;
@@ -17,7 +24,9 @@ export default async function Footer() {
           <Link href="/" className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-thuy-400 to-thuy-700 p-0.5 flex items-center justify-center shadow-glow-cyan">
               <div className="w-full h-full bg-thuy-950 rounded-[10px] flex items-center justify-center">
-                <span className="font-display font-black text-white text-base">ACD</span>
+                <span className="font-display font-black text-white text-base">
+                  ACD
+                </span>
               </div>
             </div>
             <span className="font-display font-bold text-xl text-white tracking-wide">
@@ -32,21 +41,31 @@ export default async function Footer() {
 
           <div className="pt-2 flex items-center gap-2 text-xs text-thuy-300">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Bản quyền thiết kế độc bản & hồ sơ kỹ thuật số tiêu chuẩn cao.</span>
+            <span>
+              Bản quyền thiết kế độc bản & hồ sơ kỹ thuật số tiêu chuẩn cao.
+            </span>
           </div>
         </div>
 
         {/* Categories */}
         <div className="space-y-3">
-          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">Danh Mục Sản Phẩm</h4>
+          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">
+            Danh Mục Sản Phẩm
+          </h4>
           <ul className="space-y-2 text-xs">
             <li>
-              <Link href="/products" className="hover:text-thuy-400 transition-colors">
+              <Link
+                href="/products"
+                className="hover:text-thuy-400 transition-colors"
+              >
                 Tất cả sản phẩm
               </Link>
             </li>
             <li>
-              <Link href="/cart" className="hover:text-thuy-400 transition-colors">
+              <Link
+                href="/cart"
+                className="hover:text-thuy-400 transition-colors"
+              >
                 Giỏ hàng &amp; thanh toán
               </Link>
             </li>
@@ -55,35 +74,55 @@ export default async function Footer() {
 
         {/* Resources */}
         <div className="space-y-3">
-          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">Tài Nguyên &amp; Dịch Vụ</h4>
+          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">
+            Tài Nguyên &amp; Dịch Vụ
+          </h4>
           <ul className="space-y-2 text-xs">
-             <li>
-               <Link href="/products" className="hover:text-thuy-400 transition-colors">
-                 Khám phá sản phẩm
-               </Link>
-             </li>
-<li>
-                <Link href="/privacy#section-1" className="hover:text-thuy-400 transition-colors">
-                  1. Chính sách bảo mật
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy#section-1" className="hover:text-thuy-400 transition-colors">
-                  2. Chính sách thanh toán
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy#section-1" className="hover:text-thuy-400 transition-colors">
-                  3. Chính sách giao nhận & hoàn tiền
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy#section-1" className="hover:text-thuy-400 transition-colors">
-                  4. Điều khoản giao dịch & khiếu nại
-                </Link>
-              </li>
             <li>
-              <Link href="/account" className="hover:text-thuy-400 transition-colors">
+              <Link
+                href="/products"
+                className="hover:text-thuy-400 transition-colors"
+              >
+                Khám phá sản phẩm
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/privacy#section-1"
+                className="hover:text-thuy-400 transition-colors"
+              >
+                1. Chính sách bảo mật
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/privacy#section-1"
+                className="hover:text-thuy-400 transition-colors"
+              >
+                2. Chính sách thanh toán
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/privacy#section-1"
+                className="hover:text-thuy-400 transition-colors"
+              >
+                3. Chính sách giao nhận & hoàn tiền
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/privacy#section-1"
+                className="hover:text-thuy-400 transition-colors"
+              >
+                4. Điều khoản giao dịch & khiếu nại
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/account"
+                className="hover:text-thuy-400 transition-colors"
+              >
                 Kiểm tra link tải đã mua
               </Link>
             </li>
@@ -92,23 +131,34 @@ export default async function Footer() {
 
         {/* Office Contact */}
         <div className="space-y-3">
-          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">Liên Hệ ACD Studio</h4>
+          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">
+            Liên Hệ ACD Studio
+          </h4>
           <ul className="space-y-2.5 text-xs">
             <li className="flex items-start gap-2">
               <MapPin className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
+              <span>{settings.siteOwner}</span>
+              {settings.taxCode && <span>MST: {settings.taxCode}</span>}
               <span>{settings.contactAddress}</span>
             </li>
             <li className="flex items-center gap-2">
               <Phone className="w-3.5 h-3.5 text-thuy-400 flex-shrink-0" />
-              <span className="text-slate-200 font-medium">Hotline: {settings.contactPhone}</span>
+              <span className="text-slate-200 font-medium">
+                Hotline: {settings.contactPhone}
+              </span>
             </li>
             <li className="flex items-center gap-2">
               <Mail className="w-3.5 h-3.5 text-thuy-400 flex-shrink-0" />
-              <a href={`mailto:${settings.contactEmail}`} className="hover:text-thuy-400 transition-colors">
+              <a
+                href={`mailto:${settings.contactEmail}`}
+                className="hover:text-thuy-400 transition-colors"
+              >
                 {settings.contactEmail}
               </a>
             </li>
-            {(settings.facebookUrl || settings.instagramUrl || settings.youtubeUrl) && (
+            {(settings.facebookUrl ||
+              settings.instagramUrl ||
+              settings.youtubeUrl) && (
               <li className="flex items-center gap-3 pt-1">
                 {settings.facebookUrl && (
                   <a
@@ -149,9 +199,15 @@ export default async function Footer() {
       {/* Bottom Legal bar */}
       <div className="border-t border-thuy-850 bg-thuy-950/60 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs gap-4 text-slate-500">
-          <p>© {new Date().getFullYear()} ACD Architecture & Interior Design Studio. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} ACD Architecture & Interior Design
+            Studio. All rights reserved.
+          </p>
           <div className="flex items-center gap-6">
-            <Link href="/admin" className="hover:text-thuy-400 transition-colors">
+            <Link
+              href="/admin"
+              className="hover:text-thuy-400 transition-colors"
+            >
               Hệ thống Quản Trị CMS
             </Link>
           </div>
@@ -160,4 +216,3 @@ export default async function Footer() {
     </footer>
   );
 }
-

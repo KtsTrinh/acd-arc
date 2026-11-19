@@ -70,6 +70,7 @@ export default function AdminSettingsPage() {
     text: string;
   } | null>(null);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+  const [policySections, setPolicySections] = useState<{ title: string; content: string }[]>([]);
   const [mediaTarget, setMediaTarget] = useState<
     "heroBackgroundImage" | "heroBackgroundVideo" | "heroVideoPoster"
   >("heroBackgroundImage");
@@ -78,7 +79,17 @@ export default function AdminSettingsPage() {
     fetch("/api/settings")
       .then((r) => r.json())
       .then((data) => {
-        if (data.settings) setSettings(data.settings);
+        if (data.settings) {
+          setSettings(data.settings);
+          try {
+            const parsed = JSON.parse(data.settings.privacyPolicy || "[]");
+            if (Array.isArray(parsed)) setPolicySections(parsed);
+          } catch {
+            if (data.settings.privacyPolicy) {
+              setPolicySections([{ title: "", content: data.settings.privacyPolicy }]);
+            }
+          }
+        }
       })
       .catch(() =>
         setMessage({ type: "err", text: "Không tải được cấu hình." }),
@@ -125,10 +136,11 @@ export default function AdminSettingsPage() {
     setSaving(true);
     setMessage(null);
     try {
+      const payload = { ...settings, privacyPolicy: JSON.stringify(policySections) };
       const res = await fetch("/api/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ settings }),
+        body: JSON.stringify({ settings: payload }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Lỗi lưu cấu hình.");
@@ -713,21 +725,52 @@ export default function AdminSettingsPage() {
             </div>
           )}
 
-          <div className="space-y-2">
-            <label className={labelCls}>
-              1.5. Điều Khoản Và Chính Sách Chung
-            </label>
-            <textarea
-              rows={16}
-              value={settings.privacyPolicy || ""}
-              onChange={(e) => update("privacyPolicy", e.target.value)}
-              className={`${inputCls} font-mono leading-relaxed`}
-              placeholder="<h2>1. Chính sách bảo mật</h2><p>...</p>"
-            />
-            <p className="text-[10px] text-slate-500">
-              Hỗ trợ HTML. Nội dung sẽ hiển thị trên trang /privacy. Có thể nhập
-              nhiều điều khoản tùy ý.
-            </p>
+          <h2 className="font-semibold text-sm text-[#142338] border-b border-thuy-750 pb-3 pt-2">
+            1.5. Điều Khoản Và Chính Sách Chung
+          </h2>
+          <div className="space-y-3">
+            {policySections.map((sec, idx) => (
+              <div key={idx} className="p-4 rounded-xl bg-thuy-900 border border-thuy-750 space-y-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={sec.title}
+                    onChange={(e) => {
+                      const next = [...policySections];
+                      next[idx] = { ...next[idx], title: e.target.value };
+                      setPolicySections(next);
+                    }}
+                    className={inputCls}
+                    placeholder="Tiêu đề hạng mục"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPolicySections(policySections.filter((_, i) => i !== idx))}
+                    className="px-3 py-2 rounded-xl bg-thuy-900 hover:bg-red-950/40 text-slate-600 hover:text-red-300 border border-thuy-750 text-xs"
+                  >
+                    Xóa
+                  </button>
+                </div>
+                <textarea
+                  rows={6}
+                  value={sec.content}
+                  onChange={(e) => {
+                    const next = [...policySections];
+                    next[idx] = { ...next[idx], content: e.target.value };
+                    setPolicySections(next);
+                  }}
+                  className={`${inputCls} font-mono leading-relaxed`}
+                  placeholder="Nội dung (hỗ trợ HTML)"
+                />
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setPolicySections([...policySections, { title: "", content: "" }])}
+              className="px-4 py-2 rounded-xl bg-thuy-800 hover:bg-thuy-750 text-slate-200 border border-thuy-750 text-xs font-semibold"
+            >
+              + Thêm hạng mục
+            </button>
           </div>
 
           <div className="pt-2 flex items-center gap-3 p-4 rounded-xl bg-thuy-900 border border-thuy-750">
