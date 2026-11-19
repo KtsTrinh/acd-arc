@@ -62,11 +62,26 @@ export default async function Footer() {
                  Khám phá sản phẩm
                </Link>
              </li>
-             <li>
-               <Link href="/privacy" className="hover:text-thuy-400 transition-colors">
-                 Điều khoản và chính sách chung
-               </Link>
-             </li>
+<li>
+                <Link href="/privacy" className="hover:text-thuy-400 transition-colors">
+                  1. Chính sách bảo mật
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-thuy-400 transition-colors">
+                  2. Chính sách thanh toán
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-thuy-400 transition-colors">
+                  3. Chính sách giao nhận & hoàn tiền
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-thuy-400 transition-colors">
+                  4. Điều khoản giao dịch & khiếu nại
+                </Link>
+              </li>
             <li>
               <Link href="/account" className="hover:text-thuy-400 transition-colors">
                 Kiểm tra link tải đã mua
@@ -77,7 +92,7 @@ export default async function Footer() {
 
         {/* Office Contact */}
         <div className="space-y-3">
-          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">Liên Hệ Studio</h4>
+          <h4 className="text-white font-semibold text-xs uppercase tracking-wider">Liên Hệ ACD Studio</h4>
           <ul className="space-y-2.5 text-xs">
             <li className="flex items-start gap-2">
               <MapPin className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
