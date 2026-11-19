@@ -16,6 +16,7 @@ import {
   Settings,
   Search,
   Code2,
+  FileText,
   Save,
   Loader2,
   CheckCircle2,
@@ -241,6 +242,16 @@ export default function AdminSettingsPage() {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
+              <label className={labelCls}>Chủ Sở Hữu Website</label>
+              <input
+                type="text"
+                value={settings.siteOwner || ""}
+                onChange={(e) => update("siteOwner", e.target.value)}
+                className={inputCls}
+                placeholder="Tên chủ sở hữu website"
+              />
+            </div>
             <div>
               <label className={labelCls}>Email Liên Hệ</label>
               <input
@@ -691,6 +702,23 @@ export default function AdminSettingsPage() {
               </div>
             </div>
           )}
+
+          <div className="space-y-2">
+            <label className={labelCls}>
+              1.5. Điều Khoản Và Chính Sách Chung
+            </label>
+            <textarea
+              rows={16}
+              value={settings.privacyPolicy || ""}
+              onChange={(e) => update("privacyPolicy", e.target.value)}
+              className={`${inputCls} font-mono leading-relaxed`}
+              placeholder="<h2>1. Chính sách bảo mật</h2><p>...</p>"
+            />
+            <p className="text-[10px] text-slate-500">
+              Hỗ trợ HTML. Nội dung sẽ hiển thị trên trang /privacy. Có thể nhập
+              nhiều điều khoản tùy ý.
+            </p>
+          </div>
 
           <div className="pt-2 flex items-center gap-3 p-4 rounded-xl bg-thuy-900 border border-thuy-750">
             <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />

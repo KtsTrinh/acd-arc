@@ -14,6 +14,7 @@ export interface SystemSettings {
   siteName: string;
   siteTagline: string;
   siteDescription: string;
+  siteOwner: string;
   contactEmail: string;
   contactPhone: string;
   contactAddress: string;
@@ -45,6 +46,9 @@ export interface SystemSettings {
   // Custom Script
   headerEmbedCode: string;
   bodyEmbedCode: string;
+
+  // Nội dung trang
+  privacyPolicy: string;
 
   // Tích hợp & Xác thực
   resendApiKey: string;
@@ -81,6 +85,7 @@ export const defaultSettings: SystemSettings = {
   siteTagline: "Kiáº¿n TrÃºc Há»£p Má»‡nh NgÅ© HÃ nh & Ná»™i Tháº¥t ThÆ°á»£ng LÆ°u",
   siteDescription:
     "ACD Studio - ÄÆ¡n vá»‹ thiáº¿t káº¿ kiáº¿n trÃºc biá»‡t thá»±, nhÃ  phá»‘, penthouse vÃ  ná»™i tháº¥t cao cáº¥p theo phong thá»§y há»£p má»‡nh (Kim - Má»™c - Thá»§y - Há»a - Thá»•).",
+  siteOwner: "",
   contactEmail: "contact@acd.vn",
   contactPhone: "0988.ACD.888",
   contactAddress: "TÃ²a nhÃ  Heritage, P. Phan Chu Trinh, HoÃ n Kiáº¿m, HÃ  Ná»™i",
@@ -113,6 +118,8 @@ export const defaultSettings: SystemSettings = {
 
   headerEmbedCode: "",
   bodyEmbedCode: "",
+
+  privacyPolicy: "",
 
   resendApiKey: "",
   emailFrom: "",
