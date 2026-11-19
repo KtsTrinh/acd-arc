@@ -79,7 +79,7 @@ export default function PrivacyPage() {
             <li>
               - Dữ liệu cá nhân của khách hàng sẽ được lưu trữ trên hệ thống máy
               chủ bảo mật của chủ sở hữu website cho đến khi có yêu cầu hủy bỏ
-              hoặc tự khách hàng đăng nhập và thực hiện hủy bỏ.
+              từ khách hàng.
             </li>
             <li>
               - Trong mọi trường hợp còn lại, thông tin cá nhân của khách hàng
@@ -122,41 +122,46 @@ export default function PrivacyPage() {
           <h3>
             <b>
               1.6. Phương tiện và công cụ để người dùng tiếp cận và chỉnh sửa dữ
-              liệu cá nhân của mình
+              liệu cá nhân của mình:
             </b>
           </h3>
           <ul>
             <li>
-              - Khách hàng có quyền tự kiểm tra, cập nhật, điều chỉnh hoặc hủy
-              bỏ thông tin cá nhân của mình bằng cách đăng nhập vào tài khoản cá
-              nhân trên website và chỉnh sửa thông tin.
+              - Dữ liệu cá nhân của khách hàng (họ tên, email) được liên kết và
+              đồng bộ trực tiếp từ tài khoản Google hoặc Facebook khi khách hàng
+              đăng nhập. Khách hàng có thể kiểm tra thông tin trên trang tài
+              khoản cá nhân của website hoặc cập nhật thông tin gốc trực tiếp
+              trên tài khoản Google/Facebook của mình.
             </li>
             <li>
               - Ngoài ra, khách hàng cũng có thể gửi yêu cầu trực tiếp qua email
               kientrucsoacd@gmail.com hoặc gọi điện tới số hotline 0363610366 để
-              được chúng tôi hỗ trợ chỉnh sửa hoặc xóa bỏ dữ liệu theo yêu cầu.
+              được chủ sở hữu website hoặc bộ phận dịch vụ kỹ thuật hỗ trợ cập
+              nhật, điều chỉnh hoặc xóa bỏ dữ liệu cá nhân trên hệ thống theo
+              yêu cầu.
             </li>
           </ul>
           <h3>
             <b>
               1.7. Cam kết bảo mật thông tin cá nhân và cơ chế giải quyết khiếu
-              nại
+              nại:
             </b>
           </h3>
           <p>
             <b>- Cam kết bảo mật:</b> Thông tin cá nhân của thành viên trên
-            website được chúng tôi cam kết bảo mật tuyệt đối theo chính sách bảo
-            vệ thông tin cá nhân. Việc thu thập và sử dụng thông tin của mỗi
-            khách hàng chỉ được thực hiện khi có sự đồng ý của khách hàng đó,
-            trừ những trường hợp pháp luật có quy định khác.
+            website được chủ sở hữu website cam kết bảo mật tuyệt đối theo chính
+            sách bảo vệ thông tin cá nhân. Việc thu thập và sử dụng thông tin
+            của mỗi khách hàng chỉ được thực hiện khi có sự đồng ý của khách
+            hàng đó, trừ những trường hợp pháp luật có quy định khác.
           </p>
           <p>
             <b>- Cơ chế tiếp nhận và giải quyết khiếu nại:</b> Khi phát hiện
             thông tin cá nhân của mình bị sử dụng sai mục đích hoặc phạm vi đã
             thông báo, khách hàng vui lòng gửi khiếu nại qua email
-            kientrucsoacd@gmail.com hoặc gọi trực tiếp đến số 0363610366. Chúng
-            tôi cam kết sẽ phản hồi ngay lập tức và chậm nhất trong vòng 24 giờ
-            làm việc để cùng khách hàng xác minh, xử lý và khắc phục sự cố.
+            kientrucsoacd@gmail.com hoặc gọi trực tiếp đến số 0363610366. Chủ sở
+            hữu website cam kết sẽ phản hồi ngay lập tức và chậm nhất trong vòng
+            24 giờ làm việc để cùng khách hàng xác minh, xử lý và khắc phục sự
+            cố.
           </p>
         </div>
       </details>
@@ -171,10 +176,9 @@ export default function PrivacyPage() {
           </h3>
           <ul>
             <li>
-              <b>ACD Studio</b> cung cấp phương thức thanh toán trực tuyến. Hệ
-              thống hỗ trợ thanh toán qua thẻ ATM nội địa, thẻ tín dụng/ghi nợ
-              quốc tế (Visa, Mastercard, JCB) hoặc quét mã QR qua các ví điện tử
-              được tích hợp.
+              Website <b>ACD Studio</b> áp dụng hình thức thanh toán trực tuyến
+              qua chuyển khoản ngân hàng bằng mã QR được hệ thống tự khởi tạo
+              cho từng đơn hàng.
             </li>
           </ul>
           <h3>
@@ -200,9 +204,8 @@ export default function PrivacyPage() {
           <ul>
             <li>
               - Ngay sau khi cổng thanh toán hoặc hệ thống ngân hàng xác nhận
-              giao dịch thành công, hệ thống tự động kích hoạt quyền tải tệp sản
-              phẩm trong tài khoản của khách hàng trong vòng từ 5 đến 60 phút
-              tùy loại sản phẩm.
+              giao dịch thành công, hệ thống sẽ tự động kích hoạt quyền tải tệp
+              sản phẩm trong tài khoản của khách hàng.
             </li>
           </ul>
           <h3>
@@ -226,16 +229,17 @@ export default function PrivacyPage() {
           <p>
             Trong trường hợp tài khoản ngân hàng của quý khách đã bị trừ tiền
             nhưng hệ thống chưa cập nhật trạng thái đơn hàng hoặc chưa mở khóa
-            quyền tải bản vẽ, quý khách vui lòng liên hệ ngay với bộ phận hỗ trợ
-            qua:
+            quyền tải bản vẽ, quý khách vui lòng liên hệ ngay với chủ sở hữu
+            website hoặc bộ phận kỹ thuật qua:
           </p>
           <ul>
-            <li>Hotline: 0363610366</li>
-            <li>Email: kientrucsoacd@gmail.com</li>
+            <li>- Hotline: 0363610366</li>
+            <li>- Email: kientrucsoacd@gmail.com</li>
           </ul>
           <p>
-            Chúng tôi sẽ kiểm tra đối soát với ngân hàng và kích hoạt quyền lợi
-            cho quý khách chậm nhất trong vòng 2 giờ làm việc.
+            Chủ sở hữu website hoặc bộ phận kỹ thuật sẽ kiểm tra đối soát với
+            ngân hàng và kích hoạt quyền lợi cho quý khách chậm nhất trong vòng
+            2 giờ làm việc.
           </p>
         </div>
       </details>
@@ -245,49 +249,52 @@ export default function PrivacyPage() {
           3. Chính sách giao nhận, cung cấp dịch vụ và hoàn tiền
         </summary>
         <div className="p-4 text-slate-300 text-sm leading-relaxed space-y-3">
-          <h3>Phần I: Đối với các sản phẩm trên website</h3>
+          <h3>
+            <b>Phần I: Đối với các sản phẩm trên website</b>
+          </h3>
           <p>
-            <b>- Phương thức và thời gian giao nhận:</b> Toàn bộ hồ sơ sản phẩm
-            được cung cấp dưới dạng tệp tin kỹ thuật số (định dạng PDF, ZIP,
+            - Phương thức và thời gian giao nhận: Toàn bộ hồ sơ sản phẩm được
+            cung cấp dưới dạng tệp tin kỹ thuật số (định dạng PDF, ZIP,
             RAR,...). Khách hàng không phải chịu bất kỳ chi phí vận chuyển vật
             lý nào.
           </p>
           <p>
             - Thời gian nhận hàng: Ngay sau khi hệ thống xác nhận thanh toán
             thành công, đường dẫn (link) tải bộ hồ sơ sản phẩm sẽ tự động kích
-            hoạt trong tài khoản của khách hàng.
+            hoạt trong tài khoản của khách hàng. Khách hàng có thể tải tệp sản
+            phẩm đã mua 03 lần, thời gian hiệu lực của đường dẫn tải tùy thuộc
+            vào từng sản phẩm cụ thể.
           </p>
-          <p>
-            - Thời hạn tải tệp sản phẩm: Khách hàng có thể tải tệp sản phẩm đã
-            mua 03 lần trong vòng từ 5 đến 60 phút kể từ thời điểm thanh toán
-            thành công. Thời gian hiệu lực của link tải tùy vào từng sản phẩm.
-          </p>
-          <h3>Chính sách đổi trả và hoàn tiền:</h3>
+          <h3>
+            <b>Chính sách đổi trả và hoàn tiền:</b>
+          </h3>
           <p>
             Do đặc thù của sản phẩm kỹ thuật số có thể sao chép ngay sau khi tải
-            về nên chúng tôi áp dụng quy định đổi trả và hoàn tiền như sau:
+            về, <b>ACD Studio</b> áp dụng quy định đổi trả và hoàn tiền như sau:
           </p>
           <ul>
             <li>
-              <b>Trường hợp không áp dụng hoàn tiền.</b> Chúng tôi từ chối yêu
+              <b> Trường hợp không áp dụng hoàn tiền:</b> ACD Studio từ chối yêu
               cầu hủy đơn hoặc hoàn tiền sau khi hệ thống đã cấp link tải cho
-              khách hàng, trừ các trường hợp lỗi kỹ thuật nêu dưới đây.
+              khách hàng, trừ các trường hợp lỗi kỹ thuật nêu dưới đây:
             </li>
             <li>
               <b>Trường hợp được hỗ trợ đổi file hoặc hoàn tiền 100%.</b> Khách
               hàng được quyền yêu cầu gửi lại tệp mới hoặc hoàn lại 100% giá trị
               đơn hàng nếu gặp một trong các sự cố sau:
               <ul>
-                <li>Tệp tin tải về bị lỗi hỏng định dạng.</li>
+                <li>+ Tệp tin tải về bị lỗi hỏng định dạng.</li>
                 <li>
-                  Hệ thống gặp sự cố kỹ thuật khiến khách hàng không thể tải
+                  + Hệ thống gặp sự cố kỹ thuật khiến khách hàng không thể tải
                   được tệp sau khi đã thanh toán và bộ phận kỹ thuật không thể
                   khắc phục trong vòng 24 giờ làm việc.
                 </li>
               </ul>
             </li>
           </ul>
-          <h3>Phần III: Quy trình và thời gian hoàn tiền</h3>
+          <h3>
+            <b>Phần II: Quy trình và thời gian hoàn tiền</b>
+          </h3>
           <ul>
             <li>
               <b>Bước 1 - Gửi yêu cầu.</b> Khách hàng gửi thông tin yêu cầu hoàn
@@ -380,13 +387,13 @@ export default function PrivacyPage() {
           <ul>
             <li>
               <b>Bước 1 - Tiếp nhận phản ánh.</b> Ngay khi nhận được thông tin
-              khiếu nại qua email, điện thoại, chúng tôi sẽ ghi nhận nội dung,
+              khiếu nại qua email, điện thoại, ACD Studio sẽ ghi nhận nội dung,
               rà soát theo các yêu cầu khiếu nại của khách hàng.
             </li>
             <li>
               <b>Bước 2 - Xác minh và phản hồi ban đầu.</b> Trong vòng 24 giờ
               làm việc kể từ khi tiếp nhận (không bao gồm ngày nghỉ, lễ, Tết
-              theo quy định), chúng tôi sẽ liên hệ lại với khách hàng để xác
+              theo quy định), ACD Studio sẽ liên hệ lại với khách hàng để xác
               nhận thông tin, thu thập thêm bằng chứng nếu cần thiết.
             </li>
             <li>
