@@ -327,49 +327,51 @@ export default function PrivacyPage() {
             hiện giao dịch trên nền tảng, quý khách đồng ý tuân thủ các điều
             khoản và quy định dưới đây.
           </p>
-          <h3>Phần I: Các điều kiện và hạn chế cung cấp hàng hóa, dịch vụ</h3>
-          <h4>1. Đối tượng và phạm vi áp dụng</h4>
+          <h3>
+            <b>Phần I: Các điều kiện và hạn chế cung cấp hàng hóa, dịch vụ</b>
+          </h3>
+          <h4>
+            <b>1. Đối tượng và phạm vi áp dụng</b>
+          </h4>
           <ul>
             <li>
-              <b>Đối tượng giao dịch.</b> Khách hàng giao dịch trên website phải
-              là cá nhân từ đủ 18 tuổi trở lên có đầy đủ năng lực hành vi dân
-              sự, hoặc tổ chức/doanh nghiệp được thành lập hợp pháp theo quy
+              <b>- Đối tượng giao dịch:</b> Khách hàng giao dịch trên website
+              phải là cá nhân từ đủ 18 tuổi trở lên có đầy đủ năng lực hành vi
+              dân sự, hoặc tổ chức/doanh nghiệp được thành lập hợp pháp theo quy
               định của pháp luật Việt Nam.
             </li>
             <li>
-              <b>Phạm vi địa lý.</b>
-              <ul>
-                <li>
-                  Đặc thù là sản phẩm dịch vụ số, hệ thống cung cấp trực tuyến
-                  trên toàn lãnh thổ Việt Nam và quốc tế.
-                </li>
-              </ul>
+              <b>- Phạm vi địa lý:</b> Đặc thù là sản phẩm dịch vụ số, hệ thống
+              cung cấp trực tuyến trên toàn lãnh thổ Việt Nam và quốc tế.
             </li>
           </ul>
-          <h4>2. Hạn chế về quyền sử dụng và bản quyền tài nguyên số</h4>
+          <h4>
+            <b>2. Hạn chế về quyền sử dụng và bản quyền tài nguyên số</b>
+          </h4>
           <ul>
             <li>
-              Toàn bộ sản phẩm được bán trên website thuộc bản quyền của ACD
-              Studio.
-            </li>
-            <li>
-              Nghiêm cấm các hành vi: Sao chép, chỉnh sửa, phân phối lại, rao
-              bán thương mại hoặc chia sẻ công khai miễn phí các sản phẩm đã mua
-              lên mạng Internet dưới bất kỳ hình thức nào. Nếu phát hiện vi
-              phạm, ACD Studio có quyền khóa vĩnh viễn tài khoản thành viên và
-              yêu cầu bồi thường theo Luật Sở hữu trí tuệ.
+              - Toàn bộ sản phẩm được bán trên website thuộc bản quyền của ACD
+              Studio. Nghiêm cấm các hành vi: Sao chép, chỉnh sửa, phân phối
+              lại, rao bán thương mại hoặc chia sẻ công khai miễn phí các sản
+              phẩm đã mua lên mạng Internet dưới bất kỳ hình thức nào. Nếu phát
+              hiện vi phạm, ACD Studio có quyền khóa vĩnh viễn tài khoản thành
+              viên và yêu cầu bồi thường theo Luật Sở hữu trí tuệ.
             </li>
           </ul>
           <h3>
-            Phần II: Phương thức tiếp nhận và giải quyết phản ánh, yêu cầu,
-            khiếu nại
+            <b>
+              Phần II: Phương thức tiếp nhận và giải quyết phản ánh, yêu cầu,
+              khiếu nại
+            </b>
           </h3>
           <p>
-            ACD Studio luôn đề cao trải nghiệm khách hàng và cam kết tiếp nhận,
-            xử lý mọi phản ánh, khiếu nại một cách khách quan, nhanh chóng và
-            đúng pháp luật.
+            <b>ACD Studio</b> luôn đề cao trải nghiệm khách hàng và cam kết tiếp
+            nhận, xử lý mọi phản ánh, khiếu nại một cách khách quan, nhanh chóng
+            và đúng pháp luật.
           </p>
-          <h4>1. Kênh tiếp nhận thông tin khiếu nại</h4>
+          <h4>
+            <b>1. Kênh tiếp nhận thông tin khiếu nại</b>
+          </h4>
           <p>
             Khách hàng có bất kỳ thắc mắc, phản ánh về chất lượng tệp bản vẽ,
             tiến độ dịch vụ hoặc thái độ phục vụ có thể gửi yêu cầu qua các kênh
@@ -377,48 +379,52 @@ export default function PrivacyPage() {
           </p>
           <ul>
             <li>
-              Hotline hỗ trợ trực tiếp: 0363610366 (Thời gian làm việc: 08h00 –
-              17h30 từ Thứ 2 đến Thứ 6 không bao gồm các ngày nghỉ lễ, Tết theo
-              quy định).
+              - Hotline hỗ trợ trực tiếp: 0363610366 (Thời gian làm việc: 08h00
+              – 17h30 từ Thứ 2 đến Thứ 6 không bao gồm các ngày nghỉ lễ, Tết
+              theo quy định).
             </li>
-            <li>Email tiếp nhận khiếu nại: kientrucsoacd@gmail.com</li>
+            <li>- Email tiếp nhận khiếu nại: kientrucsoacd@gmail.com</li>
           </ul>
-          <h4>2. Quy trình 4 bước giải quyết khiếu nại</h4>
+          <h4>
+            <b>2. Quy trình 4 bước giải quyết khiếu nại:</b>
+          </h4>
           <ul>
             <li>
-              <b>Bước 1 - Tiếp nhận phản ánh.</b> Ngay khi nhận được thông tin
+              <b>Bước 1 - Tiếp nhận phản ánh:</b> Ngay khi nhận được thông tin
               khiếu nại qua email, điện thoại, ACD Studio sẽ ghi nhận nội dung,
               rà soát theo các yêu cầu khiếu nại của khách hàng.
             </li>
             <li>
-              <b>Bước 2 - Xác minh và phản hồi ban đầu.</b> Trong vòng 24 giờ
+              <b>Bước 2 - Xác minh và phản hồi ban đầu:</b> Trong vòng 24 giờ
               làm việc kể từ khi tiếp nhận (không bao gồm ngày nghỉ, lễ, Tết
               theo quy định), ACD Studio sẽ liên hệ lại với khách hàng để xác
               nhận thông tin, thu thập thêm bằng chứng nếu cần thiết.
             </li>
             <li>
-              <b>Bước 3 - Đưa ra phương án xử lý.</b> Trong vòng 02 đến 05 ngày
+              <b>Bước 3 - Đưa ra phương án xử lý:</b> Trong vòng 02 đến 05 ngày
               làm việc tùy theo mức độ phức tạp của vụ việc, ACD Studio sẽ đưa
               ra phương án giải quyết cụ thể (gửi lại tệp bản vẽ chuẩn, hỗ trợ
               chỉnh sửa kỹ thuật, thực hiện hoàn tiền,...) trên tinh thần thương
               lượng và bảo vệ quyền lợi chính đáng của khách hàng.
             </li>
             <li>
-              <b>Bước 4 - Hoàn tất và đóng khiếu nại.</b> Sau khi hai bên thống
+              <b>Bước 4 - Hoàn tất và đóng khiếu nại:</b> Sau khi hai bên thống
               nhất phương án và hoàn tất việc khắc phục, ACD Studio sẽ xác nhận
               lại với khách hàng để đóng hồ sơ khiếu nại.
             </li>
           </ul>
-          <h4>3. Giải quyết tranh chấp tại cơ quan có thẩm quyền</h4>
+          <h4>
+            <b>3. Giải quyết tranh chấp tại cơ quan có thẩm quyền</b>
+          </h4>
           <ul>
             <li>
-              Mọi tranh chấp phát sinh trong quá trình giao dịch sẽ được ưu tiên
-              giải quyết thông qua thương lượng và hòa giải giữa ACD Studio và
-              khách hàng.
+              - Mọi tranh chấp phát sinh trong quá trình giao dịch sẽ được ưu
+              tiên giải quyết thông qua thương lượng và hòa giải giữa ACD Studio
+              và khách hàng.
             </li>
             <li>
-              Trong trường hợp không thể đạt được thỏa thuận chung trong vòng 30
-              ngày kể từ ngày phát sinh khiếu nại, một trong hai bên có quyền
+              - Trong trường hợp không thể đạt được thỏa thuận chung trong vòng
+              30 ngày kể từ ngày phát sinh khiếu nại, một trong hai bên có quyền
               đưa vụ việc ra Tòa án nhân dân có thẩm quyền để giải quyết theo
               quy định của pháp luật Việt Nam.
             </li>
