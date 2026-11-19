@@ -115,7 +115,7 @@ export default async function Footer() {
                 <li key={idx}>
                   <Link
                     href={`/privacy/${idx}`}
-                    className="hover:text-thuy-400 transition-colors"
+                    className="hover:text-thuy-400 transition-colors whitespace-nowrap"
                   >
                     {s.title || `Hạng mục ${idx + 1}`}
                   </Link>
@@ -126,7 +126,7 @@ export default async function Footer() {
         </div>
 
         {/* Office Contact */}
-        <div className="lg:col-span-2 space-y-3 lg:ml-20">
+        <div className="lg:col-span-2 space-y-3 lg:ml-28">
           <h4 className="text-white font-semibold text-xs uppercase tracking-wider">
             Liên Hệ ACD Studio
           </h4>
