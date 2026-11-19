@@ -105,14 +105,23 @@ export default async function Footer() {
             Điều Khoản Và Chính Sách Chung
           </h4>
           <ul className="space-y-2 text-xs">
-            <li>
-              <Link
-                href="/privacy"
-                className="hover:text-thuy-400 transition-colors"
-              >
-                Xem chi tiết
-              </Link>
-            </li>
+            {(() => {
+              let sections: { title: string; content: string }[] = [];
+              try {
+                const parsed = JSON.parse(settings.privacyPolicy || "[]");
+                if (Array.isArray(parsed)) sections = parsed;
+              } catch {}
+              return sections.map((s, idx) => (
+                <li key={idx}>
+                  <Link
+                    href={`/privacy/${idx}`}
+                    className="hover:text-thuy-400 transition-colors"
+                  >
+                    {s.title || `Hạng mục ${idx + 1}`}
+                  </Link>
+                </li>
+              ));
+            })()}
           </ul>
         </div>
 
