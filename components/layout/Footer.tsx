@@ -204,7 +204,7 @@ export default async function Footer() {
       {/* Bottom Legal bar */}
       <div className="border-t border-thuy-850 bg-thuy-950/60 py-6">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs gap-4 text-slate-500">
-          <p>
+          <p className="whitespace-nowrap">
             © {new Date().getFullYear()} ACD Architecture & Interior Design
             Studio. All rights reserved.
           </p>
