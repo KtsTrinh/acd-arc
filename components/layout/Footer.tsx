@@ -107,16 +107,19 @@ export default async function Footer() {
           <ul className="space-y-2.5 text-xs">
             <li className="flex items-start gap-2">
               <User className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
-              <span>Chủ sở hữu website: {settings.siteOwner}</span>
+              <span className="whitespace-nowrap">Chủ sở hữu website:</span>
+              <span className="break-words">{settings.siteOwner}</span>
             </li>
             <li className="flex items-start gap-2">
               <MapPin className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
-              <span>Địa chỉ: {settings.contactAddress}</span>
+              <span className="whitespace-nowrap">Địa chỉ:</span>
+              <span className="break-words">{settings.contactAddress}</span>
             </li>
             {settings.taxCode && (
               <li className="flex items-start gap-2">
                 <FileText className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
-                <span>Mã số thuế: {settings.taxCode}</span>
+                <span className="whitespace-nowrap">Mã số thuế:</span>
+                <span className="break-words">{settings.taxCode}</span>
               </li>
             )}
             <li className="flex items-center gap-2">
