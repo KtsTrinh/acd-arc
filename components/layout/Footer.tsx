@@ -100,7 +100,7 @@ export default async function Footer() {
         </div>
 
         {/* Office Contact */}
-        <div className="space-y-3">
+        <div className="lg:col-span-2 space-y-3">
           <h4 className="text-white font-semibold text-xs uppercase tracking-wider">
             Liên Hệ ACD Studio
           </h4>
