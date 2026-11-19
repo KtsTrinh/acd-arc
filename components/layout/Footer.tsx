@@ -88,38 +88,6 @@ export default async function Footer() {
             </li>
             <li>
               <Link
-                href="/privacy#section-1"
-                className="hover:text-thuy-400 transition-colors"
-              >
-                1. Chính sách bảo mật
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/privacy#section-1"
-                className="hover:text-thuy-400 transition-colors"
-              >
-                2. Chính sách thanh toán
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/privacy#section-1"
-                className="hover:text-thuy-400 transition-colors"
-              >
-                3. Chính sách giao nhận & hoàn tiền
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/privacy#section-1"
-                className="hover:text-thuy-400 transition-colors"
-              >
-                4. Điều khoản giao dịch & khiếu nại
-              </Link>
-            </li>
-            <li>
-              <Link
                 href="/account"
                 className="hover:text-thuy-400 transition-colors"
               >
@@ -137,10 +105,18 @@ export default async function Footer() {
           <ul className="space-y-2.5 text-xs">
             <li className="flex items-start gap-2">
               <MapPin className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
-              <span>{settings.siteOwner}</span>
-              {settings.taxCode && <span>MST: {settings.taxCode}</span>}
-              <span>{settings.contactAddress}</span>
+              <span>Chủ sở hữu website: {settings.siteOwner}</span>
             </li>
+            <li className="flex items-start gap-2">
+              <MapPin className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
+              <span>Địa chỉ: {settings.contactAddress}</span>
+            </li>
+            {settings.taxCode && (
+              <li className="flex items-start gap-2">
+                <MapPin className="w-3.5 h-3.5 text-thuy-400 mt-0.5 flex-shrink-0" />
+                <span>Mã số thuế: {settings.taxCode}</span>
+              </li>
+            )}
             <li className="flex items-center gap-2">
               <Phone className="w-3.5 h-3.5 text-thuy-400 flex-shrink-0" />
               <span className="text-slate-200 font-medium">
