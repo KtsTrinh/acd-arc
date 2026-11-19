@@ -36,7 +36,7 @@ export default async function Footer() {
             </span>
           </Link>
 
-          <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
+          <p className="text-slate-400 text-xs leading-relaxed max-w-sm text-justify">
             {settings.siteDescription ||
               "Studio kiến trúc tiên phong ứng dụng triết lý phong thủy ngũ hành hợp mệnh (Kim - Mộc - Thủy - Hỏa - Thổ). Tối giản, sang trọng và kiến tạo không gian sống tương sinh mang lại thịnh vượng cho từng gia chủ."}
           </p>
