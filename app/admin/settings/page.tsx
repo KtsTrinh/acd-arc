@@ -757,14 +757,14 @@ export default function AdminSettingsPage() {
                     placeholder="Tiêu đề hạng mục"
                   />
                   <textarea
-                    rows={6}
+                    rows={12}
                     value={sec.content}
                     onChange={(e) => {
                       const next = [...policySections];
                       next[idx] = { ...next[idx], content: e.target.value };
                       setPolicySections(next);
                     }}
-                    className={`${inputCls} font-mono leading-relaxed`}
+                    className={`${inputCls} font-mono leading-relaxed min-h-[200px]`}
                     placeholder="Nội dung (hỗ trợ HTML)"
                   />
                 </div>
