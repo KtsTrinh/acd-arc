@@ -30,12 +30,8 @@ export default function PrivacyPage() {
             </li>
             <li>+ Hỗ trợ khách đã thanh toán nhưng chưa tải được sản phẩm.</li>
             <li>
-              + Liên hệ tư vấn, báo giá dịch vụ thiết kế, thi công xây dựng theo
-              yêu cầu.
-            </li>
-            <li>
-              + Gửi thông báo về các cập nhật mới của bộ hồ sơ bản vẽ hoặc thông
-              tin hỗ trợ khách hàng.
+              + Gửi thông báo về các cập nhật mới của sản phẩm hoặc thông tin hỗ
+              trợ khách hàng.
             </li>
             <li>
               + Ngăn ngừa các hoạt động phá hủy tài khoản người dùng hoặc giả
@@ -43,33 +39,37 @@ export default function PrivacyPage() {
             </li>
           </ul>
           <p>
-            <b>- Phạm vi thu thập:</b> Để truy cập, đặt mua sản phẩm quý khách
-            có thể được yêu cầu đăng ký với chúng tôi các thông tin cá nhân bao
-            gồm: Họ và tên, Email, Số điện thoại liên lạc theo các thông tin của
-            gmail quý khách đã đăng ký với google.
+            <b>- Phạm vi thu thập:</b> Để truy cập và đặt mua sản phẩm quý khách
+            cần đăng nhập thông qua tài khoản Google hoặc Facebook. Hệ thống sẽ
+            thu thập và đồng bộ các thông tin cơ bản bao gồm: Họ và tên, địa chỉ
+            email từ tài khoản liên kết cùng với số điện thoại liên lạc do quý
+            khách cung cấp (nếu có) để chủ sở hữu website hoặc bộ phận dịch vụ
+            kỹ thuật hỗ trợ quá trình giao dịch và bàn giao sản phẩm.
           </p>
           <h3>
             <b>1.2. Phạm vi sử dụng thông tin</b>
           </h3>
           <p>
-            <b>ACD Studio</b> sử dụng thông tin khách hàng cung cấp một cách phù
-            hợp và tuân thủ hoàn toàn nội dung của “Chính sách bảo mật” này:
+            Chủ sở hữu website và bộ phận dịch vụ kỹ thuật sử dụng thông tin
+            khách hàng cung cấp một cách phù hợp và tuân thủ hoàn toàn nội dung
+            của “Chính sách bảo mật” này:
           </p>
           <ul>
             <li>
-              - Thông tin chỉ được sử dụng trong nội bộ hệ thống của ACD Studio
-              để phục vụ việc chăm sóc khách hàng và bàn giao sản phẩm.
+              - Thông tin chỉ được sử dụng trong nội bộ hệ thống website để phục
+              vụ việc chăm sóc khách hàng và bàn giao sản phẩm.
             </li>
             <li>
-              -Chúng tôi cam kết không bán, chia sẻ hay trao đổi thông tin cá
-              nhân của khách hàng cho bất kỳ bên thứ ba nào vì mục đích thương
-              mại.
+              - Chủ sở hữu website cam kết không bán, chia sẻ hay trao đổi thông
+              tin cá nhân của khách hàng cho bất kỳ bên thứ ba nào vì mục đích
+              thương mại.
             </li>
             <li>
-              - Trong trường hợp có yêu cầu của pháp luật, chúng tôi có trách
-              nhiệm hợp tác cung cấp thông tin cá nhân khách hàng khi có yêu cầu
-              từ cơ quan pháp luật có thẩm quyền nhằm phục vụ cho việc điều tra
-              liên quan đến hành vi vi phạm pháp luật nào đó của khách hàng.
+              - Trong trường hợp có yêu cầu của pháp luật, chủ sở hữu website có
+              trách nhiệm hợp tác cung cấp thông tin cá nhân khách hàng khi có
+              yêu cầu từ cơ quan pháp luật có thẩm quyền nhằm phục vụ cho việc
+              điều tra liên quan đến hành vi vi phạm pháp luật nào đó của khách
+              hàng.
             </li>
           </ul>
           <h3>
@@ -78,8 +78,8 @@ export default function PrivacyPage() {
           <ul>
             <li>
               - Dữ liệu cá nhân của khách hàng sẽ được lưu trữ trên hệ thống máy
-              chủ bảo mật của ACD Studio cho đến khi có yêu cầu hủy bỏ hoặc tự
-              khách hàng đăng nhập và thực hiện hủy bỏ.
+              chủ bảo mật của chủ sở hữu website cho đến khi có yêu cầu hủy bỏ
+              hoặc tự khách hàng đăng nhập và thực hiện hủy bỏ.
             </li>
             <li>
               - Trong mọi trường hợp còn lại, thông tin cá nhân của khách hàng
@@ -133,9 +133,8 @@ export default function PrivacyPage() {
             </li>
             <li>
               - Ngoài ra, khách hàng cũng có thể gửi yêu cầu trực tiếp qua email
-              kientrucsoacd@gmail.com hoặc gọi điện tới số hotline 0363610366để
-              được đội ngũ quản trị viên của ACD Studio hỗ trợ chỉnh sửa hoặc
-              xóa bỏ dữ liệu theo yêu cầu.
+              kientrucsoacd@gmail.com hoặc gọi điện tới số hotline 0363610366 để
+              được chúng tôi hỗ trợ chỉnh sửa hoặc xóa bỏ dữ liệu theo yêu cầu.
             </li>
           </ul>
           <h3>
@@ -145,20 +144,19 @@ export default function PrivacyPage() {
             </b>
           </h3>
           <p>
-            <b>Cam kết bảo mật.</b> Thông tin cá nhân của thành viên trên
-            website được <b>ACD Studio</b> cam kết bảo mật tuyệt đối theo chính
-            sách bảo vệ thông tin cá nhân. Việc thu thập và sử dụng thông tin
-            của mỗi khách hàng chỉ được thực hiện khi có sự đồng ý của khách
-            hàng đó, trừ những trường hợp pháp luật có quy định khác.
+            <b>- Cam kết bảo mật:</b> Thông tin cá nhân của thành viên trên
+            website được chúng tôi cam kết bảo mật tuyệt đối theo chính sách bảo
+            vệ thông tin cá nhân. Việc thu thập và sử dụng thông tin của mỗi
+            khách hàng chỉ được thực hiện khi có sự đồng ý của khách hàng đó,
+            trừ những trường hợp pháp luật có quy định khác.
           </p>
           <p>
-            <b>Cơ chế tiếp nhận và giải quyết khiếu nại.</b> Khi phát hiện thông
-            tin cá nhân của mình bị sử dụng sai mục đích hoặc phạm vi đã thông
-            báo, khách hàng vui lòng gửi khiếu nại qua email
-            kientrucsoacd@gmail.com hoặc gọi trực tiếp đến số 0363610366.{" "}
-            <b>ACD Studio</b> cam kết sẽ phản hồi ngay lập tức và chậm nhất
-            trong vòng 24 giờ làm việc để cùng khách hàng xác minh, xử lý và
-            khắc phục sự cố.
+            <b>- Cơ chế tiếp nhận và giải quyết khiếu nại:</b> Khi phát hiện
+            thông tin cá nhân của mình bị sử dụng sai mục đích hoặc phạm vi đã
+            thông báo, khách hàng vui lòng gửi khiếu nại qua email
+            kientrucsoacd@gmail.com hoặc gọi trực tiếp đến số 0363610366. Chúng
+            tôi cam kết sẽ phản hồi ngay lập tức và chậm nhất trong vòng 24 giờ
+            làm việc để cùng khách hàng xác minh, xử lý và khắc phục sự cố.
           </p>
         </div>
       </details>
