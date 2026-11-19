@@ -365,7 +365,7 @@ export default function Navbar() {
                 className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-200 bg-thuy-850 hover:bg-thuy-800 border border-thuy-700/80 transition-all hover:border-thuy-500"
               >
                 <User className="w-3.5 h-3.5" />
-                <span>Đăng nhập</span>
+                <span className="whitespace-nowrap">Đăng nhập</span>
               </Link>
             )}
 
