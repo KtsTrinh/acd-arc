@@ -1,6 +1,23 @@
 import { getSettings } from "@/lib/settings";
 import { notFound } from "next/navigation";
 
+function formatPolicyHtml(html: string) {
+  if (!html) return "";
+  return (
+    html
+      // Tự động chuyển các tiêu đề lớn (1.1., Phần I, Chính sách đổi trả...) thành thẻ <h2> có viền xanh
+      .replace(
+        /<p>\s*<(?:strong|b)>\s*((?:\d+\.\d+\.?|Phần\s+[IVX]+:?|Chính sách đổi trả)[^<]*)\s*<\/(?:strong|b)>\s*<\/p>/gi,
+        "<h2>$1</h2>",
+      )
+      // Tự động chuyển các tiêu đề mục nhỏ (1., 2., 3. đứng đầu dòng riêng) thành thẻ <h3>
+      .replace(
+        /<p>\s*<(?:strong|b)>\s*(\d+\.\s+[^<]+)\s*<\/(?:strong|b)>\s*<\/p>/gi,
+        "<h3>$1</h3>",
+      )
+  );
+}
+
 export default async function PrivacyDetailPage({
   params,
 }: {
@@ -18,6 +35,7 @@ export default async function PrivacyDetailPage({
   const idx = Number(params.id);
   const section = sections[idx];
   if (!section) notFound();
+
   return (
     <div className="container mx-auto px-4 sm:px-6 pt-28 pb-20 max-w-3xl text-justify">
       {section.title && (
@@ -32,7 +50,7 @@ export default async function PrivacyDetailPage({
       )}
       <div
         className="policy-rich-text"
-        dangerouslySetInnerHTML={{ __html: section.content }}
+        dangerouslySetInnerHTML={{ __html: formatPolicyHtml(section.content) }}
       />
     </div>
   );
