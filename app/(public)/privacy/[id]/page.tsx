@@ -19,9 +19,9 @@ export default async function PrivacyDetailPage({
   const section = sections[idx];
   if (!section) notFound();
   return (
-    <div className="container mx-auto px-4 sm:px-6 pt-28 pb-20 max-w-3xl text-left">
+    <div className="container mx-auto px-4 sm:px-6 pt-28 pb-20 max-w-3xl text-justify">
       {section.title && (
-        <header className="border-b border-slate-800 pb-6 mb-8">
+        <header className="border-b border-slate-800 pb-6 mb-8 text-left">
           <p className="text-sky-400 text-xs font-semibold uppercase tracking-wider mb-2">
             Điều khoản & Chính sách ACD Studio
           </p>
