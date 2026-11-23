@@ -15,14 +15,25 @@ Next.js (App Router) + Prisma + TypeScript website for ACD Studio.
 
 ```mermaid
 graph TD
-  A[Browser] --> B[Next.js App Router]
-  B --> C[Public Pages]
-  B --> D[Admin CMS]
-  B --> E[API Routes]
-  E --> F[Prisma]
-  F --> G[(PostgreSQL)]
-  E --> H[Media Proxy]
-  H --> I[Google Drive / External]
+  A[Browser]
+  B[Public Site<br/>products/cart/orders/downloads]
+  C[Admin CMS<br/>products/media/orders/users/settings]
+  D[Next.js API Routes]
+  E[Auth getCurrentUser]
+  F[Media Proxy /api/media/stream]
+  G[Prisma / PostgreSQL]
+  H[File Storage<br/>storage/private + public]
+  I[External Media<br/>Google Drive / CDN]
+
+  A --> B
+  A --> C
+  B --> D
+  C --> D
+  D --> E
+  D --> F
+  D --> G
+  F --> I
+  G --> H
 ```
 
 ## System Architecture & Business Flows (ASCII)
