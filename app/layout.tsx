@@ -63,7 +63,7 @@ export default async function RootLayout({
 
         {/* Custom header embed code (ads, pixels, GTM...) - applied on every page */}
         {settings.headerEmbedCode && (
-          <script dangerouslySetInnerHTML={{ __html: settings.headerEmbedCode }} />
+          <div dangerouslySetInnerHTML={{ __html: settings.headerEmbedCode }} />
         )}
 
         {/* Google Analytics */}
@@ -86,7 +86,7 @@ export default async function RootLayout({
 
         {/* Custom body embed code - applied on every page */}
         {settings.bodyEmbedCode && (
-          <script dangerouslySetInnerHTML={{ __html: settings.bodyEmbedCode }} />
+          <div dangerouslySetInnerHTML={{ __html: settings.bodyEmbedCode }} />
         )}
       </body>
     </html>
