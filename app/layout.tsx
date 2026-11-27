@@ -1,11 +1,13 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import "./globals.css";
 import { getSettings } from "@/lib/settings";
+import { getBaseUrl } from "@/lib/app-url";
 
 export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
+  const base = getBaseUrl();
 
   const keywords = settings.seoKeywords
     ? settings.seoKeywords
@@ -15,6 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
     : [];
 
   const metadata: Metadata = {
+    metadataBase: new URL(base),
     title: settings.seoTitle || settings.siteName,
     description: settings.seoDescription || settings.siteDescription,
     keywords,
@@ -57,16 +60,13 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
-
           rel="stylesheet"
         />
 
-        {/* Custom header embed code (ads, pixels, GTM...) - applied on every page */}
         {settings.headerEmbedCode && (
           <div dangerouslySetInnerHTML={{ __html: settings.headerEmbedCode }} />
         )}
 
-        {/* Google Analytics */}
         {settings.googleAnalyticsId && (
           <>
             <script
@@ -84,7 +84,6 @@ export default async function RootLayout({
       <body className="min-h-screen bg-thuy-900 text-slate-100 antialiased selection:bg-thuy-400 selection:text-thuy-950">
         {children}
 
-        {/* Custom body embed code - applied on every page */}
         {settings.bodyEmbedCode && (
           <div dangerouslySetInnerHTML={{ __html: settings.bodyEmbedCode }} />
         )}

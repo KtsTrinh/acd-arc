@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    { "source": "/projects", "has": [{ "type": "query", "key": "menh", "value": "menh-tho" }], "destination": "/", "permanent": true },
+    { "source": "/projects", "has": [{ "type": "query", "key": "category", "value": "biet-thu-villa" }], "destination": "/products", "permanent": true },
+    { "source": "/register", "has": [{ "type": "query", "key": "from", "value": "/cart" }], "destination": "/", "permanent": true },
+    { "source": "/projects", "has": [{ "type": "query", "key": "category", "value": "penthouse-can-ho" }], "destination": "/products", "permanent": true },
+    { "source": "/projects", "has": [{ "type": "query", "key": "category", "value": "noi-that-cao-cap" }], "destination": "/products", "permanent": true }
+  ]
+}

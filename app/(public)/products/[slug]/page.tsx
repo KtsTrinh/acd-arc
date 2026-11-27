@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   ].filter(Boolean);
   const desc = parts.join(" | ");
   return {
+    alternates: { canonical: `/products/${params.slug}` },
     title: product.name,
     description: desc,
     openGraph: {
